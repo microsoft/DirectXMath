@@ -1290,13 +1290,13 @@ inline ContainmentType XM_CALLCONV BoundingBox::Contains( FXMVECTOR V0, FXMVECTO
     XMVECTOR vCenter = XMLoadFloat3( &Center );
     XMVECTOR vExtents = XMLoadFloat3( &Extents );
 
-    XMVECTOR d = XMVector3LengthSq( V0 - vCenter );
+    XMVECTOR d = XMVectorAbs( V0 - vCenter );
     XMVECTOR Inside = XMVectorLessOrEqual( d, vExtents );
 
-    d = XMVector3LengthSq( V1 - vCenter );
+    d = XMVectorAbs( V1 - vCenter );
     Inside = XMVectorAndInt( Inside, XMVectorLessOrEqual( d, vExtents ) );
 
-    d = XMVector3LengthSq( V2 - vCenter );
+    d = XMVectorAbs( V2 - vCenter );
     Inside = XMVectorAndInt( Inside, XMVectorLessOrEqual( d, vExtents ) );
 
     return ( XMVector3EqualInt( Inside, XMVectorTrueInt() ) ) ? CONTAINS : INTERSECTS;
@@ -1406,7 +1406,7 @@ inline ContainmentType BoundingBox::Contains( const BoundingOrientedBox& box ) c
     for( size_t i=0; i < BoundingOrientedBox::CORNER_COUNT; ++i )
     {
         XMVECTOR C = XMVector3Rotate( oExtents * g_BoxOffset[i], oOrientation ) + oCenter;
-        XMVECTOR d = XMVector3LengthSq( C );
+        XMVECTOR d = XMVectorAbs(C);
         Inside = XMVectorAndInt( Inside, XMVectorLessOrEqual( d, vExtents ) );
     }
 
@@ -1434,7 +1434,7 @@ inline ContainmentType BoundingBox::Contains( const BoundingFrustum& fr ) const
     for( size_t i=0; i < BoundingFrustum::CORNER_COUNT; ++i )
     {
         XMVECTOR Point = XMLoadFloat3( &Corners[i] );
-        XMVECTOR d = XMVector3LengthSq( Point - vCenter );
+        XMVECTOR d = XMVectorAbs( Point - vCenter );
         Inside = XMVectorAndInt( Inside, XMVectorLessOrEqual( d, vExtents ) );
     }
 
@@ -2547,11 +2547,11 @@ inline bool XM_CALLCONV BoundingOrientedBox::Intersects( FXMVECTOR Origin, FXMVE
 {
     assert( DirectX::Internal::XMVector3IsUnit( Direction ) );
 
-    static const XMVECTORI32 SelectY =
+    static const XMVECTORU32 SelectY =
     {
         XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0
     };
-    static const XMVECTORI32 SelectZ =
+    static const XMVECTORU32 SelectZ =
     {
         XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0
     };
@@ -3365,11 +3365,11 @@ inline bool BoundingFrustum::Intersects( const BoundingBox& box ) const
 _Use_decl_annotations_
 inline bool BoundingFrustum::Intersects( const BoundingOrientedBox& box ) const
 {
-    static const XMVECTORI32 SelectY =
+    static const XMVECTORU32 SelectY =
     {
         XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0
     };
-    static const XMVECTORI32 SelectZ =
+    static const XMVECTORU32 SelectZ =
     {
         XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0
     };
@@ -4426,23 +4426,23 @@ inline bool XM_CALLCONV Intersects( FXMVECTOR Origin, FXMVECTOR Direction, FXMVE
 _Use_decl_annotations_
 inline bool XM_CALLCONV Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GXMVECTOR B0, HXMVECTOR B1, HXMVECTOR B2 )
 {
-    static const XMVECTORI32 SelectY =
+    static const XMVECTORU32 SelectY =
     {
         XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0
     };
-    static const XMVECTORI32 SelectZ =
+    static const XMVECTORU32 SelectZ =
     {
         XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0
     };
-    static const XMVECTORI32 Select0111 =
+    static const XMVECTORU32 Select0111 =
     {
         XM_SELECT_0, XM_SELECT_1, XM_SELECT_1, XM_SELECT_1
     };
-    static const XMVECTORI32 Select1011 =
+    static const XMVECTORU32 Select1011 =
     {
         XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1
     };
-    static const XMVECTORI32 Select1101 =
+    static const XMVECTORU32 Select1101 =
     {
         XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1
     };

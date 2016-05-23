@@ -17,20 +17,10 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 306
-
-#if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
-#if defined(_M_X64) || defined(_M_IX86) || defined(_M_ARM)
-#define _XM_LITTLEENDIAN_
-#elif defined(_M_PPCBE)
-#define _XM_BIGENDIAN_
-#else
-#error DirectX Math does not support this target
-#endif
-#endif // !_XM_BIGENDIAN_ && !_XM_LITTLEENDIAN_
+#define DIRECTX_MATH_VERSION 307
 
 
-#if defined(_MSC_VER) && !defined(_M_ARM) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
+#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
 #if ((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418)
 #define _XM_VECTORCALL_ 1
 #endif
@@ -44,21 +34,19 @@
 
 
 
-#if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #if defined(_M_IX86) || defined(_M_X64)
 #define _XM_SSE_INTRINSICS_
-#elif defined(_M_PPCBE)
-#define _XM_VMX128_INTRINSICS_
-#elif defined(_M_ARM)
+#elif defined(_M_ARM) || defined(_M_ARM64)
 #define _XM_ARM_NEON_INTRINSICS_
 #elif !defined(_XM_NO_INTRINSICS_)
 #error DirectX Math does not support this target
 #endif
-#endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_VMX128_INTRINSICS_ && !_XM_NO_INTRINSICS_
+#endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
 #pragma warning(push)
 #pragma warning(disable:4514 4820 4985)
-#include <cmath>
+#include <math.h>
 #include <float.h>
 #include <malloc.h>
 #pragma warning(pop)
@@ -69,15 +57,17 @@
 #include <xmmintrin.h>
 #include <emmintrin.h>
 #endif
-#elif defined(_XM_VMX128_INTRINSICS_)
-#error This version of DirectX Math does not support Xbox 360
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
 #ifndef _XM_NO_INTRINSICS_
 #pragma warning(push)
 #pragma warning(disable : 4987)
 #include <intrin.h>
 #pragma warning(pop)
+#ifdef _M_ARM64
+#include <arm64_neon.h>
+#else
 #include <arm_neon.h>
+#endif
 #endif
 #endif
 
@@ -86,6 +76,14 @@
 #include <sal.h>
 #include <assert.h>
 
+#ifndef _XM_NO_ROUNDF_
+#ifdef _MSC_VER
+#include <yvals.h>
+#if defined(_CPPLIB_VER) && ( _CPPLIB_VER < 610 )
+#define _XM_NO_ROUNDF_
+#endif
+#endif
+#endif
 
 #pragma warning(push)
 #pragma warning(disable : 4005 4668)
@@ -236,13 +234,8 @@ inline bool XMComparisonAnyOutOfBounds(uint32_t CR) { return (((CR) & XM_CRMASK_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
 
-#ifdef _XM_BIGENDIAN_
-#pragma bitfield_order(push)
-#pragma bitfield_order(lsb_to_msb)
-#endif
-
 //------------------------------------------------------------------------------
-#if defined(_XM_NO_INTRINSICS_) && !defined(_M_PPCBE)
+#if defined(_XM_NO_INTRINSICS_)
 // The __vector4 structure is an intrinsic on Xbox but must be separately defined
 // for x86/x64
 struct __vector4
@@ -256,7 +249,7 @@ struct __vector4
 #endif // _XM_NO_INTRINSICS_
 
 //------------------------------------------------------------------------------
-#if (defined (_M_IX86) || defined(_M_X64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
+#ifdef _XM_NO_INTRINSICS_
 typedef uint32_t __vector4i[4];
 #else
 typedef __declspec(align(16)) uint32_t __vector4i[4];
@@ -268,38 +261,34 @@ typedef __declspec(align(16)) uint32_t __vector4i[4];
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 typedef __m128 XMVECTOR;
 #elif defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-typedef __n128 XMVECTOR;
+typedef float32x4_t XMVECTOR;
 #else
 typedef __vector4 XMVECTOR;
 #endif
 
-// Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86, ARM, Xbox 360, and vector call; by reference otherwise
-#if ( defined(_M_IX86) || defined(_M_ARM) || defined(_XM_VMX128_INTRINSICS_) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+// Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86, ARM, ARM64, and vector call; by reference otherwise
+#if ( defined(_M_IX86) || defined(_M_ARM) || defined(_M_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR FXMVECTOR;
 #else
 typedef const XMVECTOR& FXMVECTOR;
 #endif
 
-// Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, Xbox 360, and x64 vector call; by reference otherwise
-#if ( defined(_M_ARM) || defined(_XM_VMX128_INTRINSICS_) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_XM_NO_INTRINSICS_)
+// Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and x64 vector call; by reference otherwise
+#if ( defined(_M_ARM) || defined(_M_ARM64) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR GXMVECTOR;
 #else
 typedef const XMVECTOR& GXMVECTOR;
 #endif
 
-// Fix-up for (5th & 6th) XMVECTOR parameter to pass in-register for Xbox 360 and vector call; by reference otherwise
-#if ( defined(_XM_VMX128_INTRINSICS_) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+// Fix-up for (5th & 6th) XMVECTOR parameter to pass in-register for ARM64 and vector call; by reference otherwise
+#if ( defined(_M_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR HXMVECTOR;
 #else
 typedef const XMVECTOR& HXMVECTOR;
 #endif
 
-// Fix-up for (7th+) XMVECTOR parameters to pass in-register for Xbox 360; by reference otherwise
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-typedef const XMVECTOR CXMVECTOR;
-#else
+// Fix-up for (7th+) XMVECTOR parameters to pass by reference
 typedef const XMVECTOR& CXMVECTOR;
-#endif
 
 //------------------------------------------------------------------------------
 // Conversion types for constants
@@ -391,21 +380,17 @@ XMVECTOR    XM_CALLCONV     operator/ (FXMVECTOR V, float S);
 
 struct XMMATRIX;
 
-// Fix-up for (1st) XMMATRIX parameter to pass in-register on Xbox 360 and vector call; by reference otherwise
-#if ( defined(_XM_VMX128_INTRINSICS )|| _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+// Fix-up for (1st) XMMATRIX parameter to pass in-register for ARM64 and vector call; by reference otherwise
+#if ( defined(_M_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMMATRIX FXMMATRIX;
 #else
 typedef const XMMATRIX& FXMMATRIX;
 #endif
 
-// Fix-up for (2nd+) XMMATRIX parameters to pass in-register on Xbox 360, by reference otherwise
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-typedef const XMMATRIX CXMMATRIX;
-#else
+// Fix-up for (2nd+) XMMATRIX parameters to pass by reference
 typedef const XMMATRIX& CXMMATRIX;
-#endif
 
-#if (defined(_M_IX86) || defined(_M_X64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
+#ifdef _XM_NO_INTRINSICS_
 struct XMMATRIX
 #else
 __declspec(align(16)) struct XMMATRIX
@@ -745,11 +730,6 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
 
 ////////////////////////////////////////////////////////////////////////////////
 
-
-#ifdef _XM_BIGENDIAN_
-#pragma bitfield_order(pop)
-#endif
-
 #pragma prefast(pop)
 #pragma warning(pop)
 
@@ -759,16 +739,10 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
  *
  ****************************************************************************/
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_VMX128_INTRINSICS_)
-#else
 XMVECTOR    XM_CALLCONV     XMConvertVectorIntToFloat(FXMVECTOR VInt, uint32_t DivExponent);
 XMVECTOR    XM_CALLCONV     XMConvertVectorFloatToInt(FXMVECTOR VFloat, uint32_t MulExponent);
 XMVECTOR    XM_CALLCONV     XMConvertVectorUIntToFloat(FXMVECTOR VUInt, uint32_t DivExponent);
 XMVECTOR    XM_CALLCONV     XMConvertVectorFloatToUInt(FXMVECTOR VFloat, uint32_t MulExponent);
-#endif
-
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_VMX128_INTRINSICS_)
-#else
 
 #if defined(__XNAMATH_H__) && defined(XMVectorSetBinaryConstant)
 #undef XMVectorSetBinaryConstant
@@ -779,7 +753,6 @@ XMVECTOR    XM_CALLCONV     XMConvertVectorFloatToUInt(FXMVECTOR VFloat, uint32_
 XMVECTOR    XM_CALLCONV     XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, uint32_t C2, uint32_t C3);
 XMVECTOR    XM_CALLCONV     XMVectorSplatConstant(int32_t IntConstant, uint32_t DivExponent);
 XMVECTOR    XM_CALLCONV     XMVectorSplatConstantInt(int32_t IntConstant);
-#endif
 
 /****************************************************************************
  *
@@ -1579,8 +1552,6 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     return XM_PERMUTE_PS( V, _MM_SHUFFLE( SwizzleW, SwizzleZ, SwizzleY, SwizzleX ) );
-#elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    return __vpermwi(V, ((SwizzleX & 3) << 6) | ((SwizzleY & 3) << 4) | ((SwizzleZ & 3) << 2) | (SwizzleW & 3) );
 #else
 
     return XMVectorSwizzle( V, SwizzleX, SwizzleY, SwizzleZ, SwizzleW );
@@ -1601,10 +1572,10 @@ template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<3,3,3,3>(FXMVECT
 
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,0,3,2>(FXMVECTOR V) { return vrev64q_f32(V); }
 
-template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,0,1>(FXMVECTOR V) { __n64 vt = vget_low_f32(V); return vcombine_f32( vt, vt ); }
-template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<2,3,2,3>(FXMVECTOR V) { __n64 vt = vget_high_f32(V); return vcombine_f32( vt, vt ); }
-template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,0,1,0>(FXMVECTOR V) { __n64 vt = vrev64_f32( vget_low_f32(V) ); return vcombine_f32( vt, vt ); }
-template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<3,2,3,2>(FXMVECTOR V) { __n64 vt = vrev64_f32( vget_high_f32(V) ); return vcombine_f32( vt, vt ); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,0,1>(FXMVECTOR V) { float32x2_t vt = vget_low_f32(V); return vcombine_f32( vt, vt ); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<2,3,2,3>(FXMVECTOR V) { float32x2_t vt = vget_high_f32(V); return vcombine_f32( vt, vt ); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,0,1,0>(FXMVECTOR V) { float32x2_t vt = vrev64_f32( vget_low_f32(V) ); return vcombine_f32( vt, vt ); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<3,2,3,2>(FXMVECTOR V) { float32x2_t vt = vrev64_f32( vget_high_f32(V) ); return vcombine_f32( vt, vt ); }
 
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,3,2>(FXMVECTOR V) { return vcombine_f32( vget_low_f32(V), vrev64_f32( vget_high_f32(V) ) ); }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,0,2,3>(FXMVECTOR V) { return vcombine_f32( vrev64_f32( vget_low_f32(V) ), vget_high_f32(V) ); }
@@ -1633,40 +1604,28 @@ template<uint32_t Elements>
     inline XMVECTOR     XM_CALLCONV     XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2)
 {
     static_assert( Elements < 4, "Elements template parameter out of range" );
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#else
     return XMVectorPermute<Elements, (Elements + 1), (Elements + 2), (Elements + 3)>(V1, V2);
-#endif
 }
 
 template<uint32_t Elements>
     inline XMVECTOR     XM_CALLCONV     XMVectorRotateLeft(FXMVECTOR V)
 {
     static_assert( Elements < 4, "Elements template parameter out of range" );
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#else
     return XMVectorSwizzle<Elements & 3, (Elements + 1) & 3, (Elements + 2) & 3, (Elements + 3) & 3>(V);
-#endif
 }
 
 template<uint32_t Elements>
     inline XMVECTOR     XM_CALLCONV     XMVectorRotateRight(FXMVECTOR V)
 {
     static_assert( Elements < 4, "Elements template parameter out of range" );
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#else
     return XMVectorSwizzle<(4 - Elements) & 3, (5 - Elements) & 3, (6 - Elements) & 3, (7 - Elements) & 3>(V);
-#endif
 }
 
 template<uint32_t VSLeftRotateElements, uint32_t Select0, uint32_t Select1, uint32_t Select2, uint32_t Select3>
     inline XMVECTOR     XM_CALLCONV     XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS)
 {
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#else
     XMVECTOR Control = XMVectorSelectControl(Select0&1, Select1&1, Select2&1, Select3&1);
     return XMVectorSelect( VD, XMVectorRotateLeft<VSLeftRotateElements>(VS), Control );
-#endif
 }
 
 /****************************************************************************
@@ -1711,13 +1670,13 @@ XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR0       = {-1.0f,0.0f, 0.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR1       = {0.0f,-1.0f, 0.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR2       = {0.0f, 0.0f,-1.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
-XMGLOBALCONST XMVECTORI32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
-XMGLOBALCONST XMVECTORI32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
-XMGLOBALCONST XMVECTORI32 g_XMMask3             = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000};
-XMGLOBALCONST XMVECTORI32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
-XMGLOBALCONST XMVECTORI32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
-XMGLOBALCONST XMVECTORI32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
-XMGLOBALCONST XMVECTORI32 g_XMMaskW             = {0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF};
+XMGLOBALCONST XMVECTORU32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMask3             = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskX             = {0xFFFFFFFF, 0x00000000, 0x00000000, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskY             = {0x00000000, 0xFFFFFFFF, 0x00000000, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskZ             = {0x00000000, 0x00000000, 0xFFFFFFFF, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskW             = {0x00000000, 0x00000000, 0x00000000, 0xFFFFFFFF};
 XMGLOBALCONST XMVECTORF32 g_XMOne               = { 1.0f, 1.0f, 1.0f, 1.0f};
 XMGLOBALCONST XMVECTORF32 g_XMOne3              = { 1.0f, 1.0f, 1.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMZero              = { 0.0f, 0.0f, 0.0f, 0.0f};
@@ -1741,20 +1700,20 @@ XMGLOBALCONST XMVECTORI32 g_XMQNaNTest          = {0x007FFFFF, 0x007FFFFF, 0x007
 XMGLOBALCONST XMVECTORI32 g_XMAbsMask           = {0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF, 0x7FFFFFFF};
 XMGLOBALCONST XMVECTORI32 g_XMFltMin            = {0x00800000, 0x00800000, 0x00800000, 0x00800000};
 XMGLOBALCONST XMVECTORI32 g_XMFltMax            = {0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF, 0x7F7FFFFF};
-XMGLOBALCONST XMVECTORI32 g_XMNegOneMask        = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
-XMGLOBALCONST XMVECTORI32 g_XMMaskA8R8G8B8      = {0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000};
-XMGLOBALCONST XMVECTORI32 g_XMFlipA8R8G8B8      = {0x00000000, 0x00000000, 0x00000000, 0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMNegOneMask        = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF};
+XMGLOBALCONST XMVECTORU32 g_XMMaskA8R8G8B8      = {0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000};
+XMGLOBALCONST XMVECTORU32 g_XMFlipA8R8G8B8      = {0x00000000, 0x00000000, 0x00000000, 0x80000000};
 XMGLOBALCONST XMVECTORF32 g_XMFixAA8R8G8B8      = {0.0f,0.0f,0.0f,(float)(0x80000000U)};
 XMGLOBALCONST XMVECTORF32 g_XMNormalizeA8R8G8B8 = {1.0f/(255.0f*(float)(0x10000)),1.0f/(255.0f*(float)(0x100)),1.0f/255.0f,1.0f/(255.0f*(float)(0x1000000))};
-XMGLOBALCONST XMVECTORI32 g_XMMaskA2B10G10R10   = {0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000};
-XMGLOBALCONST XMVECTORI32 g_XMFlipA2B10G10R10   = {0x00000200, 0x00080000, 0x20000000, 0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskA2B10G10R10   = {0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000};
+XMGLOBALCONST XMVECTORU32 g_XMFlipA2B10G10R10   = {0x00000200, 0x00080000, 0x20000000, 0x80000000};
 XMGLOBALCONST XMVECTORF32 g_XMFixAA2B10G10R10   = {-512.0f,-512.0f*(float)(0x400),-512.0f*(float)(0x100000),(float)(0x80000000U)};
 XMGLOBALCONST XMVECTORF32 g_XMNormalizeA2B10G10R10 = {1.0f/511.0f,1.0f/(511.0f*(float)(0x400)),1.0f/(511.0f*(float)(0x100000)),1.0f/(3.0f*(float)(0x40000000))};
-XMGLOBALCONST XMVECTORI32 g_XMMaskX16Y16        = {0x0000FFFF, 0xFFFF0000, 0x00000000, 0x00000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskX16Y16        = {0x0000FFFF, 0xFFFF0000, 0x00000000, 0x00000000};
 XMGLOBALCONST XMVECTORI32 g_XMFlipX16Y16        = {0x00008000, 0x00000000, 0x00000000, 0x00000000};
 XMGLOBALCONST XMVECTORF32 g_XMFixX16Y16         = {-32768.0f,0.0f,0.0f,0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNormalizeX16Y16   = {1.0f/32767.0f,1.0f/(32767.0f*65536.0f),0.0f,0.0f};
-XMGLOBALCONST XMVECTORI32 g_XMMaskX16Y16Z16W16  = {0x0000FFFF, 0x0000FFFF, 0xFFFF0000, 0xFFFF0000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskX16Y16Z16W16  = {0x0000FFFF, 0x0000FFFF, 0xFFFF0000, 0xFFFF0000};
 XMGLOBALCONST XMVECTORI32 g_XMFlipX16Y16Z16W16  = {0x00008000, 0x00008000, 0x00000000, 0x00000000};
 XMGLOBALCONST XMVECTORF32 g_XMFixX16Y16Z16W16   = {-32768.0f,-32768.0f,0.0f,0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNormalizeX16Y16Z16W16 = {1.0f/32767.0f,1.0f/32767.0f,1.0f/(32767.0f*65536.0f),1.0f/(32767.0f*65536.0f)};
@@ -1764,27 +1723,27 @@ XMGLOBALCONST XMVECTORF32 g_XMNegateX           = {-1.0f, 1.0f, 1.0f, 1.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegateY           = { 1.0f,-1.0f, 1.0f, 1.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegateZ           = { 1.0f, 1.0f,-1.0f, 1.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegateW           = { 1.0f, 1.0f, 1.0f,-1.0f};
-XMGLOBALCONST XMVECTORI32 g_XMSelect0101        = {XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1};
-XMGLOBALCONST XMVECTORI32 g_XMSelect1010        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0};
+XMGLOBALCONST XMVECTORU32 g_XMSelect0101        = {XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1};
+XMGLOBALCONST XMVECTORU32 g_XMSelect1010        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0};
 XMGLOBALCONST XMVECTORI32 g_XMOneHalfMinusEpsilon = { 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD};
-XMGLOBALCONST XMVECTORI32 g_XMSelect1000        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0};
-XMGLOBALCONST XMVECTORI32 g_XMSelect1100        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0};
-XMGLOBALCONST XMVECTORI32 g_XMSelect1110        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0};
-XMGLOBALCONST XMVECTORI32 g_XMSelect1011          = { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 };
+XMGLOBALCONST XMVECTORU32 g_XMSelect1000        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0};
+XMGLOBALCONST XMVECTORU32 g_XMSelect1100        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0};
+XMGLOBALCONST XMVECTORU32 g_XMSelect1110        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0};
+XMGLOBALCONST XMVECTORU32 g_XMSelect1011          = { XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_1 };
 XMGLOBALCONST XMVECTORF32 g_XMFixupY16          = {1.0f,1.0f/65536.0f,0.0f,0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMFixupY16W16       = {1.0f,1.0f,1.0f/65536.0f,1.0f/65536.0f};
-XMGLOBALCONST XMVECTORI32 g_XMFlipY             = {0,0x80000000,0,0};
-XMGLOBALCONST XMVECTORI32 g_XMFlipZ             = {0,0,0x80000000,0};
-XMGLOBALCONST XMVECTORI32 g_XMFlipW             = {0,0,0,0x80000000};
-XMGLOBALCONST XMVECTORI32 g_XMFlipYZ            = {0,0x80000000,0x80000000,0};
-XMGLOBALCONST XMVECTORI32 g_XMFlipZW            = {0,0,0x80000000,0x80000000};
-XMGLOBALCONST XMVECTORI32 g_XMFlipYW            = {0,0x80000000,0,0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMFlipY             = {0,0x80000000,0,0};
+XMGLOBALCONST XMVECTORU32 g_XMFlipZ             = {0,0,0x80000000,0};
+XMGLOBALCONST XMVECTORU32 g_XMFlipW             = {0,0,0,0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMFlipYZ            = {0,0x80000000,0x80000000,0};
+XMGLOBALCONST XMVECTORU32 g_XMFlipZW            = {0,0,0x80000000,0x80000000};
+XMGLOBALCONST XMVECTORU32 g_XMFlipYW            = {0,0x80000000,0,0x80000000};
 XMGLOBALCONST XMVECTORI32 g_XMMaskDec4          = {0x3FF,0x3FF<<10,0x3FF<<20,0x3<<30};
 XMGLOBALCONST XMVECTORI32 g_XMXorDec4           = {0x200,0x200<<10,0x200<<20,0};
 XMGLOBALCONST XMVECTORF32 g_XMAddUDec4          = {0,0,0,32768.0f*65536.0f};
 XMGLOBALCONST XMVECTORF32 g_XMAddDec4           = {-512.0f,-512.0f*1024.0f,-512.0f*1024.0f*1024.0f,0};
 XMGLOBALCONST XMVECTORF32 g_XMMulDec4           = {1.0f,1.0f/1024.0f,1.0f/(1024.0f*1024.0f),1.0f/(1024.0f*1024.0f*1024.0f)};
-XMGLOBALCONST XMVECTORI32 g_XMMaskByte4         = {0xFF,0xFF00,0xFF0000,0xFF000000};
+XMGLOBALCONST XMVECTORU32 g_XMMaskByte4         = {0xFF,0xFF00,0xFF0000,0xFF000000};
 XMGLOBALCONST XMVECTORI32 g_XMXorByte4          = {0x80,0x8000,0x800000,0x00000000};
 XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0f*65536.0f,0};
 XMGLOBALCONST XMVECTORF32 g_XMFixUnsigned       = {32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f};
@@ -1798,10 +1757,10 @@ XMGLOBALCONST XMVECTORI32 g_XMExponentBias      = {127, 127, 127, 127};
 XMGLOBALCONST XMVECTORI32 g_XMSubnormalExponent = {-126, -126, -126, -126};
 XMGLOBALCONST XMVECTORI32 g_XMNumTrailing       = {23, 23, 23, 23};
 XMGLOBALCONST XMVECTORI32 g_XMMinNormal         = {0x00800000, 0x00800000, 0x00800000, 0x00800000};
-XMGLOBALCONST XMVECTORI32 g_XMNegInfinity       = {0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000};
-XMGLOBALCONST XMVECTORI32 g_XMNegQNaN           = {0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000};
+XMGLOBALCONST XMVECTORU32 g_XMNegInfinity       = {0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000};
+XMGLOBALCONST XMVECTORU32 g_XMNegQNaN           = {0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000};
 XMGLOBALCONST XMVECTORI32 g_XMBin128            = {0x43000000, 0x43000000, 0x43000000, 0x43000000};
-XMGLOBALCONST XMVECTORI32 g_XMBinNeg150         = {0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000};
+XMGLOBALCONST XMVECTORU32 g_XMBinNeg150         = {0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000};
 XMGLOBALCONST XMVECTORI32 g_XM253               = {253, 253, 253, 253};
 XMGLOBALCONST XMVECTORF32 g_XMExpEst1           = {-6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f, -6.93147182e-1f};
 XMGLOBALCONST XMVECTORF32 g_XMExpEst2           = {+2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f, +2.40226462e-1f};
@@ -1834,8 +1793,6 @@ XMGLOBALCONST XMVECTORF32 g_XMInvLgE            = {+6.93147182e-1f, +6.93147182e
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
 
 //------------------------------------------------------------------------------
-
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
 inline XMVECTOR XM_CALLCONV XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, uint32_t C2, uint32_t C3)
 {
@@ -1926,14 +1883,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatConstantInt(int32_t IntConstant)
 #endif
 }
 
-// Implemented for VMX128 intrinsics as #defines aboves
-#endif // _XM_NO_INTRINSICS_ || _XM_SSE_INTRINSICS_ || _XM_ARM_NEON_INTRINSICS_
-
 #include "DirectXMathConvert.inl"
 #include "DirectXMathVector.inl"
 #include "DirectXMathMatrix.inl"
 #include "DirectXMathMisc.inl"
-
 
 #pragma prefast(pop)
 #pragma warning(pop)

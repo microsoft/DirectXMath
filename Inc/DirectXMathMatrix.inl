@@ -148,8 +148,7 @@ inline bool XM_CALLCONV XMMatrixIsInfinite
     vTemp1 = _mm_or_ps(vTemp1,vTemp3);
     // If any are infinity, the signs are true.
     return (_mm_movemask_ps(vTemp1)!=0);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -210,8 +209,7 @@ inline bool XM_CALLCONV XMMatrixIsIdentity
     vTemp3 = _mm_and_ps(vTemp3,vTemp4);
     vTemp1 = _mm_and_ps(vTemp1,vTemp3);
     return (_mm_movemask_ps(vTemp1)==0x0f);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -357,8 +355,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vX = _mm_add_ps(vX,vY);
     mResult.r[3] = vX;
     return mResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -530,8 +527,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     // x.w,y.w,z.w,w.w
     mResult.r[3] = _mm_shuffle_ps(vTemp3, vTemp4,_MM_SHUFFLE(3,1,3,1));
     return mResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -596,8 +592,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranspose
     // x.w,y.w,z.w,w.w
     mResult.r[3] = _mm_shuffle_ps(vTemp3, vTemp4,_MM_SHUFFLE(3,1,3,1));
     return mResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -817,8 +812,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     mResult.r[2] = _mm_mul_ps(C4,vTemp);
     mResult.r[3] = _mm_mul_ps(C6,vTemp);
     return mResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -828,8 +822,6 @@ inline XMVECTOR XM_CALLCONV XMMatrixDeterminant
     FXMMATRIX M
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     static const XMVECTORF32 Sign = {1.0f, -1.0f, 1.0f, -1.0f};
 
     XMVECTOR V0 = XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_X, XM_SWIZZLE_X>(M.r[2]);
@@ -864,9 +856,6 @@ inline XMVECTOR XM_CALLCONV XMMatrixDeterminant
     R = XMVectorMultiplyAdd(V2, P2, R);
 
     return XMVector4Dot(S, R);
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 #define XM3RANKDECOMPOSE(a, b, c, x, y, z)      \
@@ -1030,17 +1019,12 @@ inline bool XM_CALLCONV XMMatrixDecompose
 
 inline XMMATRIX XM_CALLCONV XMMatrixIdentity()
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMMATRIX M;
     M.r[0] = g_XMIdentityR0.v;
     M.r[1] = g_XMIdentityR1.v;
     M.r[2] = g_XMIdentityR2.v;
     M.r[3] = g_XMIdentityR3.v;
     return M;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1108,8 +1092,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranslation
     M.r[2] = g_XMIdentityR2.v;
     M.r[3] = XMVectorSet(OffsetX, OffsetY, OffsetZ, 1.f );
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 
@@ -1151,8 +1134,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranslationFromVector
     M.r[2] = g_XMIdentityR2.v;
     M.r[3] = XMVectorSelect( g_XMIdentityR3.v, Offset, g_XMSelect1110.v );
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1203,8 +1185,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixScaling
     M.r[2] = _mm_set_ps( 0, ScaleZ, 0, 0 );
     M.r[3] = g_XMIdentityR3.v;
     return M;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1252,8 +1233,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixScalingFromVector
     M.r[2] = _mm_and_ps(Scale,g_XMMaskZ);
     M.r[3] = g_XMIdentityR3.v;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1329,8 +1309,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationX
     M.r[2] = vCos;
     M.r[3] = g_XMIdentityR3;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1406,8 +1385,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationY
     M.r[0] = vSin;
     M.r[3] = g_XMIdentityR3;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1483,8 +1461,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationZ
     M.r[2] = g_XMIdentityR2;
     M.r[3] = g_XMIdentityR3;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1598,8 +1575,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationNormal
     M.r[2] = V2;
     M.r[3] = g_XMIdentityR3.v;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1613,13 +1589,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationAxis
     assert(!XMVector3Equal(Axis, XMVectorZero()));
     assert(!XMVector3IsInfinite(Axis));
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR Normal = XMVector3Normalize(Axis);
     return XMMatrixRotationNormal(Normal, Angle);
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1705,8 +1676,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationQuaternion
     M.r[2] = Q1;
     M.r[3] = g_XMIdentityR3;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1849,8 +1819,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixReflect
     assert(!XMVector3Equal(ReflectionPlane, XMVectorZero()));
     assert(!XMPlaneIsInfinite(ReflectionPlane));
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     static const XMVECTORF32 NegativeTwo = {-2.0f, -2.0f, -2.0f, 0.0f};
 
     XMVECTOR P = XMPlaneNormalize(ReflectionPlane);
@@ -1867,9 +1835,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixReflect
     M.r[2] = XMVectorMultiplyAdd(C, S, g_XMIdentityR2.v);
     M.r[3] = XMVectorMultiplyAdd(D, S, g_XMIdentityR3.v);
     return M;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1947,8 +1912,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookToLH
     assert(!XMVector3Equal(UpDirection, XMVectorZero()));
     assert(!XMVector3IsInfinite(UpDirection));
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR R2 = XMVector3Normalize(EyeDirection);
 
     XMVECTOR R0 = XMVector3Cross(UpDirection, R2);
@@ -1971,9 +1934,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookToLH
     M = XMMatrixTranspose(M);
 
     return M;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1990,6 +1950,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookToRH
 }
 
 //------------------------------------------------------------------------------
+
+#pragma prefast(push)
+#pragma prefast(disable:28931, "PREfast noise: Esp:1266")
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
 (
@@ -2073,8 +2036,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
     M.r[3] = vTemp;
 
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2161,8 +2123,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(2,1,0,0));
     M.r[3] = vTemp;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2263,8 +2224,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(2,1,0,0));
     M.r[3] = vTemp;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2363,8 +2323,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(2,1,0,0));
     M.r[3] = vTemp;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2461,8 +2420,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
     vValues = _mm_and_ps(vValues,g_XMMaskZ);
     M.r[3] = vValues;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2559,8 +2517,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
     vValues = _mm_and_ps(vValues,g_XMMaskZ);
     M.r[3] = vValues;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2644,8 +2601,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(3,1,0,0));
     M.r[3] = vTemp;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2729,8 +2685,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(3,1,0,0));
     M.r[3] = vTemp;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2830,8 +2785,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
     vValues = _mm_mul_ps(vValues,rMem2);
     M.r[3] = vValues;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2931,10 +2885,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
     vValues = _mm_mul_ps(vValues,rMem2);
     M.r[3] = vValues;
     return M;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
+#pragma prefast(pop)
 
 /****************************************************************************
  *
@@ -3057,8 +3011,7 @@ inline XMMATRIX& XMMATRIX::operator/= (float S)
     r[2] = _mm_div_ps( r[2], vS );
     r[3] = _mm_div_ps( r[3], vS );
     return *this;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -3139,8 +3092,7 @@ inline XMMATRIX XMMATRIX::operator/ (float S) const
     R.r[2] = _mm_div_ps( r[2], vS );
     R.r[3] = _mm_div_ps( r[3], vS );
     return R;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------

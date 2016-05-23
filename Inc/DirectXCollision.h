@@ -281,7 +281,7 @@ struct BoundingFrustum
     PlaneIntersectionType    XM_CALLCONV     Intersects( _In_ FXMVECTOR Plane ) const;
         // Plane-Frustum test
 
-    bool    XM_CALLCONV     Intersects( _In_ FXMVECTOR Origin, _In_ FXMVECTOR Direction, _Out_ float& Dist ) const;
+    bool    XM_CALLCONV     Intersects( _In_ FXMVECTOR rayOrigin, _In_ FXMVECTOR Direction, _Out_ float& Dist ) const;
         // Ray-Frustum test
 
     ContainmentType     XM_CALLCONV     ContainedBy( _In_ FXMVECTOR Plane0, _In_ FXMVECTOR Plane1, _In_ FXMVECTOR Plane2,

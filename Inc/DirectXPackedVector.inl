@@ -27,8 +27,6 @@ inline float PackedVector::XMConvertHalfToFloat
     HALF Value
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     uint32_t Mantissa = (uint32_t)(Value & 0x03FF);
 
     uint32_t Exponent = (Value & 0x7C00);
@@ -63,11 +61,12 @@ inline float PackedVector::XMConvertHalfToFloat
                       (Mantissa << 13);          // Mantissa
 
     return reinterpret_cast<float*>(&Result)[0];
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif
 }
 
 //------------------------------------------------------------------------------
+#pragma prefast(push)
+#pragma prefast(disable : 26015 26019, "PREfast noise: Esp:1307" )
+
 _Use_decl_annotations_
 inline float* PackedVector::XMConvertHalfToFloatStream
 (
@@ -80,7 +79,12 @@ inline float* PackedVector::XMConvertHalfToFloatStream
 {
     assert(pOutputStream);
     assert(pInputStream);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+
+    assert(InputStride >= sizeof(HALF));
+    _Analysis_assume_(InputStride >= sizeof(HALF));
+
+    assert(OutputStride >= sizeof(float));
+    _Analysis_assume_(OutputStride >= sizeof(float));
 
     const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
@@ -93,9 +97,6 @@ inline float* PackedVector::XMConvertHalfToFloatStream
     }
 
     return pOutputStream;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -105,7 +106,6 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
     float Value
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
     uint32_t Result;
 
     uint32_t IValue = reinterpret_cast<uint32_t *>(&Value)[0];
@@ -142,8 +142,6 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
         Result = ((IValue + 0x0FFFU + ((IValue >> 13U) & 1U)) >> 13U)&0x7FFFU; 
     }
     return (HALF)(Result|Sign);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -159,7 +157,12 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
 {
     assert(pOutputStream);
     assert(pInputStream);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+
+    assert(InputStride >= sizeof(float));
+    _Analysis_assume_(InputStride >= sizeof(float));
+
+    assert(OutputStride >= sizeof(HALF));
+    _Analysis_assume_(OutputStride >= sizeof(HALF));
 
     const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
@@ -171,16 +174,18 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
         pHalf += OutputStride;
     }
     return pOutputStream;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
+
+#pragma prefast(pop)
 
 /****************************************************************************
  *
  * Vector and matrix load operations
  *
  ****************************************************************************/
+#pragma prefast(push)
+#pragma prefast(disable:28931, "PREfast noise: Esp:1266")
+
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV PackedVector::XMLoadColor
 (
@@ -212,8 +217,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadColor
     vTemp = _mm_add_ps(vTemp,g_XMFixAA8R8G8B8);
     // Convert 0-255 to 0.0f-1.0f
     return _mm_mul_ps(vTemp,g_XMNormalizeA8R8G8B8);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -224,7 +228,6 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf2
 )
 {
     assert(pSource);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTORF32 vResult = {
         XMConvertHalfToFloat(pSource->x),
         XMConvertHalfToFloat(pSource->y),
@@ -232,8 +235,6 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf2
         0.0f
     };
     return vResult.v;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -268,8 +269,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShortN2
     vTemp = _mm_mul_ps(vTemp,g_XMNormalizeX16Y16);
     // Clamp result (for case of -32768)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -302,8 +302,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShort2
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16);
     // Y is 65536 too large
     return _mm_mul_ps(vTemp,g_XMFixupY16);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -339,8 +338,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShortN2
     // Y is 65536 times too large
     vTemp = _mm_mul_ps(vTemp,FixupY16);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -375,8 +373,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShort2
     // y + 0x8000 to undo the signed order.
     vTemp = _mm_add_ps(vTemp,FixaddY16);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -625,7 +622,6 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf4
 )
 {
     assert(pSource);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) 
     XMVECTORF32 vResult = {
         XMConvertHalfToFloat(pSource->x),
         XMConvertHalfToFloat(pSource->y),
@@ -633,8 +629,6 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf4
         XMConvertHalfToFloat(pSource->w)
     };
     return vResult.v;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -676,8 +670,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShortN4
     vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
     // Clamp result (for case of -32768)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -715,8 +708,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShort4
     vTemp = _mm_mul_ps(vTemp,g_XMFixupY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
     return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -757,8 +749,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShortN4
     vTemp = _mm_mul_ps(vTemp,FixupY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
     return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -797,8 +788,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShort4
     vTemp = _mm_add_ps(vTemp,FixaddY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
     return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -838,8 +828,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDecN4
     vTemp = _mm_mul_ps(vTemp,g_XMNormalizeA2B10G10R10);
     // Clamp result (for case of -512)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -865,7 +854,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDec4
     };
     return vResult.v;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORI32 XDec4Xor = {0x200, 0x200<<10, 0x200<<20, 0x80000000};
+    static const XMVECTORU32 XDec4Xor = {0x200, 0x200<<10, 0x200<<20, 0x80000000};
     static const XMVECTORF32 XDec4Add = {-512.0f,-512.0f*1024.0f,-512.0f*1024.0f*1024.0f,32768*65536.0f};
     // Splat the color in all four entries
     XMVECTOR vTemp = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
@@ -880,8 +869,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDec4
     // Convert 0-255 to 0.0f-1.0f
     vTemp = _mm_mul_ps(vTemp,g_XMMulDec4);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -920,8 +908,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUDecN4
     // Convert 0-255 to 0.0f-1.0f
     vTemp = _mm_mul_ps(vTemp,UDecN4Mul);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 
@@ -983,8 +970,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUDec4
     // Convert 0-255 to 0.0f-1.0f
     vTemp = _mm_mul_ps(vTemp,g_XMMulDec4);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1027,8 +1013,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadDecN4
     vTemp = _mm_mul_ps(vTemp,DecN4Mul);
     // Clamp result (for case of -512/-1)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1069,8 +1054,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadDec4
     // Convert 0-255 to 0.0f-1.0f
     vTemp = _mm_mul_ps(vTemp,g_XMMulDec4);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1104,8 +1088,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUByteN4
     // Fix y, z and w because they are too large
     vTemp = _mm_mul_ps(vTemp,LoadUByteN4Mul);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1139,8 +1122,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUByte4
     // Fix y, z and w because they are too large
     vTemp = _mm_mul_ps(vTemp,LoadUByte4Mul);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1175,8 +1157,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadByteN4
     vTemp = _mm_mul_ps(vTemp,LoadByteN4Mul);
     // Clamp result (for case of -128)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1210,8 +1191,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadByte4
     // Fix y, z and w because they are too large
     vTemp = _mm_mul_ps(vTemp,LoadByte4Mul);
     return vTemp;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1276,6 +1256,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadU555
 #endif // !_XM_SSE_INTRISICS_
 }
 
+#pragma prefast(pop)
 
 /****************************************************************************
  *
@@ -1324,8 +1305,7 @@ inline void XM_CALLCONV PackedVector::XMStoreColor
     vInt = _mm_packus_epi16(vInt,vInt);
     // Store the color
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->c),_mm_castsi128_ps(vInt));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1337,13 +1317,8 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf2
 )
 {
     assert(pDestination);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     pDestination->x = XMConvertFloatToHalf(XMVectorGetX(V));
     pDestination->y = XMConvertFloatToHalf(XMVectorGetY(V));
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1378,8 +1353,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShortN2
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti = _mm_packs_epi32(vResulti,vResulti);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1416,8 +1390,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShort2
     // Pack the ints into shorts
     vInt = _mm_packs_epi32(vInt,vInt);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),_mm_castsi128_ps(vInt));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1455,8 +1428,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShortN2
     // manually extract the values to store them to memory
     pDestination->x = static_cast<int16_t>(_mm_extract_epi16(vInt,0));
     pDestination->y = static_cast<int16_t>(_mm_extract_epi16(vInt,2));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1492,8 +1464,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShort2
     // manually extract the values to store them to memory
     pDestination->x = static_cast<int16_t>(_mm_extract_epi16(vInt,0));
     pDestination->y = static_cast<int16_t>(_mm_extract_epi16(vInt,2));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1768,16 +1739,22 @@ inline void XM_CALLCONV PackedVector::XMStoreFloat3SE
 
     union { float f; int32_t i; } fi;
     fi.f = maxColor;
-    fi.i &= 0xFF800000; // cut off fraction
+    fi.i += 0x00004000; // round up leaving 9 bits in fraction (including assumed 1)
 
     pDestination->e = (fi.i - 0x37800000) >> 23;
 
     fi.i = 0x83000000 - fi.i;
     float ScaleR = fi.f;
 
+#ifdef _XM_NO_ROUNDF_
     pDestination->xm = static_cast<uint32_t>( Internal::round_to_nearest(x * ScaleR) );
     pDestination->ym = static_cast<uint32_t>( Internal::round_to_nearest(y * ScaleR) );
     pDestination->zm = static_cast<uint32_t>( Internal::round_to_nearest(z * ScaleR) );
+#else
+    pDestination->xm = static_cast<uint32_t>( roundf(x * ScaleR) );
+    pDestination->ym = static_cast<uint32_t>( roundf(y * ScaleR) );
+    pDestination->zm = static_cast<uint32_t>( roundf(z * ScaleR) );
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1789,8 +1766,6 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf4
 )
 {
     assert(pDestination);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
- 
     XMFLOAT4A t;
     XMStoreFloat4A(&t, V );
 
@@ -1798,9 +1773,6 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf4
     pDestination->y = XMConvertFloatToHalf(t.y);
     pDestination->z = XMConvertFloatToHalf(t.z);
     pDestination->w = XMConvertFloatToHalf(t.w);
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1844,8 +1816,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShortN4
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti = _mm_packs_epi32(vResulti,vResulti);
     _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),_mm_castsi128_pd(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1893,8 +1864,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShort4
     // Pack the ints into shorts
     vInt = _mm_packs_epi32(vInt,vInt);
     _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),_mm_castsi128_pd(vInt));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1943,8 +1913,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShortN4
     pDestination->y = static_cast<int16_t>(_mm_extract_epi16(vInt,2));
     pDestination->z = static_cast<int16_t>(_mm_extract_epi16(vInt,4));
     pDestination->w = static_cast<int16_t>(_mm_extract_epi16(vInt,6));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1992,8 +1961,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShort4
     pDestination->y = static_cast<int16_t>(_mm_extract_epi16(vInt,2));
     pDestination->z = static_cast<int16_t>(_mm_extract_epi16(vInt,4));
     pDestination->w = static_cast<int16_t>(_mm_extract_epi16(vInt,6));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2045,8 +2013,7 @@ inline void XM_CALLCONV PackedVector::XMStoreXDecN4
     vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
     vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2098,8 +2065,7 @@ inline void XM_CALLCONV PackedVector::XMStoreXDec4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2149,8 +2115,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUDecN4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2226,8 +2191,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUDec4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2275,8 +2239,7 @@ inline void XM_CALLCONV PackedVector::XMStoreDecN4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2326,8 +2289,7 @@ inline void XM_CALLCONV PackedVector::XMStoreDec4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2378,8 +2340,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUByteN4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2430,8 +2391,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUByte4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2480,8 +2440,7 @@ inline void XM_CALLCONV PackedVector::XMStoreByteN4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2532,8 +2491,7 @@ inline void XM_CALLCONV PackedVector::XMStoreByte4
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------

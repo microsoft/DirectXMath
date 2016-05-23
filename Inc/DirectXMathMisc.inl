@@ -72,10 +72,7 @@ inline bool XM_CALLCONV XMQuaternionIsIdentity
     FXMVECTOR Q
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
     return XMVector4Equal(Q, g_XMIdentityR3.v);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -182,8 +179,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     Q2Y = _mm_add_ps(Q2Y,Q2Z);
     vResult = _mm_add_ps(vResult,Q2Y);
     return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -257,8 +253,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionConjugate
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 NegativeOne3 = {-1.0f,-1.0f,-1.0f,1.0f};
     return _mm_mul_ps(Q,NegativeOne3);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -268,8 +263,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionInverse
     FXMVECTOR Q
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     const XMVECTOR  Zero = XMVectorZero();
 
     XMVECTOR L = XMVector4LengthSq(Q);
@@ -282,9 +275,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionInverse
     Result = XMVectorSelect(Result, Zero, Control);
 
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -294,8 +284,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionLn
     FXMVECTOR Q
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     static const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
 
     XMVECTOR QW = XMVectorSplatW(Q);
@@ -312,9 +300,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionLn
     Result = XMVectorSelect(Q0, Result, ControlW);
 
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -324,8 +309,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionExp
     FXMVECTOR Q
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR Theta = XMVector3Length(Q);
 
     XMVECTOR SinTheta, CosTheta;
@@ -342,9 +325,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionExp
     Result = XMVectorSelect(CosTheta, Result, g_XMSelect1110.v);
 
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -418,8 +398,8 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
-    static const XMVECTORI32 SignMask2 = {0x80000000,0x00000000,0x00000000,0x00000000};
-    static const XMVECTORI32 MaskXY = {0xFFFFFFFF,0xFFFFFFFF,0x00000000,0x00000000};
+    static const XMVECTORU32 SignMask2 = {0x80000000,0x00000000,0x00000000,0x00000000};
+    static const XMVECTORU32 MaskXY = {0xFFFFFFFF,0xFFFFFFFF,0x00000000,0x00000000};
 
     XMVECTOR CosOmega = XMQuaternionDot(Q0, Q1);
 
@@ -456,8 +436,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
     S1 = _mm_mul_ps(S1, Q1);
     Result = _mm_add_ps(Result,S1);
     return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -633,10 +612,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionBaryCentricV
 
 inline XMVECTOR XM_CALLCONV XMQuaternionIdentity()
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
     return g_XMIdentityR3.v;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -660,8 +636,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationRollPitchYawFromVector
     FXMVECTOR Angles // <Pitch, Yaw, Roll, 0>
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     static const XMVECTORF32  Sign = {1.0f, -1.0f, -1.0f, 1.0f};
 
     XMVECTOR HalfAngles = XMVectorMultiply(Angles, g_XMOneHalf.v);
@@ -683,9 +657,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationRollPitchYawFromVector
     XMVECTOR Q = XMVectorMultiplyAdd(Q1, R1, Q0);
 
     return Q;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -717,8 +688,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationNormal
     Scale = _mm_or_ps(Scale,vCosine);
     N = _mm_mul_ps(N,Scale);
     return N;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -732,12 +702,9 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationAxis
     assert(!XMVector3Equal(Axis, XMVectorZero()));
     assert(!XMVector3IsInfinite(Axis));
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR Normal = XMVector3Normalize(Axis);
     XMVECTOR Q = XMQuaternionRotationNormal(Normal, Angle);
     return Q;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -981,8 +948,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix
     // the quaternion).
     t0 = XMVector4Length(t2);
     return _mm_div_ps(t2, t0);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1097,14 +1063,9 @@ inline XMVECTOR XM_CALLCONV XMPlaneDotCoord
 {
     // Result = P[0] * V[0] + P[1] * V[1] + P[2] * V[2] + P[3]
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR V3 = XMVectorSelect(g_XMOne.v, V, g_XMSelect1110.v);
     XMVECTOR Result = XMVector4Dot(P, V3);
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1150,8 +1111,7 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalizeEst
     // Get the reciprocal
     vDot = _mm_mul_ps(vDot,P);
     return vDot;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1197,8 +1157,7 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalize
     // Any that are infinity, set to zero
     vResult = _mm_and_ps(vResult,vLengthSq);
     return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1210,8 +1169,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneIntersectLine
     FXMVECTOR LinePoint2
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR V1 = XMVector3Dot(P, LinePoint1);
     XMVECTOR V2 = XMVector3Dot(P, LinePoint2);
     XMVECTOR D = XMVectorSubtract(V1, V2);
@@ -1226,9 +1183,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneIntersectLine
     XMVECTOR Control = XMVectorNearEqual(D, Zero, g_XMEpsilon.v);
 
     return XMVectorSelect(Point, g_XMQNaN.v, Control);
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1243,7 +1197,6 @@ inline void XM_CALLCONV XMPlaneIntersectPlane
 {
     assert(pLinePoint1);
     assert(pLinePoint2);
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
     XMVECTOR V1 = XMVector3Cross(P2, P1);
 
@@ -1266,9 +1219,6 @@ inline void XM_CALLCONV XMPlaneIntersectPlane
     XMVECTOR Control = XMVectorLessOrEqual(LengthSq, g_XMEpsilon.v);
     *pLinePoint1 = XMVectorSelect(LinePoint1,g_XMQNaN.v, Control);
     *pLinePoint2 = XMVectorSelect(LinePoint2,g_XMQNaN.v, Control);
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1279,8 +1229,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneTransform
     FXMMATRIX M
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR W = XMVectorSplatW(P);
     XMVECTOR Z = XMVectorSplatZ(P);
     XMVECTOR Y = XMVectorSplatY(P);
@@ -1291,9 +1239,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneTransform
     Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1342,8 +1287,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneFromPoints
     FXMVECTOR Point3
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
-
     XMVECTOR V21 = XMVectorSubtract(Point1, Point2);
     XMVECTOR V31 = XMVectorSubtract(Point1, Point3);
 
@@ -1356,9 +1299,6 @@ inline XMVECTOR XM_CALLCONV XMPlaneFromPoints
     XMVECTOR Result = XMVectorSelect(D, N, g_XMSelect1110.v);
 
     return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 /****************************************************************************
@@ -1484,8 +1424,7 @@ inline XMVECTOR XM_CALLCONV XMColorNegative
     XMVECTOR vTemp = _mm_xor_ps(vColor,g_XMNegate3);
     // Add 1,1,1,0 to -x,-y,-z,w
     return _mm_add_ps(vTemp,g_XMOne3);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1514,13 +1453,12 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
 
     float fLuminance = (vColor.vector4_f32[0]*gvLuminance.f[0])+(vColor.vector4_f32[1]*gvLuminance.f[1])+(vColor.vector4_f32[2]*gvLuminance.f[2]);
-    XMVECTORF32 vResult = {
-        ((vColor.vector4_f32[0] - fLuminance)*fSaturation)+fLuminance,
-        ((vColor.vector4_f32[1] - fLuminance)*fSaturation)+fLuminance,
-        ((vColor.vector4_f32[2] - fLuminance)*fSaturation)+fLuminance,
-        vColor.vector4_f32[3]};
-    return vResult.v;
-
+    XMVECTOR vResult;
+    vResult.vector4_f32[0] = ((vColor.vector4_f32[0] - fLuminance)*fSaturation)+fLuminance;
+    vResult.vector4_f32[1] = ((vColor.vector4_f32[1] - fLuminance)*fSaturation)+fLuminance;
+    vResult.vector4_f32[2] = ((vColor.vector4_f32[2] - fLuminance)*fSaturation)+fLuminance;
+    vResult.vector4_f32[3] = vColor.vector4_f32[3];
+    return vResult;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
     XMVECTOR vLuminance = XMVector3Dot( vColor, gvLuminance );
@@ -1540,8 +1478,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     vLuminance = _mm_shuffle_ps(vResult,vColor,_MM_SHUFFLE(3,2,2,2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult,vLuminance,_MM_SHUFFLE(3,0,1,0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
     return vResult;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -1575,8 +1512,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustContrast
     vScale = _mm_shuffle_ps(vResult,vColor,_MM_SHUFFLE(3,2,2,2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult,vScale,_MM_SHUFFLE(3,0,1,0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
     return vResult;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2135,8 +2071,7 @@ inline XMVECTOR XM_CALLCONV XMFresnelTerm
     vResult = _mm_max_ps(vResult,g_XMZero);
     vResult = _mm_min_ps(vResult,g_XMOne);
     return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2447,7 +2382,7 @@ inline float XMScalarASin
     {
         omx = 0.0f;
     }
-    float root = sqrt(omx);
+    float root = sqrtf(omx);
 
     // 7-degree minimax approximation
     float result = ( ( ( ( ( ( -0.0012624911f * x + 0.0066700901f ) * x - 0.0170881256f ) * x + 0.0308918810f ) * x - 0.0501743046f ) * x + 0.0889789874f ) * x - 0.2145988016f ) * x + 1.5707963050f;
@@ -2472,7 +2407,7 @@ inline float XMScalarASinEst
     {
         omx = 0.0f;
     }
-    float root = sqrt(omx);
+    float root = sqrtf(omx);
 
     // 3-degree minimax approximation
     float result = ((-0.0187293f*x+0.0742610f)*x-0.2121144f)*x+1.5707288f;

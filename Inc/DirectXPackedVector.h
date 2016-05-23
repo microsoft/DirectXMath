@@ -21,11 +21,6 @@ namespace DirectX
 namespace PackedVector
 {
 
-#ifdef _XM_BIGENDIAN_
-#pragma bitfield_order(push)
-#pragma bitfield_order(lsb_to_msb)
-#endif
-
 #pragma warning(push)
 #pragma warning(disable:4201 4365 4324)
 
@@ -864,12 +859,7 @@ struct XMU555
     XMU555& operator= (uint16_t Packed) { v = Packed; return *this; }
 };
 
-
 #pragma warning(pop)
-
-#ifdef _XM_BIGENDIAN_
-#pragma bitfield_order(pop)
-#endif
 
 
 /****************************************************************************
@@ -930,7 +920,6 @@ XMVECTOR    XM_CALLCONV     XMLoadUByte4(_In_ const XMUBYTE4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUNibble4(_In_ const XMUNIBBLE4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadU555(_In_ const XMU555* pSource);
 
-
 /****************************************************************************
  *
  * Store operations
@@ -971,7 +960,6 @@ void    XM_CALLCONV     XMStoreUByteN4(_Out_ XMUBYTEN4* pDestination, _In_ FXMVE
 void    XM_CALLCONV     XMStoreUByte4(_Out_ XMUBYTE4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V);
-
 
 /****************************************************************************
  *
