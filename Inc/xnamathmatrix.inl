@@ -3134,6 +3134,24 @@ XMFINLINE _XMFLOAT4X3& _XMFLOAT4X3::operator=
     return *this;
 }
 
+//------------------------------------------------------------------------------
+
+XMFINLINE XMFLOAT4X3A& XMFLOAT4X3A::operator=
+(
+    CONST XMFLOAT4X3A& Float4x3
+)
+{
+    XMVECTOR V1 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._11);
+    XMVECTOR V2 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._22);
+    XMVECTOR V3 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._33);
+
+    XMStoreFloat4A((XMFLOAT4A*)&_11, V1);
+    XMStoreFloat4A((XMFLOAT4A*)&_22, V2);
+    XMStoreFloat4A((XMFLOAT4A*)&_33, V3);
+
+    return *this;
+}
+
 /****************************************************************************
  *
  * XMFLOAT4X4 operators
@@ -3206,6 +3224,26 @@ XMFINLINE _XMFLOAT4X4& _XMFLOAT4X4::operator=
     XMStoreFloat4((XMFLOAT4*)&_21, V2);
     XMStoreFloat4((XMFLOAT4*)&_31, V3);
     XMStoreFloat4((XMFLOAT4*)&_41, V4);
+
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMFLOAT4X4A& XMFLOAT4X4A::operator=
+(
+    CONST XMFLOAT4X4A& Float4x4
+)
+{
+    XMVECTOR V1 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._11);
+    XMVECTOR V2 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._21);
+    XMVECTOR V3 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._31);
+    XMVECTOR V4 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._41);
+
+    XMStoreFloat4A((XMFLOAT4A*)&_11, V1);
+    XMStoreFloat4A((XMFLOAT4A*)&_21, V2);
+    XMStoreFloat4A((XMFLOAT4A*)&_31, V3);
+    XMStoreFloat4A((XMFLOAT4A*)&_41, V4);
 
     return *this;
 }

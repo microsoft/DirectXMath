@@ -1882,11 +1882,11 @@ XMFINLINE XMVECTOR XMLoadXIcoN4
     XMASSERT(((pSource->v >> 20) & 0xFFFFFull) != 0x80000ull);
     XMASSERT(((pSource->v >> 40) & 0xFFFFFull) != 0x80000ull);
 
-    Element = (UINT)pSource->v & 0xFFFFF;
+    Element = (UINT)(pSource->v & 0xFFFFF);
     V.vector4_f32[0] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
-    Element = (UINT)(pSource->v >> 20) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 20) & 0xFFFFF);
     V.vector4_f32[1] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
-    Element = (UINT)(pSource->v >> 40) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 40) & 0xFFFFF);
     V.vector4_f32[2] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
     V.vector4_f32[3] = (FLOAT)(pSource->v >> 60) / 15.0f;
 
@@ -1939,11 +1939,11 @@ XMFINLINE XMVECTOR XMLoadXIco4
     XMASSERT(((pSource->v >> 20) & 0xFFFFFull) != 0x80000ull);
     XMASSERT(((pSource->v >> 40) & 0xFFFFFull) != 0x80000ull);
 
-    Element = (UINT)pSource->v & 0xFFFFF;
+    Element = (UINT)(pSource->v & 0xFFFFF);
     V.vector4_f32[0] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
-    Element = (UINT)(pSource->v >> 20) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 20) & 0xFFFFF);
     V.vector4_f32[1] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
-    Element = (UINT)(pSource->v >> 40) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 40) & 0xFFFFF);
     V.vector4_f32[2] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
     V.vector4_f32[3] = (FLOAT)(pSource->v >> 60);
 
@@ -2084,11 +2084,11 @@ XMFINLINE XMVECTOR XMLoadIcoN4
 
     XMASSERT(pSource);
 
-    Element = (UINT)pSource->v & 0xFFFFF;
+    Element = (UINT)(pSource->v & 0xFFFFF);
     V.vector4_f32[0] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
-    Element = (UINT)(pSource->v >> 20) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 20) & 0xFFFFF);
     V.vector4_f32[1] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
-    Element = (UINT)(pSource->v >> 40) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 40) & 0xFFFFF);
     V.vector4_f32[2] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]) / 524287.0f;
     Element = (UINT)(pSource->v >> 60);
     V.vector4_f32[3] = (FLOAT)(INT)(Element | SignExtendW[Element >> 3]) / 7.0f;
@@ -2137,11 +2137,11 @@ XMFINLINE XMVECTOR XMLoadIco4
 
     XMASSERT(pSource);
 
-    Element = (UINT)pSource->v & 0xFFFFF;
+    Element = (UINT)(pSource->v & 0xFFFFF);
     V.vector4_f32[0] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
-    Element = (UINT)(pSource->v >> 20) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 20) & 0xFFFFF);
     V.vector4_f32[1] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
-    Element = (UINT)(pSource->v >> 40) & 0xFFFFF;
+    Element = (UINT)((pSource->v >> 40) & 0xFFFFF);
     V.vector4_f32[2] = (FLOAT)(INT)(Element | SignExtend[Element >> 19]);
     Element = (UINT)(pSource->v >> 60);
     V.vector4_f32[3] = (FLOAT)(INT)(Element | SignExtendW[Element >> 3]);
