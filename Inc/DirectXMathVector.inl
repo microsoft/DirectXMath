@@ -35,6 +35,8 @@ inline XMVECTOR XMVectorZero()
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {0.0f,0.0f,0.0f,0.0f};
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_setzero_ps();
 #else // _XM_VMX128_INTRINSICS_
@@ -54,6 +56,10 @@ inline XMVECTOR XMVectorSet
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult = {x,y,z,w};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 V0 = vcreate_f32(((uint64_t)*(const uint32_t *)&x) | ((uint64_t)(*(const uint32_t *)&y) << 32));
+    __n64 V1 = vcreate_f32(((uint64_t)*(const uint32_t *)&z) | ((uint64_t)(*(const uint32_t *)&w) << 32));
+    return vcombine_f32(V0, V1);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_set_ps( w, z, y, x );
 #else // _XM_VMX128_INTRINSICS_
@@ -73,6 +79,10 @@ inline XMVECTOR XMVectorSetInt
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult = {x,y,z,w};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 V0 = vcreate_u32(((uint64_t)x) | ((uint64_t)y << 32));
+    __n64 V1 = vcreate_u32(((uint64_t)z) | ((uint64_t)w << 32));
+    return vcombine_u32(V0, V1);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_set_epi32( w, z, y, x );
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -90,6 +100,8 @@ inline XMVECTOR XMVectorReplicate
 #if defined(_XM_NO_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
     XMVECTORF32 vResult = {Value,Value,Value,Value};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_f32( Value );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_set_ps1( Value );
 #else // _XM_VMX128_INTRINSICS_
@@ -98,6 +110,7 @@ inline XMVECTOR XMVectorReplicate
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value passed by pointer
+_Use_decl_annotations_
 inline XMVECTOR XMVectorReplicatePtr
 (
     const float *pValue
@@ -107,6 +120,8 @@ inline XMVECTOR XMVectorReplicatePtr
     float Value = pValue[0];
     XMVECTORF32 vResult = {Value,Value,Value,Value};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_dup_f32( pValue );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_load_ps1( pValue );
 #else // _XM_VMX128_INTRINSICS_
@@ -123,6 +138,8 @@ inline XMVECTOR XMVectorReplicateInt
 #if defined(_XM_NO_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
     XMVECTORU32 vResult = {Value,Value,Value,Value};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32( Value );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_set1_epi32( Value );
     return reinterpret_cast<const __m128 *>(&vTemp)[0];
@@ -132,6 +149,7 @@ inline XMVECTOR XMVectorReplicateInt
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value passed by pointer
+_Use_decl_annotations_
 inline XMVECTOR XMVectorReplicateIntPtr
 (
     const uint32_t *pValue
@@ -141,6 +159,8 @@ inline XMVECTOR XMVectorReplicateIntPtr
     uint32_t Value = pValue[0];
     XMVECTORU32 vResult = {Value,Value,Value,Value};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_dup_u32(pValue);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_load_ps1(reinterpret_cast<const float *>(pValue));
 #else // _XM_VMX128_INTRINSICS_
@@ -154,6 +174,8 @@ inline XMVECTOR XMVectorTrueInt()
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult = {0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU,0xFFFFFFFFU};
     return vResult.v;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_s32(-1);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_set1_epi32(-1);
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -168,6 +190,8 @@ inline XMVECTOR XMVectorFalseInt()
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {0.0f,0.0f,0.0f,0.0f};
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_setzero_ps();
 #else // _XM_VMX128_INTRINSICS_
@@ -188,6 +212,8 @@ inline XMVECTOR XMVectorSplatX
     vResult.vector4_f32[2] = 
     vResult.vector4_f32[3] = V.vector4_f32[0];
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_lane_f32( vget_low_f32( V ), 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(0, 0, 0, 0) );
 #else // _XM_VMX128_INTRINSICS_
@@ -208,6 +234,8 @@ inline XMVECTOR XMVectorSplatY
     vResult.vector4_f32[2] = 
     vResult.vector4_f32[3] = V.vector4_f32[1];
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_lane_f32( vget_low_f32( V ), 1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(1, 1, 1, 1) );
 #else // _XM_VMX128_INTRINSICS_
@@ -228,6 +256,8 @@ inline XMVECTOR XMVectorSplatZ
     vResult.vector4_f32[2] = 
     vResult.vector4_f32[3] = V.vector4_f32[2];
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_lane_f32( vget_high_f32( V ), 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(2, 2, 2, 2) );
 #else // _XM_VMX128_INTRINSICS_
@@ -248,6 +278,8 @@ inline XMVECTOR XMVectorSplatW
     vResult.vector4_f32[2] = 
     vResult.vector4_f32[3] = V.vector4_f32[3];
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_lane_f32( vget_high_f32( V ), 1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(3, 3, 3, 3) );
 #else // _XM_VMX128_INTRINSICS_
@@ -265,6 +297,8 @@ inline XMVECTOR XMVectorSplatOne()
     vResult.vector4_f32[2] = 
     vResult.vector4_f32[3] = 1.0f;
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_f32(1.0f);
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMOne;
 #else //  _XM_VMX128_INTRINSICS_
@@ -282,6 +316,8 @@ inline XMVECTOR XMVectorSplatInfinity()
     vResult.vector4_u32[2] = 
     vResult.vector4_u32[3] = 0x7F800000;
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0x7F800000);
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMInfinity;
 #else // _XM_VMX128_INTRINSICS_
@@ -299,6 +335,8 @@ inline XMVECTOR XMVectorSplatQNaN()
     vResult.vector4_u32[2] = 
     vResult.vector4_u32[3] = 0x7FC00000;
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0x7FC00000);
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMQNaN;
 #else // _XM_VMX128_INTRINSICS_
@@ -316,6 +354,8 @@ inline XMVECTOR XMVectorSplatEpsilon()
     vResult.vector4_u32[2] = 
     vResult.vector4_u32[3] = 0x34000000;
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0x34000000);
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMEpsilon;
 #else // _XM_VMX128_INTRINSICS_
@@ -333,6 +373,8 @@ inline XMVECTOR XMVectorSplatSignMask()
     vResult.vector4_u32[2] = 
     vResult.vector4_u32[3] = 0x80000000U;
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vdupq_n_u32(0x80000000U);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_set1_epi32( 0x80000000 );
     return reinterpret_cast<__m128*>(&V)[0];
@@ -349,6 +391,8 @@ inline float XMVectorGetByIndex(FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[i];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return V.n128_f32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
     return V.m128_f32[i];
 #else // _XM_VMX128_INTRINSICS_
@@ -362,12 +406,10 @@ inline float XMVectorGetX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[0];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_f32(V, 0);
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER>=1500)
-    return _mm_cvtss_f32(V);    
-#else
-    return V.m128_f32[0];
-#endif
+    return _mm_cvtss_f32(V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -378,13 +420,11 @@ inline float XMVectorGetY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[1];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_f32(V, 1);
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
     return _mm_cvtss_f32(vTemp);
-#else
-    return V.m128_f32[1];
-#endif
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -395,13 +435,11 @@ inline float XMVectorGetZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[2];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_f32(V, 2);
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
     return _mm_cvtss_f32(vTemp);
-#else
-    return V.m128_f32[2];
-#endif
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -412,13 +450,11 @@ inline float XMVectorGetW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[3];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_f32(V, 3);
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
     return _mm_cvtss_f32(vTemp);
-#else
-    return V.m128_f32[3];
-#endif
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -427,6 +463,7 @@ inline float XMVectorGetW(FXMVECTOR V)
 
 // Store a component indexed by i into a 32 bit float location in memory.
 // This causes Load/Hit/Store on VMX targets
+_Use_decl_annotations_
 inline void XMVectorGetByIndexPtr(float *f, FXMVECTOR V, size_t i)
 {
     assert( f != nullptr );
@@ -434,6 +471,8 @@ inline void XMVectorGetByIndexPtr(float *f, FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     *f = V.vector4_f32[i];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    *f = V.n128_f32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
     *f = V.m128_f32[i];
 #else // _XM_VMX128_INTRINSICS_
@@ -443,11 +482,14 @@ inline void XMVectorGetByIndexPtr(float *f, FXMVECTOR V, size_t i)
 //------------------------------------------------------------------------------
 
 // Store the X component into a 32 bit float location in memory.
-inline void XMVectorGetXPtr(float *x,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetXPtr(float *x, FXMVECTOR V)
 {
     assert( x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
     *x = V.vector4_f32[0];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_f32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_ss(x,V);
 #else // _XM_VMX128_INTRINSICS_
@@ -455,11 +497,14 @@ inline void XMVectorGetXPtr(float *x,FXMVECTOR V)
 }
 
 // Store the Y component into a 32 bit float location in memory.
-inline void XMVectorGetYPtr(float *y,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetYPtr(float *y, FXMVECTOR V)
 {
     assert( y != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *y = V.vector4_f32[1];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(y,vResult);
@@ -468,11 +513,14 @@ inline void XMVectorGetYPtr(float *y,FXMVECTOR V)
 }
 
 // Store the Z component into a 32 bit float location in memory.
-inline void XMVectorGetZPtr(float *z,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetZPtr(float *z, FXMVECTOR V)
 {
     assert( z != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *z = V.vector4_f32[2];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(z,vResult);
@@ -481,11 +529,14 @@ inline void XMVectorGetZPtr(float *z,FXMVECTOR V)
 }
 
 // Store the W component into a 32 bit float location in memory.
-inline void XMVectorGetWPtr(float *w,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetWPtr(float *w, FXMVECTOR V)
 {
     assert( w != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *w = V.vector4_f32[3];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(w,vResult);
@@ -503,14 +554,10 @@ inline uint32_t XMVectorGetIntByIndex(FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[i];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return V.n128_u32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER<1400)
-    XMVECTORU32 tmp;
-    tmp.v = V;
-    return tmp.u[i];
-#else
     return V.m128_u32[i];
-#endif
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -523,6 +570,8 @@ inline uint32_t XMVectorGetIntX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[0];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_u32(V, 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     return static_cast<uint32_t>(_mm_cvtsi128_si32(reinterpret_cast<const __m128i *>(&V)[0]));
 #else // _XM_VMX128_INTRINSICS_
@@ -535,6 +584,8 @@ inline uint32_t XMVectorGetIntY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[1];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_u32(V, 1);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(1,1,1,1));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -548,6 +599,8 @@ inline uint32_t XMVectorGetIntZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[2];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_u32(V, 2);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(2,2,2,2));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -561,6 +614,8 @@ inline uint32_t XMVectorGetIntW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[3];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vgetq_lane_u32(V, 3);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(3,3,3,3));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -572,6 +627,7 @@ inline uint32_t XMVectorGetIntW(FXMVECTOR V)
 
 // Store a component indexed by i into a 32 bit integer location in memory.
 // This causes Load/Hit/Store on VMX targets
+_Use_decl_annotations_
 inline void XMVectorGetIntByIndexPtr(uint32_t *x, FXMVECTOR V, size_t i)
 {
     assert( x != nullptr );
@@ -579,14 +635,10 @@ inline void XMVectorGetIntByIndexPtr(uint32_t *x, FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     *x = V.vector4_u32[i];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    *x = V.n128_u32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_MSC_VER) && (_MSC_VER<1400)
-    XMVECTORU32 tmp;
-    tmp.v = V;
-    *x = tmp.u[i];
-#else
     *x = V.m128_u32[i];
-#endif
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -594,11 +646,14 @@ inline void XMVectorGetIntByIndexPtr(uint32_t *x, FXMVECTOR V, size_t i)
 //------------------------------------------------------------------------------
 
 // Store the X component into a 32 bit integer location in memory.
-inline void XMVectorGetIntXPtr(uint32_t *x,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetIntXPtr(uint32_t *x, FXMVECTOR V)
 {
     assert( x != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *x = V.vector4_u32[0];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_u32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_ss(reinterpret_cast<float *>(x),V);
 #else // _XM_VMX128_INTRINSICS_
@@ -606,11 +661,14 @@ inline void XMVectorGetIntXPtr(uint32_t *x,FXMVECTOR V)
 }
 
 // Store the Y component into a 32 bit integer location in memory.
-inline void XMVectorGetIntYPtr(uint32_t *y,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetIntYPtr(uint32_t *y, FXMVECTOR V)
 {
     assert( y != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *y = V.vector4_u32[1];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(reinterpret_cast<float *>(y),vResult);
@@ -619,11 +677,14 @@ inline void XMVectorGetIntYPtr(uint32_t *y,FXMVECTOR V)
 }
 
 // Store the Z component into a 32 bit integer locaCantion in memory.
-inline void XMVectorGetIntZPtr(uint32_t *z,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetIntZPtr(uint32_t *z, FXMVECTOR V)
 {
     assert( z != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *z = V.vector4_u32[2];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(reinterpret_cast<float *>(z),vResult);
@@ -632,11 +693,14 @@ inline void XMVectorGetIntZPtr(uint32_t *z,FXMVECTOR V)
 }
 
 // Store the W component into a 32 bit integer location in memory.
-inline void XMVectorGetIntWPtr(uint32_t *w,FXMVECTOR V)
+_Use_decl_annotations_
+inline void XMVectorGetIntWPtr(uint32_t *w, FXMVECTOR V)
 {
     assert( w != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
     *w = V.vector4_u32[3];
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    vst1q_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(reinterpret_cast<float *>(w),vResult);
@@ -656,6 +720,10 @@ inline XMVECTOR XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
     XMVECTOR U;
     U = V;
     U.vector4_f32[i] = f;
+    return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR U = V;
+    U.n128_f32[i] = f;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR U = V;
@@ -678,6 +746,8 @@ inline XMVECTOR XMVectorSetX(FXMVECTOR V, float x)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_f32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_set_ss(x);
     vResult = _mm_move_ss(V,vResult);
@@ -697,6 +767,8 @@ inline XMVECTOR XMVectorSetY(FXMVECTOR V, float y)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
@@ -721,6 +793,8 @@ inline XMVECTOR XMVectorSetZ(FXMVECTOR V, float z)
     U.vector4_f32[2] = z;
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
@@ -746,6 +820,8 @@ inline XMVECTOR XMVectorSetW(FXMVECTOR V, float w)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = w;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
@@ -764,6 +840,7 @@ inline XMVECTOR XMVectorSetW(FXMVECTOR V, float w)
 
 // Sets a component of a vector to a floating point value passed by pointer
 // This causes Load/Hit/Store on VMX targets
+_Use_decl_annotations_
 inline XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V, const float *f, size_t i)
 {
     assert( f != nullptr );
@@ -773,6 +850,10 @@ inline XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V, const float *f, size_t i)
     XMVECTOR U;
     U = V;
     U.vector4_f32[i] = *f;
+    return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR U = V;
+    U.n128_f32[i] = *f;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR U = V;
@@ -785,7 +866,8 @@ inline XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V, const float *f, size_t i)
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a floating point value passed by pointer
-inline XMVECTOR XMVectorSetXPtr(FXMVECTOR V,const float *x)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetXPtr(FXMVECTOR V, const float *x)
 {
     assert( x != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -795,6 +877,8 @@ inline XMVECTOR XMVectorSetXPtr(FXMVECTOR V,const float *x)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_f32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_load_ss(x);
     vResult = _mm_move_ss(V,vResult);
@@ -804,7 +888,8 @@ inline XMVECTOR XMVectorSetXPtr(FXMVECTOR V,const float *x)
 }
 
 // Sets the Y component of a vector to a floating point value passed by pointer
-inline XMVECTOR XMVectorSetYPtr(FXMVECTOR V,const float *y)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetYPtr(FXMVECTOR V, const float *y)
 {
     assert( y != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -814,6 +899,8 @@ inline XMVECTOR XMVectorSetYPtr(FXMVECTOR V,const float *y)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
@@ -829,7 +916,8 @@ inline XMVECTOR XMVectorSetYPtr(FXMVECTOR V,const float *y)
 }
 
 // Sets the Z component of a vector to a floating point value passed by pointer
-inline XMVECTOR XMVectorSetZPtr(FXMVECTOR V,const float *z)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetZPtr(FXMVECTOR V, const float *z)
 {
     assert( z != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -839,6 +927,8 @@ inline XMVECTOR XMVectorSetZPtr(FXMVECTOR V,const float *z)
     U.vector4_f32[2] = *z;
     U.vector4_f32[3] = V.vector4_f32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
@@ -854,7 +944,8 @@ inline XMVECTOR XMVectorSetZPtr(FXMVECTOR V,const float *z)
 }
 
 // Sets the W component of a vector to a floating point value passed by pointer
-inline XMVECTOR XMVectorSetWPtr(FXMVECTOR V,const float *w)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetWPtr(FXMVECTOR V, const float *w)
 {
     assert( w != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -864,6 +955,8 @@ inline XMVECTOR XMVectorSetWPtr(FXMVECTOR V,const float *w)
     U.vector4_f32[2] = V.vector4_f32[2];
     U.vector4_f32[3] = *w;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
@@ -891,6 +984,11 @@ inline XMVECTOR XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_t i)
     U = V;
     U.vector4_u32[i] = x;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORU32 tmp;
+    tmp.v = V;
+    tmp.u[i] = x;
+    return tmp;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTORU32 tmp;
     tmp.v = V;
@@ -913,6 +1011,8 @@ inline XMVECTOR XMVectorSetIntX(FXMVECTOR V, uint32_t x)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_u32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cvtsi32_si128(x);
     XMVECTOR vResult = _mm_move_ss(V,reinterpret_cast<const __m128 *>(&vTemp)[0]);
@@ -932,6 +1032,8 @@ inline XMVECTOR XMVectorSetIntY(FXMVECTOR V, uint32_t y)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
@@ -957,6 +1059,8 @@ inline XMVECTOR XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
     U.vector4_u32[2] = z;
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
@@ -982,6 +1086,8 @@ inline XMVECTOR XMVectorSetIntW(FXMVECTOR V, uint32_t w)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = w;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsetq_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
@@ -1000,6 +1106,7 @@ inline XMVECTOR XMVectorSetIntW(FXMVECTOR V, uint32_t w)
 
 // Sets a component of a vector to an integer value passed by pointer
 // This causes Load/Hit/Store on VMX targets
+_Use_decl_annotations_
 inline XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t *x, size_t i)
 {
     assert( x != nullptr );
@@ -1010,6 +1117,11 @@ inline XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t *x, size_t 
     U = V;
     U.vector4_u32[i] = *x;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORU32 tmp;
+    tmp.v = V;
+    tmp.u[i] = *x;
+    return tmp;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTORU32 tmp;
     tmp.v = V;
@@ -1022,7 +1134,8 @@ inline XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t *x, size_t 
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer value passed by pointer
-inline XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V,const uint32_t *x)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V, const uint32_t *x)
 {
     assert( x != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -1032,6 +1145,8 @@ inline XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V,const uint32_t *x)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_u32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float *>(x));
     XMVECTOR vResult = _mm_move_ss(V,vTemp);
@@ -1041,7 +1156,8 @@ inline XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V,const uint32_t *x)
 }
 
 // Sets the Y component of a vector to an integer value passed by pointer
-inline XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V,const uint32_t *y)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t *y)
 {
     assert( y != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -1051,6 +1167,8 @@ inline XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V,const uint32_t *y)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
@@ -1066,7 +1184,8 @@ inline XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V,const uint32_t *y)
 }
 
 // Sets the Z component of a vector to an integer value passed by pointer
-inline XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V,const uint32_t *z)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t *z)
 {
     assert( z != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -1076,6 +1195,8 @@ inline XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V,const uint32_t *z)
     U.vector4_u32[2] = *z;
     U.vector4_u32[3] = V.vector4_u32[3];
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
@@ -1091,7 +1212,8 @@ inline XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V,const uint32_t *z)
 }
 
 // Sets the W component of a vector to an integer value passed by pointer
-inline XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V,const uint32_t *w)
+_Use_decl_annotations_
+inline XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V, const uint32_t *w)
 {
     assert( w != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
@@ -1101,6 +1223,8 @@ inline XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V,const uint32_t *w)
     U.vector4_u32[2] = V.vector4_u32[2];
     U.vector4_u32[3] = *w;
     return U;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vld1q_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
@@ -1116,128 +1240,148 @@ inline XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V,const uint32_t *w)
 }
 
 //------------------------------------------------------------------------------
-// Define a control vector to be used in XMVectorPermute
-// operations.  Visualize the two vectors V1 and V2 given
-// in a permute as arranged back to back in a linear fashion,
-// such that they form an array of 8 floating point values.
-// The four integers specified in XMVectorPermuteControl
-// will serve as indices into the array to select components
-// from the two vectors.  ElementIndex0 is used to select
-// an element from the vectors to be placed in the first
-// component of the resulting vector, ElementIndex1 is used
-// to select an element for the second component, etc.
 
-inline XMVECTOR XMVectorPermuteControl
+inline XMVECTOR XMVectorSwizzle
 (
-    uint32_t     ElementIndex0, 
-    uint32_t     ElementIndex1, 
-    uint32_t     ElementIndex2, 
-    uint32_t     ElementIndex3
+    FXMVECTOR V,
+    uint32_t E0,
+    uint32_t E1,
+    uint32_t E2,
+    uint32_t E3
 )
 {
-    assert(ElementIndex0 < 8);
-    assert(ElementIndex1 < 8);
-    assert(ElementIndex2 < 8);
-    assert(ElementIndex3 < 8);
-    _Analysis_assume_(ElementIndex0 < 8);
-    _Analysis_assume_(ElementIndex1 < 8);
-    _Analysis_assume_(ElementIndex2 < 8);
-    _Analysis_assume_(ElementIndex3 < 8);
-#if defined(_XM_SSE_INTRINSICS_) || defined(_XM_NO_INTRINSICS_)
-    XMVECTORU32 vControl;
-    static const uint32_t ControlElement[] = {
-                    XM_PERMUTE_0X,
-                    XM_PERMUTE_0Y,
-                    XM_PERMUTE_0Z,
-                    XM_PERMUTE_0W,
-                    XM_PERMUTE_1X,
-                    XM_PERMUTE_1Y,
-                    XM_PERMUTE_1Z,
-                    XM_PERMUTE_1W
-                };
+    assert( (E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4) );
+    _Analysis_assume_( (E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4) );
+#if defined(_XM_NO_INTRINSICS_)
 
-    vControl.u[0] = ControlElement[ElementIndex0];
-    vControl.u[1] = ControlElement[ElementIndex1];
-    vControl.u[2] = ControlElement[ElementIndex2];
-    vControl.u[3] = ControlElement[ElementIndex3];
-    return vControl.v;
+    XMVECTOR Result = { V.vector4_f32[E0],
+                        V.vector4_f32[E1],
+                        V.vector4_f32[E2],
+                        V.vector4_f32[E3] };
+    return Result;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t ControlElement[ 4 ] =
+    {
+#ifdef _XM_LITTLEENDIAN_
+        0x03020100, // XM_SWIZZLE_X
+        0x07060504, // XM_SWIZZLE_Y
+        0x0B0A0908, // XM_SWIZZLE_Z
+        0x0F0E0D0C, // XM_SWIZZLE_W
 #else
+        0x00010203, // XM_SWIZZLE_X
+        0x04050607, // XM_SWIZZLE_Y
+        0x08090A0B, // XM_SWIZZLE_Z
+        0x0C0D0E0F, // XM_SWIZZLE_W
+#endif
+    };
+
+    int8x8x2_t tbl;
+    tbl.val[0] = vget_low_f32(V);
+    tbl.val[1] = vget_high_f32(V);
+
+    __n64 idx = vcreate_u32( ((uint64_t)ControlElement[E0]) | (((uint64_t)ControlElement[E1]) << 32) );
+    const __n64 rL = vtbl2_u8( tbl, idx );
+
+    idx = vcreate_u32( ((uint64_t)ControlElement[E2]) | (((uint64_t)ControlElement[E3]) << 32) );
+    const __n64 rH = vtbl2_u8( tbl, idx );
+
+    return vcombine_f32( rL, rH );
+#elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+    const uint32_t *aPtr = (const uint32_t* )(&V);
+
+    XMVECTOR Result;
+    uint32_t *pWork = (uint32_t*)(&Result);
+
+    pWork[0] = aPtr[E0];
+    pWork[1] = aPtr[E1];
+    pWork[2] = aPtr[E2];
+    pWork[3] = aPtr[E3];
+
+    return Result;
 #endif
 }
 
 //------------------------------------------------------------------------------
-
-// Using a control vector made up of 16 bytes from 0-31, remap V1 and V2's byte
-// entries into a single 16 byte vector and return it. Index 0-15 = V1,
-// 16-31 = V2
 inline XMVECTOR XMVectorPermute
 (
-    FXMVECTOR V1, 
-    FXMVECTOR V2, 
-    FXMVECTOR Control
+    FXMVECTOR V1,
+    FXMVECTOR V2,
+    uint32_t PermuteX,
+    uint32_t PermuteY,
+    uint32_t PermuteZ,
+    uint32_t PermuteW
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-    const uint8_t *aByte[2];
+    assert( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
+    _Analysis_assume_( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
+
+#if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    static const uint32_t ControlElement[ 8 ] =
+    {
+#ifdef _XM_LITTLEENDIAN_
+        0x03020100, // XM_PERMUTE_0X
+        0x07060504, // XM_PERMUTE_0Y
+        0x0B0A0908, // XM_PERMUTE_0Z
+        0x0F0E0D0C, // XM_PERMUTE_0W
+        0x13121110, // XM_PERMUTE_1X
+        0x17161514, // XM_PERMUTE_1Y
+        0x1B1A1918, // XM_PERMUTE_1Z
+        0x1F1E1D1C, // XM_PERMUTE_1W
+#else
+        0x00010203, // XM_PERMUTE_0X
+        0x04050607, // XM_PERMUTE_0Y
+        0x08090A0B, // XM_PERMUTE_0Z
+        0x0C0D0E0F, // XM_PERMUTE_0W
+        0x10111213, // XM_PERMUTE_1X
+        0x14151617, // XM_PERMUTE_1Y
+        0x18191A1B, // XM_PERMUTE_1Z
+        0x1C1D1E1F, // XM_PERMUTE_1W
+#endif
+    };
+
+    int8x8x4_t tbl;
+    tbl.val[0] = vget_low_f32(V1);
+    tbl.val[1] = vget_high_f32(V1);
+    tbl.val[2] = vget_low_f32(V2);
+    tbl.val[3] = vget_high_f32(V2);
+
+    __n64 idx = vcreate_u32( ((uint64_t)ControlElement[PermuteX]) | (((uint64_t)ControlElement[PermuteY]) << 32) );
+    const __n64 rL = vtbl4_u8( tbl, idx );
+
+    idx = vcreate_u32( ((uint64_t)ControlElement[PermuteZ]) | (((uint64_t)ControlElement[PermuteW]) << 32) );
+    const __n64 rH = vtbl4_u8( tbl, idx );
+
+    return vcombine_f32( rL, rH );
+#elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+ 
+    const uint32_t *aPtr[2];
+    aPtr[0] = (const uint32_t* )(&V1);
+    aPtr[1] = (const uint32_t* )(&V2);
+
     XMVECTOR Result;
-    uint32_t i, uIndex, VectorIndex;
-    const uint8_t *pControl;
-    uint8_t *pWork;
+    uint32_t *pWork = (uint32_t*)(&Result);
 
-    // Indices must be in range from 0 to 31
-    assert((Control.vector4_u32[0] & 0xE0E0E0E0) == 0);
-    assert((Control.vector4_u32[1] & 0xE0E0E0E0) == 0);
-    assert((Control.vector4_u32[2] & 0xE0E0E0E0) == 0);
-    assert((Control.vector4_u32[3] & 0xE0E0E0E0) == 0);
+    const uint32_t i0 = PermuteX & 3;
+    const uint32_t vi0 = PermuteX >> 2;
+    pWork[0] = aPtr[vi0][i0];
 
-    // 0-15 = V1, 16-31 = V2
-    aByte[0] = (const uint8_t*)(&V1);
-    aByte[1] = (const uint8_t*)(&V2);
-    i = 16;
-    pControl = (const uint8_t *)(&Control);
-    pWork = (uint8_t *)(&Result);
-    do {
-        // Get the byte to map from
-        uIndex = pControl[0];
-        ++pControl;
-        VectorIndex = (uIndex>>4)&1;
-        uIndex &= 0x0F;
-#if defined(_XM_LITTLEENDIAN_)
-        uIndex ^= 3; // Swap byte ordering on little endian machines
-#endif
-        pWork[0] = aByte[VectorIndex][uIndex];
-        ++pWork;
-    } while (--i);
+    const uint32_t i1 = PermuteY & 3;
+    const uint32_t vi1 = PermuteY >> 2;
+    pWork[1] = aPtr[vi1][i1];
+
+    const uint32_t i2 = PermuteZ & 3;
+    const uint32_t vi2 = PermuteZ >> 2;
+    pWork[2] = aPtr[vi2][i2];
+
+    const uint32_t i3 = PermuteW & 3;
+    const uint32_t vi3 = PermuteW >> 2;
+    pWork[3] = aPtr[vi3][i3];
+
     return Result;
-#elif defined(_XM_SSE_INTRINSICS_)
-#if defined(_PREFAST_) || defined(XMDEBUG)
-    // Indices must be in range from 0 to 31
-    static const XMVECTORI32 PremuteTest = {0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0};
-    XMVECTOR vAssert = _mm_and_ps(Control,PremuteTest);
-    __m128i vAsserti = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&vAssert)[0],g_XMZero);
-    assert(_mm_movemask_ps(*reinterpret_cast<const __m128 *>(&vAsserti)) == 0xf);
 #endif
-    // Store the vectors onto local memory on the stack
-    XMVECTOR Array[2];
-    Array[0] = V1;
-    Array[1] = V2;
-    // Output vector, on the stack
-    XMVECTORU8 vResult;
-    // Get pointer to the two vectors on the stack
-    const uint8_t *pInput = reinterpret_cast<const uint8_t *>(Array);
-    // Store the Control vector on the stack to access the bytes
-    // don't use Control, it can cause a register variable to spill on the stack.
-    XMVECTORU8 vControl;
-    vControl.v = Control;   // Write to memory
-    uint32_t i = 0;
-    do {
-        uint32_t ComponentIndex = vControl.u[i] & 0x1FU;
-        ComponentIndex ^= 3; // Swap byte ordering
-        vResult.u[i] = pInput[ComponentIndex];
-    } while (++i<16);
-    return vResult;
-#else // _XM_SSE_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1265,6 +1409,12 @@ inline XMVECTOR XMVectorSelectControl
     // Any non-zero entries become 0xFFFFFFFF else 0
     vTemp = _mm_cmpgt_epi32(vTemp,g_XMZero);
     return reinterpret_cast<__m128 *>(&vTemp)[0];
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __n64 V0 = vcreate_s32(((uint64_t)VectorIndex0) | ((uint64_t)VectorIndex1 << 32));
+    __n64 V1 = vcreate_s32(((uint64_t)VectorIndex2) | ((uint64_t)VectorIndex3 << 32));
+    __n128 vTemp = vcombine_s32(V0, V1);
+    // Any non-zero entries become 0xFFFFFFFF else 0
+    return vcgtq_s32(vTemp,g_XMZero);
 #else
     XMVECTOR    ControlVector;
     const uint32_t  ControlElement[] =
@@ -1304,14 +1454,14 @@ inline XMVECTOR XMVectorSelect
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = (V1.vector4_u32[0] & ~Control.vector4_u32[0]) | (V2.vector4_u32[0] & Control.vector4_u32[0]);
     Result.vector4_u32[1] = (V1.vector4_u32[1] & ~Control.vector4_u32[1]) | (V2.vector4_u32[1] & Control.vector4_u32[1]);
     Result.vector4_u32[2] = (V1.vector4_u32[2] & ~Control.vector4_u32[2]) | (V2.vector4_u32[2] & Control.vector4_u32[2]);
     Result.vector4_u32[3] = (V1.vector4_u32[3] & ~Control.vector4_u32[3]) | (V2.vector4_u32[3] & Control.vector4_u32[3]);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vbslq_f32( Control, V2, V1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp1 = _mm_andnot_ps(Control,V1);
     XMVECTOR vTemp2 = _mm_and_ps(V2,Control);
@@ -1331,14 +1481,14 @@ inline XMVECTOR XMVectorMergeXY
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[0];
     Result.vector4_u32[1] = V2.vector4_u32[0];
     Result.vector4_u32[2] = V1.vector4_u32[1];
     Result.vector4_u32[3] = V2.vector4_u32[1];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vzipq_f32( V1, V2 ).val[0];
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_unpacklo_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1356,18 +1506,54 @@ inline XMVECTOR XMVectorMergeZW
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[2];
     Result.vector4_u32[1] = V2.vector4_u32[2];
     Result.vector4_u32[2] = V1.vector4_u32[3];
     Result.vector4_u32[3] = V2.vector4_u32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vzipq_f32( V1, V2 ).val[1];
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_unpackhi_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2, uint32_t Elements)
+{
+    assert( Elements < 4 );
+    _Analysis_assume_( Elements < 4 );
+    return XMVectorPermute(V1, V2, Elements, ((Elements) + 1), ((Elements) + 2), ((Elements) + 3));
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XMVectorRotateLeft(FXMVECTOR V, uint32_t Elements)
+{
+    assert( Elements < 4 );
+    _Analysis_assume_( Elements < 4 );
+    return XMVectorSwizzle( V, Elements & 3, (Elements + 1) & 3, (Elements + 2) & 3, (Elements + 3) & 3 );
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XMVectorRotateRight(FXMVECTOR V, uint32_t Elements)
+{
+    assert( Elements < 4 );
+    _Analysis_assume_( Elements < 4 );
+    return XMVectorSwizzle( V, (4 - (Elements)) & 3, (5 - (Elements)) & 3, (6 - (Elements)) & 3, (7 - (Elements)) & 3 );
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, uint32_t VSLeftRotateElements,
+                                  uint32_t Select0, uint32_t Select1, uint32_t Select2, uint32_t Select3)
+{
+    XMVECTOR Control = XMVectorSelectControl(Select0&1, Select1&1, Select2&1, Select3&1);
+    return XMVectorSelect( VD, XMVectorRotateLeft(VS, VSLeftRotateElements), Control );
 }
 
 //------------------------------------------------------------------------------
@@ -1385,14 +1571,14 @@ inline XMVECTOR XMVectorEqual
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-
     Control.vector4_u32[0] = (V1.vector4_f32[0] == V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[1] = (V1.vector4_f32[1] == V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[2] = (V1.vector4_f32[2] == V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[3] = (V1.vector4_f32[3] == V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
-
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vceqq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmpeq_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1401,6 +1587,7 @@ inline XMVECTOR XMVectorEqual
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMVECTOR XMVectorEqualR
 (
     uint32_t*    pCR,
@@ -1410,14 +1597,11 @@ inline XMVECTOR XMVectorEqualR
 {
     assert( pCR != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
-    uint32_t ux, uy, uz, uw, CR;
-    XMVECTOR Control;
-
-    ux = (V1.vector4_f32[0] == V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
-    uy = (V1.vector4_f32[1] == V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
-    uz = (V1.vector4_f32[2] == V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
-    uw = (V1.vector4_f32[3] == V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
-    CR = 0;
+    uint32_t ux = (V1.vector4_f32[0] == V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uint32_t uy = (V1.vector4_f32[1] == V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uint32_t uz = (V1.vector4_f32[2] == V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uint32_t uw = (V1.vector4_f32[3] == V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
+    uint32_t CR = 0;
     if (ux&uy&uz&uw)
     {
         // All elements are greater
@@ -1429,12 +1613,32 @@ inline XMVECTOR XMVectorEqualR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
+
+    XMVECTOR Control;
     Control.vector4_u32[0] = ux;
     Control.vector4_u32[1] = uy;
     Control.vector4_u32[2] = uz;
     Control.vector4_u32[3] = uw;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        // All elements are equal
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        // All elements are not equal
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    *pCR = CR;
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     uint32_t CR = 0;
@@ -1469,14 +1673,14 @@ inline XMVECTOR XMVectorEqualInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-
     Control.vector4_u32[0] = (V1.vector4_u32[0] == V2.vector4_u32[0]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[1] = (V1.vector4_u32[1] == V2.vector4_u32[1]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[2] = (V1.vector4_u32[2] == V2.vector4_u32[2]) ? 0xFFFFFFFF : 0;
     Control.vector4_u32[3] = (V1.vector4_u32[3] == V2.vector4_u32[3]) ? 0xFFFFFFFF : 0;
-
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vceqq_u32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -1486,6 +1690,7 @@ inline XMVECTOR XMVectorEqualInt
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMVECTOR XMVectorEqualIntR
 (
     uint32_t*    pCR,
@@ -1495,12 +1700,10 @@ inline XMVECTOR XMVectorEqualIntR
 {
     assert( pCR != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTOR Control;
 
-    Control = XMVectorEqualInt(V1, V2);
+    XMVECTOR Control = XMVectorEqualInt(V1, V2);
 
     *pCR = 0;
-
     if (XMVector4EqualInt(Control, XMVectorTrueInt()))
     {
         // All elements are equal
@@ -1511,9 +1714,26 @@ inline XMVECTOR XMVectorEqualIntR
         // All elements are not equal
         *pCR |= XM_CRMASK_CR6FALSE;
     }
-
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        // All elements are equal
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        // All elements are not equal
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    *pCR = CR;
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
     int iTemp = _mm_movemask_ps(reinterpret_cast<const __m128*>(&V)[0]);
@@ -1543,26 +1763,26 @@ inline XMVECTOR XMVectorNearEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    float fDeltax, fDeltay, fDeltaz, fDeltaw;
-    XMVECTOR Control;
-
-    fDeltax = V1.vector4_f32[0]-V2.vector4_f32[0];
-    fDeltay = V1.vector4_f32[1]-V2.vector4_f32[1];
-    fDeltaz = V1.vector4_f32[2]-V2.vector4_f32[2];
-    fDeltaw = V1.vector4_f32[3]-V2.vector4_f32[3];
+    float fDeltax = V1.vector4_f32[0]-V2.vector4_f32[0];
+    float fDeltay = V1.vector4_f32[1]-V2.vector4_f32[1];
+    float fDeltaz = V1.vector4_f32[2]-V2.vector4_f32[2];
+    float fDeltaw = V1.vector4_f32[3]-V2.vector4_f32[3];
 
     fDeltax = fabsf(fDeltax);
     fDeltay = fabsf(fDeltay);
     fDeltaz = fabsf(fDeltaz);
     fDeltaw = fabsf(fDeltaw);
 
+    XMVECTOR Control;
     Control.vector4_u32[0] = (fDeltax <= Epsilon.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
     Control.vector4_u32[1] = (fDeltay <= Epsilon.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
     Control.vector4_u32[2] = (fDeltaz <= Epsilon.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
     Control.vector4_u32[3] = (fDeltaw <= Epsilon.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
-
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR vDelta = vsubq_f32(V1,V2);
+    return vacleq_f32( vDelta, Epsilon );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -1593,6 +1813,8 @@ inline XMVECTOR XMVectorNotEqual
     Control.vector4_u32[3] = (V1.vector4_f32[3] != V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmvnq_u32(vceqq_f32(V1, V2));
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmpneq_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1616,6 +1838,8 @@ inline XMVECTOR XMVectorNotEqualInt
     Control.vector4_u32[3] = (V1.vector4_u32[3] != V2.vector4_u32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmvnq_u32(vceqq_u32(V1, V2));
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
     return _mm_xor_ps(reinterpret_cast<__m128 *>(&V)[0],g_XMNegOneMask);
@@ -1640,6 +1864,8 @@ inline XMVECTOR XMVectorGreater
     Control.vector4_u32[3] = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcgtq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmpgt_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1648,6 +1874,7 @@ inline XMVECTOR XMVectorGreater
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMVECTOR XMVectorGreaterR
 (
     uint32_t*    pCR,
@@ -1657,14 +1884,12 @@ inline XMVECTOR XMVectorGreaterR
 {
     assert( pCR != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
-    uint32_t ux, uy, uz, uw, CR;
-    XMVECTOR Control;
 
-    ux = (V1.vector4_f32[0] > V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
-    uy = (V1.vector4_f32[1] > V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
-    uz = (V1.vector4_f32[2] > V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
-    uw = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
-    CR = 0;
+    uint32_t ux = (V1.vector4_f32[0] > V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uint32_t uy = (V1.vector4_f32[1] > V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uint32_t uz = (V1.vector4_f32[2] > V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uint32_t uw = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
+    uint32_t CR = 0;
     if (ux&uy&uz&uw)
     {
         // All elements are greater
@@ -1676,12 +1901,32 @@ inline XMVECTOR XMVectorGreaterR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
+
+    XMVECTOR Control;
     Control.vector4_u32[0] = ux;
     Control.vector4_u32[1] = uy;
     Control.vector4_u32[2] = uz;
     Control.vector4_u32[3] = uw;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgtq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        // All elements are greater
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        // All elements are not greater
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    *pCR = CR;
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     uint32_t CR = 0;
@@ -1718,6 +1963,8 @@ inline XMVECTOR XMVectorGreaterOrEqual
     Control.vector4_u32[3] = (V1.vector4_f32[3] >= V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcgeq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmpge_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1726,6 +1973,7 @@ inline XMVECTOR XMVectorGreaterOrEqual
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMVECTOR XMVectorGreaterOrEqualR
 (
     uint32_t*    pCR,
@@ -1735,14 +1983,12 @@ inline XMVECTOR XMVectorGreaterOrEqualR
 {
     assert( pCR != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
-    uint32_t ux, uy, uz, uw, CR;
-    XMVECTOR Control;
 
-    ux = (V1.vector4_f32[0] >= V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
-    uy = (V1.vector4_f32[1] >= V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
-    uz = (V1.vector4_f32[2] >= V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
-    uw = (V1.vector4_f32[3] >= V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
-    CR = 0;
+    uint32_t ux = (V1.vector4_f32[0] >= V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uint32_t uy = (V1.vector4_f32[1] >= V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uint32_t uz = (V1.vector4_f32[2] >= V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uint32_t uw = (V1.vector4_f32[3] >= V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
+    uint32_t CR = 0;
     if (ux&uy&uz&uw)
     {
         // All elements are greater
@@ -1754,12 +2000,32 @@ inline XMVECTOR XMVectorGreaterOrEqualR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
+
+    XMVECTOR Control;
     Control.vector4_u32[0] = ux;
     Control.vector4_u32[1] = uy;
     Control.vector4_u32[2] = uz;
     Control.vector4_u32[3] = uw;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgeq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        // All elements are greater or equal
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        // All elements are not greater or equal
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    *pCR = CR;
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     uint32_t CR = 0;
@@ -1796,6 +2062,8 @@ inline XMVECTOR XMVectorLess
     Control.vector4_u32[3] = (V1.vector4_f32[3] < V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcltq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmplt_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1819,6 +2087,8 @@ inline XMVECTOR XMVectorLessOrEqual
     Control.vector4_u32[3] = (V1.vector4_f32[3] <= V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vcleq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_cmple_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -1842,6 +2112,16 @@ inline XMVECTOR XMVectorInBounds
     Control.vector4_u32[3] = (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test if less than or equal
+    XMVECTOR vTemp1 = vcleq_f32(V,Bounds);
+    // Negate the bounds
+    XMVECTOR vTemp2 = vnegq_f32(Bounds);
+    // Test if greater or equal (Reversed)
+    vTemp2 = vcleq_f32(vTemp2,V);
+    // Blend answers
+    vTemp1 = vandq_u32(vTemp1,vTemp2);
+    return vTemp1;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -1858,6 +2138,7 @@ inline XMVECTOR XMVectorInBounds
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMVECTOR XMVectorInBoundsR
 (
     uint32_t*    pCR,
@@ -1867,28 +2148,47 @@ inline XMVECTOR XMVectorInBoundsR
 {
     assert( pCR != nullptr );
 #if defined(_XM_NO_INTRINSICS_)
-    uint32_t ux, uy, uz, uw, CR;
-    XMVECTOR Control;
 
-    ux = (V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
-    uy = (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
-    uz = (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
-    uw = (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
+    uint32_t ux = (V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uint32_t uy = (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uint32_t uz = (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uint32_t uw = (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
 
-    CR = 0;
-
+    uint32_t CR = 0;
     if (ux&uy&uz&uw)
     {
         // All elements are in bounds
         CR = XM_CRMASK_CR6BOUNDS;
     }
     *pCR = CR;
+
+    XMVECTOR Control;
     Control.vector4_u32[0] = ux;
     Control.vector4_u32[1] = uy;
     Control.vector4_u32[2] = uz;
     Control.vector4_u32[3] = uw;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test if less than or equal
+    XMVECTOR vTemp1 = vcleq_f32(V,Bounds);
+    // Negate the bounds
+    XMVECTOR vTemp2 = vnegq_f32(Bounds);
+    // Test if greater or equal (Reversed)
+    vTemp2 = vcleq_f32(vTemp2,V);
+    // Blend answers
+    vTemp1 = vandq_u32(vTemp1,vTemp2);
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        // All elements are in bounds
+        CR = XM_CRMASK_CR6BOUNDS;
+    }
+    *pCR = CR;
+    return vTemp1;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -1926,19 +2226,14 @@ inline XMVECTOR XMVectorIsNaN
     Control.vector4_u32[3] = XMISNAN(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test against itself. NaN is always not equal
+    __n128 vTempNan = vceqq_f32( V, V );
+    // Flip results
+    return vmvnq_u32( vTempNan );
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Mask off the exponent
-    __m128i vTempInf = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMInfinity);
-    // Mask off the mantissa
-    __m128i vTempNan = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMQNaNTest);
-    // Are any of the exponents == 0x7F800000?
-    vTempInf = _mm_cmpeq_epi32(vTempInf,g_XMInfinity);
-    // Are any of the mantissa's zero? (SSE2 doesn't have a neq test)
-    vTempNan = _mm_cmpeq_epi32(vTempNan,g_XMZero);
-    // Perform a not on the NaN test to be true on NON-zero mantissas
-    vTempNan = _mm_andnot_si128(vTempNan,vTempInf);
-    // If any are NaN, the signs are true after the merge above
-    return reinterpret_cast<const XMVECTOR *>(&vTempNan)[0];
+    // Test against itself. NaN is always not equal
+    return _mm_cmpneq_ps(V,V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1959,6 +2254,13 @@ inline XMVECTOR XMVectorIsInfinite
     Control.vector4_u32[3] = XMISINF(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Mask off the sign bit
+    __n128 vTemp = vandq_u32(V,g_XMAbsMask);
+    // Compare to infinity
+    vTemp = vceqq_f32(vTemp,g_XMInfinity);
+    // If any are infinity, the signs are true.
+    return vTemp;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     __m128 vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -1991,6 +2293,8 @@ inline XMVECTOR XMVectorMin
     Result.vector4_f32[3] = (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3];
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vminq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_min_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2014,6 +2318,8 @@ inline XMVECTOR XMVectorMax
     Result.vector4_f32[3] = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3];
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmaxq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_max_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2029,19 +2335,33 @@ inline XMVECTOR XMVectorRound
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR       Result;
-    XMVECTOR       Bias;
     const XMVECTOR Zero = XMVectorZero();
     const XMVECTOR BiasPos = XMVectorReplicate(0.5f);
     const XMVECTOR BiasNeg = XMVectorReplicate(-0.5f);
 
-    Bias = XMVectorLess(V, Zero);
+    XMVECTOR Bias = XMVectorLess(V, Zero);
     Bias = XMVectorSelect(BiasPos, BiasNeg, Bias);
-    Result = XMVectorAdd(V, Bias);
+    XMVECTOR Result = XMVectorAdd(V, Bias);
     Result = XMVectorTruncate(Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vTest = vabsq_f32( V );
+    vTest = vcltq_f32( vTest, g_XMNoFraction );
+
+    __n128 Bias = vcltq_f32( V, vdupq_n_u32(0) );
+
+    __n128 BiasPos = vdupq_n_f32( 0.5f );
+    __n128 BiasNeg = vdupq_n_f32( -0.5f );
+    Bias = vbslq_f32( Bias, BiasNeg, BiasPos );
+    __n128 V0 = vaddq_f32( V, Bias );
+    __n128 vInt = vcvtq_s32_f32( V0 );
+    __n128 vResult = vcvtq_f32_s32( vInt );
+
+    // All numbers less than 8388608 will use the round to int
+    // All others, use the ORIGINAL value
+    return vbslq_f32( vTest, vResult, V );
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
@@ -2093,6 +2413,16 @@ inline XMVECTOR XMVectorTruncate
     }
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vTest = vabsq_f32( V );
+    vTest = vcltq_f32( vTest, g_XMNoFraction );
+
+    __n128 vInt = vcvtq_s32_f32( V );
+    __n128 vResult = vcvtq_f32_s32( vInt );
+
+    // All numbers less than 8388608 will use the round to int
+    // All others, use the ORIGINAL value
+    return vbslq_f32( vTest, vResult, V );
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
@@ -2130,6 +2460,9 @@ inline XMVECTOR XMVectorFloor
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 V0 = vsubq_f32( V, vdupq_n_u32(0x3EFFFFA0) );
+    return XMVectorRound(V0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
@@ -2167,6 +2500,9 @@ inline XMVECTOR XMVectorCeiling
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 V0 = vaddq_f32( V, vdupq_n_u32(0x3EFFFFA0) );
+    return XMVectorRound(V0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
@@ -2202,12 +2538,15 @@ inline XMVECTOR XMVectorClamp
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result = XMVectorMax(Min, V);
     Result = XMVectorMin(Max, Result);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR vResult;
+    vResult = vmaxq_f32(Min,V);
+    vResult = vminq_f32(vResult,Max);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult;
     vResult = _mm_max_ps(Min,V);
@@ -2230,6 +2569,11 @@ inline XMVECTOR XMVectorSaturate
 
     return XMVectorClamp(V, Zero, g_XMOne.v);
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Set <0 to 0
+    XMVECTOR vResult = vmaxq_f32(V, vdupq_n_u32(0) );
+    // Set>1 to 1
+    return vminq_f32(vResult, vdupq_n_f32(1.0f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Set <0 to 0
     XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
@@ -2252,13 +2596,14 @@ inline XMVECTOR XMVectorAndInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[0] & V2.vector4_u32[0];
     Result.vector4_u32[1] = V1.vector4_u32[1] & V2.vector4_u32[1];
     Result.vector4_u32[2] = V1.vector4_u32[2] & V2.vector4_u32[2];
     Result.vector4_u32[3] = V1.vector4_u32[3] & V2.vector4_u32[3];
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vandq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_and_ps(V1,V2);
 #else // _XM_VMX128_INTRINSICS_
@@ -2276,14 +2621,14 @@ inline XMVECTOR XMVectorAndCInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[0] & ~V2.vector4_u32[0];
     Result.vector4_u32[1] = V1.vector4_u32[1] & ~V2.vector4_u32[1];
     Result.vector4_u32[2] = V1.vector4_u32[2] & ~V2.vector4_u32[2];
     Result.vector4_u32[3] = V1.vector4_u32[3] & ~V2.vector4_u32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vbicq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_andnot_si128( reinterpret_cast<const __m128i *>(&V2)[0], reinterpret_cast<const __m128i *>(&V1)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -2302,14 +2647,14 @@ inline XMVECTOR XMVectorOrInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[0] | V2.vector4_u32[0];
     Result.vector4_u32[1] = V1.vector4_u32[1] | V2.vector4_u32[1];
     Result.vector4_u32[2] = V1.vector4_u32[2] | V2.vector4_u32[2];
     Result.vector4_u32[3] = V1.vector4_u32[3] | V2.vector4_u32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vorrq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_or_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -2328,14 +2673,15 @@ inline XMVECTOR XMVectorNorInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = ~(V1.vector4_u32[0] | V2.vector4_u32[0]);
     Result.vector4_u32[1] = ~(V1.vector4_u32[1] | V2.vector4_u32[1]);
     Result.vector4_u32[2] = ~(V1.vector4_u32[2] | V2.vector4_u32[2]);
     Result.vector4_u32[3] = ~(V1.vector4_u32[3] | V2.vector4_u32[3]);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 Result = vorrq_u32(V1,V2);
+    return vbicq_u32(g_XMNegOneMask, Result);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i Result;
     Result = _mm_or_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
@@ -2356,14 +2702,14 @@ inline XMVECTOR XMVectorXorInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_u32[0] = V1.vector4_u32[0] ^ V2.vector4_u32[0];
     Result.vector4_u32[1] = V1.vector4_u32[1] ^ V2.vector4_u32[1];
     Result.vector4_u32[2] = V1.vector4_u32[2] ^ V2.vector4_u32[2];
     Result.vector4_u32[3] = V1.vector4_u32[3] ^ V2.vector4_u32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return veorq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_xor_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
@@ -2385,14 +2731,14 @@ inline XMVECTOR XMVectorNegate
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] = -V.vector4_f32[0];
     Result.vector4_f32[1] = -V.vector4_f32[1];
     Result.vector4_f32[2] = -V.vector4_f32[2];
     Result.vector4_f32[3] = -V.vector4_f32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vnegq_f32(V);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR Z;
 
@@ -2414,14 +2760,14 @@ inline XMVECTOR XMVectorAdd
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] = V1.vector4_f32[0] + V2.vector4_f32[0];
     Result.vector4_f32[1] = V1.vector4_f32[1] + V2.vector4_f32[1];
     Result.vector4_f32[2] = V1.vector4_f32[2] + V2.vector4_f32[2];
     Result.vector4_f32[3] = V1.vector4_f32[3] + V2.vector4_f32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vaddq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_add_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2438,19 +2784,16 @@ inline XMVECTOR XMVectorAddAngles
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR       Mask;
-    XMVECTOR       Offset;
-    XMVECTOR       Result;
     const XMVECTOR Zero = XMVectorZero();
 
     // Add the given angles together.  If the range of V1 is such
     // that -Pi <= V1 < Pi and the range of V2 is such that
     // -2Pi <= V2 <= 2Pi, then the range of the resulting angle
     // will be -Pi <= Result < Pi.
-    Result = XMVectorAdd(V1, V2);
+    XMVECTOR Result = XMVectorAdd(V1, V2);
 
-    Mask = XMVectorLess(Result, g_XMNegativePi.v);
-    Offset = XMVectorSelect(Zero, g_XMTwoPi.v, Mask);
+    XMVECTOR Mask = XMVectorLess(Result, g_XMNegativePi.v);
+    XMVECTOR Offset = XMVectorSelect(Zero, g_XMTwoPi.v, Mask);
 
     Mask = XMVectorGreaterOrEqual(Result, g_XMPi.v);
     Offset = XMVectorSelect(Offset, g_XMNegativeTwoPi.v, Mask);
@@ -2459,6 +2802,20 @@ inline XMVECTOR XMVectorAddAngles
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Adjust the angles
+    __n128 vResult = vaddq_f32(V1,V2);
+    // Less than Pi?
+    __n128 vOffset = vcltq_f32(vResult,g_XMNegativePi);
+    vOffset = vandq_u32(vOffset,g_XMTwoPi);
+    // Add 2Pi to all entries less than -Pi
+    vResult = vaddq_f32(vResult,vOffset);
+    // Greater than or equal to Pi?
+    vOffset = vcgeq_f32(vResult,g_XMPi);
+    vOffset = vandq_u32(vOffset,g_XMTwoPi);
+    // Sub 2Pi to all entries greater than Pi
+    vResult = vsubq_f32(vResult,vOffset);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Adjust the angles
     XMVECTOR vResult = _mm_add_ps(V1,V2);
@@ -2488,14 +2845,14 @@ inline XMVECTOR XMVectorSubtract
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] = V1.vector4_f32[0] - V2.vector4_f32[0];
     Result.vector4_f32[1] = V1.vector4_f32[1] - V2.vector4_f32[1];
     Result.vector4_f32[2] = V1.vector4_f32[2] - V2.vector4_f32[2];
     Result.vector4_f32[3] = V1.vector4_f32[3] - V2.vector4_f32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vsubq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_sub_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2512,19 +2869,16 @@ inline XMVECTOR XMVectorSubtractAngles
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR       Mask;
-    XMVECTOR       Offset;
-    XMVECTOR       Result;
     const XMVECTOR Zero = XMVectorZero();
 
     // Subtract the given angles.  If the range of V1 is such
     // that -Pi <= V1 < Pi and the range of V2 is such that
     // -2Pi <= V2 <= 2Pi, then the range of the resulting angle
     // will be -Pi <= Result < Pi.
-    Result = XMVectorSubtract(V1, V2);
+    XMVECTOR Result = XMVectorSubtract(V1, V2);
 
-    Mask = XMVectorLess(Result, g_XMNegativePi.v);
-    Offset = XMVectorSelect(Zero, g_XMTwoPi.v, Mask);
+    XMVECTOR Mask = XMVectorLess(Result, g_XMNegativePi.v);
+    XMVECTOR Offset = XMVectorSelect(Zero, g_XMTwoPi.v, Mask);
 
     Mask = XMVectorGreaterOrEqual(Result, g_XMPi.v);
     Offset = XMVectorSelect(Offset, g_XMNegativeTwoPi.v, Mask);
@@ -2533,6 +2887,20 @@ inline XMVECTOR XMVectorSubtractAngles
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Adjust the angles
+    __n128 vResult = vsubq_f32(V1,V2);
+    // Less than Pi?
+    __n128 vOffset = vcltq_f32(vResult,g_XMNegativePi);
+    vOffset = vandq_u32(vOffset,g_XMTwoPi);
+    // Add 2Pi to all entries less than -Pi
+    vResult = vaddq_f32(vResult,vOffset);
+    // Greater than or equal to Pi?
+    vOffset = vcgeq_f32(vResult,g_XMPi);
+    vOffset = vandq_u32(vOffset,g_XMTwoPi);
+    // Sub 2Pi to all entries greater than Pi
+    vResult = vsubq_f32(vResult,vOffset);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Adjust the angles
     XMVECTOR vResult = _mm_sub_ps(V1,V2);
@@ -2567,6 +2935,8 @@ inline XMVECTOR XMVectorMultiply
         V1.vector4_f32[3] * V2.vector4_f32[3]
     };
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmulq_f32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_mul_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2591,6 +2961,8 @@ inline XMVECTOR XMVectorMultiplyAdd
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmlaq_f32( V3, V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_mul_ps( V1, V2 );
     return _mm_add_ps(vResult, V3 );
@@ -2613,6 +2985,14 @@ inline XMVECTOR XMVectorDivide
     Result.vector4_f32[2] = V1.vector4_f32[2] / V2.vector4_f32[2];
     Result.vector4_f32[3] = V1.vector4_f32[3] / V2.vector4_f32[3];
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 2 iterations of Newton-Raphson refinement of reciprocal
+    __n128 Reciprocal = vrecpeq_f32(V2);
+    __n128 S = vrecpsq_f32( Reciprocal, V2 );
+    Reciprocal = vmulq_f32( S, Reciprocal );
+    S = vrecpsq_f32( Reciprocal, V2 );
+    Reciprocal = vmulq_f32( S, Reciprocal );
+    return vmulq_f32( V1, Reciprocal );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_div_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
@@ -2638,6 +3018,8 @@ inline XMVECTOR XMVectorNegativeMultiplySubtract
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmlsq_f32( V3, V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R = _mm_mul_ps( V1, V2 );
     return _mm_sub_ps( V3, R );
@@ -2662,6 +3044,8 @@ inline XMVECTOR XMVectorScale
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vmulq_n_f32( V, ScaleFactor );
 #elif defined(_XM_SSE_INTRINSICS_)
    XMVECTOR vResult = _mm_set_ps1(ScaleFactor);
    return _mm_mul_ps(vResult,V);
@@ -2678,28 +3062,13 @@ inline XMVECTOR XMVectorReciprocalEst
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;
-    uint32_t     i;
-
-    // Avoid C4701
-    Result.vector4_f32[0] = 0.0f;
-
-    for (i = 0; i < 4; i++)
-    {
-        if (XMISNAN(V.vector4_f32[i]))
-        {
-            Result.vector4_u32[i] = 0x7FC00000;
-        }
-        else if (V.vector4_f32[i] == 0.0f || V.vector4_f32[i] == -0.0f)
-        {
-            Result.vector4_u32[i] = 0x7F800000 | (V.vector4_u32[i] & 0x80000000);
-        }
-        else
-        {
-            Result.vector4_f32[i] = 1.f / V.vector4_f32[i];
-        }
-    }
+    Result.vector4_f32[0] = 1.f / V.vector4_f32[0];
+    Result.vector4_f32[1] = 1.f / V.vector4_f32[1];
+    Result.vector4_f32[2] = 1.f / V.vector4_f32[2];
+    Result.vector4_f32[3] = 1.f / V.vector4_f32[3];
     return Result;
-
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vrecpeq_f32(V);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_rcp_ps(V);
 #else // _XM_VMX128_INTRINSICS_
@@ -2714,8 +3083,19 @@ inline XMVECTOR XMVectorReciprocal
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return XMVectorReciprocalEst(V);
-
+    XMVECTOR Result;
+    Result.vector4_f32[0] = 1.f / V.vector4_f32[0];
+    Result.vector4_f32[1] = 1.f / V.vector4_f32[1];
+    Result.vector4_f32[2] = 1.f / V.vector4_f32[2];
+    Result.vector4_f32[3] = 1.f / V.vector4_f32[3];
+    return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 2 iterations of Newton-Raphson refinement
+    __n128 Reciprocal = vrecpeq_f32(V);
+    __n128 S = vrecpsq_f32( Reciprocal, V );
+    Reciprocal = vmulq_f32( S, Reciprocal );
+    S = vrecpsq_f32( Reciprocal, V );
+    return vmulq_f32( S, Reciprocal );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_div_ps(g_XMOne,V);
 #else // _XM_VMX128_INTRINSICS_
@@ -2730,22 +3110,24 @@ inline XMVECTOR XMVectorSqrtEst
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTOR Select;
-
-    // if (x == +Infinity)  sqrt(x) = +Infinity
-    // if (x == +0.0f)      sqrt(x) = +0.0f
-    // if (x == -0.0f)      sqrt(x) = -0.0f
-    // if (x < 0.0f)        sqrt(x) = QNaN
-
-    XMVECTOR Result = XMVectorReciprocalSqrtEst(V);
-    XMVECTOR Zero = XMVectorZero();
-    XMVECTOR VEqualsInfinity = XMVectorEqualInt(V, g_XMInfinity.v);
-    XMVECTOR VEqualsZero = XMVectorEqual(V, Zero);
-    Result = XMVectorMultiply(V, Result);
-    Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
-    Result = XMVectorSelect(V, Result, Select);
+    XMVECTOR Result;
+    Result.vector4_f32[0] = sqrtf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = sqrtf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = sqrtf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = sqrtf( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 1 iteration of Newton-Raphson refinment of sqrt
+    __n128 S0 = vrsqrteq_f32(V);
+    __n128 P0 = vmulq_f32( V, S0 );
+    __n128 R0 = vrsqrtsq_f32( P0, S0 );
+    __n128 S1 = vmulq_f32( S0, R0 );
 
+    XMVECTOR VEqualsInfinity = XMVectorEqualInt(V, g_XMInfinity.v);
+    XMVECTOR VEqualsZero = XMVectorEqual(V, vdupq_n_f32(0) );
+    __n128 Result = vmulq_f32( V, S1 );
+    XMVECTOR Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
+    return XMVectorSelect(V, Result, Select);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_sqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
@@ -2760,27 +3142,30 @@ inline XMVECTOR XMVectorSqrt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR Zero;
-    XMVECTOR VEqualsInfinity, VEqualsZero;
-    XMVECTOR Select;
     XMVECTOR Result;
-
-    // if (x == +Infinity)  sqrt(x) = +Infinity
-    // if (x == +0.0f)      sqrt(x) = +0.0f
-    // if (x == -0.0f)      sqrt(x) = -0.0f
-    // if (x < 0.0f)        sqrt(x) = QNaN
-
-    Result = XMVectorReciprocalSqrt(V);
-    Zero = XMVectorZero();
-    VEqualsInfinity = XMVectorEqualInt(V, g_XMInfinity.v);
-    VEqualsZero = XMVectorEqual(V, Zero);
-    Result = XMVectorMultiply(V, Result);
-    Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
-    Result = XMVectorSelect(V, Result, Select);
-
+    Result.vector4_f32[0] = sqrtf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = sqrtf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = sqrtf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = sqrtf( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 3 iterations of Newton-Raphson refinment of sqrt
+    __n128 S0 = vrsqrteq_f32(V);
+    __n128 P0 = vmulq_f32( V, S0 );
+    __n128 R0 = vrsqrtsq_f32( P0, S0 );
+    __n128 S1 = vmulq_f32( S0, R0 );
+    __n128 P1 = vmulq_f32( V, S1 );
+    __n128 R1 = vrsqrtsq_f32( P1, S1 );
+    __n128 S2 = vmulq_f32( S1, R1 );
+    __n128 P2 = vmulq_f32( V, S2 );
+    __n128 R2 = vrsqrtsq_f32( P2, S2 );
+    __n128 S3 = vmulq_f32( S2, R2 );
 
+    XMVECTOR VEqualsInfinity = XMVectorEqualInt(V, g_XMInfinity.v);
+    XMVECTOR VEqualsZero = XMVectorEqual(V, vdupq_n_f32(0) );
+    __n128 Result = vmulq_f32( V, S3 );
+    XMVECTOR Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
+    return XMVectorSelect(V, Result, Select);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_sqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
@@ -2795,44 +3180,14 @@ inline XMVECTOR XMVectorReciprocalSqrtEst
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-
-    // if (x == +Infinity)  rsqrt(x) = 0
-    // if (x == +0.0f)      rsqrt(x) = +Infinity
-    // if (x == -0.0f)      rsqrt(x) = -Infinity
-    // if (x < 0.0f)        rsqrt(x) = QNaN
-
     XMVECTOR Result;
-    uint32_t     i;
-
-    // Avoid C4701
-    Result.vector4_f32[0] = 0.0f;
-
-    for (i = 0; i < 4; i++)
-    {
-        if (XMISNAN(V.vector4_f32[i]))
-        {
-            Result.vector4_u32[i] = 0x7FC00000;
-        }
-        else if (V.vector4_f32[i] == 0.0f || V.vector4_f32[i] == -0.0f)
-        {
-            Result.vector4_u32[i] = 0x7F800000 | (V.vector4_u32[i] & 0x80000000);
-        }
-        else if (V.vector4_f32[i] < 0.0f)
-        {
-            Result.vector4_u32[i] = 0x7FFFFFFF;
-        }
-        else if (XMISINF(V.vector4_f32[i]))
-        {
-            Result.vector4_f32[i] = 0.0f;
-        }
-        else
-        {
-            Result.vector4_f32[i] = 1.0f / sqrtf(V.vector4_f32[i]);
-        }
-    }
-
+    Result.vector4_f32[0] = 1.f / sqrtf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = 1.f / sqrtf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = 1.f / sqrtf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = 1.f / sqrtf( V.vector4_f32[3] );
     return Result;
-
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vrsqrteq_f32(V);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_rsqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
@@ -2847,9 +3202,24 @@ inline XMVECTOR XMVectorReciprocalSqrt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR Result;
+    Result.vector4_f32[0] = 1.f / sqrtf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = 1.f / sqrtf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = 1.f / sqrtf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = 1.f / sqrtf( V.vector4_f32[3] );
+    return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 2 iterations of Newton-Raphson refinement of reciprocal
+    __n128 S0 = vrsqrteq_f32(V);
 
-    return XMVectorReciprocalSqrtEst(V);
+    __n128 P0 = vmulq_f32( V, S0 );
+    __n128 R0 = vrsqrtsq_f32( P0, S0 );
 
+    __n128 S1 = vmulq_f32( S0, R0 );
+    __n128 P1 = vmulq_f32( V, S1 );
+    __n128 R1 = vrsqrtsq_f32( P1, S1 );
+
+    return vmulq_f32( S1, R1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_sqrt_ps(V);
     vResult = _mm_div_ps(g_XMOne,vResult);
@@ -2858,9 +3228,10 @@ inline XMVECTOR XMVectorReciprocalSqrt
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XMVectorExpEst
+inline XMVECTOR XMVectorExp
 (
     FXMVECTOR V
 )
@@ -2874,143 +3245,27 @@ inline XMVECTOR XMVectorExpEst
     Result.vector4_f32[3] = powf(2.0f, V.vector4_f32[3]);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        powf(2.0f,vgetq_lane_f32(V, 0)),
+        powf(2.0f,vgetq_lane_f32(V, 1)),
+        powf(2.0f,vgetq_lane_f32(V, 2)),
+        powf(2.0f,vgetq_lane_f32(V, 3))
+    };
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
+    __declspec(align(16)) float a[4];
+    _mm_store_ps( a, V );
     XMVECTOR vResult = _mm_setr_ps(
-        powf(2.0f,XMVectorGetX(V)),
-        powf(2.0f,XMVectorGetY(V)),
-        powf(2.0f,XMVectorGetZ(V)),
-        powf(2.0f,XMVectorGetW(V)));
+        powf(2.0f,a[0]),
+        powf(2.0f,a[1]),
+        powf(2.0f,a[2]),
+        powf(2.0f,a[3]));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorExp
-(
-    FXMVECTOR V
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR               E, S;
-    XMVECTOR               R, R2, R3, R4;
-    XMVECTOR               V0, V1;
-    XMVECTOR               C0X, C0Y, C0Z, C0W;
-    XMVECTOR               C1X, C1Y, C1Z, C1W;
-    XMVECTOR               Result;
-    static const XMVECTOR  C0 = {1.0f, -6.93147182e-1f, 2.40226462e-1f, -5.55036440e-2f};
-    static const XMVECTOR  C1 = {9.61597636e-3f, -1.32823968e-3f, 1.47491097e-4f, -1.08635004e-5f};
-
-    R = XMVectorFloor(V);
-    E = XMVectorExpEst(R);
-    R = XMVectorSubtract(V, R);
-    R2 = XMVectorMultiply(R, R);
-    R3 = XMVectorMultiply(R, R2);
-    R4 = XMVectorMultiply(R2, R2);
-
-    C0X = XMVectorSplatX(C0);
-    C0Y = XMVectorSplatY(C0);
-    C0Z = XMVectorSplatZ(C0);
-    C0W = XMVectorSplatW(C0);
-
-    C1X = XMVectorSplatX(C1);
-    C1Y = XMVectorSplatY(C1);
-    C1Z = XMVectorSplatZ(C1);
-    C1W = XMVectorSplatW(C1);
-
-    V0 = XMVectorMultiplyAdd(R, C0Y, C0X);
-    V0 = XMVectorMultiplyAdd(R2, C0Z, V0);
-    V0 = XMVectorMultiplyAdd(R3, C0W, V0);
-
-    V1 = XMVectorMultiplyAdd(R, C1Y, C1X);
-    V1 = XMVectorMultiplyAdd(R2, C1Z, V1);
-    V1 = XMVectorMultiplyAdd(R3, C1W, V1);
-
-    S = XMVectorMultiplyAdd(R4, V1, V0);
-
-    S = XMVectorReciprocal(S);
-    Result = XMVectorMultiply(E, S);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 C0 = {1.0f, -6.93147182e-1f, 2.40226462e-1f, -5.55036440e-2f};
-    static const XMVECTORF32 C1 = {9.61597636e-3f, -1.32823968e-3f, 1.47491097e-4f, -1.08635004e-5f};
-
-    // Get the integer of the input
-    XMVECTOR R = XMVectorFloor(V);
-    // Get the exponent estimate
-    XMVECTOR E = XMVectorExpEst(R);
-    // Get the fractional only
-    R = _mm_sub_ps(V,R);
-    // Get R^2
-    XMVECTOR R2 = _mm_mul_ps(R,R);
-    // And R^3
-    XMVECTOR R3 = _mm_mul_ps(R,R2);
-
-    XMVECTOR V0 = _mm_load_ps1(&C0.f[1]);
-    V0 = _mm_mul_ps(V0,R);
-    XMVECTOR vConstants = _mm_load_ps1(&C0.f[0]);
-    V0 = _mm_add_ps(V0,vConstants);
-    vConstants = _mm_load_ps1(&C0.f[2]);
-    vConstants = _mm_mul_ps(vConstants,R2);
-    V0 = _mm_add_ps(V0,vConstants);
-    vConstants = _mm_load_ps1(&C0.f[3]);
-    vConstants = _mm_mul_ps(vConstants,R3);
-    V0 = _mm_add_ps(V0,vConstants);
-
-    XMVECTOR V1 = _mm_load_ps1(&C1.f[1]);
-    V1 = _mm_mul_ps(V1,R);
-    vConstants = _mm_load_ps1(&C1.f[0]);
-    V1 = _mm_add_ps(V1,vConstants);
-    vConstants = _mm_load_ps1(&C1.f[2]);
-    vConstants = _mm_mul_ps(vConstants,R2);
-    V1 = _mm_add_ps(V1,vConstants);
-    vConstants = _mm_load_ps1(&C1.f[3]);
-    vConstants = _mm_mul_ps(vConstants,R3);
-    V1 = _mm_add_ps(V1,vConstants);
-    // R2 = R^4
-    R2 = _mm_mul_ps(R2,R2);
-    R2 = _mm_mul_ps(R2,V1);
-    R2 = _mm_add_ps(R2,V0);
-    E = _mm_div_ps(E,R2);
-    return E;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
-
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorLogEst
-(
-    FXMVECTOR V
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    float fScale = (1.0f / logf(2.0f));
-    XMVECTOR Result;
-
-    Result.vector4_f32[0] = logf(V.vector4_f32[0])*fScale;
-    Result.vector4_f32[1] = logf(V.vector4_f32[1])*fScale;
-    Result.vector4_f32[2] = logf(V.vector4_f32[2])*fScale;
-    Result.vector4_f32[3] = logf(V.vector4_f32[3])*fScale;
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vScale = _mm_set_ps1(1.0f / logf(2.0f));
-    XMVECTOR vResult = _mm_setr_ps(
-        logf(XMVectorGetX(V)),
-        logf(XMVectorGetY(V)),
-        logf(XMVectorGetZ(V)),
-        logf(XMVectorGetW(V)));
-    vResult = _mm_mul_ps(vResult,vScale);
-    return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -3020,57 +3275,40 @@ inline XMVECTOR XMVectorLog
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    float fScale = (1.0f / logf(2.0f));
-    XMVECTOR Result;
 
+    const float fScale = 1.4426950f; // (1.0f / logf(2.0f));
+
+    XMVECTOR Result;
     Result.vector4_f32[0] = logf(V.vector4_f32[0])*fScale;
     Result.vector4_f32[1] = logf(V.vector4_f32[1])*fScale;
     Result.vector4_f32[2] = logf(V.vector4_f32[2])*fScale;
     Result.vector4_f32[3] = logf(V.vector4_f32[3])*fScale;
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR vScale = vdupq_n_f32(1.0f / logf(2.0f));
+    XMVECTORF32 vResult = {
+        logf(vgetq_lane_f32(V, 0)),
+        logf(vgetq_lane_f32(V, 1)),
+        logf(vgetq_lane_f32(V, 2)),
+        logf(vgetq_lane_f32(V, 3))
+    };
+    return vmulq_f32( vResult, vScale );
 #elif defined(_XM_SSE_INTRINSICS_)
+    __declspec(align(16)) float a[4];
+    _mm_store_ps( a, V );
     XMVECTOR vScale = _mm_set_ps1(1.0f / logf(2.0f));
     XMVECTOR vResult = _mm_setr_ps(
-        logf(XMVectorGetX(V)),
-        logf(XMVectorGetY(V)),
-        logf(XMVectorGetZ(V)),
-        logf(XMVectorGetW(V)));
+        logf(a[0]),
+        logf(a[1]),
+        logf(a[2]),
+        logf(a[3]));
     vResult = _mm_mul_ps(vResult,vScale);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorPowEst
-(
-    FXMVECTOR V1,
-    FXMVECTOR V2
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR Result;
-
-    Result.vector4_f32[0] = powf(V1.vector4_f32[0], V2.vector4_f32[0]);
-    Result.vector4_f32[1] = powf(V1.vector4_f32[1], V2.vector4_f32[1]);
-    Result.vector4_f32[2] = powf(V1.vector4_f32[2], V2.vector4_f32[2]);
-    Result.vector4_f32[3] = powf(V1.vector4_f32[3], V2.vector4_f32[3]);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_setr_ps(
-        powf(XMVectorGetX(V1),XMVectorGetX(V2)),
-        powf(XMVectorGetY(V1),XMVectorGetY(V2)),
-        powf(XMVectorGetZ(V1),XMVectorGetZ(V2)),
-        powf(XMVectorGetW(V1),XMVectorGetW(V2)));
-    return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -3080,10 +3318,34 @@ inline XMVECTOR XMVectorPow
     FXMVECTOR V2
 )
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_)
 
-    return XMVectorPowEst(V1, V2);
+    XMVECTOR Result;
+    Result.vector4_f32[0] = powf(V1.vector4_f32[0], V2.vector4_f32[0]);
+    Result.vector4_f32[1] = powf(V1.vector4_f32[1], V2.vector4_f32[1]);
+    Result.vector4_f32[2] = powf(V1.vector4_f32[2], V2.vector4_f32[2]);
+    Result.vector4_f32[3] = powf(V1.vector4_f32[3], V2.vector4_f32[3]);
+    return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        powf(vgetq_lane_f32(V1, 0), vgetq_lane_f32(V2, 0)),
+        powf(vgetq_lane_f32(V1, 1), vgetq_lane_f32(V2, 1)),
+        powf(vgetq_lane_f32(V1, 2), vgetq_lane_f32(V2, 2)),
+        powf(vgetq_lane_f32(V1, 3), vgetq_lane_f32(V2, 3))
+    };
+    return vResult;
+#elif defined(_XM_SSE_INTRINSICS_)
+    __declspec(align(16)) float a[4];
+    __declspec(align(16)) float b[4];
+    _mm_store_ps( a, V1 );
+    _mm_store_ps( b, V2 );
+    XMVECTOR vResult = _mm_setr_ps(
+        powf(a[0],b[0]),
+        powf(a[1],b[1]),
+        powf(a[2],b[2]),
+        powf(a[3],b[3]));
+    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3104,6 +3366,8 @@ inline XMVECTOR XMVectorAbs
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    return vabsq_f32( V );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_setzero_ps();
     vResult = _mm_sub_ps(vResult,V);
@@ -3121,20 +3385,19 @@ inline XMVECTOR XMVectorMod
     FXMVECTOR V2
 )
 {
+    // V1 % V2 = V1 - V2 * truncate(V1 / V2)
+
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR Reciprocal;
-    XMVECTOR Quotient;
-    XMVECTOR Result;
-
-    // V1 % V2 = V1 - V2 * truncate(V1 / V2)
-    Reciprocal = XMVectorReciprocal(V2);
-    Quotient = XMVectorMultiply(V1, Reciprocal);
+    XMVECTOR Quotient = XMVectorDivide(V1, V2);
     Quotient = XMVectorTruncate(Quotient);
-    Result = XMVectorNegativeMultiplySubtract(V2, Quotient, V1);
-
+    XMVECTOR Result = XMVectorNegativeMultiplySubtract(V2, Quotient, V1);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR vResult = XMVectorDivide(V1, V2);
+    vResult = XMVectorTruncate(vResult);
+    return vmlsq_f32( V1, vResult, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_div_ps(V1, V2);
     vResult = XMVectorTruncate(vResult);
@@ -3161,9 +3424,14 @@ inline XMVECTOR XMVectorModAngles
     V = XMVectorMultiply(Angles, g_XMReciprocalTwoPi.v);
     V = XMVectorRound(V);
     Result = XMVectorNegativeMultiplySubtract(g_XMTwoPi.v, V, Angles);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Modulo the range of the given angles such that -XM_PI <= Angles < XM_PI
+    XMVECTOR vResult = vmulq_f32(Angles,g_XMReciprocalTwoPi);
+    // Use the inline function due to complexity for rounding
+    vResult = XMVectorRound(vResult);
+    return vmlsq_f32( Angles, vResult, g_XMTwoPi );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Modulo the range of the given angles such that -XM_PI <= Angles < XM_PI
     XMVECTOR vResult = _mm_mul_ps(Angles,g_XMReciprocalTwoPi);
@@ -3183,128 +3451,89 @@ inline XMVECTOR XMVectorSin
     FXMVECTOR V
 )
 {
+    // 11-degree minimax approximation
 
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2, V3, V5, V7, V9, V11, V13, V15, V17, V19, V21, V23;
-    XMVECTOR S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11;
     XMVECTOR Result;
-
-    V1 = XMVectorModAngles(V);
-
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! + V^9 / 9! - V^11 / 11! + V^13 / 13! - 
-    //           V^15 / 15! + V^17 / 17! - V^19 / 19! + V^21 / 21! - V^23 / 23! (for -PI <= V < PI)
-    V2  = XMVectorMultiply(V1, V1);
-    V3  = XMVectorMultiply(V2, V1);
-    V5  = XMVectorMultiply(V3, V2);
-    V7  = XMVectorMultiply(V5, V2);
-    V9  = XMVectorMultiply(V7, V2);
-    V11 = XMVectorMultiply(V9, V2);
-    V13 = XMVectorMultiply(V11, V2);
-    V15 = XMVectorMultiply(V13, V2);
-    V17 = XMVectorMultiply(V15, V2);
-    V19 = XMVectorMultiply(V17, V2);
-    V21 = XMVectorMultiply(V19, V2);
-    V23 = XMVectorMultiply(V21, V2);
-
-    S1  = XMVectorSplatY(g_XMSinCoefficients0.v);
-    S2  = XMVectorSplatZ(g_XMSinCoefficients0.v);
-    S3  = XMVectorSplatW(g_XMSinCoefficients0.v);
-    S4  = XMVectorSplatX(g_XMSinCoefficients1.v);
-    S5  = XMVectorSplatY(g_XMSinCoefficients1.v);
-    S6  = XMVectorSplatZ(g_XMSinCoefficients1.v);
-    S7  = XMVectorSplatW(g_XMSinCoefficients1.v);
-    S8  = XMVectorSplatX(g_XMSinCoefficients2.v);
-    S9  = XMVectorSplatY(g_XMSinCoefficients2.v);
-    S10 = XMVectorSplatZ(g_XMSinCoefficients2.v);
-    S11 = XMVectorSplatW(g_XMSinCoefficients2.v);
-
-    Result = XMVectorMultiplyAdd(S1, V3, V1);
-    Result = XMVectorMultiplyAdd(S2, V5, Result);
-    Result = XMVectorMultiplyAdd(S3, V7, Result);
-    Result = XMVectorMultiplyAdd(S4, V9, Result);
-    Result = XMVectorMultiplyAdd(S5, V11, Result);
-    Result = XMVectorMultiplyAdd(S6, V13, Result);
-    Result = XMVectorMultiplyAdd(S7, V15, Result);
-    Result = XMVectorMultiplyAdd(S8, V17, Result);
-    Result = XMVectorMultiplyAdd(S9, V19, Result);
-    Result = XMVectorMultiplyAdd(S10, V21, Result);
-    Result = XMVectorMultiplyAdd(S11, V23, Result);
-
+    Result.vector4_f32[0] = XMScalarSin( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarSin( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarSin( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarSin( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR SC1 = g_XMSinCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_low_f32(SC1), 0);
+
+    const XMVECTOR SC0 = g_XMSinCoefficients0;
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(SC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_high_f32(SC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    Result = vmulq_f32(Result, x);
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
-    XMVECTOR vResult = XMVectorModAngles(V);
-    // Each on is V to the "num" power
-    // V2 = V1^2
-    XMVECTOR V2  = _mm_mul_ps(vResult,vResult);
-    // V1^3
-    XMVECTOR vPower = _mm_mul_ps(vResult,V2);    
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMSinCoefficients0.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    XMVECTOR x = XMVectorModAngles(V);
 
-    // V^5
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients0.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x).
+    __m128 sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
 
-    // V^7
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients0.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    // V^9
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients1.f[0]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR SC1 = g_XMSinCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( SC1, SC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    // V^11
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients1.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    const XMVECTOR SC0 = g_XMSinCoefficients0;
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^13
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients1.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^15
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients1.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^17
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients2.f[0]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^19
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients2.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^21
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients2.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^23
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMSinCoefficients2.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-    return vResult;
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3316,319 +3545,245 @@ inline XMVECTOR XMVectorCos
     FXMVECTOR V
 )
 {
+    // 10-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2, V4, V6, V8, V10, V12, V14, V16, V18, V20, V22;
-    XMVECTOR C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11;
     XMVECTOR Result;
-
-    V1 = XMVectorModAngles(V);
-
-    // cos(V) ~= 1 - V^2 / 2! + V^4 / 4! - V^6 / 6! + V^8 / 8! - V^10 / 10! + V^12 / 12! - 
-    //           V^14 / 14! + V^16 / 16! - V^18 / 18! + V^20 / 20! - V^22 / 22! (for -PI <= V < PI)
-    V2 = XMVectorMultiply(V1, V1);
-    V4 = XMVectorMultiply(V2, V2);
-    V6 = XMVectorMultiply(V4, V2);
-    V8 = XMVectorMultiply(V4, V4);
-    V10 = XMVectorMultiply(V6, V4);
-    V12 = XMVectorMultiply(V6, V6);
-    V14 = XMVectorMultiply(V8, V6);
-    V16 = XMVectorMultiply(V8, V8);
-    V18 = XMVectorMultiply(V10, V8);
-    V20 = XMVectorMultiply(V10, V10);
-    V22 = XMVectorMultiply(V12, V10);
-
-    C1 = XMVectorSplatY(g_XMCosCoefficients0.v);
-    C2 = XMVectorSplatZ(g_XMCosCoefficients0.v);
-    C3 = XMVectorSplatW(g_XMCosCoefficients0.v);
-    C4 = XMVectorSplatX(g_XMCosCoefficients1.v);
-    C5 = XMVectorSplatY(g_XMCosCoefficients1.v);
-    C6 = XMVectorSplatZ(g_XMCosCoefficients1.v);
-    C7 = XMVectorSplatW(g_XMCosCoefficients1.v);
-    C8 = XMVectorSplatX(g_XMCosCoefficients2.v);
-    C9 = XMVectorSplatY(g_XMCosCoefficients2.v);
-    C10 = XMVectorSplatZ(g_XMCosCoefficients2.v);
-    C11 = XMVectorSplatW(g_XMCosCoefficients2.v);
-
-    Result = XMVectorMultiplyAdd(C1, V2, g_XMOne.v);
-    Result = XMVectorMultiplyAdd(C2, V4, Result);
-    Result = XMVectorMultiplyAdd(C3, V6, Result);
-    Result = XMVectorMultiplyAdd(C4, V8, Result);
-    Result = XMVectorMultiplyAdd(C5, V10, Result);
-    Result = XMVectorMultiplyAdd(C6, V12, Result);
-    Result = XMVectorMultiplyAdd(C7, V14, Result);
-    Result = XMVectorMultiplyAdd(C8, V16, Result);
-    Result = XMVectorMultiplyAdd(C9, V18, Result);
-    Result = XMVectorMultiplyAdd(C10, V20, Result);
-    Result = XMVectorMultiplyAdd(C11, V22, Result);
-
+    Result.vector4_f32[0] = XMScalarCos( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarCos( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarCos( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarCos( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Map V to x in [-pi,pi].
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+    sign = vbslq_f32( comp, g_XMOne, g_XMNegativeOne );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR CC1 = g_XMCosCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_low_f32(CC1), 0);
+
+    const XMVECTOR CC0 = g_XMCosCoefficients0;
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(CC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_high_f32(CC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    Result = vmulq_f32(Result, sign);
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Force the value within the bounds of pi
-    XMVECTOR V2 = XMVectorModAngles(V);
-    // Each on is V to the "num" power
-    // V2 = V1^2
-    V2  = _mm_mul_ps(V2,V2);
-    // V^2
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMCosCoefficients0.f[1]);
-    vConstants = _mm_mul_ps(vConstants,V2);
-    XMVECTOR vResult = _mm_add_ps(vConstants,g_XMOne);
+    // Map V to x in [-pi,pi].
+    XMVECTOR x = XMVectorModAngles(V);
 
-    // V^4
-    XMVECTOR vPower = _mm_mul_ps(V2,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients0.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    XMVECTOR sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, g_XMOne);
+    select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    sign = _mm_or_ps(select0, select1);
 
-    // V^6
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients0.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    // V^8
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients1.f[0]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR CC1 = g_XMCosCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( CC1, CC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    // V^10
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients1.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    const XMVECTOR CC0 = g_XMCosCoefficients0;
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^12
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients1.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^14
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients1.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    // V^16
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients2.f[0]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^18
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients2.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^20
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients2.f[2]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-
-    // V^22
-    vPower = _mm_mul_ps(vPower,V2);
-    vConstants = _mm_load_ps1(&g_XMCosCoefficients2.f[3]);
-    vConstants = _mm_mul_ps(vConstants,vPower);
-    vResult = _mm_add_ps(vResult,vConstants);
-    return vResult;
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, sign);
+    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline void XMVectorSinCos
 (
     XMVECTOR* pSin, 
     XMVECTOR* pCos, 
-    FXMVECTOR  V
+    FXMVECTOR V
 )
 {
     assert(pSin != nullptr);
     assert(pCos != nullptr);
 
+    // 11/10-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR Sin;
+    XMVECTOR Cos;
 
-    XMVECTOR V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, V13;
-    XMVECTOR V14, V15, V16, V17, V18, V19, V20, V21, V22, V23;
-    XMVECTOR S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11;
-    XMVECTOR C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11;
-    XMVECTOR Sin, Cos;
-
-    V1 = XMVectorModAngles(V);
-
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! + V^9 / 9! - V^11 / 11! + V^13 / 13! - 
-    //           V^15 / 15! + V^17 / 17! - V^19 / 19! + V^21 / 21! - V^23 / 23! (for -PI <= V < PI)
-    // cos(V) ~= 1 - V^2 / 2! + V^4 / 4! - V^6 / 6! + V^8 / 8! - V^10 / 10! + V^12 / 12! - 
-    //           V^14 / 14! + V^16 / 16! - V^18 / 18! + V^20 / 20! - V^22 / 22! (for -PI <= V < PI)
-
-    V2 = XMVectorMultiply(V1, V1);
-    V3 = XMVectorMultiply(V2, V1);
-    V4 = XMVectorMultiply(V2, V2);
-    V5 = XMVectorMultiply(V3, V2);
-    V6 = XMVectorMultiply(V3, V3);
-    V7 = XMVectorMultiply(V4, V3);
-    V8 = XMVectorMultiply(V4, V4);
-    V9 = XMVectorMultiply(V5, V4);
-    V10 = XMVectorMultiply(V5, V5);
-    V11 = XMVectorMultiply(V6, V5);
-    V12 = XMVectorMultiply(V6, V6);
-    V13 = XMVectorMultiply(V7, V6);
-    V14 = XMVectorMultiply(V7, V7);
-    V15 = XMVectorMultiply(V8, V7);
-    V16 = XMVectorMultiply(V8, V8);
-    V17 = XMVectorMultiply(V9, V8);
-    V18 = XMVectorMultiply(V9, V9);
-    V19 = XMVectorMultiply(V10, V9);
-    V20 = XMVectorMultiply(V10, V10);
-    V21 = XMVectorMultiply(V11, V10);
-    V22 = XMVectorMultiply(V11, V11);
-    V23 = XMVectorMultiply(V12, V11);
-
-    S1  = XMVectorSplatY(g_XMSinCoefficients0.v);
-    S2  = XMVectorSplatZ(g_XMSinCoefficients0.v);
-    S3  = XMVectorSplatW(g_XMSinCoefficients0.v);
-    S4  = XMVectorSplatX(g_XMSinCoefficients1.v);
-    S5  = XMVectorSplatY(g_XMSinCoefficients1.v);
-    S6  = XMVectorSplatZ(g_XMSinCoefficients1.v);
-    S7  = XMVectorSplatW(g_XMSinCoefficients1.v);
-    S8  = XMVectorSplatX(g_XMSinCoefficients2.v);
-    S9  = XMVectorSplatY(g_XMSinCoefficients2.v);
-    S10  = XMVectorSplatZ(g_XMSinCoefficients2.v);
-    S11  = XMVectorSplatW(g_XMSinCoefficients2.v);
-
-    C1 = XMVectorSplatY(g_XMCosCoefficients0.v);
-    C2 = XMVectorSplatZ(g_XMCosCoefficients0.v);
-    C3 = XMVectorSplatW(g_XMCosCoefficients0.v);
-    C4 = XMVectorSplatX(g_XMCosCoefficients1.v);
-    C5 = XMVectorSplatY(g_XMCosCoefficients1.v);
-    C6 = XMVectorSplatZ(g_XMCosCoefficients1.v);
-    C7 = XMVectorSplatW(g_XMCosCoefficients1.v);
-    C8 = XMVectorSplatX(g_XMCosCoefficients2.v);
-    C9 = XMVectorSplatY(g_XMCosCoefficients2.v);
-    C10 = XMVectorSplatZ(g_XMCosCoefficients2.v);
-    C11 = XMVectorSplatW(g_XMCosCoefficients2.v);
-
-    Sin = XMVectorMultiplyAdd(S1, V3, V1);
-    Sin = XMVectorMultiplyAdd(S2, V5, Sin);
-    Sin = XMVectorMultiplyAdd(S3, V7, Sin);
-    Sin = XMVectorMultiplyAdd(S4, V9, Sin);
-    Sin = XMVectorMultiplyAdd(S5, V11, Sin);
-    Sin = XMVectorMultiplyAdd(S6, V13, Sin);
-    Sin = XMVectorMultiplyAdd(S7, V15, Sin);
-    Sin = XMVectorMultiplyAdd(S8, V17, Sin);
-    Sin = XMVectorMultiplyAdd(S9, V19, Sin);
-    Sin = XMVectorMultiplyAdd(S10, V21, Sin);
-    Sin = XMVectorMultiplyAdd(S11, V23, Sin);
-
-    Cos = XMVectorMultiplyAdd(C1, V2, g_XMOne.v);
-    Cos = XMVectorMultiplyAdd(C2, V4, Cos);
-    Cos = XMVectorMultiplyAdd(C3, V6, Cos);
-    Cos = XMVectorMultiplyAdd(C4, V8, Cos);
-    Cos = XMVectorMultiplyAdd(C5, V10, Cos);
-    Cos = XMVectorMultiplyAdd(C6, V12, Cos);
-    Cos = XMVectorMultiplyAdd(C7, V14, Cos);
-    Cos = XMVectorMultiplyAdd(C8, V16, Cos);
-    Cos = XMVectorMultiplyAdd(C9, V18, Cos);
-    Cos = XMVectorMultiplyAdd(C10, V20, Cos);
-    Cos = XMVectorMultiplyAdd(C11, V22, Cos);
+    XMScalarSinCos(&Sin.vector4_f32[0], &Cos.vector4_f32[0], V.vector4_f32[0]);
+    XMScalarSinCos(&Sin.vector4_f32[1], &Cos.vector4_f32[1], V.vector4_f32[1]);
+    XMScalarSinCos(&Sin.vector4_f32[2], &Cos.vector4_f32[2], V.vector4_f32[2]);
+    XMScalarSinCos(&Sin.vector4_f32[3], &Cos.vector4_f32[3], V.vector4_f32[3]);
 
     *pSin = Sin;
     *pCos = Cos;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+    sign = vbslq_f32( comp, g_XMOne, g_XMNegativeOne );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation for sine
+    const XMVECTOR SC1 = g_XMSinCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_low_f32(SC1), 0);
+
+    const XMVECTOR SC0 = g_XMSinCoefficients0;
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(SC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_high_f32(SC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    *pSin = vmulq_f32(Result, x);
+
+    // Compute polynomial approximation for cosine
+    const XMVECTOR CC1 = g_XMCosCoefficients1;
+    Result = vdupq_lane_f32(vget_low_f32(CC1), 0);
+
+    const XMVECTOR CC0 = g_XMCosCoefficients0;
+    vConstants = vdupq_lane_f32(vget_high_f32(CC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_high_f32(CC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CC0), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CC0), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    *pCos = vmulq_f32(Result, sign);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2, V3, V4, V5, V6, V7, V8, V9, V10, V11, V12, V13;
-    XMVECTOR V14, V15, V16, V17, V18, V19, V20, V21, V22, V23;
-    XMVECTOR S1, S2, S3, S4, S5, S6, S7, S8, S9, S10, S11;
-    XMVECTOR C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11;
-    XMVECTOR Sin, Cos;
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
-    V1 = XMVectorModAngles(V);
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x), cos(y) = sign*cos(x).
+    XMVECTOR sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, g_XMOne);
+    select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    sign = _mm_or_ps(select0, select1);
 
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! + V^9 / 9! - V^11 / 11! + V^13 / 13! - 
-    //           V^15 / 15! + V^17 / 17! - V^19 / 19! + V^21 / 21! - V^23 / 23! (for -PI <= V < PI)
-    // cos(V) ~= 1 - V^2 / 2! + V^4 / 4! - V^6 / 6! + V^8 / 8! - V^10 / 10! + V^12 / 12! - 
-    //           V^14 / 14! + V^16 / 16! - V^18 / 18! + V^20 / 20! - V^22 / 22! (for -PI <= V < PI)
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    V2 = XMVectorMultiply(V1, V1);
-    V3 = XMVectorMultiply(V2, V1);
-    V4 = XMVectorMultiply(V2, V2);
-    V5 = XMVectorMultiply(V3, V2);
-    V6 = XMVectorMultiply(V3, V3);
-    V7 = XMVectorMultiply(V4, V3);
-    V8 = XMVectorMultiply(V4, V4);
-    V9 = XMVectorMultiply(V5, V4);
-    V10 = XMVectorMultiply(V5, V5);
-    V11 = XMVectorMultiply(V6, V5);
-    V12 = XMVectorMultiply(V6, V6);
-    V13 = XMVectorMultiply(V7, V6);
-    V14 = XMVectorMultiply(V7, V7);
-    V15 = XMVectorMultiply(V8, V7);
-    V16 = XMVectorMultiply(V8, V8);
-    V17 = XMVectorMultiply(V9, V8);
-    V18 = XMVectorMultiply(V9, V9);
-    V19 = XMVectorMultiply(V10, V9);
-    V20 = XMVectorMultiply(V10, V10);
-    V21 = XMVectorMultiply(V11, V10);
-    V22 = XMVectorMultiply(V11, V11);
-    V23 = XMVectorMultiply(V12, V11);
+    // Compute polynomial approximation of sine
+    const XMVECTOR SC1 = g_XMSinCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( SC1, SC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    S1  = _mm_load_ps1(&g_XMSinCoefficients0.f[1]);
-    S2  = _mm_load_ps1(&g_XMSinCoefficients0.f[2]);
-    S3  = _mm_load_ps1(&g_XMSinCoefficients0.f[3]);
-    S4  = _mm_load_ps1(&g_XMSinCoefficients1.f[0]);
-    S5  = _mm_load_ps1(&g_XMSinCoefficients1.f[1]);
-    S6  = _mm_load_ps1(&g_XMSinCoefficients1.f[2]);
-    S7  = _mm_load_ps1(&g_XMSinCoefficients1.f[3]);
-    S8  = _mm_load_ps1(&g_XMSinCoefficients2.f[0]);
-    S9  = _mm_load_ps1(&g_XMSinCoefficients2.f[1]);
-    S10  = _mm_load_ps1(&g_XMSinCoefficients2.f[2]);
-    S11  = _mm_load_ps1(&g_XMSinCoefficients2.f[3]);
+    const XMVECTOR SC0 = g_XMSinCoefficients0;
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    C1 = _mm_load_ps1(&g_XMCosCoefficients0.f[1]);
-    C2 = _mm_load_ps1(&g_XMCosCoefficients0.f[2]);
-    C3 = _mm_load_ps1(&g_XMCosCoefficients0.f[3]);
-    C4 = _mm_load_ps1(&g_XMCosCoefficients1.f[0]);
-    C5 = _mm_load_ps1(&g_XMCosCoefficients1.f[1]);
-    C6 = _mm_load_ps1(&g_XMCosCoefficients1.f[2]);
-    C7 = _mm_load_ps1(&g_XMCosCoefficients1.f[3]);
-    C8 = _mm_load_ps1(&g_XMCosCoefficients2.f[0]);
-    C9 = _mm_load_ps1(&g_XMCosCoefficients2.f[1]);
-    C10 = _mm_load_ps1(&g_XMCosCoefficients2.f[2]);
-    C11 = _mm_load_ps1(&g_XMCosCoefficients2.f[3]);
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    S1 = _mm_mul_ps(S1,V3);
-    Sin = _mm_add_ps(S1,V1);
-    Sin = XMVectorMultiplyAdd(S2, V5, Sin);
-    Sin = XMVectorMultiplyAdd(S3, V7, Sin);
-    Sin = XMVectorMultiplyAdd(S4, V9, Sin);
-    Sin = XMVectorMultiplyAdd(S5, V11, Sin);
-    Sin = XMVectorMultiplyAdd(S6, V13, Sin);
-    Sin = XMVectorMultiplyAdd(S7, V15, Sin);
-    Sin = XMVectorMultiplyAdd(S8, V17, Sin);
-    Sin = XMVectorMultiplyAdd(S9, V19, Sin);
-    Sin = XMVectorMultiplyAdd(S10, V21, Sin);
-    Sin = XMVectorMultiplyAdd(S11, V23, Sin);
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    Cos = _mm_mul_ps(C1,V2);
-    Cos = _mm_add_ps(Cos,g_XMOne);
-    Cos = XMVectorMultiplyAdd(C2, V4, Cos);
-    Cos = XMVectorMultiplyAdd(C3, V6, Cos);
-    Cos = XMVectorMultiplyAdd(C4, V8, Cos);
-    Cos = XMVectorMultiplyAdd(C5, V10, Cos);
-    Cos = XMVectorMultiplyAdd(C6, V12, Cos);
-    Cos = XMVectorMultiplyAdd(C7, V14, Cos);
-    Cos = XMVectorMultiplyAdd(C8, V16, Cos);
-    Cos = XMVectorMultiplyAdd(C9, V18, Cos);
-    Cos = XMVectorMultiplyAdd(C10, V20, Cos);
-    Cos = XMVectorMultiplyAdd(C11, V22, Cos);
+    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    *pSin = Result;
 
-    *pSin = Sin;
-    *pCos = Cos;
+    // Compute polynomial approximation of cosine
+    const XMVECTOR CC1 = g_XMCosCoefficients1;
+    vConstants = _mm_shuffle_ps( CC1, CC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_mul_ps(vConstants, x2);
+
+    const XMVECTOR CC0 = g_XMCosCoefficients0;
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, sign);
+    *pCos = Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3640,155 +3795,86 @@ inline XMVECTOR XMVectorTan
     FXMVECTOR V
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
     // Cody and Waite algorithm to compute tangent.
 
-    XMVECTOR VA, VB, VC, VC2;
-    XMVECTOR T0, T1, T2, T3, T4, T5, T6, T7;
-    XMVECTOR C0, C1, TwoDivPi, Epsilon;
-    XMVECTOR N, D;
-    XMVECTOR R0, R1;
-    XMVECTOR VIsZero, VCNearZero, VBIsEven;
-    XMVECTOR Zero;
+#if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;
-    uint32_t     i;
-    static const XMVECTOR TanCoefficients0 = {1.0f, -4.667168334e-1f, 2.566383229e-2f, -3.118153191e-4f};
-    static const XMVECTOR TanCoefficients1 = {4.981943399e-7f, -1.333835001e-1f, 3.424887824e-3f, -1.786170734e-5f};
-    static const XMVECTOR TanConstants = {1.570796371f, 6.077100628e-11f, 0.000244140625f, 0.63661977228f /*2 / Pi*/ };
+    Result.vector4_f32[0] = tanf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = tanf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = tanf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = tanf( V.vector4_f32[3] );
+    return Result;
+#elif defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) 
+
+    static const XMVECTORF32 TanCoefficients0 = {1.0f, -4.667168334e-1f, 2.566383229e-2f, -3.118153191e-4f};
+    static const XMVECTORF32 TanCoefficients1 = {4.981943399e-7f, -1.333835001e-1f, 3.424887824e-3f, -1.786170734e-5f};
+    static const XMVECTORF32 TanConstants = {1.570796371f, 6.077100628e-11f, 0.000244140625f, 0.63661977228f /*2 / Pi*/ };
     static const XMVECTORU32 Mask = {0x1, 0x1, 0x1, 0x1};
 
-    TwoDivPi = XMVectorSplatW(TanConstants);
+    XMVECTOR TwoDivPi = XMVectorSplatW(TanConstants.v);
 
-    Zero = XMVectorZero();
+    XMVECTOR Zero = XMVectorZero();
 
-    C0 = XMVectorSplatX(TanConstants);
-    C1 = XMVectorSplatY(TanConstants);
-    Epsilon = XMVectorSplatZ(TanConstants);
+    XMVECTOR C0 = XMVectorSplatX(TanConstants.v);
+    XMVECTOR C1 = XMVectorSplatY(TanConstants.v);
+    XMVECTOR Epsilon = XMVectorSplatZ(TanConstants.v);
 
-    VA = XMVectorMultiply(V, TwoDivPi);
+    XMVECTOR VA = XMVectorMultiply(V, TwoDivPi);
 
     VA = XMVectorRound(VA);
 
-    VC = XMVectorNegativeMultiplySubtract(VA, C0, V);
+    XMVECTOR VC = XMVectorNegativeMultiplySubtract(VA, C0, V);
 
-    VB = XMVectorAbs(VA);
+    XMVECTOR VB = XMVectorAbs(VA);
 
     VC = XMVectorNegativeMultiplySubtract(VA, C1, VC);
 
-    for (i = 0; i < 4; i++)
+#if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    VB = vcvtq_u32_f32( VB );
+#elif defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    reinterpret_cast<__m128i *>(&VB)[0] = _mm_cvttps_epi32(VB);
+#else
+    for (size_t i = 0; i < 4; i++)
     {
         VB.vector4_u32[i] = (uint32_t)VB.vector4_f32[i];
     }
+#endif
 
-    VC2 = XMVectorMultiply(VC, VC);
+    XMVECTOR VC2 = XMVectorMultiply(VC, VC);
 
-    T7 = XMVectorSplatW(TanCoefficients1);
-    T6 = XMVectorSplatZ(TanCoefficients1);
-    T4 = XMVectorSplatX(TanCoefficients1);
-    T3 = XMVectorSplatW(TanCoefficients0);
-    T5 = XMVectorSplatY(TanCoefficients1);
-    T2 = XMVectorSplatZ(TanCoefficients0);
-    T1 = XMVectorSplatY(TanCoefficients0);
-    T0 = XMVectorSplatX(TanCoefficients0);
+    XMVECTOR T7 = XMVectorSplatW(TanCoefficients1.v);
+    XMVECTOR T6 = XMVectorSplatZ(TanCoefficients1.v);
+    XMVECTOR T4 = XMVectorSplatX(TanCoefficients1.v);
+    XMVECTOR T3 = XMVectorSplatW(TanCoefficients0.v);
+    XMVECTOR T5 = XMVectorSplatY(TanCoefficients1.v);
+    XMVECTOR T2 = XMVectorSplatZ(TanCoefficients0.v);
+    XMVECTOR T1 = XMVectorSplatY(TanCoefficients0.v);
+    XMVECTOR T0 = XMVectorSplatX(TanCoefficients0.v);
 
-    VBIsEven = XMVectorAndInt(VB, Mask.v);
+    XMVECTOR VBIsEven = XMVectorAndInt(VB, Mask.v);
     VBIsEven = XMVectorEqualInt(VBIsEven, Zero);
 
-    N = XMVectorMultiplyAdd(VC2, T7, T6);
-    D = XMVectorMultiplyAdd(VC2, T4, T3);
+    XMVECTOR N = XMVectorMultiplyAdd(VC2, T7, T6);
+    XMVECTOR D = XMVectorMultiplyAdd(VC2, T4, T3);
     N = XMVectorMultiplyAdd(VC2, N, T5);
     D = XMVectorMultiplyAdd(VC2, D, T2);
     N = XMVectorMultiply(VC2, N);
     D = XMVectorMultiplyAdd(VC2, D, T1);
     N = XMVectorMultiplyAdd(VC, N, VC);
-    VCNearZero = XMVectorInBounds(VC, Epsilon);
+    XMVECTOR VCNearZero = XMVectorInBounds(VC, Epsilon);
     D = XMVectorMultiplyAdd(VC2, D, T0);
 
     N = XMVectorSelect(N, VC, VCNearZero);
     D = XMVectorSelect(D, g_XMOne.v, VCNearZero);
 
-    R0 = XMVectorNegate(N);
-    R1 = XMVectorReciprocal(D);
-    R0 = XMVectorReciprocal(R0);
-    R1 = XMVectorMultiply(N, R1);
-    R0 = XMVectorMultiply(D, R0);
+    XMVECTOR R0 = XMVectorNegate(N);
+    XMVECTOR R1 = XMVectorDivide(N,D);
+    R0 = XMVectorDivide(D,R0);
 
-    VIsZero = XMVectorEqual(V, Zero);
+    XMVECTOR VIsZero = XMVectorEqual(V, Zero);
 
-    Result = XMVectorSelect(R0, R1, VBIsEven);
+    XMVECTOR Result = XMVectorSelect(R0, R1, VBIsEven);
 
-    Result = XMVectorSelect(Result, Zero, VIsZero);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Cody and Waite algorithm to compute tangent.
-
-    XMVECTOR VA, VB, VC, VC2;
-    XMVECTOR T0, T1, T2, T3, T4, T5, T6, T7;
-    XMVECTOR C0, C1, TwoDivPi, Epsilon;
-    XMVECTOR N, D;
-    XMVECTOR R0, R1;
-    XMVECTOR VIsZero, VCNearZero, VBIsEven;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static const XMVECTORF32 TanCoefficients0 = {1.0f, -4.667168334e-1f, 2.566383229e-2f, -3.118153191e-4f};
-    static const XMVECTORF32 TanCoefficients1 = {4.981943399e-7f, -1.333835001e-1f, 3.424887824e-3f, -1.786170734e-5f};
-    static const XMVECTORF32 TanConstants = {1.570796371f, 6.077100628e-11f, 0.000244140625f, 2.0f / XM_PI};
-    static const XMVECTORI32 Mask = {0x1, 0x1, 0x1, 0x1};
-
-    TwoDivPi = XMVectorSplatW(TanConstants);
-
-    Zero = XMVectorZero();
-
-    C0 = XMVectorSplatX(TanConstants);
-    C1 = XMVectorSplatY(TanConstants);
-    Epsilon = XMVectorSplatZ(TanConstants);
-
-    VA = XMVectorMultiply(V, TwoDivPi);
-
-    VA = XMVectorRound(VA);
-
-    VC = XMVectorNegativeMultiplySubtract(VA, C0, V);
-
-    VB = XMVectorAbs(VA);
-
-    VC = XMVectorNegativeMultiplySubtract(VA, C1, VC);
-
-    reinterpret_cast<__m128i *>(&VB)[0] = _mm_cvttps_epi32(VB);
-
-    VC2 = XMVectorMultiply(VC, VC);
-
-    T7 = XMVectorSplatW(TanCoefficients1);
-    T6 = XMVectorSplatZ(TanCoefficients1);
-    T4 = XMVectorSplatX(TanCoefficients1);
-    T3 = XMVectorSplatW(TanCoefficients0);
-    T5 = XMVectorSplatY(TanCoefficients1);
-    T2 = XMVectorSplatZ(TanCoefficients0);
-    T1 = XMVectorSplatY(TanCoefficients0);
-    T0 = XMVectorSplatX(TanCoefficients0);
-
-    VBIsEven = XMVectorAndInt(VB,Mask);
-    VBIsEven = XMVectorEqualInt(VBIsEven, Zero);
-
-    N = XMVectorMultiplyAdd(VC2, T7, T6);
-    D = XMVectorMultiplyAdd(VC2, T4, T3);
-    N = XMVectorMultiplyAdd(VC2, N, T5);
-    D = XMVectorMultiplyAdd(VC2, D, T2);
-    N = XMVectorMultiply(VC2, N);
-    D = XMVectorMultiplyAdd(VC2, D, T1);
-    N = XMVectorMultiplyAdd(VC, N, VC);
-    VCNearZero = XMVectorInBounds(VC, Epsilon);
-    D = XMVectorMultiplyAdd(VC2, D, T0);
-
-    N = XMVectorSelect(N, VC, VCNearZero);
-    D = XMVectorSelect(D, g_XMOne, VCNearZero);
-    R0 = XMVectorNegate(N);
-    R1 = _mm_div_ps(N,D);
-    R0 = _mm_div_ps(D,R0);
-    VIsZero = XMVectorEqual(V, Zero);
-    Result = XMVectorSelect(R0, R1, VBIsEven);
     Result = XMVectorSelect(Result, Zero, VIsZero);
 
     return Result;
@@ -3805,38 +3891,32 @@ inline XMVECTOR XMVectorSinH
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
     XMVECTOR Result;
+    Result.vector4_f32[0] = sinhf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = sinhf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = sinhf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = sinhf( V.vector4_f32[3] );
+    return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
 
-    V1 = XMVectorMultiplyAdd(V, Scale.v, g_XMNegativeOne.v);
-    V2 = XMVectorNegativeMultiplySubtract(V, Scale.v, g_XMNegativeOne.v);
+    XMVECTOR V1 = vmlaq_f32( g_XMNegativeOne.v, V, Scale.v );
+    XMVECTOR V2 = vmlsq_f32( g_XMNegativeOne.v, V, Scale.v );
+    XMVECTOR E1 = XMVectorExp(V1);
+    XMVECTOR E2 = XMVectorExp(V2);
 
-    E1 = XMVectorExp(V1);
-    E2 = XMVectorExp(V2);
-
-    Result = XMVectorSubtract(E1, E2);
-
-    return Result;
-
+    return vsubq_f32(E1, E2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
     static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
 
-    V1 = _mm_mul_ps(V, Scale);
+    XMVECTOR V1 = _mm_mul_ps(V, Scale);
     V1 = _mm_add_ps(V1,g_XMNegativeOne);
-    V2 = _mm_mul_ps(V, Scale);
+    XMVECTOR V2 = _mm_mul_ps(V, Scale);
     V2 = _mm_sub_ps(g_XMNegativeOne,V2);
-    E1 = XMVectorExp(V1);
-    E2 = XMVectorExp(V2);
+    XMVECTOR E1 = XMVectorExp(V1);
+    XMVECTOR E2 = XMVectorExp(V2);
 
-    Result = _mm_sub_ps(E1, E2);
-
-    return Result;
+    return _mm_sub_ps(E1, E2);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3849,36 +3929,30 @@ inline XMVECTOR XMVectorCosH
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
     XMVECTOR Result;
-    static const XMVECTOR Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
-
-    V1 = XMVectorMultiplyAdd(V, Scale, g_XMNegativeOne.v);
-    V2 = XMVectorNegativeMultiplySubtract(V, Scale, g_XMNegativeOne.v);
-
-    E1 = XMVectorExp(V1);
-    E2 = XMVectorExp(V2);
-
-    Result = XMVectorAdd(E1, E2);
-
+    Result.vector4_f32[0] = coshf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = coshf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = coshf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = coshf( V.vector4_f32[3] );
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
 
-    V1 = _mm_mul_ps(V,Scale);
-    V1 = _mm_add_ps(V1,g_XMNegativeOne);
-    V2 = _mm_mul_ps(V, Scale);
-    V2 = _mm_sub_ps(g_XMNegativeOne,V2);
-    E1 = XMVectorExp(V1);
-    E2 = XMVectorExp(V2);
-    Result = _mm_add_ps(E1, E2);
-    return Result;
+    XMVECTOR V1 = vmlaq_f32(g_XMNegativeOne.v, V, Scale.v);
+    XMVECTOR V2 = vmlsq_f32(g_XMNegativeOne.v, V, Scale.v);
+    XMVECTOR E1 = XMVectorExp(V1);
+    XMVECTOR E2 = XMVectorExp(V2);
+    return vaddq_f32(E1, E2);
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
+
+    XMVECTOR V1 = _mm_mul_ps(V,Scale.v);
+    V1 = _mm_add_ps(V1,g_XMNegativeOne.v);
+    XMVECTOR V2 = _mm_mul_ps(V, Scale.v);
+    V2 = _mm_sub_ps(g_XMNegativeOne.v,V2);
+    XMVECTOR E1 = XMVectorExp(V1);
+    XMVECTOR E2 = XMVectorExp(V2);
+    return _mm_add_ps(E1, E2);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3891,30 +3965,29 @@ inline XMVECTOR XMVectorTanH
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR E;
     XMVECTOR Result;
+    Result.vector4_f32[0] = tanhf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = tanhf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = tanhf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = tanhf( V.vector4_f32[3] );
+    return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 Scale = {2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f}; // 2.0f / ln(2.0f)
 
-    E = XMVectorMultiply(V, Scale.v);
+    XMVECTOR E = vmulq_f32(V, Scale.v);
     E = XMVectorExp(E);
-    E = XMVectorMultiplyAdd(E, g_XMOneHalf.v, g_XMOneHalf.v);
+    E = vmlaq_f32( g_XMOneHalf.v, E, g_XMOneHalf.v );
     E = XMVectorReciprocal(E);
-
-    Result = XMVectorSubtract(g_XMOne.v, E);
-
-    return Result;
-
+    return vsubq_f32(g_XMOne.v, E);
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = {2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f}; // 2.0f / ln(2.0f)
 
-    XMVECTOR E = _mm_mul_ps(V, Scale);
+    XMVECTOR E = _mm_mul_ps(V, Scale.v);
     E = XMVectorExp(E);
-    E = _mm_mul_ps(E,g_XMOneHalf);
-    E = _mm_add_ps(E,g_XMOneHalf);
-    E = XMVectorReciprocal(E);
-    E = _mm_sub_ps(g_XMOne, E);
-    return E;
+    E = _mm_mul_ps(E,g_XMOneHalf.v);
+    E = _mm_add_ps(E,g_XMOneHalf.v);
+    E = _mm_div_ps(g_XMOne.v,E);
+    return _mm_sub_ps(g_XMOne.v,E);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3926,135 +3999,105 @@ inline XMVECTOR XMVectorASin
     FXMVECTOR V
 )
 {
+    // 7-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V2, V3, AbsV;
-    XMVECTOR C0, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11;
-    XMVECTOR R0, R1, R2, R3, R4;
-    XMVECTOR OneMinusAbsV;
-    XMVECTOR Rsq;
     XMVECTOR Result;
-    static const XMVECTOR OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
-
-    // asin(V) = V * (C0 + C1 * V + C2 * V^2 + C3 * V^3 + C4 * V^4 + C5 * V^5) + (1 - V) * rsq(1 - V) * 
-    //           V * (C6 + C7 * V + C8 * V^2 + C9 * V^3 + C10 * V^4 + C11 * V^5)
-
-    AbsV = XMVectorAbs(V);
-
-    V2 = XMVectorMultiply(V, V);
-    V3 = XMVectorMultiply(V2, AbsV);
-
-    R4 = XMVectorNegativeMultiplySubtract(AbsV, V, V);
-
-    OneMinusAbsV = XMVectorSubtract(OnePlusEpsilon, AbsV);
-    Rsq = XMVectorReciprocalSqrt(OneMinusAbsV);
-
-    C0 = XMVectorSplatX(g_XMASinCoefficients0.v);
-    C1 = XMVectorSplatY(g_XMASinCoefficients0.v);
-    C2 = XMVectorSplatZ(g_XMASinCoefficients0.v);
-    C3 = XMVectorSplatW(g_XMASinCoefficients0.v);
-
-    C4 = XMVectorSplatX(g_XMASinCoefficients1.v);
-    C5 = XMVectorSplatY(g_XMASinCoefficients1.v);
-    C6 = XMVectorSplatZ(g_XMASinCoefficients1.v);
-    C7 = XMVectorSplatW(g_XMASinCoefficients1.v);
-
-    C8 = XMVectorSplatX(g_XMASinCoefficients2.v);
-    C9 = XMVectorSplatY(g_XMASinCoefficients2.v);
-    C10 = XMVectorSplatZ(g_XMASinCoefficients2.v);
-    C11 = XMVectorSplatW(g_XMASinCoefficients2.v);
-
-    R0 = XMVectorMultiplyAdd(C3, AbsV, C7);
-    R1 = XMVectorMultiplyAdd(C1, AbsV, C5);
-    R2 = XMVectorMultiplyAdd(C2, AbsV, C6);
-    R3 = XMVectorMultiplyAdd(C0, AbsV, C4);
-
-    R0 = XMVectorMultiplyAdd(R0, AbsV, C11);
-    R1 = XMVectorMultiplyAdd(R1, AbsV, C9);
-    R2 = XMVectorMultiplyAdd(R2, AbsV, C10);
-    R3 = XMVectorMultiplyAdd(R3, AbsV, C8);
-
-    R0 = XMVectorMultiplyAdd(R2, V3, R0);
-    R1 = XMVectorMultiplyAdd(R3, V3, R1);
-
-    R0 = XMVectorMultiply(V, R0);
-    R1 = XMVectorMultiply(R4, R1);
-
-    Result = XMVectorMultiplyAdd(R1, Rsq, R0);
-
+    Result.vector4_f32[0] = XMScalarASin( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarASin( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarASin( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarASin( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 nonnegative = vcgeq_f32(V, g_XMZero);
+    __n128 x = vabsq_f32(V);
 
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __n128 oneMValue = vsubq_f32(g_XMOne, x);
+    __n128 clampOneMValue = vmaxq_f32(g_XMZero, oneMValue);
+    __n128 root = XMVectorSqrt(clampOneMValue);
+
+    // Compute polynomial approximation
+    const XMVECTOR AC1 = g_XMArcCoefficients1;
+    __n128 t0 = vdupq_lane_f32(vget_high_f32(AC1), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(AC1), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC1), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC1), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    const XMVECTOR AC0 = g_XMArcCoefficients0;
+    vConstants = vdupq_lane_f32(vget_high_f32(AC0), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_high_f32(AC0), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC0), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC0), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+    t0 = vmulq_f32(t0, root);
+
+    __n128 t1 = vsubq_f32(g_XMPi, t0);
+    t0 = vbslq_f32( nonnegative, t0, t1 );
+    t0 = vsubq_f32(g_XMHalfPi, t0);
+    return t0;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
+    __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
+    __m128 mvalue = _mm_sub_ps(g_XMZero, V);
+    __m128 x = _mm_max_ps(V, mvalue);  // |V|
 
-    // asin(V) = V * (C0 + C1 * V + C2 * V^2 + C3 * V^3 + C4 * V^4 + C5 * V^5) + (1 - V) * rsq(1 - V) * 
-    //           V * (C6 + C7 * V + C8 * V^2 + C9 * V^3 + C10 * V^4 + C11 * V^5)
-    // Get abs(V)
-    XMVECTOR vAbsV = _mm_setzero_ps();
-    vAbsV = _mm_sub_ps(vAbsV,V);
-    vAbsV = _mm_max_ps(vAbsV,V);
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __m128 oneMValue = _mm_sub_ps(g_XMOne, x);
+    __m128 clampOneMValue = _mm_max_ps(g_XMZero, oneMValue);
+    __m128 root = _mm_sqrt_ps(clampOneMValue);  // sqrt(1-|V|)
 
-    XMVECTOR R0 = vAbsV;
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[3]);
-    R0 = _mm_mul_ps(R0,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[3]);
-    R0 = _mm_add_ps(R0,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR AC1 = g_XMArcCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    XMVECTOR R1 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[1]);
-    R1 = _mm_mul_ps(R1,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[1]);
-    R1 = _mm_add_ps(R1, vConstants);
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    XMVECTOR R2 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[2]);
-    R2 = _mm_mul_ps(R2,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[2]);
-    R2 = _mm_add_ps(R2, vConstants);
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    XMVECTOR R3 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[0]);
-    R3 = _mm_mul_ps(R3,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[0]);
-    R3 = _mm_add_ps(R3, vConstants);
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[3]);
-    R0 = _mm_mul_ps(R0,vAbsV);
-    R0 = _mm_add_ps(R0,vConstants);
+    const XMVECTOR AC0 = g_XMArcCoefficients0;
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[1]);
-    R1 = _mm_mul_ps(R1,vAbsV);
-    R1 = _mm_add_ps(R1,vConstants);
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[2]);
-    R2 = _mm_mul_ps(R2,vAbsV);
-    R2 = _mm_add_ps(R2,vConstants);
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[0]);
-    R3 = _mm_mul_ps(R3,vAbsV);
-    R3 = _mm_add_ps(R3,vConstants);
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, root);
 
-    // V3 = V^3
-    vConstants = _mm_mul_ps(V,V);
-    vConstants = _mm_mul_ps(vConstants, vAbsV);
-    // Mul by V^3
-    R2 = _mm_mul_ps(R2,vConstants);
-    R3 = _mm_mul_ps(R3,vConstants);
-    // Merge the results
-    R0 = _mm_add_ps(R0,R2);
-    R1 = _mm_add_ps(R1,R3);
-
-    R0 = _mm_mul_ps(R0,V);
-    // vConstants = V-(V^2 retaining sign)
-    vConstants = _mm_mul_ps(vAbsV, V);
-    vConstants = _mm_sub_ps(V,vConstants);
-    R1 = _mm_mul_ps(R1,vConstants);
-    vConstants = _mm_sub_ps(OnePlusEpsilon,vAbsV);
-    // Do NOT use rsqrt/mul. This needs the precision
-    vConstants = _mm_sqrt_ps(vConstants);
-    R1 = _mm_div_ps(R1,vConstants);
-    R0 = _mm_add_ps(R0,R1);
-    return R0;
+    __m128 t1 = _mm_sub_ps(g_XMPi, t0);
+    t0 = _mm_and_ps(nonnegative, t0);
+    t1 = _mm_andnot_ps(nonnegative, t1);
+    t0 = _mm_or_ps(t0, t1);
+    t0 = _mm_sub_ps(g_XMHalfPi, t0);
+    return t0;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -4066,134 +4109,103 @@ inline XMVECTOR XMVectorACos
     FXMVECTOR V
 )
 {
+    // 7-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V2, V3, AbsV;
-    XMVECTOR C0, C1, C2, C3, C4, C5, C6, C7, C8, C9, C10, C11;
-    XMVECTOR R0, R1, R2, R3, R4;
-    XMVECTOR OneMinusAbsV;
-    XMVECTOR Rsq;
     XMVECTOR Result;
-    static const XMVECTOR OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
-
-    // acos(V) = PI / 2 - asin(V)
-
-    AbsV = XMVectorAbs(V);
-
-    V2 = XMVectorMultiply(V, V);
-    V3 = XMVectorMultiply(V2, AbsV);
-
-    R4 = XMVectorNegativeMultiplySubtract(AbsV, V, V);
-
-    OneMinusAbsV = XMVectorSubtract(OnePlusEpsilon, AbsV);
-    Rsq = XMVectorReciprocalSqrt(OneMinusAbsV);
-
-    C0 = XMVectorSplatX(g_XMASinCoefficients0.v);
-    C1 = XMVectorSplatY(g_XMASinCoefficients0.v);
-    C2 = XMVectorSplatZ(g_XMASinCoefficients0.v);
-    C3 = XMVectorSplatW(g_XMASinCoefficients0.v);
-
-    C4 = XMVectorSplatX(g_XMASinCoefficients1.v);
-    C5 = XMVectorSplatY(g_XMASinCoefficients1.v);
-    C6 = XMVectorSplatZ(g_XMASinCoefficients1.v);
-    C7 = XMVectorSplatW(g_XMASinCoefficients1.v);
-
-    C8 = XMVectorSplatX(g_XMASinCoefficients2.v);
-    C9 = XMVectorSplatY(g_XMASinCoefficients2.v);
-    C10 = XMVectorSplatZ(g_XMASinCoefficients2.v);
-    C11 = XMVectorSplatW(g_XMASinCoefficients2.v);
-
-    R0 = XMVectorMultiplyAdd(C3, AbsV, C7);
-    R1 = XMVectorMultiplyAdd(C1, AbsV, C5);
-    R2 = XMVectorMultiplyAdd(C2, AbsV, C6);
-    R3 = XMVectorMultiplyAdd(C0, AbsV, C4);
-
-    R0 = XMVectorMultiplyAdd(R0, AbsV, C11);
-    R1 = XMVectorMultiplyAdd(R1, AbsV, C9);
-    R2 = XMVectorMultiplyAdd(R2, AbsV, C10);
-    R3 = XMVectorMultiplyAdd(R3, AbsV, C8);
-
-    R0 = XMVectorMultiplyAdd(R2, V3, R0);
-    R1 = XMVectorMultiplyAdd(R3, V3, R1);
-
-    R0 = XMVectorMultiply(V, R0);
-    R1 = XMVectorMultiply(R4, R1);
-
-    Result = XMVectorMultiplyAdd(R1, Rsq, R0);
-
-    Result = XMVectorSubtract(g_XMHalfPi.v, Result);
-
+    Result.vector4_f32[0] = XMScalarACos( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarACos( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarACos( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarACos( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 nonnegative = vcgeq_f32(V, g_XMZero);
+    __n128 x = vabsq_f32(V);
 
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __n128 oneMValue = vsubq_f32(g_XMOne, x);
+    __n128 clampOneMValue = vmaxq_f32(g_XMZero, oneMValue);
+    __n128 root = XMVectorSqrt(clampOneMValue);
+
+    // Compute polynomial approximation
+    const XMVECTOR AC1 = g_XMArcCoefficients1;
+    __n128 t0 = vdupq_lane_f32(vget_high_f32(AC1), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(AC1), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC1), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC1), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    const XMVECTOR AC0 = g_XMArcCoefficients0;
+    vConstants = vdupq_lane_f32(vget_high_f32(AC0), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_high_f32(AC0), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC0), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AC0), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+    t0 = vmulq_f32(t0, root);
+
+    __n128 t1 = vsubq_f32(g_XMPi, t0);
+    t0 = vbslq_f32( nonnegative, t0, t1 );
+    return t0;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
-    // Uses only 6 registers for good code on x86 targets
-    // acos(V) = PI / 2 - asin(V)
-    // Get abs(V)
-    XMVECTOR vAbsV = _mm_setzero_ps();
-    vAbsV = _mm_sub_ps(vAbsV,V);
-    vAbsV = _mm_max_ps(vAbsV,V);
-    // Perform the series in precision groups to
-    // retain precision across 20 bits. (3 bits of imprecision due to operations)
-    XMVECTOR R0 = vAbsV;
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[3]);
-    R0 = _mm_mul_ps(R0,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[3]);
-    R0 = _mm_add_ps(R0,vConstants);
-    R0 = _mm_mul_ps(R0,vAbsV);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[3]);
-    R0 = _mm_add_ps(R0,vConstants);
+    __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
+    __m128 mvalue = _mm_sub_ps(g_XMZero, V);
+    __m128 x = _mm_max_ps(V, mvalue);  // |V|
 
-    XMVECTOR R1 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[1]);
-    R1 = _mm_mul_ps(R1,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[1]);
-    R1 = _mm_add_ps(R1,vConstants);
-    R1 = _mm_mul_ps(R1, vAbsV);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[1]);
-    R1 = _mm_add_ps(R1,vConstants);
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __m128 oneMValue = _mm_sub_ps(g_XMOne, x);
+    __m128 clampOneMValue = _mm_max_ps(g_XMZero, oneMValue);
+    __m128 root = _mm_sqrt_ps(clampOneMValue);  // sqrt(1-|V|)
 
-    XMVECTOR R2 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[2]);
-    R2 = _mm_mul_ps(R2,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[2]);
-    R2 = _mm_add_ps(R2,vConstants);
-    R2 = _mm_mul_ps(R2, vAbsV);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[2]);
-    R2 = _mm_add_ps(R2,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR AC1 = g_XMArcCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    XMVECTOR R3 = vAbsV;
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[0]);
-    R3 = _mm_mul_ps(R3,vConstants);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients1.f[0]);
-    R3 = _mm_add_ps(R3,vConstants);
-    R3 = _mm_mul_ps(R3, vAbsV);
-    vConstants = _mm_load_ps1(&g_XMASinCoefficients2.f[0]);
-    R3 = _mm_add_ps(R3,vConstants);
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    // vConstants = V^3
-    vConstants = _mm_mul_ps(V,V);
-    vConstants = _mm_mul_ps(vConstants,vAbsV);
-    R2 = _mm_mul_ps(R2,vConstants);
-    R3 = _mm_mul_ps(R3,vConstants);
-    // Add the pair of values together here to retain
-    // as much precision as possible
-    R0 = _mm_add_ps(R0,R2);
-    R1 = _mm_add_ps(R1,R3);
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    R0 = _mm_mul_ps(R0,V);
-    // vConstants = V-(V*abs(V))
-    vConstants = _mm_mul_ps(V,vAbsV);
-    vConstants = _mm_sub_ps(V,vConstants);
-    R1 = _mm_mul_ps(R1,vConstants);
-    // Episilon exists to allow 1.0 as an answer
-    vConstants = _mm_sub_ps(OnePlusEpsilon, vAbsV);
-    // Use sqrt instead of rsqrt for precision
-    vConstants = _mm_sqrt_ps(vConstants);
-    R1 = _mm_div_ps(R1,vConstants);
-    R1 = _mm_add_ps(R1,R0);
-    vConstants = _mm_sub_ps(g_XMHalfPi,R1);
-    return vConstants;
+    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    const XMVECTOR AC0 = g_XMArcCoefficients0;
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, root);
+
+    __m128 t1 = _mm_sub_ps(g_XMPi, t0);
+    t0 = _mm_and_ps(nonnegative, t0);
+    t1 = _mm_andnot_ps(nonnegative, t1);
+    t0 = _mm_or_ps(t0, t1);
+    return t0;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -4205,194 +4217,120 @@ inline XMVECTOR XMVectorATan
     FXMVECTOR V
 )
 {
+    // 17-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    // Cody and Waite algorithm to compute inverse tangent.
-
-    XMVECTOR N, D;
-    XMVECTOR VF, G, ReciprocalF, AbsF, FA, FB;
-    XMVECTOR Sqrt3, Sqrt3MinusOne, TwoMinusSqrt3;
-    XMVECTOR HalfPi, OneThirdPi, OneSixthPi, Epsilon, MinV, MaxV;
-    XMVECTOR Zero;
-    XMVECTOR NegativeHalfPi;
-    XMVECTOR Angle1, Angle2;
-    XMVECTOR F_GT_One, F_GT_TwoMinusSqrt3, AbsF_LT_Epsilon, V_LT_Zero, V_GT_MaxV, V_LT_MinV;
-    XMVECTOR NegativeResult, Result;
-    XMVECTOR P0, P1, P2, P3, Q0, Q1, Q2, Q3;
-    static const XMVECTOR ATanConstants0 = {-1.3688768894e+1f, -2.0505855195e+1f, -8.4946240351f, -8.3758299368e-1f};
-    static const XMVECTOR ATanConstants1 = {4.1066306682e+1f, 8.6157349597e+1f, 5.9578436142e+1f, 1.5024001160e+1f};
-    static const XMVECTOR ATanConstants2 = {1.732050808f, 7.320508076e-1f, 2.679491924e-1f, 0.000244140625f}; // <sqrt(3), sqrt(3) - 1, 2 - sqrt(3), Epsilon>
-    static const XMVECTOR ATanConstants3 = {XM_PIDIV2, 1.04719755133f, 0.523598775667f, 8.507059173e+37f}; // <Pi / 2, Pi / 3, Pi / 6, MaxV>
-
-    Zero = XMVectorZero();
-
-    P0 = XMVectorSplatX(ATanConstants0);
-    P1 = XMVectorSplatY(ATanConstants0);
-    P2 = XMVectorSplatZ(ATanConstants0);
-    P3 = XMVectorSplatW(ATanConstants0);
-
-    Q0 = XMVectorSplatX(ATanConstants1);
-    Q1 = XMVectorSplatY(ATanConstants1);
-    Q2 = XMVectorSplatZ(ATanConstants1);
-    Q3 = XMVectorSplatW(ATanConstants1);
-
-    Sqrt3 = XMVectorSplatX(ATanConstants2);
-    Sqrt3MinusOne = XMVectorSplatY(ATanConstants2);
-    TwoMinusSqrt3 = XMVectorSplatZ(ATanConstants2);
-    Epsilon = XMVectorSplatW(ATanConstants2);
-
-    HalfPi = XMVectorSplatX(ATanConstants3);
-    OneThirdPi = XMVectorSplatY(ATanConstants3);
-    OneSixthPi = XMVectorSplatZ(ATanConstants3);
-    MaxV = XMVectorSplatW(ATanConstants3);
-
-    VF = XMVectorAbs(V);
-    ReciprocalF = XMVectorReciprocal(VF);
-
-    F_GT_One = XMVectorGreater(VF, g_XMOne.v);
-
-    VF = XMVectorSelect(VF, ReciprocalF, F_GT_One);
-    Angle1 = XMVectorSelect(Zero, HalfPi, F_GT_One);
-    Angle2 = XMVectorSelect(OneSixthPi, OneThirdPi, F_GT_One);
-
-    F_GT_TwoMinusSqrt3 = XMVectorGreater(VF, TwoMinusSqrt3);
-
-    FA = XMVectorMultiplyAdd(Sqrt3MinusOne, VF, VF);
-    FA = XMVectorAdd(FA, g_XMNegativeOne.v);
-    FB = XMVectorAdd(VF, Sqrt3);
-    FB = XMVectorReciprocal(FB);
-    FA = XMVectorMultiply(FA, FB);
-
-    VF = XMVectorSelect(VF, FA, F_GT_TwoMinusSqrt3);
-    Angle1 = XMVectorSelect(Angle1, Angle2, F_GT_TwoMinusSqrt3);
-
-    AbsF = XMVectorAbs(VF);
-    AbsF_LT_Epsilon = XMVectorLess(AbsF, Epsilon);
-
-    G = XMVectorMultiply(VF, VF);
-
-    D = XMVectorAdd(G, Q3);
-    D = XMVectorMultiplyAdd(D, G, Q2);
-    D = XMVectorMultiplyAdd(D, G, Q1);
-    D = XMVectorMultiplyAdd(D, G, Q0);
-    D = XMVectorReciprocal(D);
-
-    N = XMVectorMultiplyAdd(P3, G, P2);
-    N = XMVectorMultiplyAdd(N, G, P1);
-    N = XMVectorMultiplyAdd(N, G, P0);
-    N = XMVectorMultiply(N, G);
-    Result = XMVectorMultiply(N, D);
-
-    Result = XMVectorMultiplyAdd(Result, VF, VF);
-
-    Result = XMVectorSelect(Result, VF, AbsF_LT_Epsilon);
-
-    NegativeResult = XMVectorNegate(Result);
-    Result = XMVectorSelect(Result, NegativeResult, F_GT_One);
-
-    Result = XMVectorAdd(Result, Angle1);
-
-    V_LT_Zero = XMVectorLess(V, Zero);
-    NegativeResult = XMVectorNegate(Result);
-    Result = XMVectorSelect(Result, NegativeResult, V_LT_Zero);
-
-    MinV = XMVectorNegate(MaxV);
-    NegativeHalfPi = XMVectorNegate(HalfPi);
-    V_GT_MaxV = XMVectorGreater(V, MaxV);
-    V_LT_MinV = XMVectorLess(V, MinV);
-    Result = XMVectorSelect(Result, g_XMHalfPi.v, V_GT_MaxV);
-    Result = XMVectorSelect(Result, NegativeHalfPi, V_LT_MinV);
-
+    XMVECTOR Result;
+    Result.vector4_f32[0] = atanf( V.vector4_f32[0] );
+    Result.vector4_f32[1] = atanf( V.vector4_f32[1] );
+    Result.vector4_f32[2] = atanf( V.vector4_f32[2] );
+    Result.vector4_f32[3] = atanf( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 absV = vabsq_f32(V);
+    __n128 invV = XMVectorReciprocal(V);
+    __n128 comp = vcgtq_f32(V, g_XMOne);
+    __n128 sign = vbslq_f32(comp, g_XMOne, g_XMNegativeOne);
+    comp = vcleq_f32(absV, g_XMOne);
+    sign = vbslq_f32(comp, g_XMZero, sign);
+    __n128 x = vbslq_f32(comp, V, invV);
 
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR TC1 = g_XMATanCoefficients1;
+    __n128 Result = vdupq_lane_f32(vget_high_f32(TC1), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(TC1), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(TC1), 1);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(TC1), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    const XMVECTOR TC0 = g_XMATanCoefficients0;
+    vConstants = vdupq_lane_f32(vget_high_f32(TC0), 1);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_high_f32(TC0), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(TC0), 1);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(TC0), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    Result = vmlaq_f32( g_XMOne, Result, x2 );
+    Result = vmulq_f32( Result, x );
+
+    __n128 result1 = vmulq_f32(sign, g_XMHalfPi);
+    result1 = vsubq_f32(result1, Result);
+
+    comp = vceqq_f32(sign, g_XMZero);
+    Result = vbslq_f32( comp, Result, result1 );
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 ATanConstants0 = {-1.3688768894e+1f, -2.0505855195e+1f, -8.4946240351f, -8.3758299368e-1f};
-    static const XMVECTORF32 ATanConstants1 = {4.1066306682e+1f, 8.6157349597e+1f, 5.9578436142e+1f, 1.5024001160e+1f};
-    static const XMVECTORF32 ATanConstants2 = {1.732050808f, 7.320508076e-1f, 2.679491924e-1f, 0.000244140625f}; // <sqrt(3), sqrt(3) - 1, 2 - sqrt(3), Epsilon>
-    static const XMVECTORF32 ATanConstants3 = {XM_PIDIV2, XM_PI / 3.0f, XM_PI / 6.0f, 8.507059173e+37f}; // <Pi / 2, Pi / 3, Pi / 6, MaxV>
+    __m128 absV = XMVectorAbs(V);
+    __m128 invV = _mm_div_ps(g_XMOne, V);
+    __m128 comp = _mm_cmpgt_ps(V, g_XMOne);
+    __m128 select0 = _mm_and_ps(comp, g_XMOne);
+    __m128 select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    __m128 sign = _mm_or_ps(select0, select1);
+    comp = _mm_cmple_ps(absV, g_XMOne);
+    select0 = _mm_and_ps(comp, g_XMZero);
+    select1 = _mm_andnot_ps(comp, sign);
+    sign = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, V);
+    select1 = _mm_andnot_ps(comp, invV);
+    __m128 x = _mm_or_ps(select0, select1);
 
-    XMVECTOR VF = XMVectorAbs(V);
-    XMVECTOR F_GT_One = _mm_cmpgt_ps(VF,g_XMOne);
-    XMVECTOR ReciprocalF = XMVectorReciprocal(VF);
-    VF = XMVectorSelect(VF, ReciprocalF, F_GT_One);
-    XMVECTOR Zero = XMVectorZero();
-    XMVECTOR HalfPi = _mm_load_ps1(&ATanConstants3.f[0]);
-    XMVECTOR Angle1 = XMVectorSelect(Zero, HalfPi, F_GT_One);
-    // Pi/3
-    XMVECTOR vConstants = _mm_load_ps1(&ATanConstants3.f[1]);
-    // Pi/6
-    XMVECTOR Angle2 = _mm_load_ps1(&ATanConstants3.f[2]);
-    Angle2 = XMVectorSelect(Angle2, vConstants, F_GT_One);
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    // 1-sqrt(3)
-    XMVECTOR FA = _mm_load_ps1(&ATanConstants2.f[1]);
-    FA = _mm_mul_ps(FA,VF);
-    FA = _mm_add_ps(FA,VF);
-    FA = _mm_add_ps(FA,g_XMNegativeOne);
-    // sqrt(3)
-    vConstants = _mm_load_ps1(&ATanConstants2.f[0]);
-    vConstants = _mm_add_ps(vConstants,VF);
-    FA = _mm_div_ps(FA,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR TC1 = g_XMATanCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    // 2-sqrt(3)
-    vConstants = _mm_load_ps1(&ATanConstants2.f[2]);
-    // >2-sqrt(3)?
-    vConstants = _mm_cmpgt_ps(VF,vConstants);
-    VF = XMVectorSelect(VF, FA, vConstants);
-    Angle1 = XMVectorSelect(Angle1, Angle2, vConstants);
+    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    XMVECTOR AbsF = XMVectorAbs(VF);
+    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    XMVECTOR G = _mm_mul_ps(VF,VF);
-    XMVECTOR D = _mm_load_ps1(&ATanConstants1.f[3]);
-    D = _mm_add_ps(D,G);
-    D = _mm_mul_ps(D,G);
-    vConstants = _mm_load_ps1(&ATanConstants1.f[2]);
-    D = _mm_add_ps(D,vConstants);
-    D = _mm_mul_ps(D,G);
-    vConstants = _mm_load_ps1(&ATanConstants1.f[1]);
-    D = _mm_add_ps(D,vConstants);
-    D = _mm_mul_ps(D,G);
-    vConstants = _mm_load_ps1(&ATanConstants1.f[0]);
-    D = _mm_add_ps(D,vConstants);
+    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    XMVECTOR N = _mm_load_ps1(&ATanConstants0.f[3]);
-    N = _mm_mul_ps(N,G);
-    vConstants = _mm_load_ps1(&ATanConstants0.f[2]);
-    N = _mm_add_ps(N,vConstants);
-    N = _mm_mul_ps(N,G);
-    vConstants = _mm_load_ps1(&ATanConstants0.f[1]);
-    N = _mm_add_ps(N,vConstants);
-    N = _mm_mul_ps(N,G);
-    vConstants = _mm_load_ps1(&ATanConstants0.f[0]);
-    N = _mm_add_ps(N,vConstants);
-    N = _mm_mul_ps(N,G);
-    XMVECTOR Result = _mm_div_ps(N,D);
+    const XMVECTOR TC0 = g_XMATanCoefficients0;
+    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    Result = _mm_mul_ps(Result,VF);
-    Result = _mm_add_ps(Result,VF);
-    // Epsilon
-    vConstants = _mm_load_ps1(&ATanConstants2.f[3]);
-    vConstants = _mm_cmpge_ps(vConstants,AbsF);
-    Result = XMVectorSelect(Result,VF,vConstants);
+    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    XMVECTOR NegativeResult = _mm_mul_ps(Result,g_XMNegativeOne);
-    Result = XMVectorSelect(Result,NegativeResult,F_GT_One);
-    Result = _mm_add_ps(Result,Angle1);
+    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    Zero = _mm_cmpge_ps(Zero,V);
-    NegativeResult = _mm_mul_ps(Result,g_XMNegativeOne);
-    Result = XMVectorSelect(Result,NegativeResult,Zero);
+    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    __m128 result1 = _mm_mul_ps(sign, g_XMHalfPi);
+    result1 = _mm_sub_ps(result1, Result);
 
-    XMVECTOR MaxV = _mm_load_ps1(&ATanConstants3.f[3]);
-    XMVECTOR MinV = _mm_mul_ps(MaxV,g_XMNegativeOne);
-    // Negate HalfPi
-    HalfPi = _mm_mul_ps(HalfPi,g_XMNegativeOne);
-    MaxV = _mm_cmple_ps(MaxV,V);
-    MinV = _mm_cmpge_ps(MinV,V);
-    Result = XMVectorSelect(Result,g_XMHalfPi,MaxV);
-    // HalfPi = -HalfPi
-    Result = XMVectorSelect(Result,HalfPi,MinV);
+    comp = _mm_cmpeq_ps(sign, g_XMZero);
+    select0 = _mm_and_ps(comp, Result);
+    select1 = _mm_andnot_ps(comp, result1);
+    Result = _mm_or_ps(select0, select1);
     return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -4406,8 +4344,6 @@ inline XMVECTOR XMVectorATan2
     FXMVECTOR X
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
     // Return the inverse tangent of Y / X in the range of -Pi to Pi with the following exceptions:
 
     //     Y == 0 and X is Negative         -> Pi with the sign of Y
@@ -4420,111 +4356,45 @@ inline XMVECTOR XMVectorATan2
     //     Y == Infinity and X == -Infinity -> 3Pi / 4 with the sign of Y
     //     Y == Infinity and X == +Infinity -> Pi / 4 with the sign of Y
 
-    XMVECTOR Reciprocal;
-    XMVECTOR V;
-    XMVECTOR YSign;
-    XMVECTOR Pi, PiOverTwo, PiOverFour, ThreePiOverFour;
-    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity;
-    XMVECTOR ATanResultValid;
-    XMVECTOR R0, R1, R2, R3, R4, R5;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static const XMVECTOR ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, 2.3561944905f /* Pi*3/4 */ };
+    static const XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
 
-    Zero = XMVectorZero();
-    ATanResultValid = XMVectorTrueInt();
+    XMVECTOR Zero = XMVectorZero();
+    XMVECTOR ATanResultValid = XMVectorTrueInt();
 
-    Pi = XMVectorSplatX(ATan2Constants);
-    PiOverTwo = XMVectorSplatY(ATan2Constants);
-    PiOverFour = XMVectorSplatZ(ATan2Constants);
-    ThreePiOverFour = XMVectorSplatW(ATan2Constants);
+    XMVECTOR Pi = XMVectorSplatX(ATan2Constants);
+    XMVECTOR PiOverTwo = XMVectorSplatY(ATan2Constants);
+    XMVECTOR PiOverFour = XMVectorSplatZ(ATan2Constants);
+    XMVECTOR ThreePiOverFour = XMVectorSplatW(ATan2Constants);
 
-    YEqualsZero = XMVectorEqual(Y, Zero);
-    XEqualsZero = XMVectorEqual(X, Zero);
-    XIsPositive = XMVectorAndInt(X, g_XMNegativeZero.v);
+    XMVECTOR YEqualsZero = XMVectorEqual(Y, Zero);
+    XMVECTOR XEqualsZero = XMVectorEqual(X, Zero);
+    XMVECTOR XIsPositive = XMVectorAndInt(X, g_XMNegativeZero.v);
     XIsPositive = XMVectorEqualInt(XIsPositive, Zero);
-    YEqualsInfinity = XMVectorIsInfinite(Y);
-    XEqualsInfinity = XMVectorIsInfinite(X);
+    XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
+    XMVECTOR XEqualsInfinity = XMVectorIsInfinite(X);
 
-    YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
+    XMVECTOR YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
     Pi = XMVectorOrInt(Pi, YSign);
     PiOverTwo = XMVectorOrInt(PiOverTwo, YSign);
     PiOverFour = XMVectorOrInt(PiOverFour, YSign);
     ThreePiOverFour = XMVectorOrInt(ThreePiOverFour, YSign);
 
-    R1 = XMVectorSelect(Pi, YSign, XIsPositive);
-    R2 = XMVectorSelect(ATanResultValid, PiOverTwo, XEqualsZero);
-    R3 = XMVectorSelect(R2, R1, YEqualsZero);
-    R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
-    R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
-    Result = XMVectorSelect(R3, R5, YEqualsInfinity);
+    XMVECTOR R1 = XMVectorSelect(Pi, YSign, XIsPositive);
+    XMVECTOR R2 = XMVectorSelect(ATanResultValid, PiOverTwo, XEqualsZero);
+    XMVECTOR R3 = XMVectorSelect(R2, R1, YEqualsZero);
+    XMVECTOR R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
+    XMVECTOR R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
+    XMVECTOR Result = XMVectorSelect(R3, R5, YEqualsInfinity);
     ATanResultValid = XMVectorEqualInt(Result, ATanResultValid);
 
-    Reciprocal = XMVectorReciprocal(X);
-    V = XMVectorMultiply(Y, Reciprocal);
-    R0 = XMVectorATan(V);
+    XMVECTOR V = XMVectorDivide(Y, X);
+
+    XMVECTOR R0 = XMVectorATan(V);
 
     R1 = XMVectorSelect( Pi, Zero, XIsPositive );
     R2 = XMVectorAdd(R0, R1);
 
-    Result = XMVectorSelect(Result, R2, ATanResultValid);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
-
-    // Mask if Y>0 && Y!=INF
-    XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
-    // Get the sign of (Y&0x80000000)
-    XMVECTOR YSign = _mm_and_ps(Y, g_XMNegativeZero);
-    // Get the sign bits of X
-    XMVECTOR XIsPositive = _mm_and_ps(X,g_XMNegativeZero);
-    // Change them to masks
-    XIsPositive = XMVectorEqualInt(XIsPositive,g_XMZero);
-    // Get Pi
-    XMVECTOR Pi = _mm_load_ps1(&ATan2Constants.f[0]);
-    // Copy the sign of Y
-    Pi = _mm_or_ps(Pi,YSign);
-    XMVECTOR R1 = XMVectorSelect(Pi,YSign,XIsPositive);
-    // Mask for X==0
-    XMVECTOR vConstants = _mm_cmpeq_ps(X,g_XMZero);
-    // Get Pi/2 with with sign of Y
-    XMVECTOR PiOverTwo = _mm_load_ps1(&ATan2Constants.f[1]);
-    PiOverTwo = _mm_or_ps(PiOverTwo,YSign);
-    XMVECTOR R2 = XMVectorSelect(g_XMNegOneMask,PiOverTwo,vConstants);
-    // Mask for Y==0
-    vConstants = _mm_cmpeq_ps(Y,g_XMZero);
-    R2 = XMVectorSelect(R2,R1,vConstants);
-    // Get Pi/4 with sign of Y
-    XMVECTOR PiOverFour = _mm_load_ps1(&ATan2Constants.f[2]);
-    PiOverFour = _mm_or_ps(PiOverFour,YSign);
-    // Get (Pi*3)/4 with sign of Y
-    XMVECTOR ThreePiOverFour = _mm_load_ps1(&ATan2Constants.f[3]);
-    ThreePiOverFour = _mm_or_ps(ThreePiOverFour,YSign);
-    vConstants = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
-    XMVECTOR XEqualsInfinity = XMVectorIsInfinite(X);
-    vConstants = XMVectorSelect(PiOverTwo,vConstants,XEqualsInfinity);
-
-    XMVECTOR vResult = XMVectorSelect(R2,vConstants,YEqualsInfinity);
-    vConstants = XMVectorSelect(R1,vResult,YEqualsInfinity);
-    // At this point, any entry that's zero will get the result
-    // from XMVectorATan(), otherwise, return the failsafe value
-    vResult = XMVectorSelect(vResult,vConstants,XEqualsInfinity);
-    // Any entries not 0xFFFFFFFF, are considered precalculated
-    XMVECTOR ATanResultValid = XMVectorEqualInt(vResult,g_XMNegOneMask);
-    // Let's do the ATan2 function
-    vConstants = _mm_div_ps(Y,X);
-    vConstants = XMVectorATan(vConstants);
-    // Discard entries that have been declared void
-
-    XMVECTOR R3 = XMVectorSelect( Pi, g_XMZero, XIsPositive );
-    vConstants = _mm_add_ps( vConstants, R3 );
-
-    vResult = XMVectorSelect(vResult,vConstants,ATanResultValid);
-    return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+    return XMVectorSelect(Result, R2, ATanResultValid);
 }
 
 //------------------------------------------------------------------------------
@@ -4534,46 +4404,74 @@ inline XMVECTOR XMVectorSinEst
     FXMVECTOR V
 )
 {
+    // 7-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V2, V3, V5, V7;
-    XMVECTOR S1, S2, S3;
     XMVECTOR Result;
-
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! (for -PI <= V < PI)
-    V2 = XMVectorMultiply(V, V);
-    V3 = XMVectorMultiply(V2, V);
-    V5 = XMVectorMultiply(V3, V2);
-    V7 = XMVectorMultiply(V5, V2);
-
-    S1 = XMVectorSplatY(g_XMSinEstCoefficients.v);
-    S2 = XMVectorSplatZ(g_XMSinEstCoefficients.v);
-    S3 = XMVectorSplatW(g_XMSinEstCoefficients.v);
-
-    Result = XMVectorMultiplyAdd(S1, V3, V);
-    Result = XMVectorMultiplyAdd(S2, V5, Result);
-    Result = XMVectorMultiplyAdd(S3, V7, Result);
-
+    Result.vector4_f32[0] = XMScalarSinEst( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarSinEst( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarSinEst( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarSinEst( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR SEC = g_XMSinCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_high_f32(SEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(SEC), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SEC), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    Result = vmulq_f32(Result, x);
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! (for -PI <= V < PI)
-    XMVECTOR V2 = _mm_mul_ps(V,V);
-    XMVECTOR V3 = _mm_mul_ps(V2,V);
-    XMVECTOR vResult = _mm_load_ps1(&g_XMSinEstCoefficients.f[1]);
-    vResult = _mm_mul_ps(vResult,V3);
-    vResult = _mm_add_ps(vResult,V);
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMSinEstCoefficients.f[2]);
-    // V^5
-    V3 = _mm_mul_ps(V3,V2);
-    vConstants = _mm_mul_ps(vConstants,V3);
-    vResult = _mm_add_ps(vResult,vConstants);
-    vConstants = _mm_load_ps1(&g_XMSinEstCoefficients.f[3]);
-    // V^7
-    V3 = _mm_mul_ps(V3,V2);
-    vConstants = _mm_mul_ps(vConstants,V3);
-    vResult = _mm_add_ps(vResult,vConstants);
-    return vResult;
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
+
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x).
+    __m128 sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+
+    __m128 x2 = _mm_mul_ps(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR SEC = g_XMSinCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
+
+    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -4585,51 +4483,85 @@ inline XMVECTOR XMVectorCosEst
     FXMVECTOR V
 )
 {
+    // 6-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V2, V4, V6;
-    XMVECTOR C0, C1, C2, C3;
     XMVECTOR Result;
-
-    V2 = XMVectorMultiply(V, V);
-    V4 = XMVectorMultiply(V2, V2);
-    V6 = XMVectorMultiply(V4, V2);
-
-    C0 = XMVectorSplatX(g_XMCosEstCoefficients.v);
-    C1 = XMVectorSplatY(g_XMCosEstCoefficients.v);
-    C2 = XMVectorSplatZ(g_XMCosEstCoefficients.v);
-    C3 = XMVectorSplatW(g_XMCosEstCoefficients.v);
-
-    Result = XMVectorMultiplyAdd(C1, V2, C0);
-    Result = XMVectorMultiplyAdd(C2, V4, Result);
-    Result = XMVectorMultiplyAdd(C3, V6, Result);
-
+    Result.vector4_f32[0] = XMScalarCosEst( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarCosEst( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarCosEst( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarCosEst( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Map V to x in [-pi,pi].
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+    sign = vbslq_f32( comp, g_XMOne, g_XMNegativeOne );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR CEC = g_XMCosCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_high_f32(CEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(CEC), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CEC), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    Result = vmulq_f32(Result, sign);
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Get V^2
-    XMVECTOR V2 = _mm_mul_ps(V,V);
-    XMVECTOR vResult = _mm_load_ps1(&g_XMCosEstCoefficients.f[1]);
-    vResult = _mm_mul_ps(vResult,V2);
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMCosEstCoefficients.f[0]);
-    vResult = _mm_add_ps(vResult,vConstants);
-    vConstants = _mm_load_ps1(&g_XMCosEstCoefficients.f[2]);
-    // Get V^4
-    XMVECTOR V4 = _mm_mul_ps(V2, V2);
-    vConstants = _mm_mul_ps(vConstants,V4);
-    vResult = _mm_add_ps(vResult,vConstants);
-    vConstants = _mm_load_ps1(&g_XMCosEstCoefficients.f[3]);
-    // It's really V^6
-    V4 = _mm_mul_ps(V4,V2);
-    vConstants = _mm_mul_ps(vConstants,V4);
-    vResult = _mm_add_ps(vResult,vConstants);
-    return vResult;
+    // Map V to x in [-pi,pi].
+    XMVECTOR x = XMVectorModAngles(V);
+
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    XMVECTOR sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, g_XMOne);
+    select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    sign = _mm_or_ps(select0, select1);
+
+    __m128 x2 = _mm_mul_ps(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR CEC = g_XMCosCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
+
+    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, sign);
+    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline void XMVectorSinCosEst
 (
     XMVECTOR* pSin, 
@@ -4640,76 +4572,111 @@ inline void XMVectorSinCosEst
     assert(pSin != nullptr);
     assert(pCos != nullptr);
 
+    // 7/6-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR Sin;
+    XMVECTOR Cos;
 
-    XMVECTOR V2, V3, V4, V5, V6, V7;
-    XMVECTOR S1, S2, S3;
-    XMVECTOR C0, C1, C2, C3;
-    XMVECTOR Sin, Cos;
-
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! (for -PI <= V < PI)
-    // cos(V) ~= 1 - V^2 / 2! + V^4 / 4! - V^6 / 6! (for -PI <= V < PI)
-    V2 = XMVectorMultiply(V, V);
-    V3 = XMVectorMultiply(V2, V);
-    V4 = XMVectorMultiply(V2, V2);
-    V5 = XMVectorMultiply(V3, V2);
-    V6 = XMVectorMultiply(V3, V3);
-    V7 = XMVectorMultiply(V4, V3);
-
-    S1 = XMVectorSplatY(g_XMSinEstCoefficients.v);
-    S2 = XMVectorSplatZ(g_XMSinEstCoefficients.v);
-    S3 = XMVectorSplatW(g_XMSinEstCoefficients.v);
-
-    C0 = XMVectorSplatX(g_XMCosEstCoefficients.v);
-    C1 = XMVectorSplatY(g_XMCosEstCoefficients.v);
-    C2 = XMVectorSplatZ(g_XMCosEstCoefficients.v);
-    C3 = XMVectorSplatW(g_XMCosEstCoefficients.v);
-
-    Sin = XMVectorMultiplyAdd(S1, V3, V);
-    Sin = XMVectorMultiplyAdd(S2, V5, Sin);
-    Sin = XMVectorMultiplyAdd(S3, V7, Sin);
-
-    Cos = XMVectorMultiplyAdd(C1, V2, C0);
-    Cos = XMVectorMultiplyAdd(C2, V4, Cos);
-    Cos = XMVectorMultiplyAdd(C3, V6, Cos);
+    XMScalarSinCosEst(&Sin.vector4_f32[0], &Cos.vector4_f32[0], V.vector4_f32[0]);
+    XMScalarSinCosEst(&Sin.vector4_f32[1], &Cos.vector4_f32[1], V.vector4_f32[1]);
+    XMScalarSinCosEst(&Sin.vector4_f32[2], &Cos.vector4_f32[2], V.vector4_f32[2]);
+    XMScalarSinCosEst(&Sin.vector4_f32[3], &Cos.vector4_f32[3], V.vector4_f32[3]);
 
     *pSin = Sin;
     *pCos = Cos;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
+    // Map in [-pi/2,pi/2] with cos(y) = sign*cos(x).
+    __n128 sign = vandq_u32(x, g_XMNegativeZero);
+    __n128 c = vorrq_u32(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __n128 absx = vabsq_f32( x );
+    __n128 rflx = vsubq_f32(c, x);
+    __n128 comp = vcleq_f32(absx, g_XMHalfPi);
+    x = vbslq_f32( comp, x, rflx );
+    sign = vbslq_f32( comp, g_XMOne, g_XMNegativeOne );
+
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation for sine
+    const XMVECTOR SEC = g_XMSinCoefficients1;
+    XMVECTOR Result = vdupq_lane_f32(vget_high_f32(SEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(SEC), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(SEC), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    *pSin = vmulq_f32(Result, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR CEC = g_XMCosCoefficients1;
+    Result = vdupq_lane_f32(vget_high_f32(CEC), 1);
+
+    vConstants = vdupq_lane_f32(vget_high_f32(CEC), 0);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    vConstants = vdupq_lane_f32(vget_low_f32(CEC), 1);
+    Result = vmlaq_f32(vConstants, Result, x2);
+
+    Result = vmlaq_f32(g_XMOne, Result, x2);
+    *pCos = vmulq_f32(Result, sign);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V2, V3, V4, V5, V6, V7;
-    XMVECTOR S1, S2, S3;
-    XMVECTOR C0, C1, C2, C3;
-    XMVECTOR Sin, Cos;
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
 
-    // sin(V) ~= V - V^3 / 3! + V^5 / 5! - V^7 / 7! (for -PI <= V < PI)
-    // cos(V) ~= 1 - V^2 / 2! + V^4 / 4! - V^6 / 6! (for -PI <= V < PI)
-    V2 = XMVectorMultiply(V, V);
-    V3 = XMVectorMultiply(V2, V);
-    V4 = XMVectorMultiply(V2, V2);
-    V5 = XMVectorMultiply(V3, V2);
-    V6 = XMVectorMultiply(V3, V3);
-    V7 = XMVectorMultiply(V4, V3);
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x), cos(y) = sign*cos(x).
+    XMVECTOR sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, g_XMOne);
+    select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    sign = _mm_or_ps(select0, select1);
 
-    S1 = _mm_load_ps1(&g_XMSinEstCoefficients.f[1]);
-    S2 = _mm_load_ps1(&g_XMSinEstCoefficients.f[2]);
-    S3 = _mm_load_ps1(&g_XMSinEstCoefficients.f[3]);
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    C0 = _mm_load_ps1(&g_XMCosEstCoefficients.f[0]);
-    C1 = _mm_load_ps1(&g_XMCosEstCoefficients.f[1]);
-    C2 = _mm_load_ps1(&g_XMCosEstCoefficients.f[2]);
-    C3 = _mm_load_ps1(&g_XMCosEstCoefficients.f[3]);
+    // Compute polynomial approximation for sine
+    const XMVECTOR SEC = g_XMSinCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    Sin = XMVectorMultiplyAdd(S1, V3, V);
-    Sin = XMVectorMultiplyAdd(S2, V5, Sin);
-    Sin = XMVectorMultiplyAdd(S3, V7, Sin);
+    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    Cos = XMVectorMultiplyAdd(C1, V2, C0);
-    Cos = XMVectorMultiplyAdd(C2, V4, Cos);
-    Cos = XMVectorMultiplyAdd(C3, V6, Cos);
+    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
 
-    *pSin = Sin;
-    *pCos = Cos;
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    *pSin = Result;
+
+    // Compute polynomial approximation for cosine
+    const XMVECTOR CEC = g_XMCosCoefficients1;
+    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    Result = _mm_mul_ps(vConstants, x2);
+
+    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    Result = _mm_add_ps(Result, g_XMOne);
+    Result = _mm_mul_ps(Result, sign);
+    *pCos = Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -4721,189 +4688,28 @@ inline XMVECTOR XMVectorTanEst
     FXMVECTOR V
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR OneOverPi = XMVectorSplatW(g_XMTanEstCoefficients.v);
 
-    XMVECTOR V1, V2, V1T0, V1T1, V2T2;
-    XMVECTOR T0, T1, T2;
-    XMVECTOR N, D;
-    XMVECTOR OneOverPi;
-    XMVECTOR Result;
-
-    OneOverPi = XMVectorSplatW(g_XMTanEstCoefficients.v);
-
-    V1 = XMVectorMultiply(V, OneOverPi);
+    XMVECTOR V1 = XMVectorMultiply(V, OneOverPi);
     V1 = XMVectorRound(V1);
 
     V1 = XMVectorNegativeMultiplySubtract(g_XMPi.v, V1, V);
 
-    T0 = XMVectorSplatX(g_XMTanEstCoefficients.v);
-    T1 = XMVectorSplatY(g_XMTanEstCoefficients.v);
-    T2 = XMVectorSplatZ(g_XMTanEstCoefficients.v);
+    XMVECTOR T0 = XMVectorSplatX(g_XMTanEstCoefficients.v);
+    XMVECTOR T1 = XMVectorSplatY(g_XMTanEstCoefficients.v);
+    XMVECTOR T2 = XMVectorSplatZ(g_XMTanEstCoefficients.v);
 
-    V2T2 = XMVectorNegativeMultiplySubtract(V1, V1, T2);
-    V2 = XMVectorMultiply(V1, V1);
-    V1T0 = XMVectorMultiply(V1, T0);
-    V1T1 = XMVectorMultiply(V1, T1);
+    XMVECTOR V2T2 = XMVectorNegativeMultiplySubtract(V1, V1, T2);
+    XMVECTOR V2 = XMVectorMultiply(V1, V1);
+    XMVECTOR V1T0 = XMVectorMultiply(V1, T0);
+    XMVECTOR V1T1 = XMVectorMultiply(V1, T1);
 
-    D = XMVectorReciprocalEst(V2T2);
-    N = XMVectorMultiplyAdd(V2, V1T1, V1T0);
+    XMVECTOR D = XMVectorReciprocalEst(V2T2);
+    XMVECTOR N = XMVectorMultiplyAdd(V2, V1T1, V1T0);
 
-    Result = XMVectorMultiply(N, D);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2, V1T0, V1T1, V2T2;
-    XMVECTOR T0, T1, T2;
-    XMVECTOR N, D;
-    XMVECTOR OneOverPi;
-    XMVECTOR Result;
-
-    OneOverPi = XMVectorSplatW(g_XMTanEstCoefficients);
-
-    V1 = XMVectorMultiply(V, OneOverPi);
-    V1 = XMVectorRound(V1);
-
-    V1 = XMVectorNegativeMultiplySubtract(g_XMPi, V1, V);
-
-    T0 = XMVectorSplatX(g_XMTanEstCoefficients);
-    T1 = XMVectorSplatY(g_XMTanEstCoefficients);
-    T2 = XMVectorSplatZ(g_XMTanEstCoefficients);
-
-    V2T2 = XMVectorNegativeMultiplySubtract(V1, V1, T2);
-    V2 = XMVectorMultiply(V1, V1);
-    V1T0 = XMVectorMultiply(V1, T0);
-    V1T1 = XMVectorMultiply(V1, T1);
-
-    D = XMVectorReciprocalEst(V2T2);
-    N = XMVectorMultiplyAdd(V2, V1T1, V1T0);
-
-    Result = XMVectorMultiply(N, D);
-
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
+    return XMVectorMultiply(N, D);
 }
 
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorSinHEst
-(
-    FXMVECTOR V
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
-    static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
-
-    V1 = XMVectorMultiplyAdd(V, Scale.v, g_XMNegativeOne.v);
-    V2 = XMVectorNegativeMultiplySubtract(V, Scale.v, g_XMNegativeOne.v);
-
-    E1 = XMVectorExpEst(V1);
-    E2 = XMVectorExpEst(V2);
-
-    Result = XMVectorSubtract(E1, E2);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
-    static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
-
-    V1 = _mm_mul_ps(V,Scale);
-    V1 = _mm_add_ps(V1,g_XMNegativeOne);
-    V2 = _mm_mul_ps(V,Scale);
-    V2 = _mm_sub_ps(g_XMNegativeOne,V2);
-    E1 = XMVectorExpEst(V1);
-    E2 = XMVectorExpEst(V2);
-    Result = _mm_sub_ps(E1, E2);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
-
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorCosHEst
-(
-    FXMVECTOR V
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
-    static const XMVECTOR Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
-
-    V1 = XMVectorMultiplyAdd(V, Scale, g_XMNegativeOne.v);
-    V2 = XMVectorNegativeMultiplySubtract(V, Scale, g_XMNegativeOne.v);
-
-    E1 = XMVectorExpEst(V1);
-    E2 = XMVectorExpEst(V2);
-
-    Result = XMVectorAdd(E1, E2);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR V1, V2;
-    XMVECTOR E1, E2;
-    XMVECTOR Result;
-    static const XMVECTORF32 Scale = {1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f}; // 1.0f / ln(2.0f)
-
-    V1 = _mm_mul_ps(V,Scale);
-    V1 = _mm_add_ps(V1,g_XMNegativeOne);
-    V2 = _mm_mul_ps(V, Scale);
-    V2 = _mm_sub_ps(g_XMNegativeOne,V2);
-    E1 = XMVectorExpEst(V1);
-    E2 = XMVectorExpEst(V2);
-    Result = _mm_add_ps(E1, E2);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
-
-//------------------------------------------------------------------------------
-
-inline XMVECTOR XMVectorTanHEst
-(
-    FXMVECTOR V
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR E;
-    XMVECTOR Result;
-    static const XMVECTOR Scale = {2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f}; // 2.0f / ln(2.0f)
-
-    E = XMVectorMultiply(V, Scale);
-    E = XMVectorExpEst(E);
-    E = XMVectorMultiplyAdd(E, g_XMOneHalf.v, g_XMOneHalf.v);
-    E = XMVectorReciprocalEst(E);
-
-    Result = XMVectorSubtract(g_XMOne.v, E);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 Scale = {2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f}; // 2.0f / ln(2.0f)
-
-    XMVECTOR E = _mm_mul_ps(V, Scale);
-    E = XMVectorExpEst(E);
-    E = _mm_mul_ps(E,g_XMOneHalf);
-    E = _mm_add_ps(E,g_XMOneHalf);
-    E = XMVectorReciprocalEst(E);
-    E = _mm_sub_ps(g_XMOne, E);
-    return E;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -4912,71 +4718,75 @@ inline XMVECTOR XMVectorASinEst
     FXMVECTOR V
 )
 {
+    // 3-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR AbsV, V2, VD, VC0, V2C3;
-    XMVECTOR C0, C1, C2, C3;
-    XMVECTOR D, Rsq, SqrtD;
-    XMVECTOR OnePlusEps;
     XMVECTOR Result;
-
-    AbsV = XMVectorAbs(V);
-
-    OnePlusEps = XMVectorSplatX(g_XMASinEstConstants.v);
-
-    C0 = XMVectorSplatX(g_XMASinEstCoefficients.v);
-    C1 = XMVectorSplatY(g_XMASinEstCoefficients.v);
-    C2 = XMVectorSplatZ(g_XMASinEstCoefficients.v);
-    C3 = XMVectorSplatW(g_XMASinEstCoefficients.v);
-
-    D = XMVectorSubtract(OnePlusEps, AbsV);
-
-    Rsq = XMVectorReciprocalSqrtEst(D);
-    SqrtD = XMVectorMultiply(D, Rsq);
-
-    V2 = XMVectorMultiply(V, AbsV);
-    V2C3 = XMVectorMultiply(V2, C3);
-    VD = XMVectorMultiply(D, AbsV);
-    VC0 = XMVectorMultiply(V, C0);
-
-    Result = XMVectorMultiply(V, C1);
-    Result = XMVectorMultiplyAdd(V2, C2, Result);
-    Result = XMVectorMultiplyAdd(V2C3, VD, Result);
-    Result = XMVectorMultiplyAdd(VC0, SqrtD, Result);
-
+    Result.vector4_f32[0] = XMScalarASinEst( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarASinEst( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarASinEst( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarASinEst( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 nonnegative = vcgeq_f32(V, g_XMZero);
+    __n128 x = vabsq_f32(V);
 
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __n128 oneMValue = vsubq_f32(g_XMOne, x);
+    __n128 clampOneMValue = vmaxq_f32(g_XMZero, oneMValue);
+    __n128 root = XMVectorSqrt(clampOneMValue);
+
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMArcEstCoefficients;
+    __n128 t0 = vdupq_lane_f32(vget_high_f32(AEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(AEC), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AEC), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AEC), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+    t0 = vmulq_f32(t0, root);
+
+    __n128 t1 = vsubq_f32(g_XMPi, t0);
+    t0 = vbslq_f32( nonnegative, t0, t1 );
+    t0 = vsubq_f32(g_XMHalfPi, t0);
+    return t0;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Get abs(V)
-    XMVECTOR vAbsV = _mm_setzero_ps();
-    vAbsV = _mm_sub_ps(vAbsV,V);
-    vAbsV = _mm_max_ps(vAbsV,V);
+    __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
+    __m128 mvalue = _mm_sub_ps(g_XMZero, V);
+    __m128 x = _mm_max_ps(V, mvalue);  // |V|
 
-    XMVECTOR D = _mm_load_ps1(&g_XMASinEstConstants.f[0]);
-    D = _mm_sub_ps(D,vAbsV);
-    // Since this is an estimate, rqsrt is okay
-    XMVECTOR vConstants = _mm_rsqrt_ps(D);
-    XMVECTOR SqrtD = _mm_mul_ps(D,vConstants);
-    // V2 = V^2 retaining sign
-    XMVECTOR V2 = _mm_mul_ps(V,vAbsV);
-    D = _mm_mul_ps(D,vAbsV);
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __m128 oneMValue = _mm_sub_ps(g_XMOne, x);
+    __m128 clampOneMValue = _mm_max_ps(g_XMZero, oneMValue);
+    __m128 root = _mm_sqrt_ps(clampOneMValue);  // sqrt(1-|V|)
 
-    XMVECTOR vResult = _mm_load_ps1(&g_XMASinEstCoefficients.f[1]);
-    vResult = _mm_mul_ps(vResult,V);
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[2]);
-    vConstants = _mm_mul_ps(vConstants,V2);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMArcEstCoefficients;
+    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[3]);
-    vConstants = _mm_mul_ps(vConstants,V2);
-    vConstants = _mm_mul_ps(vConstants,D);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[0]);
-    vConstants = _mm_mul_ps(vConstants,V);
-    vConstants = _mm_mul_ps(vConstants,SqrtD);
-    vResult = _mm_add_ps(vResult,vConstants);
-    return vResult;
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, root);
+
+    __m128 t1 = _mm_sub_ps(g_XMPi, t0);
+    t0 = _mm_and_ps(nonnegative, t0);
+    t1 = _mm_andnot_ps(nonnegative, t1);
+    t0 = _mm_or_ps(t0, t1);
+    t0 = _mm_sub_ps(g_XMHalfPi, t0);
+    return t0;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -4988,83 +4798,112 @@ inline XMVECTOR XMVectorACosEst
     FXMVECTOR V
 )
 {
+    // 3-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR AbsV, V2, VD, VC0, V2C3;
-    XMVECTOR C0, C1, C2, C3;
-    XMVECTOR D, Rsq, SqrtD;
-    XMVECTOR OnePlusEps, HalfPi;
     XMVECTOR Result;
-
-    // acos(V) = PI / 2 - asin(V)
-
-    AbsV = XMVectorAbs(V);
-
-    OnePlusEps = XMVectorSplatX(g_XMASinEstConstants.v);
-    HalfPi = XMVectorSplatY(g_XMASinEstConstants.v);
-
-    C0 = XMVectorSplatX(g_XMASinEstCoefficients.v);
-    C1 = XMVectorSplatY(g_XMASinEstCoefficients.v);
-    C2 = XMVectorSplatZ(g_XMASinEstCoefficients.v);
-    C3 = XMVectorSplatW(g_XMASinEstCoefficients.v);
-
-    D = XMVectorSubtract(OnePlusEps, AbsV);
-
-    Rsq = XMVectorReciprocalSqrtEst(D);
-    SqrtD = XMVectorMultiply(D, Rsq);
-
-    V2 = XMVectorMultiply(V, AbsV);
-    V2C3 = XMVectorMultiply(V2, C3);
-    VD = XMVectorMultiply(D, AbsV);
-    VC0 = XMVectorMultiply(V, C0);
-
-    Result = XMVectorMultiply(V, C1);
-    Result = XMVectorMultiplyAdd(V2, C2, Result);
-    Result = XMVectorMultiplyAdd(V2C3, VD, Result);
-    Result = XMVectorMultiplyAdd(VC0, SqrtD, Result);
-    Result = XMVectorSubtract(HalfPi, Result);
-
+    Result.vector4_f32[0] = XMScalarACosEst( V.vector4_f32[0] );
+    Result.vector4_f32[1] = XMScalarACosEst( V.vector4_f32[1] );
+    Result.vector4_f32[2] = XMScalarACosEst( V.vector4_f32[2] );
+    Result.vector4_f32[3] = XMScalarACosEst( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 nonnegative = vcgeq_f32(V, g_XMZero);
+    __n128 x = vabsq_f32(V);
 
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __n128 oneMValue = vsubq_f32(g_XMOne, x);
+    __n128 clampOneMValue = vmaxq_f32(g_XMZero, oneMValue);
+    __n128 root = XMVectorSqrt(clampOneMValue);
+
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMArcEstCoefficients;
+    __n128 t0 = vdupq_lane_f32(vget_high_f32(AEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(AEC), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AEC), 1);
+    t0 = vmlaq_f32( vConstants, t0, x );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AEC), 0);
+    t0 = vmlaq_f32( vConstants, t0, x );
+    t0 = vmulq_f32(t0, root);
+
+    __n128 t1 = vsubq_f32(g_XMPi, t0);
+    t0 = vbslq_f32( nonnegative, t0, t1 );
+    return t0;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // acos(V) = PI / 2 - asin(V)
-    // Get abs(V)
-    XMVECTOR vAbsV = _mm_setzero_ps();
-    vAbsV = _mm_sub_ps(vAbsV,V);
-    vAbsV = _mm_max_ps(vAbsV,V);
-    // Calc D
-    XMVECTOR D = _mm_load_ps1(&g_XMASinEstConstants.f[0]);
-    D = _mm_sub_ps(D,vAbsV);
-    // SqrtD = sqrt(D-abs(V)) estimated
-    XMVECTOR vConstants = _mm_rsqrt_ps(D);
-    XMVECTOR SqrtD = _mm_mul_ps(D,vConstants);
-    // V2 = V^2 while retaining sign
-    XMVECTOR V2 = _mm_mul_ps(V, vAbsV);
-    // Drop vAbsV here. D = (Const-abs(V))*abs(V)
-    D = _mm_mul_ps(D, vAbsV);
+    __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
+    __m128 mvalue = _mm_sub_ps(g_XMZero, V);
+    __m128 x = _mm_max_ps(V, mvalue);  // |V|
 
-    XMVECTOR vResult = _mm_load_ps1(&g_XMASinEstCoefficients.f[1]);
-    vResult = _mm_mul_ps(vResult,V);
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[2]);
-    vConstants = _mm_mul_ps(vConstants,V2);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Compute (1-|V|), clamp to zero to avoid sqrt of negative number.
+    __m128 oneMValue = _mm_sub_ps(g_XMOne, x);
+    __m128 clampOneMValue = _mm_max_ps(g_XMZero, oneMValue);
+    __m128 root = _mm_sqrt_ps(clampOneMValue);  // sqrt(1-|V|)
 
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[3]);
-    vConstants = _mm_mul_ps(vConstants,V2);
-    vConstants = _mm_mul_ps(vConstants,D);
-    vResult = _mm_add_ps(vResult,vConstants);
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMArcEstCoefficients;
+    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinEstCoefficients.f[0]);
-    vConstants = _mm_mul_ps(vConstants,V);
-    vConstants = _mm_mul_ps(vConstants,SqrtD);
-    vResult = _mm_add_ps(vResult,vConstants);
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_load_ps1(&g_XMASinEstConstants.f[1]);
-    vResult = _mm_sub_ps(vConstants,vResult);
-    return vResult;
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, x);
+
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    t0 = _mm_add_ps(t0, vConstants);
+    t0 = _mm_mul_ps(t0, root);
+
+    __m128 t1 = _mm_sub_ps(g_XMPi, t0);
+    t0 = _mm_and_ps(nonnegative, t0);
+    t1 = _mm_andnot_ps(nonnegative, t1);
+    t0 = _mm_or_ps(t0, t1);
+    return t0;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
+
+//------------------------------------------------------------------------------
+
+namespace Internal
+{
+
+inline float XMScalarATanEst
+(
+    float Value
+)
+{
+    float y, sign;
+    if (fabsf(Value) <= 1.0f)
+    {
+        y = Value;
+        sign = 0.0f;
+    }
+    else if (Value > 1.0f)
+    {
+        y = 1.0f / Value;
+        sign = 1.0f;
+    }
+    else
+    {
+        y = 1.0f / Value;
+        sign = -1.0f;
+    }
+
+    // 9-degree minimax approximation
+    float y2 = y*y;
+    float poly = ((((0.0208351f*y2-0.085133f)*y2+0.180141f)*y2-0.3302995f)*y2+0.999866f)*y;
+
+    return (sign == 0.0f ? poly : sign*XM_PIDIV2 - poly);
+}
+
+};  // namespace Internal
 
 //------------------------------------------------------------------------------
 
@@ -5073,50 +4912,94 @@ inline XMVECTOR XMVectorATanEst
     FXMVECTOR V
 )
 {
+    // 9-degree minimax approximation
+
 #if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR AbsV, V2S2, N, D;
-    XMVECTOR S0, S1, S2;
-    XMVECTOR HalfPi;
     XMVECTOR Result;
-
-    S0 = XMVectorSplatX(g_XMATanEstCoefficients.v);
-    S1 = XMVectorSplatY(g_XMATanEstCoefficients.v);
-    S2 = XMVectorSplatZ(g_XMATanEstCoefficients.v);
-    HalfPi = XMVectorSplatW(g_XMATanEstCoefficients.v);
-
-    AbsV = XMVectorAbs(V);
-
-    V2S2 = XMVectorMultiplyAdd(V, V, S2);
-    N = XMVectorMultiplyAdd(AbsV, HalfPi, S0);
-    D = XMVectorMultiplyAdd(AbsV, S1, V2S2);
-    N = XMVectorMultiply(N, V);
-    D = XMVectorReciprocalEst(D);
-
-    Result = XMVectorMultiply(N, D);
-
+    Result.vector4_f32[0] = Internal::XMScalarATanEst( V.vector4_f32[0] );
+    Result.vector4_f32[1] = Internal::XMScalarATanEst( V.vector4_f32[1] );
+    Result.vector4_f32[2] = Internal::XMScalarATanEst( V.vector4_f32[2] );
+    Result.vector4_f32[3] = Internal::XMScalarATanEst( V.vector4_f32[3] );
     return Result;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 absV = vabsq_f32(V);
+    __n128 invV = XMVectorReciprocalEst(V);
+    __n128 comp = vcgtq_f32(V, g_XMOne);
+    __n128 sign = vbslq_f32(comp, g_XMOne, g_XMNegativeOne );
+    comp = vcleq_f32(absV, g_XMOne);
+    sign = vbslq_f32(comp, g_XMZero, sign );
+    __n128 x = vbslq_f32(comp, V, invV );
 
+    __n128 x2 = vmulq_f32(x, x);
+
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMATanEstCoefficients1;
+    __n128 Result = vdupq_lane_f32(vget_high_f32(AEC), 1);
+
+    XMVECTOR vConstants = vdupq_lane_f32(vget_high_f32(AEC), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32(AEC), 1);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    vConstants = vdupq_lane_f32(vget_low_f32( AEC), 0);
+    Result = vmlaq_f32( vConstants, Result, x2 );
+
+    // ATanEstCoefficients0 is already splatted
+    Result = vmlaq_f32( g_XMATanEstCoefficients0, Result, x2 );
+    Result = vmulq_f32( Result, x );
+
+    float32x4_t result1 = vmulq_f32(sign, g_XMHalfPi);
+    result1 = vsubq_f32(result1, Result);
+
+    comp = vceqq_f32(sign, g_XMZero);
+    Result = vbslq_f32( comp, Result, result1 );
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Get abs(V)
-    XMVECTOR vAbsV = _mm_setzero_ps();
-    vAbsV = _mm_sub_ps(vAbsV,V);
-    vAbsV = _mm_max_ps(vAbsV,V);
+    __m128 absV = XMVectorAbs(V);
+    __m128 invV = _mm_div_ps(g_XMOne, V);
+    __m128 comp = _mm_cmpgt_ps(V, g_XMOne);
+    __m128 select0 = _mm_and_ps(comp, g_XMOne);
+    __m128 select1 = _mm_andnot_ps(comp, g_XMNegativeOne);
+    __m128 sign = _mm_or_ps(select0, select1);
+    comp = _mm_cmple_ps(absV, g_XMOne);
+    select0 = _mm_and_ps(comp, g_XMZero);
+    select1 = _mm_andnot_ps(comp, sign);
+    sign = _mm_or_ps(select0, select1);
+    select0 = _mm_and_ps(comp, V);
+    select1 = _mm_andnot_ps(comp, invV);
+    __m128 x = _mm_or_ps(select0, select1);
 
-    XMVECTOR vResult = _mm_load_ps1(&g_XMATanEstCoefficients.f[3]);
-    vResult = _mm_mul_ps(vResult,vAbsV);
-    XMVECTOR vConstants = _mm_load_ps1(&g_XMATanEstCoefficients.f[0]);
-    vResult = _mm_add_ps(vResult,vConstants);
-    vResult = _mm_mul_ps(vResult,V);
+    __m128 x2 = _mm_mul_ps(x, x);
 
-    XMVECTOR D = _mm_mul_ps(V,V);
-    vConstants = _mm_load_ps1(&g_XMATanEstCoefficients.f[2]);
-    D = _mm_add_ps(D,vConstants);
-    vConstants = _mm_load_ps1(&g_XMATanEstCoefficients.f[1]);
-    vConstants = _mm_mul_ps(vConstants,vAbsV);
-    D = _mm_add_ps(D,vConstants);
-    vResult = _mm_div_ps(vResult,D);
-    return vResult;
+    // Compute polynomial approximation
+    const XMVECTOR AEC = g_XMATanEstCoefficients1;
+    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    __m128 Result = _mm_mul_ps(vConstants, x2);
+
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    Result = _mm_add_ps(Result, vConstants);
+    Result = _mm_mul_ps(Result, x2);
+
+    // ATanEstCoefficients0 is already splatted
+    Result = _mm_add_ps(Result, g_XMATanEstCoefficients0);
+    Result = _mm_mul_ps(Result, x);
+    __m128 result1 = _mm_mul_ps(sign, g_XMHalfPi);
+    result1 = _mm_sub_ps(result1, Result);
+
+    comp = _mm_cmpeq_ps(sign, g_XMZero);
+    select0 = _mm_and_ps(comp, Result);
+    select1 = _mm_andnot_ps(comp, result1);
+    Result = _mm_or_ps(select0, select1);
+    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -5129,51 +5012,40 @@ inline XMVECTOR XMVectorATan2Est
     FXMVECTOR X
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+    static const XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, 2.3561944905f /* Pi*3/4 */};
 
-    XMVECTOR Reciprocal;
-    XMVECTOR V;
-    XMVECTOR YSign;
-    XMVECTOR Pi, PiOverTwo, PiOverFour, ThreePiOverFour;
-    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity;
-    XMVECTOR ATanResultValid;
-    XMVECTOR R0, R1, R2, R3, R4, R5;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static const XMVECTOR ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, 2.3561944905f /* Pi*3/4 */};
+    const XMVECTOR Zero = XMVectorZero();
+    XMVECTOR ATanResultValid = XMVectorTrueInt();
 
-    Zero = XMVectorZero();
-    ATanResultValid = XMVectorTrueInt();
+    XMVECTOR Pi = XMVectorSplatX(ATan2Constants);
+    XMVECTOR PiOverTwo = XMVectorSplatY(ATan2Constants);
+    XMVECTOR PiOverFour = XMVectorSplatZ(ATan2Constants);
+    XMVECTOR ThreePiOverFour = XMVectorSplatW(ATan2Constants);
 
-    Pi = XMVectorSplatX(ATan2Constants);
-    PiOverTwo = XMVectorSplatY(ATan2Constants);
-    PiOverFour = XMVectorSplatZ(ATan2Constants);
-    ThreePiOverFour = XMVectorSplatW(ATan2Constants);
-
-    YEqualsZero = XMVectorEqual(Y, Zero);
-    XEqualsZero = XMVectorEqual(X, Zero);
-    XIsPositive = XMVectorAndInt(X, g_XMNegativeZero.v);
+    XMVECTOR YEqualsZero = XMVectorEqual(Y, Zero);
+    XMVECTOR XEqualsZero = XMVectorEqual(X, Zero);
+    XMVECTOR XIsPositive = XMVectorAndInt(X, g_XMNegativeZero.v);
     XIsPositive = XMVectorEqualInt(XIsPositive, Zero);
-    YEqualsInfinity = XMVectorIsInfinite(Y);
-    XEqualsInfinity = XMVectorIsInfinite(X);
+    XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
+    XMVECTOR XEqualsInfinity = XMVectorIsInfinite(X);
 
-    YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
+    XMVECTOR YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
     Pi = XMVectorOrInt(Pi, YSign);
     PiOverTwo = XMVectorOrInt(PiOverTwo, YSign);
     PiOverFour = XMVectorOrInt(PiOverFour, YSign);
     ThreePiOverFour = XMVectorOrInt(ThreePiOverFour, YSign);
 
-    R1 = XMVectorSelect(Pi, YSign, XIsPositive);
-    R2 = XMVectorSelect(ATanResultValid, PiOverTwo, XEqualsZero);
-    R3 = XMVectorSelect(R2, R1, YEqualsZero);
-    R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
-    R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
-    Result = XMVectorSelect(R3, R5, YEqualsInfinity);
+    XMVECTOR R1 = XMVectorSelect(Pi, YSign, XIsPositive);
+    XMVECTOR R2 = XMVectorSelect(ATanResultValid, PiOverTwo, XEqualsZero);
+    XMVECTOR R3 = XMVectorSelect(R2, R1, YEqualsZero);
+    XMVECTOR R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
+    XMVECTOR R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
+    XMVECTOR Result = XMVectorSelect(R3, R5, YEqualsInfinity);
     ATanResultValid = XMVectorEqualInt(Result, ATanResultValid);
 
-    Reciprocal = XMVectorReciprocalEst(X);
-    V = XMVectorMultiply(Y, Reciprocal);
-    R0 = XMVectorATanEst(V);
+    XMVECTOR Reciprocal = XMVectorReciprocalEst(X);
+    XMVECTOR V = XMVectorMultiply(Y, Reciprocal);
+    XMVECTOR R0 = XMVectorATanEst(V);
 
     R1 = XMVectorSelect( Pi, Zero, XIsPositive );
     R2 = XMVectorAdd(R0, R1);
@@ -5181,62 +5053,6 @@ inline XMVECTOR XMVectorATan2Est
     Result = XMVectorSelect(Result, R2, ATanResultValid);
 
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
-
-    // Mask if Y>0 && Y!=INF
-    XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
-    // Get the sign of (Y&0x80000000)
-    XMVECTOR YSign = _mm_and_ps(Y, g_XMNegativeZero);
-    // Get the sign bits of X
-    XMVECTOR XIsPositive = _mm_and_ps(X,g_XMNegativeZero);
-    // Change them to masks
-    XIsPositive = XMVectorEqualInt(XIsPositive,g_XMZero);
-    // Get Pi
-    XMVECTOR Pi = _mm_load_ps1(&ATan2Constants.f[0]);
-    // Copy the sign of Y
-    Pi = _mm_or_ps(Pi,YSign);
-    XMVECTOR R1 = XMVectorSelect(Pi,YSign,XIsPositive);
-    // Mask for X==0
-    XMVECTOR vConstants = _mm_cmpeq_ps(X,g_XMZero);
-    // Get Pi/2 with with sign of Y
-    XMVECTOR PiOverTwo = _mm_load_ps1(&ATan2Constants.f[1]);
-    PiOverTwo = _mm_or_ps(PiOverTwo,YSign);
-    XMVECTOR R2 = XMVectorSelect(g_XMNegOneMask,PiOverTwo,vConstants);
-    // Mask for Y==0
-    vConstants = _mm_cmpeq_ps(Y,g_XMZero);
-    R2 = XMVectorSelect(R2,R1,vConstants);
-    // Get Pi/4 with sign of Y
-    XMVECTOR PiOverFour = _mm_load_ps1(&ATan2Constants.f[2]);
-    PiOverFour = _mm_or_ps(PiOverFour,YSign);
-    // Get (Pi*3)/4 with sign of Y
-    XMVECTOR ThreePiOverFour = _mm_load_ps1(&ATan2Constants.f[3]);
-    ThreePiOverFour = _mm_or_ps(ThreePiOverFour,YSign);
-    vConstants = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
-    XMVECTOR XEqualsInfinity = XMVectorIsInfinite(X);
-    vConstants = XMVectorSelect(PiOverTwo,vConstants,XEqualsInfinity);
-
-    XMVECTOR vResult = XMVectorSelect(R2,vConstants,YEqualsInfinity);
-    vConstants = XMVectorSelect(R1,vResult,YEqualsInfinity);
-    // At this point, any entry that's zero will get the result
-    // from XMVectorATan(), otherwise, return the failsafe value
-    vResult = XMVectorSelect(vResult,vConstants,XEqualsInfinity);
-    // Any entries not 0xFFFFFFFF, are considered precalculated
-    XMVECTOR ATanResultValid = XMVectorEqualInt(vResult,g_XMNegOneMask);
-    // Let's do the ATan2 function
-    XMVECTOR Reciprocal = _mm_rcp_ps(X);
-    vConstants = _mm_mul_ps(Y, Reciprocal);
-    vConstants = XMVectorATanEst(vConstants);
-    // Discard entries that have been declared void
-
-    XMVECTOR R3 = XMVectorSelect( Pi, g_XMZero, XIsPositive );
-    vConstants = _mm_add_ps( vConstants, R3 );
-
-    vResult = XMVectorSelect(vResult,vConstants,ATanResultValid);
-    return vResult;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -5248,29 +5064,21 @@ inline XMVECTOR XMVectorLerp
     float    t
 )
 {
+    // V0 + t * (V1 - V0)
+
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR Scale;
-    XMVECTOR Length;
-    XMVECTOR Result;
+    XMVECTOR Scale = XMVectorReplicate(t);
+    XMVECTOR Length = XMVectorSubtract(V1, V0);
+    return XMVectorMultiplyAdd(Length, Scale, V0);
 
-    // V0 + t * (V1 - V0)
-    Scale = XMVectorReplicate(t);
-    Length = XMVectorSubtract(V1, V0);
-    Result = XMVectorMultiplyAdd(Length, Scale, V0);
-
-    return Result;
-
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR L = vsubq_f32( V1, V0 );
+    return vmlaq_n_f32( V0, L, t );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR L, S;
-    XMVECTOR Result;
-
-    L = _mm_sub_ps( V1, V0 );
-
-    S = _mm_set_ps1( t );
-
-    Result = _mm_mul_ps( L, S );
-
+    XMVECTOR L = _mm_sub_ps( V1, V0 );
+    XMVECTOR S = _mm_set_ps1( t );
+    XMVECTOR Result = _mm_mul_ps( L, S );
     return _mm_add_ps( Result, V0 );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
@@ -5285,25 +5093,19 @@ inline XMVECTOR XMVectorLerpV
     FXMVECTOR T
 )
 {
+    // V0 + T * (V1 - V0)
+
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR Length;
-    XMVECTOR Result;
+    XMVECTOR Length = XMVectorSubtract(V1, V0);
+    return XMVectorMultiplyAdd(Length, T, V0);
 
-    // V0 + T * (V1 - V0)
-    Length = XMVectorSubtract(V1, V0);
-    Result = XMVectorMultiplyAdd(Length, T, V0);
-
-    return Result;
-
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR L = vsubq_f32( V1, V0 );
+    return vmlaq_f32( V0, L, T );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Length;
-    XMVECTOR Result;
-
-    Length = _mm_sub_ps( V1, V0 );
-
-    Result = _mm_mul_ps( Length, T );
-
+    XMVECTOR Length = _mm_sub_ps( V1, V0 );
+    XMVECTOR Result = _mm_mul_ps( Length, T );
     return _mm_add_ps( Result, V0 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -5316,39 +5118,46 @@ inline XMVECTOR XMVectorHermite
     FXMVECTOR Position0, 
     FXMVECTOR Tangent0, 
     FXMVECTOR Position1, 
-    CXMVECTOR Tangent1, 
+    GXMVECTOR Tangent1, 
     float    t
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR P0;
-    XMVECTOR T0;
-    XMVECTOR P1;
-    XMVECTOR T1;
-    XMVECTOR Result;
-    float    t2;
-    float    t3;
-
     // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
     //          (t^3 - 2 * t^2 + t) * Tangent0 +
     //          (-2 * t^3 + 3 * t^2) * Position1 +
     //          (t^3 - t^2) * Tangent1
-    t2 = t * t;
-    t3 = t * t2;
 
-    P0 = XMVectorReplicate(2.0f * t3 - 3.0f * t2 + 1.0f);
-    T0 = XMVectorReplicate(t3 - 2.0f * t2 + t);
-    P1 = XMVectorReplicate(-2.0f * t3 + 3.0f * t2);
-    T1 = XMVectorReplicate(t3 - t2);
+#if defined(_XM_NO_INTRINSICS_)
 
-    Result = XMVectorMultiply(P0, Position0);
+    float t2 = t * t;
+    float t3 = t * t2;
+
+    XMVECTOR P0 = XMVectorReplicate(2.0f * t3 - 3.0f * t2 + 1.0f);
+    XMVECTOR T0 = XMVectorReplicate(t3 - 2.0f * t2 + t);
+    XMVECTOR P1 = XMVectorReplicate(-2.0f * t3 + 3.0f * t2);
+    XMVECTOR T1 = XMVectorReplicate(t3 - t2);
+
+    XMVECTOR Result = XMVectorMultiply(P0, Position0);
     Result = XMVectorMultiplyAdd(T0, Tangent0, Result);
     Result = XMVectorMultiplyAdd(P1, Position1, Result);
     Result = XMVectorMultiplyAdd(T1, Tangent1, Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float t2 = t * t;
+    float t3 = t * t2;
+
+    XMVECTOR P0 = vdupq_n_f32(2.0f * t3 - 3.0f * t2 + 1.0f);
+    XMVECTOR T0 = vdupq_n_f32(t3 - 2.0f * t2 + t);
+    XMVECTOR P1 = vdupq_n_f32(-2.0f * t3 + 3.0f * t2);
+    XMVECTOR T1 = vdupq_n_f32(t3 - t2);
+
+    XMVECTOR vResult = vmulq_f32(P0, Position0);
+    vResult = vmlaq_f32( vResult, T0, Tangent0 );
+    vResult = vmlaq_f32( vResult, P1, Position1 );
+    vResult = vmlaq_f32( vResult, T1, Tangent1 );
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -5377,47 +5186,66 @@ inline XMVECTOR XMVectorHermiteV
     FXMVECTOR Position0, 
     FXMVECTOR Tangent0, 
     FXMVECTOR Position1, 
-    CXMVECTOR Tangent1, 
+    GXMVECTOR Tangent1, 
     CXMVECTOR T
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR P0;
-    XMVECTOR T0;
-    XMVECTOR P1;
-    XMVECTOR T1;
-    XMVECTOR Result;
-    XMVECTOR T2;
-    XMVECTOR T3;
-
     // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
     //          (t^3 - 2 * t^2 + t) * Tangent0 +
     //          (-2 * t^3 + 3 * t^2) * Position1 +
     //          (t^3 - t^2) * Tangent1
-    T2 = XMVectorMultiply(T, T);
-    T3 = XMVectorMultiply(T , T2);
 
-    P0 = XMVectorReplicate(2.0f * T3.vector4_f32[0] - 3.0f * T2.vector4_f32[0] + 1.0f);
-    T0 = XMVectorReplicate(T3.vector4_f32[1] - 2.0f * T2.vector4_f32[1] + T.vector4_f32[1]);
-    P1 = XMVectorReplicate(-2.0f * T3.vector4_f32[2] + 3.0f * T2.vector4_f32[2]);
-    T1 = XMVectorReplicate(T3.vector4_f32[3] - T2.vector4_f32[3]);
+#if defined(_XM_NO_INTRINSICS_)
 
-    Result = XMVectorMultiply(P0, Position0);
+    XMVECTOR T2 = XMVectorMultiply(T, T);
+    XMVECTOR T3 = XMVectorMultiply(T , T2);
+
+    XMVECTOR P0 = XMVectorReplicate(2.0f * T3.vector4_f32[0] - 3.0f * T2.vector4_f32[0] + 1.0f);
+    XMVECTOR T0 = XMVectorReplicate(T3.vector4_f32[1] - 2.0f * T2.vector4_f32[1] + T.vector4_f32[1]);
+    XMVECTOR P1 = XMVectorReplicate(-2.0f * T3.vector4_f32[2] + 3.0f * T2.vector4_f32[2]);
+    XMVECTOR T1 = XMVectorReplicate(T3.vector4_f32[3] - T2.vector4_f32[3]);
+
+    XMVECTOR Result = XMVectorMultiply(P0, Position0);
     Result = XMVectorMultiplyAdd(T0, Tangent0, Result);
     Result = XMVectorMultiplyAdd(P1, Position1, Result);
     Result = XMVectorMultiplyAdd(T1, Tangent1, Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const XMVECTORF32 CatMulT2 = {-3.0f,-2.0f,3.0f,-1.0f};
+    static const XMVECTORF32 CatMulT3 = {2.0f,1.0f,-2.0f,1.0f};
+
+    XMVECTOR T2 = vmulq_f32(T,T);
+    XMVECTOR T3 = vmulq_f32(T,T2);
+    // Mul by the constants against t^2
+    T2 = vmulq_f32(T2,CatMulT2);
+    // Mul by the constants against t^3
+    T3 = vmlaq_f32(T2, T3, CatMulT3 );
+    // T3 now has the pre-result.
+    // I need to add t.y only
+    T2 = vandq_u32(T,g_XMMaskY);
+    T3 = vaddq_f32(T3,T2);
+    // Add 1.0f to x
+    T3 = vaddq_f32(T3,g_XMIdentityR0);
+    // Now, I have the constants created
+    // Mul the x constant to Position0
+    XMVECTOR vResult = vdupq_lane_f32( vget_low_f32( T3 ), 0 ); // T3[0]
+    vResult = vmulq_f32(vResult,Position0);
+    // Mul the y constant to Tangent0
+    T2 = vdupq_lane_f32( vget_low_f32( T3 ), 1 ); // T3[1]
+    vResult = vmlaq_f32(vResult, T2, Tangent0 );
+    // Mul the z constant to Position1
+    T2 = vdupq_lane_f32( vget_high_f32( T3 ), 0 ); // T3[2]
+    vResult = vmlaq_f32(vResult, T2, Position1 );
+    // Mul the w constant to Tangent1
+    T3 = vdupq_lane_f32( vget_high_f32( T3 ), 1 ); // T3[3]
+    vResult = vmlaq_f32(vResult, T3, Tangent1 );
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 CatMulT2 = {-3.0f,-2.0f,3.0f,-1.0f};
     static const XMVECTORF32 CatMulT3 = {2.0f,1.0f,-2.0f,1.0f};
 
-    // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
-    //          (t^3 - 2 * t^2 + t) * Tangent0 +
-    //          (-2 * t^3 + 3 * t^2) * Position1 +
-    //          (t^3 - t^2) * Tangent1
     XMVECTOR T2 = _mm_mul_ps(T,T);
     XMVECTOR T3 = _mm_mul_ps(T,T2);
     // Mul by the constants against t^2
@@ -5459,39 +5287,47 @@ inline XMVECTOR XMVectorCatmullRom
     FXMVECTOR Position0, 
     FXMVECTOR Position1, 
     FXMVECTOR Position2, 
-    CXMVECTOR Position3, 
+    GXMVECTOR Position3, 
     float    t
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR P0;
-    XMVECTOR P1;
-    XMVECTOR P2;
-    XMVECTOR P3;
-    XMVECTOR Result;
-    float    t2;
-    float    t3;
-
     // Result = ((-t^3 + 2 * t^2 - t) * Position0 +
     //           (3 * t^3 - 5 * t^2 + 2) * Position1 +
     //           (-3 * t^3 + 4 * t^2 + t) * Position2 +
     //           (t^3 - t^2) * Position3) * 0.5
-    t2 = t * t;
-    t3 = t * t2;
 
-    P0 = XMVectorReplicate((-t3 + 2.0f * t2 - t) * 0.5f);
-    P1 = XMVectorReplicate((3.0f * t3 - 5.0f * t2 + 2.0f) * 0.5f);
-    P2 = XMVectorReplicate((-3.0f * t3 + 4.0f * t2 + t) * 0.5f);
-    P3 = XMVectorReplicate((t3 - t2) * 0.5f);
+#if defined(_XM_NO_INTRINSICS_)
 
-    Result = XMVectorMultiply(P0, Position0);
+    float t2 = t * t;
+    float t3 = t * t2;
+
+    XMVECTOR P0 = XMVectorReplicate((-t3 + 2.0f * t2 - t) * 0.5f);
+    XMVECTOR P1 = XMVectorReplicate((3.0f * t3 - 5.0f * t2 + 2.0f) * 0.5f);
+    XMVECTOR P2 = XMVectorReplicate((-3.0f * t3 + 4.0f * t2 + t) * 0.5f);
+    XMVECTOR P3 = XMVectorReplicate((t3 - t2) * 0.5f);
+
+    XMVECTOR Result = XMVectorMultiply(P0, Position0);
     Result = XMVectorMultiplyAdd(P1, Position1, Result);
     Result = XMVectorMultiplyAdd(P2, Position2, Result);
     Result = XMVectorMultiplyAdd(P3, Position3, Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float t2 = t * t;
+    float t3 = t * t2;
+
+    XMVECTOR P0 = vdupq_n_f32((-t3 + 2.0f * t2 - t) * 0.5f);
+    XMVECTOR P1 = vdupq_n_f32((3.0f * t3 - 5.0f * t2 + 2.0f) * 0.5f);
+    XMVECTOR P2 = vdupq_n_f32((-3.0f * t3 + 4.0f * t2 + t) * 0.5f);
+    XMVECTOR P3 = vdupq_n_f32((t3 - t2) * 0.5f);
+
+    P1 = vmulq_f32(P1, Position1);
+    P0 = vmlaq_f32(P1, P0, Position0);
+    P3 = vmulq_f32(P3, Position3);
+    P2 = vmlaq_f32(P3, P2, Position2);
+    P0 = vaddq_f32(P0,P2);
+    return P0;
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -5520,7 +5356,7 @@ inline XMVECTOR XMVectorCatmullRomV
     FXMVECTOR Position0, 
     FXMVECTOR Position1, 
     FXMVECTOR Position2, 
-    CXMVECTOR Position3, 
+    GXMVECTOR Position3, 
     CXMVECTOR T
 )
 {
@@ -5547,6 +5383,35 @@ inline XMVECTOR XMVectorCatmullRomV
         (-3*fw*fw*fw+4*fw*fw+fw)*Position2.vector4_f32[3]+
         (fw*fw*fw-fw*fw)*Position3.vector4_f32[3])
     };
+    return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const XMVECTORF32 Catmul2 = {2.0f,2.0f,2.0f,2.0f};
+    static const XMVECTORF32 Catmul3 = {3.0f,3.0f,3.0f,3.0f};
+    static const XMVECTORF32 Catmul4 = {4.0f,4.0f,4.0f,4.0f};
+    static const XMVECTORF32 Catmul5 = {5.0f,5.0f,5.0f,5.0f};
+    // Cache T^2 and T^3
+    XMVECTOR T2 = vmulq_f32(T,T);
+    XMVECTOR T3 = vmulq_f32(T,T2);
+    // Perform the Position0 term
+    XMVECTOR vResult = vaddq_f32(T2,T2);
+    vResult = vsubq_f32(vResult,T);
+    vResult = vsubq_f32(vResult,T3);
+    vResult = vmulq_f32(vResult,Position0);
+    // Perform the Position1 term and add
+    XMVECTOR vTemp = vmulq_f32(T3,Catmul3);
+    vTemp = vmlsq_f32(vTemp, T2, Catmul5);
+    vTemp = vaddq_f32(vTemp,Catmul2);
+    vResult = vmlaq_f32(vResult, vTemp, Position1);
+    // Perform the Position2 term and add
+    vTemp = vmulq_f32(T2,Catmul4);
+    vTemp = vmlsq_f32(vTemp, T3, Catmul3);
+    vTemp = vaddq_f32(vTemp,T);
+    vResult = vmlaq_f32(vResult, vTemp, Position2);
+    // Position3 is the last term
+    T3 = vsubq_f32(T3,T2);
+    vResult = vmlaq_f32(vResult, T3, Position3);
+    // Multiply by 0.5f and exit
+    vResult = vmulq_f32(vResult,g_XMOneHalf);
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Catmul2 = {2.0f,2.0f,2.0f,2.0f};
@@ -5597,26 +5462,28 @@ inline XMVECTOR XMVectorBaryCentric
     float    g
 )
 {
+    // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
+
 #if defined(_XM_NO_INTRINSICS_)
 
-    // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
-    XMVECTOR P10;
-    XMVECTOR P20;
-    XMVECTOR ScaleF;
-    XMVECTOR ScaleG;
-    XMVECTOR Result;
+    XMVECTOR P10 = XMVectorSubtract(Position1, Position0);
+    XMVECTOR ScaleF = XMVectorReplicate(f);
 
-    P10 = XMVectorSubtract(Position1, Position0);
-    ScaleF = XMVectorReplicate(f);
+    XMVECTOR P20 = XMVectorSubtract(Position2, Position0);
+    XMVECTOR ScaleG = XMVectorReplicate(g);
 
-    P20 = XMVectorSubtract(Position2, Position0);
-    ScaleG = XMVectorReplicate(g);
-
-    Result = XMVectorMultiplyAdd(P10, ScaleF, Position0);
+    XMVECTOR Result = XMVectorMultiplyAdd(P10, ScaleF, Position0);
     Result = XMVectorMultiplyAdd(P20, ScaleG, Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR R1 = vsubq_f32(Position1,Position0);
+    XMVECTOR SF = vdupq_n_f32(f);
+    XMVECTOR R2 = vsubq_f32(Position2,Position0);
+    XMVECTOR SG = vdupq_n_f32(g);
+    R1 = vmlaq_f32( Position0, R1, SF);
+    return vmlaq_f32( R1, R2, SG );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
     XMVECTOR SF = _mm_set_ps1(f);
@@ -5638,25 +5505,27 @@ inline XMVECTOR XMVectorBaryCentricV
     FXMVECTOR Position0, 
     FXMVECTOR Position1, 
     FXMVECTOR Position2, 
-    CXMVECTOR F, 
+    GXMVECTOR F, 
     CXMVECTOR G
 )
 {
+    // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
+
 #if defined(_XM_NO_INTRINSICS_)
 
-    // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
-    XMVECTOR P10;
-    XMVECTOR P20;
-    XMVECTOR Result;
+    XMVECTOR P10 = XMVectorSubtract(Position1, Position0);
+    XMVECTOR P20 = XMVectorSubtract(Position2, Position0);
 
-    P10 = XMVectorSubtract(Position1, Position0);
-    P20 = XMVectorSubtract(Position2, Position0);
-
-    Result = XMVectorMultiplyAdd(P10, F, Position0);
+    XMVECTOR Result = XMVectorMultiplyAdd(P10, F, Position0);
     Result = XMVectorMultiplyAdd(P20, G, Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR R1 = vsubq_f32(Position1,Position0);
+    XMVECTOR R2 = vsubq_f32(Position2,Position0);
+    R1 = vmlaq_f32( Position0, R1, F );
+    return vmlaq_f32( R1, R2, G);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
     XMVECTOR R2 = _mm_sub_ps(Position2,Position0);
@@ -5689,6 +5558,9 @@ inline bool XMVector2Equal
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
 // z and w are don't care
@@ -5710,7 +5582,6 @@ inline uint32_t XMVector2EqualR
 #if defined(_XM_NO_INTRINSICS_)
 
     uint32_t CR = 0;
-
     if ((V1.vector4_f32[0] == V2.vector4_f32[0]) && 
         (V1.vector4_f32[1] == V2.vector4_f32[1]))
     {
@@ -5718,6 +5589,20 @@ inline uint32_t XMVector2EqualR
     }
     else if ((V1.vector4_f32[0] != V2.vector4_f32[0]) && 
         (V1.vector4_f32[1] != V2.vector4_f32[1]))
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    uint64_t r = vget_lane_u64( vTemp, 0 );
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -5750,6 +5635,9 @@ inline bool XMVector2EqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_u32( vget_low_u32(V1), vget_low_u32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)==3) != 0);
@@ -5781,6 +5669,19 @@ inline uint32_t XMVector2EqualIntR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_u32( vget_low_u32(V1), vget_low_u32(V2) );
+    uint64_t r = vget_lane_u64( vTemp, 0 );
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     int iTest = _mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3;
@@ -5808,11 +5709,15 @@ inline bool XMVector2NearEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    float dx, dy;
-    dx = fabsf(V1.vector4_f32[0]-V2.vector4_f32[0]);
-    dy = fabsf(V1.vector4_f32[1]-V2.vector4_f32[1]);
+    float dx = fabsf(V1.vector4_f32[0]-V2.vector4_f32[0]);
+    float dy = fabsf(V1.vector4_f32[1]-V2.vector4_f32[1]);
     return ((dx <= Epsilon.vector4_f32[0]) &&
             (dy <= Epsilon.vector4_f32[1]));
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vDelta = vsub_f32(vget_low_u32(V1), vget_low_u32(V2));
+    __n64 vTemp = vacle_f32( vDelta, vget_low_u32(Epsilon) );
+    uint64_t r = vget_lane_u64( vTemp, 0 );
+    return ( r == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -5837,6 +5742,9 @@ inline bool XMVector2NotEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) != 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
 // z and w are don't care
@@ -5856,6 +5764,9 @@ inline bool XMVector2NotEqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vceq_u32( vget_low_u32(V1), vget_low_u32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) != 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)!=3) != 0);
@@ -5874,7 +5785,9 @@ inline bool XMVector2Greater
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1])) != 0);
-
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vcgt_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
 // z and w are don't care
@@ -5906,6 +5819,20 @@ inline uint32_t XMVector2GreaterR
         CR = XM_CRMASK_CR6FALSE;
     }
     return CR;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vcgt_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    uint64_t r = vget_lane_u64( vTemp, 0 );
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     int iTest = _mm_movemask_ps(vTemp)&3;
@@ -5933,6 +5860,9 @@ inline bool XMVector2GreaterOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vcge_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -5950,6 +5880,7 @@ inline uint32_t XMVector2GreaterOrEqualR
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
+
     uint32_t CR = 0;
     if ((V1.vector4_f32[0] >= V2.vector4_f32[0]) && 
         (V1.vector4_f32[1] >= V2.vector4_f32[1]))
@@ -5963,6 +5894,19 @@ inline uint32_t XMVector2GreaterOrEqualR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vcge_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    uint64_t r = vget_lane_u64( vTemp, 0 );
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     int iTest = _mm_movemask_ps(vTemp)&3;
@@ -5990,6 +5934,9 @@ inline bool XMVector2Less
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vclt_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -6008,6 +5955,9 @@ inline bool XMVector2LessOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 vTemp = vcle_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -6024,10 +5974,23 @@ inline bool XMVector2InBounds
     FXMVECTOR Bounds
 )
 {
- #if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_)
     return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
         (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1])) != 0);
- #elif defined(_XM_SSE_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    __n64 B = vget_low_f32( Bounds );
+    // Test if less than or equal
+    __n64 vTemp1 = vcle_f32(VL,B);
+    // Negate the bounds
+    __n64 vTemp2 = vneg_f32(B);
+    // Test if greater or equal (Reversed)
+    vTemp2 = vcle_f32(vTemp2,VL);
+    // Blend answers
+    vTemp1 = vand_u32(vTemp1,vTemp2);
+    // x and y in bounds?
+    return ( vget_lane_u64( vTemp1, 0 ) == 0xFFFFFFFFFFFFFFFFU );
+#elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
     // Negate the bounds
@@ -6043,37 +6006,6 @@ inline bool XMVector2InBounds
 #endif
 }
 
-//------------------------------------------------------------------------------
-
-inline uint32_t XMVector2InBoundsR
-(
-    FXMVECTOR V, 
-    FXMVECTOR Bounds
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-    uint32_t CR = 0;
-    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
-        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]))
-    {
-        CR = XM_CRMASK_CR6BOUNDS;
-    }
-    return CR;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Test if less than or equal
-    XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
-    // Negate the bounds
-    XMVECTOR vTemp2 = _mm_mul_ps(Bounds,g_XMNegativeOne);
-    // Test if greater or equal (Reversed)
-    vTemp2 = _mm_cmple_ps(vTemp2,V);
-    // Blend answers
-    vTemp1 = _mm_and_ps(vTemp1,vTemp2);
-    // x and y in bounds? (z and w are don't care)
-    return ((_mm_movemask_ps(vTemp1)&0x3)==0x3) ? XM_CRMASK_CR6BOUNDS : 0;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -6085,19 +6017,17 @@ inline bool XMVector2IsNaN
 #if defined(_XM_NO_INTRINSICS_)
     return (XMISNAN(V.vector4_f32[0]) ||
             XMISNAN(V.vector4_f32[1]));
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    // Test against itself. NaN is always not equal
+    __n64 vTempNan = vceq_f32( VL, VL );
+    // If x or y are NaN, the mask is zero
+    return ( vget_lane_u64( vTempNan, 0 ) != 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Mask off the exponent
-    __m128i vTempInf = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMInfinity);
-    // Mask off the mantissa
-    __m128i vTempNan = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMQNaNTest);
-    // Are any of the exponents == 0x7F800000?
-    vTempInf = _mm_cmpeq_epi32(vTempInf,g_XMInfinity);
-    // Are any of the mantissa's zero? (SSE2 doesn't have a neq test)
-    vTempNan = _mm_cmpeq_epi32(vTempNan,g_XMZero);
-    // Perform a not on the NaN test to be true on NON-zero mantissas
-    vTempNan = _mm_andnot_si128(vTempNan,vTempInf);
-    // If x or y are NaN, the signs are true after the merge above
-    return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTempNan)[0])&3) != 0);
+    // Test against itself. NaN is always not equal
+    XMVECTOR vTempNan = _mm_cmpneq_ps(V,V);
+    // If x or y are NaN, the mask is non-zero
+    return ((_mm_movemask_ps(vTempNan)&3) != 0);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6113,6 +6043,13 @@ inline bool XMVector2IsInfinite
 
     return (XMISINF(V.vector4_f32[0]) ||
             XMISINF(V.vector4_f32[1]));
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Mask off the sign bit
+    __n64 vTemp = vand_u32( vget_low_f32( V ) , vget_low_f32( g_XMAbsMask ) );
+    // Compare to infinity
+    vTemp = vceq_f32(vTemp, vget_low_f32( g_XMInfinity) );
+    // If any are infinity, the signs are true.
+    return vget_lane_u64( vTemp, 0 ) != 0;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     __m128 vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -6139,14 +6076,17 @@ inline XMVECTOR XMVector2Dot
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] =
     Result.vector4_f32[1] =
     Result.vector4_f32[2] =
     Result.vector4_f32[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Perform the dot product on x and y
+    __n64 vTemp = vmul_f32( vget_low_f32(V1), vget_low_f32(V2) );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    return vcombine_f32( vTemp, vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V1,V2);
@@ -6168,6 +6108,8 @@ inline XMVECTOR XMVector2Cross
     FXMVECTOR V2
 )
 {
+    // [ V1.x*V2.y - V1.y*V2.x, V1.x*V2.y - V1.y*V2.x ]
+
 #if defined(_XM_NO_INTRINSICS_)
     float fCross = (V1.vector4_f32[0] * V2.vector4_f32[1]) - (V1.vector4_f32[1] * V2.vector4_f32[0]);
     XMVECTOR vResult = { 
@@ -6177,6 +6119,13 @@ inline XMVECTOR XMVector2Cross
         fCross
     };
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const XMVECTORF32 Negate = { 1.f, -1.f, 0, 0 };
+
+    __n64 vTemp = vmul_f32( vget_low_f32( V1 ), vrev64_f32( vget_low_f32( V2 ) ) );
+    vTemp = vmul_f32( vTemp, vget_low_f32( Negate ) );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    return vcombine_f32( vTemp, vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap x and y
     XMVECTOR vResult = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(0,1,0,1));
@@ -6200,20 +6149,7 @@ inline XMVECTOR XMVector2LengthSq
     FXMVECTOR V
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
     return XMVector2Dot(V, V);
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Perform the dot product on x and y
-    XMVECTOR vLengthSq = _mm_mul_ps(V,V);
-    // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
-    // x+y
-    vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
-    return vLengthSq;
-#else
-    return XMVector2Dot(V, V);
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -6226,12 +6162,18 @@ inline XMVECTOR XMVector2ReciprocalLengthEst
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result = XMVector2LengthSq(V);
     Result = XMVectorReciprocalSqrtEst(Result);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    // Reciprocal sqrt (estimate)
+    vTemp = vrsqrte_f32( vTemp );
+    return vcombine_f32( vTemp, vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6256,12 +6198,24 @@ inline XMVECTOR XMVector2ReciprocalLength
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result = XMVector2LengthSq(V);
     Result = XMVectorReciprocalSqrt(Result);
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    // Reciprocal sqrt
+    __n64  S0 = vrsqrte_f32(vTemp);
+    __n64  P0 = vmul_f32( vTemp, S0 );
+    __n64  R0 = vrsqrts_f32( P0, S0 );
+    __n64  S1 = vmul_f32( S0, R0 );
+    __n64  P1 = vmul_f32( vTemp, S1 );
+    __n64  R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6285,10 +6239,24 @@ inline XMVECTOR XMVector2LengthEst
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
+
     XMVECTOR Result;
     Result = XMVector2LengthSq(V);
     Result = XMVectorSqrtEst(Result);
     return Result;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( vTemp, zero );
+    // Sqrt (estimate)
+    __n64 Result = vrsqrte_f32( vTemp );
+    Result = vmul_f32( vTemp, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6317,6 +6285,24 @@ inline XMVECTOR XMVector2Length
     Result = XMVectorSqrt(Result);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( vTemp, zero );
+    // Sqrt
+    __n64 S0 = vrsqrte_f32( vTemp );
+    __n64 P0 = vmul_f32( vTemp, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( vTemp, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    Result = vmul_f32( vTemp, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6347,6 +6333,16 @@ inline XMVECTOR XMVector2NormalizeEst
     Result = XMVectorMultiply(V, Result);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    // Reciprocal sqrt (estimate)
+    vTemp = vrsqrte_f32( vTemp );
+    // Normalize
+    __n64 Result = vmul_f32( VL, vTemp );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6370,11 +6366,9 @@ inline XMVECTOR XMVector2Normalize
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    float fLength;
-    XMVECTOR vResult;
 
-    vResult = XMVector2Length( V );
-    fLength = vResult.vector4_f32[0];
+    XMVECTOR vResult = XMVector2Length( V );
+    float fLength = vResult.vector4_f32[0];
 
     // Prevent divide by zero
     if (fLength > 0) {
@@ -6387,6 +6381,26 @@ inline XMVECTOR XMVector2Normalize
     vResult.vector4_f32[3] = V.vector4_f32[3]*fLength;
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32(V);
+    // Dot2
+    __n64 vTemp = vmul_f32( VL, VL );
+    vTemp = vpadd_f32( vTemp, vTemp );
+    __n64 VEqualsZero = vceq_f32( vTemp, vdup_n_u32(0) );
+    __n64 VEqualsInf = vceq_f32( vTemp, vget_low_f32(g_XMInfinity) );
+    // Reciprocal sqrt (2 iterations of Newton-Raphson)
+    __n64 S0 = vrsqrte_f32( vTemp );
+    __n64 P0 = vmul_f32( vTemp, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( vTemp, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    vTemp = vmul_f32( S1, R1 );
+    // Normalize
+    __n64 Result = vmul_f32( VL, vTemp );
+    Result = vbsl_f32( VEqualsZero, vdup_n_f32(0), Result );
+    Result = vbsl_f32( VEqualsInf, vget_low_f32(g_XMQNaN), Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6424,22 +6438,9 @@ inline XMVECTOR XMVector2ClampLength
     float    LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampMax;
-    XMVECTOR ClampMin;
-
-    ClampMax = XMVectorReplicate(LengthMax);
-    ClampMin = XMVectorReplicate(LengthMin);
-
+    XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
+    XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
     return XMVector2ClampLengthV(V, ClampMin, ClampMax);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampMax = _mm_set_ps1(LengthMax);
-    XMVECTOR ClampMin = _mm_set_ps1(LengthMin);
-    return XMVector2ClampLengthV(V, ClampMin, ClampMax);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -6451,98 +6452,42 @@ inline XMVECTOR XMVector2ClampLengthV
     FXMVECTOR LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR Zero;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
-    assert((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]));
-    assert((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]));
-    assert(XMVector2GreaterOrEqual(LengthMin, XMVectorZero()));
-    assert(XMVector2GreaterOrEqual(LengthMax, XMVectorZero()));
-    assert(XMVector2GreaterOrEqual(LengthMax, LengthMin));
-
-    LengthSq = XMVector2LengthSq(V);
-
-    Zero = XMVectorZero();
-
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
-
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
-    ZeroLength = XMVectorEqual(LengthSq, Zero);
-
-    Length = XMVectorMultiply(LengthSq, RcpLength);
-
-    Normal = XMVectorMultiply(V, RcpLength);
-
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
-    Length = XMVectorSelect(LengthSq, Length, Select);
-    Normal = XMVectorSelect(LengthSq, Normal, Select);
-
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
-
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
-    ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
-
-    Result = XMVectorMultiply(Normal, ClampLength);
-
-    // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax, ControlMin);
-    Result = XMVectorSelect(Result, V, Control);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
     assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)));
     assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)));
     assert(XMVector2GreaterOrEqual(LengthMin, g_XMZero));
     assert(XMVector2GreaterOrEqual(LengthMax, g_XMZero));
     assert(XMVector2GreaterOrEqual(LengthMax, LengthMin));
-    LengthSq = XMVector2LengthSq(V);
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity);
-    ZeroLength = XMVectorEqual(LengthSq, g_XMZero);
-    Length = _mm_mul_ps(LengthSq, RcpLength);
-    Normal = _mm_mul_ps(V, RcpLength);
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
+
+    XMVECTOR LengthSq = XMVector2LengthSq(V);
+
+    const XMVECTOR Zero = XMVectorZero();
+
+    XMVECTOR RcpLength = XMVectorReciprocalSqrt(LengthSq);
+
+    XMVECTOR InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
+    XMVECTOR ZeroLength = XMVectorEqual(LengthSq, Zero);
+
+    XMVECTOR Length = XMVectorMultiply(LengthSq, RcpLength);
+
+    XMVECTOR Normal = XMVectorMultiply(V, RcpLength);
+
+    XMVECTOR Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
     Length = XMVectorSelect(LengthSq, Length, Select);
     Normal = XMVectorSelect(LengthSq, Normal, Select);
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
+
+    XMVECTOR ControlMax = XMVectorGreater(Length, LengthMax);
+    XMVECTOR ControlMin = XMVectorLess(Length, LengthMin);
+
+    XMVECTOR ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
     ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
-    Result = _mm_mul_ps(Normal, ClampLength);
+
+    XMVECTOR Result = XMVectorMultiply(Normal, ClampLength);
+
     // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax, ControlMin);
+    XMVECTOR Control = XMVectorEqualInt(ControlMax, ControlMin);
     Result = XMVectorSelect(Result, V, Control);
+
     return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -6553,26 +6498,13 @@ inline XMVECTOR XMVector2Reflect
     FXMVECTOR Normal
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+    // Result = Incident - (2 * dot(Incident, Normal)) * Normal
 
     XMVECTOR Result;
-
-    // Result = Incident - (2 * dot(Incident, Normal)) * Normal
     Result = XMVector2Dot(Incident, Normal);
     Result = XMVectorAdd(Result, Result);
     Result = XMVectorNegativeMultiplySubtract(Result, Normal, Incident);
-
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Result = Incident - (2 * dot(Incident, Normal)) * Normal
-    XMVECTOR Result = XMVector2Dot(Incident,Normal);
-    Result = _mm_add_ps(Result, Result);
-    Result = _mm_mul_ps(Result, Normal);
-    Result = _mm_sub_ps(Incident,Result);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -6584,16 +6516,8 @@ inline XMVECTOR XMVector2Refract
     float    RefractionIndex
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-    XMVECTOR Index;
-    Index = XMVectorReplicate(RefractionIndex);
+    XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector2RefractV(Incident, Normal, Index);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Index = _mm_set_ps1(RefractionIndex);
-    return XMVector2RefractV(Incident,Normal,Index);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -6606,16 +6530,15 @@ inline XMVECTOR XMVector2RefractV
     FXMVECTOR RefractionIndex
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-    float IDotN;
-    float RX,RY;
-    XMVECTOR vResult;
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
-    IDotN = (Incident.vector4_f32[0]*Normal.vector4_f32[0])+(Incident.vector4_f32[1]*Normal.vector4_f32[1]);
+
+#if defined(_XM_NO_INTRINSICS_)
+
+    float IDotN = (Incident.vector4_f32[0]*Normal.vector4_f32[0])+(Incident.vector4_f32[1]*Normal.vector4_f32[1]);
     // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
-    RY = 1.0f-(IDotN*IDotN);
-    RX = 1.0f-(RY*RefractionIndex.vector4_f32[0]*RefractionIndex.vector4_f32[0]);
+    float RY = 1.0f-(IDotN*IDotN);
+    float RX = 1.0f-(RY*RefractionIndex.vector4_f32[0]*RefractionIndex.vector4_f32[0]);
     RY = 1.0f-(RY*RefractionIndex.vector4_f32[1]*RefractionIndex.vector4_f32[1]);
     if (RX>=0.0f) {
         RX = (RefractionIndex.vector4_f32[0]*Incident.vector4_f32[0])-(Normal.vector4_f32[0]*((RefractionIndex.vector4_f32[0]*IDotN)+sqrtf(RX)));
@@ -6627,11 +6550,43 @@ inline XMVECTOR XMVector2RefractV
     } else {
         RY = 0.0f;
     }
+
+    XMVECTOR vResult;
     vResult.vector4_f32[0] = RX;
     vResult.vector4_f32[1] = RY;
     vResult.vector4_f32[2] = 0.0f;   
     vResult.vector4_f32[3] = 0.0f;
     return vResult;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 IL = vget_low_f32( Incident );
+    __n64 NL = vget_low_f32( Normal );
+    __n64 RIL = vget_low_f32( RefractionIndex );
+    // Get the 2D Dot product of Incident-Normal
+    __n64 vTemp = vmul_f32(IL, NL);
+    __n64 IDotN = vpadd_f32( vTemp, vTemp );
+    // vTemp = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
+    vTemp = vmls_f32( vget_low_f32( g_XMOne ), IDotN, IDotN);
+    vTemp = vmul_f32(vTemp,RIL);
+    vTemp = vmls_f32(vget_low_f32( g_XMOne ), vTemp, RIL );
+    // If any terms are <=0, sqrt() will fail, punt to zero
+    __n64 vMask = vcgt_f32(vTemp, vget_low_f32(g_XMZero) );
+    // Sqrt(vTemp)
+    __n64 S0 = vrsqrte_f32(vTemp);
+    __n64 P0 = vmul_f32( vTemp, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( vTemp, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    __n64 S2 = vmul_f32( S1, R1 );
+    vTemp = vmul_f32( vTemp, S2 );
+    // R = RefractionIndex * IDotN + sqrt(R)
+    vTemp = vmla_f32( vTemp, RIL, IDotN );
+    // Result = RefractionIndex * Incident - Normal * R
+    __n64 vResult = vmul_f32(RIL,IL);
+    vResult = vmls_f32( vResult, vTemp, NL );
+    vResult = vand_u32(vResult,vMask);
+    return vcombine_f32(vResult, vResult);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -6672,12 +6627,19 @@ inline XMVECTOR XMVector2Orthogonal
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] = -V.vector4_f32[1];
     Result.vector4_f32[1] = V.vector4_f32[0];
-
+    Result.vector4_f32[2] = 0.f;
+    Result.vector4_f32[3] = 0.f;
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const XMVECTORF32 Negate = { -1.f, 1.f, 0, 0 };
+    const __n64 zero = vdup_n_f32(0);
+
+    __n64 VL = vget_low_f32( V );
+    __n64 Result = vmul_f32( vrev64_f32( VL ), vget_low_f32( Negate ) );
+    return vcombine_f32( Result, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
     vResult = _mm_mul_ps(vResult,g_XMNegateX);
@@ -6694,27 +6656,13 @@ inline XMVECTOR XMVector2AngleBetweenNormalsEst
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) 
 
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
-
-    Result = XMVector2Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector2Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
     Result = XMVectorACosEst(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector2Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);;
-    vResult = XMVectorACosEst(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6727,27 +6675,13 @@ inline XMVECTOR XMVector2AngleBetweenNormals
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
-
-    Result = XMVector2Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector2Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne, g_XMOne);
     Result = XMVectorACos(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector2Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);;
-    vResult = XMVectorACos(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6760,46 +6694,20 @@ inline XMVECTOR XMVector2AngleBetweenVectors
     FXMVECTOR V2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
+    XMVECTOR L1 = XMVector2ReciprocalLength(V1);
+    XMVECTOR L2 = XMVector2ReciprocalLength(V2);
 
-    L1 = XMVector2ReciprocalLength(V1);
-    L2 = XMVector2ReciprocalLength(V2);
-
-    Dot = XMVector2Dot(V1, V2);
+    XMVECTOR Dot = XMVector2Dot(V1, V2);
 
     L1 = XMVectorMultiply(L1, L2);
 
-    CosAngle = XMVectorMultiply(Dot, L1);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    CosAngle = XMVectorClamp(CosAngle, NegativeOne, One);
+    XMVECTOR CosAngle = XMVectorMultiply(Dot, L1);
+    CosAngle = XMVectorClamp(CosAngle, g_XMNegativeOne.v, g_XMOne.v);
 
-    Result = XMVectorACos(CosAngle);
+    return XMVectorACos(CosAngle);
 
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR Result;
-    L1 = XMVector2ReciprocalLength(V1);
-    L2 = XMVector2ReciprocalLength(V2);
-    Dot = XMVector2Dot(V1, V2);
-    L1 = _mm_mul_ps(L1, L2);
-    CosAngle = _mm_mul_ps(Dot, L1);
-    CosAngle = XMVectorClamp(CosAngle, g_XMNegativeOne,g_XMOne);
-    Result = XMVectorACos(CosAngle);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6813,15 +6721,6 @@ inline XMVECTOR XMVector2LinePointDistance
     FXMVECTOR Point
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR PointVector;
-    XMVECTOR LineVector;
-    XMVECTOR ReciprocalLengthSq;
-    XMVECTOR PointProjectionScale;
-    XMVECTOR DistanceVector;
-    XMVECTOR Result;
-
     // Given a vector PointVector from LinePoint1 to Point and a vector
     // LineVector from LinePoint1 to LinePoint2, the scaled distance 
     // PointProjectionScale from LinePoint1 to the perpendicular projection
@@ -6829,32 +6728,21 @@ inline XMVECTOR XMVector2LinePointDistance
     //
     //     PointProjectionScale = dot(PointVector, LineVector) / LengthSq(LineVector)
 
-    PointVector = XMVectorSubtract(Point, LinePoint1);
-    LineVector = XMVectorSubtract(LinePoint2, LinePoint1);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    ReciprocalLengthSq = XMVector2LengthSq(LineVector);
-    ReciprocalLengthSq = XMVectorReciprocal(ReciprocalLengthSq);
+    XMVECTOR PointVector = XMVectorSubtract(Point, LinePoint1);
+    XMVECTOR LineVector = XMVectorSubtract(LinePoint2, LinePoint1);
 
-    PointProjectionScale = XMVector2Dot(PointVector, LineVector);
-    PointProjectionScale = XMVectorMultiply(PointProjectionScale, ReciprocalLengthSq);
+    XMVECTOR LengthSq = XMVector2LengthSq(LineVector);
 
-    DistanceVector = XMVectorMultiply(LineVector, PointProjectionScale);
+    XMVECTOR PointProjectionScale = XMVector2Dot(PointVector, LineVector);
+    PointProjectionScale = XMVectorDivide(PointProjectionScale, LengthSq);
+
+    XMVECTOR DistanceVector = XMVectorMultiply(LineVector, PointProjectionScale);
     DistanceVector = XMVectorSubtract(PointVector, DistanceVector);
 
-    Result = XMVector2Length(DistanceVector);
+    return XMVector2Length(DistanceVector);
 
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR PointVector = _mm_sub_ps(Point,LinePoint1);
-    XMVECTOR LineVector = _mm_sub_ps(LinePoint2,LinePoint1);
-    XMVECTOR ReciprocalLengthSq = XMVector2LengthSq(LineVector);
-    XMVECTOR vResult = XMVector2Dot(PointVector,LineVector);
-    vResult = _mm_div_ps(vResult,ReciprocalLengthSq);
-    vResult = _mm_mul_ps(vResult,LineVector);
-    vResult = _mm_sub_ps(PointVector,vResult);
-    vResult = XMVector2Length(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6866,26 +6754,20 @@ inline XMVECTOR XMVector2IntersectLine
     FXMVECTOR Line1Point1, 
     FXMVECTOR Line1Point2, 
     FXMVECTOR Line2Point1, 
-    CXMVECTOR Line2Point2
+    GXMVECTOR Line2Point2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR        V1;
-    XMVECTOR        V2;
-    XMVECTOR        V3;
-    XMVECTOR        C1;
-    XMVECTOR        C2;
-    XMVECTOR        Result;
-    const XMVECTOR  Zero = XMVectorZero();
+    XMVECTOR V1 = XMVectorSubtract(Line1Point2, Line1Point1);
+    XMVECTOR V2 = XMVectorSubtract(Line2Point2, Line2Point1);
+    XMVECTOR V3 = XMVectorSubtract(Line1Point1, Line2Point1);
 
-    V1 = XMVectorSubtract(Line1Point2, Line1Point1);
-    V2 = XMVectorSubtract(Line2Point2, Line2Point1);
-    V3 = XMVectorSubtract(Line1Point1, Line2Point1);
+    XMVECTOR C1 = XMVector2Cross(V1, V2);
+    XMVECTOR C2 = XMVector2Cross(V2, V3);
 
-    C1 = XMVector2Cross(V1, V2);
-    C2 = XMVector2Cross(V2, V3);
-
+    XMVECTOR Result;
+    const XMVECTOR Zero = XMVectorZero();
     if (XMVector2NearEqual(C1, Zero, g_XMEpsilon.v))
     {
         if (XMVector2NearEqual(C2, Zero, g_XMEpsilon.v))
@@ -6902,8 +6784,7 @@ inline XMVECTOR XMVector2IntersectLine
     else
     {
         // Intersection point = Line1Point1 + V1 * (C2 / C1)
-        XMVECTOR Scale;
-        Scale = XMVectorReciprocal(C1);
+        XMVECTOR Scale = XMVectorReciprocal(C1);
         Scale = XMVectorMultiply(C2, Scale);
         Result = XMVectorMultiplyAdd(V1, Scale, Line1Point1);
     }
@@ -6955,18 +6836,20 @@ inline XMVECTOR XMVector2Transform
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Result;
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
+    XMVECTOR Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    __n128 Y = vdupq_lane_f32( VL, 1 );
+    __n128 Result = vmlaq_f32( M.r[3], Y, M.r[1] );
+    __n128 X = vdupq_lane_f32( VL, 0 );
+    return vmlaq_f32( Result, X, M.r[0] );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
@@ -6981,6 +6864,7 @@ inline XMVECTOR XMVector2Transform
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT4* XMVector2TransformStream
 (
     XMFLOAT4*       pOutputStream, 
@@ -6993,27 +6877,24 @@ inline XMFLOAT4* XMVector2TransformStream
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
 
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row3 = M.r[3];
 
-    for (i = 0; i < VectorCount; i++)
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT2*)pInputVector)->x);
+        XMVECTOR V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiplyAdd(Y, row1, row3);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
         XMStoreFloat4((XMFLOAT4*)pOutputVector, Result);
 
@@ -7023,23 +6904,6 @@ inline XMFLOAT4* XMVector2TransformStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2*>(pInputVector)->x);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2*>(pInputVector)->y);
-        vResult = _mm_mul_ps(vResult,M.r[1]);
-        vResult = _mm_add_ps(vResult,M.r[3]);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-        _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector),vResult);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7053,42 +6917,24 @@ inline XMVECTOR XMVector2TransformCoord
     CXMMATRIX M
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR InverseW;
-    XMVECTOR Result;
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
+    XMVECTOR Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
-    InverseW = XMVectorSplatW(Result);
-    InverseW = XMVectorReciprocal(InverseW);
+    XMVECTOR W = XMVectorSplatW(Result);
+    return XMVectorDivide( Result, W );
 
-    Result = XMVectorMultiply(Result, InverseW);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
-    vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
-    vTemp = _mm_mul_ps(vTemp,M.r[1]);
-    vResult = _mm_add_ps(vResult,vTemp);
-    vResult = _mm_add_ps(vResult,M.r[3]);
-    vTemp = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
-    vResult = _mm_div_ps(vResult,vTemp);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT2* XMVector2TransformCoordStream
 (
     XMFLOAT2*       pOutputStream, 
@@ -7096,37 +6942,33 @@ inline XMFLOAT2* XMVector2TransformCoordStream
     const XMFLOAT2* pInputStream, 
     size_t          InputStride, 
     size_t          VectorCount, 
-    CXMMATRIX     M
+    CXMMATRIX       M
 )
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR InverseW;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
     uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row3 = M.r[3];
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT2*)pInputVector)->x);
+        XMVECTOR V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiplyAdd(Y, M.r[1], M.r[3]);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiplyAdd(Y, row1, row3);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
-        InverseW = XMVectorSplatW(Result);
-        InverseW = XMVectorReciprocal(InverseW);
+        XMVECTOR W = XMVectorSplatW(Result);
 
-        Result = XMVectorMultiply(Result, InverseW);
+        Result = XMVectorDivide(Result, W);
 
         XMStoreFloat2((XMFLOAT2*)pOutputVector, Result);
 
@@ -7136,25 +6978,6 @@ inline XMFLOAT2* XMVector2TransformCoordStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t *pInputVector = (const uint8_t*)pInputStream;
-    uint8_t *pOutputVector = (uint8_t*)pOutputStream;
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2*>(pInputVector)->x);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2*>(pInputVector)->y);
-        vResult = _mm_mul_ps(vResult,M.r[1]);
-        vResult = _mm_add_ps(vResult,M.r[3]);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-        X = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
-        vResult = _mm_div_ps(vResult,X);
-        _mm_store_sd(reinterpret_cast<double *>(pOutputVector),reinterpret_cast<__m128d *>(&vResult)[0]);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7169,18 +6992,20 @@ inline XMVECTOR XMVector2TransformNormal
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Result;
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiply(Y, M.r[1]);
+    XMVECTOR Result = XMVectorMultiply(Y, M.r[1]);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    __n128 Y = vdupq_lane_f32( VL, 1 );
+    __n128 Result = vmulq_f32( Y, M.r[1] );
+    __n128 X = vdupq_lane_f32( VL, 0 );
+    return vmlaq_f32( Result, X, M.r[0] );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
@@ -7194,6 +7019,7 @@ inline XMVECTOR XMVector2TransformNormal
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT2* XMVector2TransformNormalStream
 (
     XMFLOAT2*       pOutputStream, 
@@ -7206,26 +7032,23 @@ inline XMFLOAT2* XMVector2TransformNormalStream
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
     uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
-    {
-        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT2*)pInputVector)->x);
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
 
-        Result = XMVectorMultiply(Y, M.r[1]);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+    for (size_t i = 0; i < VectorCount; i++)
+    {
+        XMVECTOR V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
+
+        XMVECTOR Result = XMVectorMultiply(Y, row1);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
         XMStoreFloat2((XMFLOAT2*)pOutputVector, Result);
 
@@ -7235,23 +7058,6 @@ inline XMFLOAT2* XMVector2TransformNormalStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t*pInputVector = (const uint8_t*)pInputStream;
-    uint8_t *pOutputVector = (uint8_t*)pOutputStream;
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2 *>(pInputVector)->x);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT2 *>(pInputVector)->y);
-        vResult = _mm_mul_ps(vResult,M.r[1]);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-        _mm_store_sd(reinterpret_cast<double*>(pOutputVector),reinterpret_cast<const __m128d *>(&vResult)[0]);
-
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7276,6 +7082,11 @@ inline bool XMVector3Equal
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7307,6 +7118,22 @@ inline uint32_t XMVector3EqualR
         CR = XM_CRMASK_CR6FALSE;
     }
     return CR;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU;
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     int iTest = _mm_movemask_ps(vTemp)&7;
@@ -7334,6 +7161,11 @@ inline bool XMVector3EqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)==7) != 0);
@@ -7361,6 +7193,22 @@ inline uint32_t XMVector3EqualIntR
     else if ((V1.vector4_u32[0] != V2.vector4_u32[0]) && 
         (V1.vector4_u32[1] != V2.vector4_u32[1]) &&
         (V1.vector4_u32[2] != V2.vector4_u32[2]))
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU;
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -7400,6 +7248,12 @@ inline bool XMVector3NearEqual
     return (((dx <= Epsilon.vector4_f32[0]) &&
             (dy <= Epsilon.vector4_f32[1]) &&
             (dz <= Epsilon.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vDelta = vsubq_f32( V1, V2 );
+    __n128 vResult = vacleq_f32( vDelta, Epsilon );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -7424,6 +7278,11 @@ inline bool XMVector3NotEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1)  & 0xFFFFFFU) != 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)!=7) != 0);
@@ -7442,6 +7301,11 @@ inline bool XMVector3NotEqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1)  & 0xFFFFFFU) != 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)!=7) != 0);
@@ -7460,6 +7324,11 @@ inline bool XMVector3Greater
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgtq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7492,6 +7361,22 @@ inline uint32_t XMVector3GreaterR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgtq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU;
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     uint32_t CR = 0;
@@ -7519,6 +7404,11 @@ inline bool XMVector3GreaterOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgeq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7552,6 +7442,22 @@ inline uint32_t XMVector3GreaterOrEqualR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgeq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU;
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     uint32_t CR = 0;
@@ -7579,6 +7485,11 @@ inline bool XMVector3Less
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcltq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7597,6 +7508,11 @@ inline bool XMVector3LessOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcleq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7617,6 +7533,19 @@ inline bool XMVector3InBounds
     return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
         (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
         (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test if less than or equal
+    __n128 vTemp1 = vcleq_f32(V,Bounds);
+    // Negate the bounds
+    __n128 vTemp2 = vnegq_f32(Bounds);
+    // Test if greater or equal (Reversed)
+    vTemp2 = vcleq_f32(vTemp2,V);
+    // Blend answers
+    vTemp1 = vandq_u32(vTemp1,vTemp2);
+    // in bounds?
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -7633,38 +7562,6 @@ inline bool XMVector3InBounds
 #endif
 }
 
-//------------------------------------------------------------------------------
-
-inline uint32_t XMVector3InBoundsR
-(
-    FXMVECTOR V, 
-    FXMVECTOR Bounds
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-    uint32_t CR = 0;
-    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
-        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
-        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]))
-    {
-        CR = XM_CRMASK_CR6BOUNDS;
-    }
-    return CR;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Test if less than or equal
-    XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
-    // Negate the bounds
-    XMVECTOR vTemp2 = _mm_mul_ps(Bounds,g_XMNegativeOne);
-    // Test if greater or equal (Reversed)
-    vTemp2 = _mm_cmple_ps(vTemp2,V);
-    // Blend answers
-    vTemp1 = _mm_and_ps(vTemp1,vTemp2);
-    // x,y and z in bounds? (w is don't care)
-    return ((_mm_movemask_ps(vTemp1)&0x7)==0x7) ? XM_CRMASK_CR6BOUNDS : 0;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -7679,19 +7576,18 @@ inline bool XMVector3IsNaN
             XMISNAN(V.vector4_f32[1]) ||
             XMISNAN(V.vector4_f32[2]));
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test against itself. NaN is always not equal
+    __n128 vTempNan = vceqq_f32( V, V );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTempNan), vget_high_u8(vTempNan));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    // If x or y or z are NaN, the mask is zero
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) != 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Mask off the exponent
-    __m128i vTempInf = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMInfinity);
-    // Mask off the mantissa
-    __m128i vTempNan = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMQNaNTest);
-    // Are any of the exponents == 0x7F800000?
-    vTempInf = _mm_cmpeq_epi32(vTempInf,g_XMInfinity);
-    // Are any of the mantissa's zero? (SSE2 doesn't have a neq test)
-    vTempNan = _mm_cmpeq_epi32(vTempNan,g_XMZero);
-    // Perform a not on the NaN test to be true on NON-zero mantissas
-    vTempNan = _mm_andnot_si128(vTempNan,vTempInf);
-    // If x, y or z are NaN, the signs are true after the merge above
-    return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTempNan)[0])&7) != 0);
+    // Test against itself. NaN is always not equal
+    XMVECTOR vTempNan = _mm_cmpneq_ps(V,V);
+    // If x or y or z are NaN, the mask is non-zero
+    return ((_mm_movemask_ps(vTempNan)&7) != 0);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7707,6 +7603,15 @@ inline bool XMVector3IsInfinite
     return (XMISINF(V.vector4_f32[0]) ||
             XMISINF(V.vector4_f32[1]) ||
             XMISINF(V.vector4_f32[2]));
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Mask off the sign bit
+    __n128 vTempInf = vandq_u32( V, g_XMAbsMask );
+    // Compare to infinity
+    vTempInf = vceqq_f32(vTempInf, g_XMInfinity );
+    // If any are infinity, the signs are true.
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTempInf), vget_high_u8(vTempInf));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) != 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     __m128 vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -7740,6 +7645,14 @@ inline XMVECTOR XMVector3Dot
     };            
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vTemp = vmulq_f32( V1, V2 );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    return vcombine_f32( v1, v1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V1,V2);
@@ -7765,6 +7678,8 @@ inline XMVECTOR XMVector3Cross
     FXMVECTOR V2
 )
 {
+    // [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
+
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
         (V1.vector4_f32[1] * V2.vector4_f32[2]) - (V1.vector4_f32[2] * V2.vector4_f32[1]),
@@ -7773,7 +7688,19 @@ inline XMVECTOR XMVector3Cross
         0.0f
     };
     return vResult;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 v1xy = vget_low_f32(V1);
+    __n64 v2xy = vget_low_f32(V2);
 
+    __n64 v1yx = vrev64_f32( v1xy );
+    __n64 v2yx = vrev64_f32( v2xy );
+
+    __n64 v1zz = vdup_lane_f32( vget_high_f32(V1), 0 );
+    __n64 v2zz = vdup_lane_f32( vget_high_f32(V2), 0 );
+
+    __n128 vResult = vmulq_f32( vcombine_f32(v1yx,v1xy), vcombine_f32(v2zz,v2yx) );
+    vResult = vmlsq_f32( vResult, vcombine_f32(v1zz,v1yx), vcombine_f32(v2yx,v2xy) );
+    return veorq_u32( vResult, g_XMFlipY );
 #elif defined(_XM_SSE_INTRINSICS_)
     // y1,z1,x1,w1
     XMVECTOR vTemp1 = _mm_shuffle_ps(V1,V1,_MM_SHUFFLE(3,0,2,1));
@@ -7821,6 +7748,17 @@ inline XMVECTOR XMVector3ReciprocalLengthEst
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt (estimate)
+    v2 = vrsqrte_f32( v1 );
+    return vcombine_f32(v2, v2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -7857,6 +7795,23 @@ inline XMVECTOR XMVector3ReciprocalLength
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt
+    __n64  S0 = vrsqrte_f32(v1);
+    __n64  P0 = vmul_f32( v1, S0 );
+    __n64  R0 = vrsqrts_f32( P0, S0 );
+    __n64  S1 = vmul_f32( S0, R0 );
+    __n64  P1 = vmul_f32( v1, S1 );
+    __n64  R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
@@ -7895,6 +7850,21 @@ inline XMVECTOR XMVector3LengthEst
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( v1, zero );
+    // Sqrt (estimate)
+    __n64 Result = vrsqrte_f32( v1 );
+    Result = vmul_f32( v1, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -7931,6 +7901,27 @@ inline XMVECTOR XMVector3Length
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( v1, zero );
+    // Sqrt
+    __n64 S0 = vrsqrte_f32( v1 );
+    __n64 P0 = vmul_f32( v1, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( v1, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    Result = vmul_f32( v1, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -7967,6 +7958,18 @@ inline XMVECTOR XMVector3NormalizeEst
     Result = XMVectorMultiply(V, Result);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt (estimate)
+    v2 = vrsqrte_f32( v1 );
+    // Normalize
+    return vmulq_f32( V, vcombine_f32(v2,v2) );
 #elif defined(_XM_SSE_INTRINSICS_)
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
@@ -8014,6 +8017,28 @@ inline XMVECTOR XMVector3Normalize
     vResult.vector4_f32[3] = V.vector4_f32[3]*fLength;
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot3
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vdup_lane_f32( v2, 0 );
+    v1 = vadd_f32( v1, v2 );
+    __n64 VEqualsZero = vceq_f32( v1, vdup_n_u32(0) );
+    __n64 VEqualsInf = vceq_f32( v1, vget_low_f32(g_XMInfinity) );
+    // Reciprocal sqrt (2 iterations of Newton-Raphson)
+    __n64 S0 = vrsqrte_f32( v1 );
+    __n64 P0 = vmul_f32( v1, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( v1, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    v2 = vmul_f32( S1, R1 );
+    // Normalize
+    __n128 vResult = vmulq_f32( V, vcombine_f32(v2,v2) );
+    vResult = vbslq_f32( vcombine_f32(VEqualsZero,VEqualsZero), vdupq_n_f32(0), vResult );
+    return vbslq_f32( vcombine_f32(VEqualsInf,VEqualsInf), g_XMQNaN, vResult );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -8053,22 +8078,10 @@ inline XMVECTOR XMVector3ClampLength
     float    LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampMax;
-    XMVECTOR ClampMin;
-
-    ClampMax = XMVectorReplicate(LengthMax);
-    ClampMin = XMVectorReplicate(LengthMin);
+    XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
+    XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
 
     return XMVector3ClampLengthV(V, ClampMin, ClampMax);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampMax = _mm_set_ps1(LengthMax);
-    XMVECTOR ClampMin = _mm_set_ps1(LengthMin);
-    return XMVector3ClampLengthV(V,ClampMin,ClampMax);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -8080,99 +8093,42 @@ inline XMVECTOR XMVector3ClampLengthV
     FXMVECTOR LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR Zero;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
-    assert((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[2] == LengthMin.vector4_f32[0]));
-    assert((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[2] == LengthMax.vector4_f32[0]));
+    assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)));
+    assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)));
     assert(XMVector3GreaterOrEqual(LengthMin, XMVectorZero()));
     assert(XMVector3GreaterOrEqual(LengthMax, XMVectorZero()));
     assert(XMVector3GreaterOrEqual(LengthMax, LengthMin));
 
-    LengthSq = XMVector3LengthSq(V);
+    XMVECTOR LengthSq = XMVector3LengthSq(V);
 
-    Zero = XMVectorZero();
+    const XMVECTOR Zero = XMVectorZero();
 
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
+    XMVECTOR RcpLength = XMVectorReciprocalSqrt(LengthSq);
 
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
-    ZeroLength = XMVectorEqual(LengthSq, Zero);
+    XMVECTOR InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
+    XMVECTOR ZeroLength = XMVectorEqual(LengthSq, Zero);
 
-    Normal = XMVectorMultiply(V, RcpLength);
+    XMVECTOR Normal = XMVectorMultiply(V, RcpLength);
 
-    Length = XMVectorMultiply(LengthSq, RcpLength);
+    XMVECTOR Length = XMVectorMultiply(LengthSq, RcpLength);
 
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
+    XMVECTOR Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
     Length = XMVectorSelect(LengthSq, Length, Select);
     Normal = XMVectorSelect(LengthSq, Normal, Select);
 
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
+    XMVECTOR ControlMax = XMVectorGreater(Length, LengthMax);
+    XMVECTOR ControlMin = XMVectorLess(Length, LengthMin);
 
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
+    XMVECTOR ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
     ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
 
-    Result = XMVectorMultiply(Normal, ClampLength);
+    XMVECTOR Result = XMVectorMultiply(Normal, ClampLength);
 
     // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax, ControlMin);
+    XMVECTOR Control = XMVectorEqualInt(ControlMax, ControlMin);
     Result = XMVectorSelect(Result, V, Control);
 
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
-    assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)));
-    assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)));
-    assert(XMVector3GreaterOrEqual(LengthMin, g_XMZero));
-    assert(XMVector3GreaterOrEqual(LengthMax, g_XMZero));
-    assert(XMVector3GreaterOrEqual(LengthMax, LengthMin));
-
-    LengthSq = XMVector3LengthSq(V);
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity);
-    ZeroLength = XMVectorEqual(LengthSq,g_XMZero);
-    Normal = _mm_mul_ps(V, RcpLength);
-    Length = _mm_mul_ps(LengthSq, RcpLength);
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
-    Length = XMVectorSelect(LengthSq, Length, Select);
-    Normal = XMVectorSelect(LengthSq, Normal, Select);
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
-    ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
-    Result = _mm_mul_ps(Normal, ClampLength);
-    // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax, ControlMin);
-    Result = XMVectorSelect(Result, V, Control);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -8183,26 +8139,13 @@ inline XMVECTOR XMVector3Reflect
     FXMVECTOR Normal
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR Result;
-
     // Result = Incident - (2 * dot(Incident, Normal)) * Normal
-    Result = XMVector3Dot(Incident, Normal);
+
+    XMVECTOR Result = XMVector3Dot(Incident, Normal);
     Result = XMVectorAdd(Result, Result);
     Result = XMVectorNegativeMultiplySubtract(Result, Normal, Incident);
 
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Result = Incident - (2 * dot(Incident, Normal)) * Normal
-    XMVECTOR Result = XMVector3Dot(Incident, Normal);
-    Result = _mm_add_ps(Result, Result);
-    Result = _mm_mul_ps(Result, Normal);
-    Result = _mm_sub_ps(Incident,Result);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -8214,17 +8157,8 @@ inline XMVECTOR XMVector3Refract
     float    RefractionIndex
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR Index;
-    Index = XMVectorReplicate(RefractionIndex);
+    XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector3RefractV(Incident, Normal, Index);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Index = _mm_set_ps1(RefractionIndex);
-    return XMVector3RefractV(Incident,Normal,Index);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -8236,19 +8170,17 @@ inline XMVECTOR XMVector3RefractV
     FXMVECTOR RefractionIndex
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR        IDotN;
-    XMVECTOR        R;
-    const XMVECTOR  Zero = XMVectorZero();
-
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
 
-    IDotN = XMVector3Dot(Incident, Normal);
+#if defined(_XM_NO_INTRINSICS_)
+
+    const XMVECTOR  Zero = XMVectorZero();
+
+    XMVECTOR IDotN = XMVector3Dot(Incident, Normal);
 
     // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
-    R = XMVectorNegativeMultiplySubtract(IDotN, IDotN, g_XMOne.v);
+    XMVECTOR R = XMVectorNegativeMultiplySubtract(IDotN, IDotN, g_XMOne.v);
     R = XMVectorMultiply(R, RefractionIndex);
     R = XMVectorNegativeMultiplySubtract(R, RefractionIndex, g_XMOne.v);
 
@@ -8259,19 +8191,51 @@ inline XMVECTOR XMVector3RefractV
     }
     else
     {
-        XMVECTOR Result;
-
         // R = RefractionIndex * IDotN + sqrt(R)
         R = XMVectorSqrt(R);
         R = XMVectorMultiplyAdd(RefractionIndex, IDotN, R);
 
         // Result = RefractionIndex * Incident - Normal * R
-        Result = XMVectorMultiply(RefractionIndex, Incident);
+        XMVECTOR Result = XMVectorMultiply(RefractionIndex, Incident);
         Result = XMVectorNegativeMultiplySubtract(Normal, R, Result);
 
         return Result;
     }
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR IDotN = XMVector3Dot(Incident,Normal);
+
+    // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
+    __n128 R = vmlsq_f32( g_XMOne, IDotN, IDotN);
+    R = vmulq_f32(R, RefractionIndex);
+    R = vmlsq_f32(g_XMOne, R, RefractionIndex );
+
+    __n128 vResult = vcleq_f32(R,g_XMZero);
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    if ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU )
+    {
+        // Total internal reflection
+        vResult = g_XMZero;
+    }
+    else
+    {
+        // Sqrt(R)
+        __n128 S0 = vrsqrteq_f32(R);
+        __n128 P0 = vmulq_f32( R, S0 );
+        __n128 R0 = vrsqrtsq_f32( P0, S0 );
+        __n128 S1 = vmulq_f32( S0, R0 );
+        __n128 P1 = vmulq_f32( R, S1 );
+        __n128 R1 = vrsqrtsq_f32( P1, S1 );
+        __n128 S2 = vmulq_f32( S1, R1 );
+        R = vmulq_f32( R, S2 );
+        // R = RefractionIndex * IDotN + sqrt(R)
+        R = vmlaq_f32( R, RefractionIndex, IDotN );
+        // Result = RefractionIndex * Incident - Normal * R
+        vResult = vmulq_f32(RefractionIndex, Incident);
+        vResult = vmlsq_f32( vResult, R, Normal );
+    }
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -8312,70 +8276,27 @@ inline XMVECTOR XMVector3Orthogonal
     FXMVECTOR V
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR NegativeV;
-    XMVECTOR Z, YZYY;
-    XMVECTOR ZIsNegative, YZYYIsNegative;
-    XMVECTOR S, D;
-    XMVECTOR R0, R1;
-    XMVECTOR Select;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static const XMVECTORU32 Permute1X0X0X0X = {XM_PERMUTE_1X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X};
-    static const XMVECTORU32 Permute0Y0Z0Y0Y= {XM_PERMUTE_0Y, XM_PERMUTE_0Z, XM_PERMUTE_0Y, XM_PERMUTE_0Y};
+    XMVECTOR Zero = XMVectorZero();
+    XMVECTOR Z = XMVectorSplatZ(V);
+    XMVECTOR YZYY = XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_Y>(V);
 
-    Zero = XMVectorZero();
-    Z = XMVectorSplatZ(V);
-    YZYY = XMVectorPermute(V, V, Permute0Y0Z0Y0Y.v);
+    XMVECTOR NegativeV = XMVectorSubtract(Zero, V);
 
-    NegativeV = XMVectorSubtract(Zero, V);
+    XMVECTOR ZIsNegative = XMVectorLess(Z, Zero);
+    XMVECTOR YZYYIsNegative = XMVectorLess(YZYY, Zero);
 
-    ZIsNegative = XMVectorLess(Z, Zero);
-    YZYYIsNegative = XMVectorLess(YZYY, Zero);
+    XMVECTOR S = XMVectorAdd(YZYY, Z);
+    XMVECTOR D = XMVectorSubtract(YZYY, Z);
 
-    S = XMVectorAdd(YZYY, Z);
-    D = XMVectorSubtract(YZYY, Z);
+    XMVECTOR Select = XMVectorEqualInt(ZIsNegative, YZYYIsNegative);
 
-    Select = XMVectorEqualInt(ZIsNegative, YZYYIsNegative);
+    XMVECTOR R0 = XMVectorPermute<XM_PERMUTE_1X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X>(NegativeV, S);
+    XMVECTOR R1 = XMVectorPermute<XM_PERMUTE_1X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X>(V, D);
 
-    R0 = XMVectorPermute(NegativeV, S, Permute1X0X0X0X.v);
-    R1 = XMVectorPermute(V, D, Permute1X0X0X0X.v);
+    return XMVectorSelect(R1, R0, Select);
 
-    Result = XMVectorSelect(R1, R0, Select);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR NegativeV;
-    XMVECTOR Z, YZYY;
-    XMVECTOR ZIsNegative, YZYYIsNegative;
-    XMVECTOR S, D;
-    XMVECTOR R0, R1;
-    XMVECTOR Select;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static const XMVECTORI32 Permute1X0X0X0X = {XM_PERMUTE_1X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X};
-    static const XMVECTORI32 Permute0Y0Z0Y0Y= {XM_PERMUTE_0Y, XM_PERMUTE_0Z, XM_PERMUTE_0Y, XM_PERMUTE_0Y};
-
-    Zero = XMVectorZero();
-    Z = XMVectorSplatZ(V);
-    YZYY = XMVectorPermute(V, V, Permute0Y0Z0Y0Y);
-
-    NegativeV = _mm_sub_ps(Zero, V);
-
-    ZIsNegative = XMVectorLess(Z, Zero);
-    YZYYIsNegative = XMVectorLess(YZYY, Zero);
-
-    S = _mm_add_ps(YZYY, Z);
-    D = _mm_sub_ps(YZYY, Z);
-
-    Select = XMVectorEqualInt(ZIsNegative, YZYYIsNegative);
-
-    R0 = XMVectorPermute(NegativeV, S, Permute1X0X0X0X);
-    R1 = XMVectorPermute(V, D,Permute1X0X0X0X);
-    Result = XMVectorSelect(R1, R0, Select);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8388,27 +8309,13 @@ inline XMVECTOR XMVector3AngleBetweenNormalsEst
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR Result;
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-
-    Result = XMVector3Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector3Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
     Result = XMVectorACosEst(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector3Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);
-    vResult = XMVectorACosEst(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8421,27 +8328,13 @@ inline XMVECTOR XMVector3AngleBetweenNormals
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR Result;
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-
-    Result = XMVector3Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector3Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
     Result = XMVectorACos(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector3Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);
-    vResult = XMVectorACos(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8454,49 +8347,20 @@ inline XMVECTOR XMVector3AngleBetweenVectors
     FXMVECTOR V2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
+    XMVECTOR L1 = XMVector3ReciprocalLength(V1);
+    XMVECTOR L2 = XMVector3ReciprocalLength(V2);
 
-    L1 = XMVector3ReciprocalLength(V1);
-    L2 = XMVector3ReciprocalLength(V2);
-
-    Dot = XMVector3Dot(V1, V2);
+    XMVECTOR Dot = XMVector3Dot(V1, V2);
 
     L1 = XMVectorMultiply(L1, L2);
 
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
+    XMVECTOR CosAngle = XMVectorMultiply(Dot, L1);
+    CosAngle = XMVectorClamp(CosAngle, g_XMNegativeOne.v, g_XMOne.v);
 
-    CosAngle = XMVectorMultiply(Dot, L1);
+    return XMVectorACos(CosAngle);
 
-    CosAngle = XMVectorClamp(CosAngle, NegativeOne, One);
-
-    Result = XMVectorACos(CosAngle);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR Result;
-
-    L1 = XMVector3ReciprocalLength(V1);
-    L2 = XMVector3ReciprocalLength(V2);
-    Dot = XMVector3Dot(V1, V2);
-    L1 = _mm_mul_ps(L1, L2);
-    CosAngle = _mm_mul_ps(Dot, L1);
-    CosAngle = XMVectorClamp(CosAngle,g_XMNegativeOne,g_XMOne);
-    Result = XMVectorACos(CosAngle);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8510,15 +8374,6 @@ inline XMVECTOR XMVector3LinePointDistance
     FXMVECTOR Point
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR PointVector;
-    XMVECTOR LineVector;
-    XMVECTOR ReciprocalLengthSq;
-    XMVECTOR PointProjectionScale;
-    XMVECTOR DistanceVector;
-    XMVECTOR Result;
-
     // Given a vector PointVector from LinePoint1 to Point and a vector
     // LineVector from LinePoint1 to LinePoint2, the scaled distance 
     // PointProjectionScale from LinePoint1 to the perpendicular projection
@@ -8526,38 +8381,28 @@ inline XMVECTOR XMVector3LinePointDistance
     //
     //     PointProjectionScale = dot(PointVector, LineVector) / LengthSq(LineVector)
 
-    PointVector = XMVectorSubtract(Point, LinePoint1);
-    LineVector = XMVectorSubtract(LinePoint2, LinePoint1);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    ReciprocalLengthSq = XMVector3LengthSq(LineVector);
-    ReciprocalLengthSq = XMVectorReciprocal(ReciprocalLengthSq);
+    XMVECTOR PointVector = XMVectorSubtract(Point, LinePoint1);
+    XMVECTOR LineVector = XMVectorSubtract(LinePoint2, LinePoint1);
 
-    PointProjectionScale = XMVector3Dot(PointVector, LineVector);
-    PointProjectionScale = XMVectorMultiply(PointProjectionScale, ReciprocalLengthSq);
+    XMVECTOR LengthSq = XMVector3LengthSq(LineVector);
 
-    DistanceVector = XMVectorMultiply(LineVector, PointProjectionScale);
+    XMVECTOR PointProjectionScale = XMVector3Dot(PointVector, LineVector);
+    PointProjectionScale = XMVectorDivide(PointProjectionScale, LengthSq);
+
+    XMVECTOR DistanceVector = XMVectorMultiply(LineVector, PointProjectionScale);
     DistanceVector = XMVectorSubtract(PointVector, DistanceVector);
 
-    Result = XMVector3Length(DistanceVector);
+    return XMVector3Length(DistanceVector);
 
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR PointVector = _mm_sub_ps(Point,LinePoint1);
-    XMVECTOR LineVector = _mm_sub_ps(LinePoint2,LinePoint1);
-    XMVECTOR ReciprocalLengthSq = XMVector3LengthSq(LineVector);
-    XMVECTOR vResult = XMVector3Dot(PointVector,LineVector);
-    vResult = _mm_div_ps(vResult,ReciprocalLengthSq);
-    vResult = _mm_mul_ps(vResult,LineVector);
-    vResult = _mm_sub_ps(PointVector,vResult);
-    vResult = XMVector3Length(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline void XMVector3ComponentsFromNormal
 (
     XMVECTOR* pParallel, 
@@ -8569,25 +8414,12 @@ inline void XMVector3ComponentsFromNormal
     assert(pParallel != nullptr);
     assert(pPerpendicular != nullptr);
 
-#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR Scale = XMVector3Dot(V, Normal);
 
-    XMVECTOR Parallel;
-    XMVECTOR Scale;
-
-    Scale = XMVector3Dot(V, Normal);
-
-    Parallel = XMVectorMultiply(Normal, Scale);
+    XMVECTOR Parallel = XMVectorMultiply(Normal, Scale);
 
     *pParallel = Parallel;
     *pPerpendicular = XMVectorSubtract(V, Parallel);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Scale = XMVector3Dot(V, Normal);
-    XMVECTOR Parallel = _mm_mul_ps(Normal,Scale);
-    *pParallel = Parallel;
-    *pPerpendicular = _mm_sub_ps(V,Parallel);
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -8599,29 +8431,13 @@ inline XMVECTOR XMVector3Rotate
     FXMVECTOR RotationQuaternion
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR A;
-    XMVECTOR Q;
-    XMVECTOR Result;
+    XMVECTOR A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
+    XMVECTOR Q = XMQuaternionConjugate(RotationQuaternion);
+    XMVECTOR Result = XMQuaternionMultiply(Q, A);
+    return XMQuaternionMultiply(Result, RotationQuaternion);
 
-    A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
-    Q = XMQuaternionConjugate(RotationQuaternion);
-    Result = XMQuaternionMultiply(Q, A);
-    Result = XMQuaternionMultiply(Result, RotationQuaternion);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR A;
-    XMVECTOR Q;
-    XMVECTOR Result;
-
-    A = _mm_and_ps(V,g_XMMask3);
-    Q = XMQuaternionConjugate(RotationQuaternion);
-    Result = XMQuaternionMultiply(Q, A);
-    Result = XMQuaternionMultiply(Result, RotationQuaternion);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8635,28 +8451,13 @@ inline XMVECTOR XMVector3InverseRotate
     FXMVECTOR RotationQuaternion
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR A;
-    XMVECTOR Q;
-    XMVECTOR Result;
+    XMVECTOR A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
+    XMVECTOR Result = XMQuaternionMultiply(RotationQuaternion, A);
+    XMVECTOR Q = XMQuaternionConjugate(RotationQuaternion);
+    return XMQuaternionMultiply(Result, Q);
 
-    A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
-    Result = XMQuaternionMultiply(RotationQuaternion, A);
-    Q = XMQuaternionConjugate(RotationQuaternion);
-    Result = XMQuaternionMultiply(Result, Q);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR A;
-    XMVECTOR Q;
-    XMVECTOR Result;
-    A = _mm_and_ps(V,g_XMMask3);
-    Result = XMQuaternionMultiply(RotationQuaternion, A);
-    Q = XMQuaternionConjugate(RotationQuaternion);
-    Result = XMQuaternionMultiply(Result, Q);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8671,21 +8472,24 @@ inline XMVECTOR XMVector3Transform
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR Result;
+    XMVECTOR Z = XMVectorSplatZ(V);
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Z = XMVectorSplatZ(V);
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
+    XMVECTOR Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
     Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    XMVECTOR vResult = vdupq_lane_f32( VL, 0 ); // X
+    XMVECTOR vTemp = vdupq_lane_f32( VL, 1 ); // Y
+    vResult = vmlaq_f32( M.r[3], vResult, M.r[0] );
+    vResult = vmlaq_f32( vResult, vTemp, M.r[1] );
+    vTemp = vdupq_lane_f32( vget_high_f32( V ), 0 ); // Z
+    return vmlaq_f32( vResult, vTemp, M.r[2] );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
@@ -8703,6 +8507,7 @@ inline XMVECTOR XMVector3Transform
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT4* XMVector3TransformStream
 (
     XMFLOAT4*       pOutputStream, 
@@ -8715,27 +8520,27 @@ inline XMFLOAT4* XMVector3TransformStream
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row2 = M.r[2];
+    const XMVECTOR row3 = M.r[3];
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
-        Z = XMVectorSplatZ(V);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
+        XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
+        XMVECTOR Z = XMVectorSplatZ(V);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
-        Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiplyAdd(Z, row2, row3);
+        Result = XMVectorMultiplyAdd(Y, row1, Result);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
         XMStoreFloat4((XMFLOAT4*)pOutputVector, Result);
 
@@ -8745,27 +8550,6 @@ inline XMFLOAT4* XMVector3TransformStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->x);
-        XMVECTOR Y = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->y);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->z);
-        vResult = _mm_mul_ps(vResult,M.r[2]);
-        vResult = _mm_add_ps(vResult,M.r[3]);
-        Y = _mm_mul_ps(Y,M.r[1]);
-        vResult = _mm_add_ps(vResult,Y);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-        _mm_storeu_ps(reinterpret_cast<float *>(pOutputVector),vResult);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8779,48 +8563,26 @@ inline XMVECTOR XMVector3TransformCoord
     CXMMATRIX M
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR InverseW;
-    XMVECTOR Result;
+    XMVECTOR Z = XMVectorSplatZ(V);
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Z = XMVectorSplatZ(V);
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
+    XMVECTOR Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
     Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
-    InverseW = XMVectorSplatW(Result);
-    InverseW = XMVectorReciprocal(InverseW);
+    XMVECTOR W = XMVectorSplatW(Result);
+    return XMVectorDivide( Result, W );
 
-    Result = XMVectorMultiply(Result, InverseW);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
-    vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
-    vTemp = _mm_mul_ps(vTemp,M.r[1]);
-    vResult = _mm_add_ps(vResult,vTemp);
-    vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
-    vTemp = _mm_mul_ps(vTemp,M.r[2]);
-    vResult = _mm_add_ps(vResult,vTemp);
-    vResult = _mm_add_ps(vResult,M.r[3]);
-    vTemp = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
-    vResult = _mm_div_ps(vResult,vTemp);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT3* XMVector3TransformCoordStream
 (
     XMFLOAT3*       pOutputStream, 
@@ -8828,41 +8590,36 @@ inline XMFLOAT3* XMVector3TransformCoordStream
     const XMFLOAT3* pInputStream, 
     size_t          InputStride, 
     size_t          VectorCount, 
-    CXMMATRIX     M
+    CXMMATRIX       M
 )
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR InverseW;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
     uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row2 = M.r[2];
+    const XMVECTOR row3 = M.r[3];
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
-        Z = XMVectorSplatZ(V);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        Z = XMVectorReplicate(((XMFLOAT3*)pInputVector)->z);
-//        Y = XMVectorReplicate(((XMFLOAT3*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT3*)pInputVector)->x);
+        XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
+        XMVECTOR Z = XMVectorSplatZ(V);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiplyAdd(Z, M.r[2], M.r[3]);
-        Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiplyAdd(Z, row2, row3);
+        Result = XMVectorMultiplyAdd(Y, row1, Result);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
-        InverseW = XMVectorSplatW(Result);
-        InverseW = XMVectorReciprocal(InverseW);
+        XMVECTOR W = XMVectorSplatW(Result);
 
-        Result = XMVectorMultiply(Result, InverseW);
+        Result = XMVectorDivide(Result, W);
 
         XMStoreFloat3((XMFLOAT3*)pOutputVector, Result);
 
@@ -8872,34 +8629,6 @@ inline XMFLOAT3* XMVector3TransformCoordStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t *pInputVector = (const uint8_t*)pInputStream;
-    uint8_t *pOutputVector = (uint8_t*)pOutputStream;
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->x);
-        XMVECTOR Y = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->y);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->z);
-        vResult = _mm_mul_ps(vResult,M.r[2]);
-        vResult = _mm_add_ps(vResult,M.r[3]);
-        Y = _mm_mul_ps(Y,M.r[1]);
-        vResult = _mm_add_ps(vResult,Y);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-
-        X = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
-        vResult = _mm_div_ps(vResult,X);
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
-        vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
-        vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8914,21 +8643,24 @@ inline XMVECTOR XMVector3TransformNormal
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR Result;
+    XMVECTOR Z = XMVectorSplatZ(V);
+    XMVECTOR Y = XMVectorSplatY(V);
+    XMVECTOR X = XMVectorSplatX(V);
 
-    Z = XMVectorSplatZ(V);
-    Y = XMVectorSplatY(V);
-    X = XMVectorSplatX(V);
-
-    Result = XMVectorMultiply(Z, M.r[2]);
+    XMVECTOR Result = XMVectorMultiply(Z, M.r[2]);
     Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
     Result = XMVectorMultiplyAdd(X, M.r[0], Result);
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    XMVECTOR vResult = vdupq_lane_f32( VL, 0 ); // X
+    XMVECTOR vTemp = vdupq_lane_f32( VL, 1 ); // Y
+    vResult = vmulq_f32( vResult, M.r[0] );
+    vResult = vmlaq_f32( vResult, vTemp, M.r[1] );
+    vTemp = vdupq_lane_f32( vget_high_f32( V ), 0 ); // Z
+    return vmlaq_f32( vResult, vTemp, M.r[2] );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
@@ -8945,6 +8677,7 @@ inline XMVECTOR XMVector3TransformNormal
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT3* XMVector3TransformNormalStream
 (
     XMFLOAT3*       pOutputStream, 
@@ -8952,35 +8685,31 @@ inline XMFLOAT3* XMVector3TransformNormalStream
     const XMFLOAT3* pInputStream, 
     size_t          InputStride, 
     size_t          VectorCount, 
-    CXMMATRIX     M
+    CXMMATRIX       M
 )
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row2 = M.r[2];
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
-        Z = XMVectorSplatZ(V);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        Z = XMVectorReplicate(((XMFLOAT3*)pInputVector)->z);
-//        Y = XMVectorReplicate(((XMFLOAT3*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT3*)pInputVector)->x);
+        XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
+        XMVECTOR Z = XMVectorSplatZ(V);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiply(Z, M.r[2]);
-        Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiply(Z, row2);
+        Result = XMVectorMultiplyAdd(Y, row1, Result);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
         XMStoreFloat3((XMFLOAT3*)pOutputVector, Result);
 
@@ -8990,30 +8719,6 @@ inline XMFLOAT3* XMVector3TransformNormalStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t *pInputVector = (const uint8_t*)pInputStream;
-    uint8_t *pOutputVector = (uint8_t*)pOutputStream;
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        XMVECTOR X = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->x);
-        XMVECTOR Y = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->y);
-        XMVECTOR vResult = _mm_load_ps1(&reinterpret_cast<const XMFLOAT3 *>(pInputVector)->z);
-        vResult = _mm_mul_ps(vResult,M.r[2]);
-        Y = _mm_mul_ps(Y,M.r[1]);
-        vResult = _mm_add_ps(vResult,Y);
-        X = _mm_mul_ps(X,M.r[0]);
-        vResult = _mm_add_ps(vResult,X);
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
-        vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
-        vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-
-    return pOutputStream;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -9034,63 +8739,30 @@ inline XMVECTOR XMVector3Project
     CXMMATRIX World
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMMATRIX Transform;
-    XMVECTOR Scale;
-    XMVECTOR Offset;
-    XMVECTOR Result;
-    float    HalfViewportWidth = ViewportWidth * 0.5f;
-    float    HalfViewportHeight = ViewportHeight * 0.5f;
+    const float HalfViewportWidth = ViewportWidth * 0.5f;
+    const float HalfViewportHeight = ViewportHeight * 0.5f;
 
-    Scale = XMVectorSet(HalfViewportWidth, 
-                        -HalfViewportHeight,
-                        ViewportMaxZ - ViewportMinZ,
-                        0.0f);
+    XMVECTOR Scale = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
+    XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
 
-    Offset = XMVectorSet(ViewportX + HalfViewportWidth,
-                        ViewportY + HalfViewportHeight,
-                        ViewportMinZ,
-                        0.0f);
-
-    Transform = XMMatrixMultiply(World, View);
+    XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform = XMMatrixMultiply(Transform, Projection);
 
-    Result = XMVector3TransformCoord(V, Transform);
+    XMVECTOR Result = XMVector3TransformCoord(V, Transform);
 
     Result = XMVectorMultiplyAdd(Result, Scale, Offset);
 
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMMATRIX Transform;
-    XMVECTOR Scale;
-    XMVECTOR Offset;
-    XMVECTOR Result;
-    float    HalfViewportWidth = ViewportWidth * 0.5f;
-    float    HalfViewportHeight = ViewportHeight * 0.5f;
-
-    Scale = XMVectorSet(HalfViewportWidth, 
-                        -HalfViewportHeight,
-                        ViewportMaxZ - ViewportMinZ,
-                        0.0f);
-
-    Offset = XMVectorSet(ViewportX + HalfViewportWidth,
-                        ViewportY + HalfViewportHeight,
-                        ViewportMinZ,
-                        0.0f);
-    Transform = XMMatrixMultiply(World, View);
-    Transform = XMMatrixMultiply(Transform, Projection);
-    Result = XMVector3TransformCoord(V, Transform);
-    Result = _mm_mul_ps(Result,Scale);
-    Result = _mm_add_ps(Result,Offset);
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT3* XMVector3ProjectStream
 (
     XMFLOAT3*       pOutputStream, 
@@ -9111,38 +8783,26 @@ inline XMFLOAT3* XMVector3ProjectStream
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMMATRIX Transform;
-    XMVECTOR V;
-    XMVECTOR Scale;
-    XMVECTOR Offset;
-    XMVECTOR Result;
-    size_t   i;
-    float    HalfViewportWidth = ViewportWidth * 0.5f;
-    float    HalfViewportHeight = ViewportHeight * 0.5f;
-    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 
-    Scale = XMVectorSet(HalfViewportWidth, 
-                        -HalfViewportHeight,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
+    const float HalfViewportWidth = ViewportWidth * 0.5f;
+    const float HalfViewportHeight = ViewportHeight * 0.5f;
 
-    Offset = XMVectorSet(ViewportX + HalfViewportWidth,
-                        ViewportY + HalfViewportHeight,
-                        ViewportMinZ,
-                        0.0f);
+    XMVECTOR Scale = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 1.0f);
+    XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
 
-    Transform = XMMatrixMultiply(World, View);
+    XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform = XMMatrixMultiply(Transform, Projection);
 
-    for (i = 0; i < VectorCount; i++)
+    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
+        XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
-        Result = XMVector3TransformCoord(V, Transform);
-
+        XMVECTOR Result = XMVector3TransformCoord(V, Transform);
         Result = XMVectorMultiplyAdd(Result, Scale, Offset);
 
         XMStoreFloat3((XMFLOAT3*)pOutputVector, Result);
@@ -9153,45 +8813,7 @@ inline XMFLOAT3* XMVector3ProjectStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMMATRIX Transform;
-    XMVECTOR V;
-    XMVECTOR Scale;
-    XMVECTOR Offset;
-    XMVECTOR Result;
-    float    HalfViewportWidth = ViewportWidth * 0.5f;
-    float    HalfViewportHeight = ViewportHeight * 0.5f;
-    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
-
-    Scale = XMVectorSet(HalfViewportWidth, 
-                        -HalfViewportHeight,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
-
-    Offset = XMVectorSet(ViewportX + HalfViewportWidth,
-                        ViewportY + HalfViewportHeight,
-                        ViewportMinZ,
-                        0.0f);
-
-    Transform = XMMatrixMultiply(World, View);
-    Transform = XMMatrixMultiply(Transform, Projection);
-
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
-
-        Result = XMVector3TransformCoord(V, Transform);
-
-        Result = _mm_mul_ps(Result,Scale);
-        Result = _mm_add_ps(Result,Offset);
-        XMStoreFloat3((XMFLOAT3*)pOutputVector, Result);
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-    return pOutputStream;
-
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
@@ -9200,85 +8822,42 @@ inline XMFLOAT3* XMVector3ProjectStream
 inline XMVECTOR XMVector3Unproject
 (
     FXMVECTOR V, 
-    float    ViewportX, 
-    float    ViewportY, 
-    float    ViewportWidth, 
-    float    ViewportHeight, 
-    float    ViewportMinZ, 
-    float    ViewportMaxZ, 
+    float     ViewportX, 
+    float     ViewportY, 
+    float     ViewportWidth, 
+    float     ViewportHeight, 
+    float     ViewportMinZ, 
+    float     ViewportMaxZ, 
     CXMMATRIX Projection, 
     CXMMATRIX View, 
     CXMMATRIX World
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMMATRIX        Transform;
-    XMVECTOR        Scale;
-    XMVECTOR        Offset;
-    XMVECTOR        Determinant;
-    XMVECTOR        Result;
-    const XMVECTOR  D = XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f);
+    static const XMVECTORF32 D = { -1.0f, 1.0f, 0.0f, 0.0f };
 
-    Scale = XMVectorSet(ViewportWidth * 0.5f,
-                        -ViewportHeight * 0.5f,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
+    XMVECTOR Scale = XMVectorSet(ViewportWidth * 0.5f, -ViewportHeight * 0.5f, ViewportMaxZ - ViewportMinZ, 1.0f);
     Scale = XMVectorReciprocal(Scale);
 
-    Offset = XMVectorSet(-ViewportX,
-                        -ViewportY,
-                        -ViewportMinZ,
-                        0.0f);
-    Offset = XMVectorMultiplyAdd(Scale, Offset, D);
+    XMVECTOR Offset = XMVectorSet(-ViewportX, -ViewportY, -ViewportMinZ, 0.0f);
+    Offset = XMVectorMultiplyAdd(Scale, Offset, D.v);
 
-    Transform = XMMatrixMultiply(World, View);
+    XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform = XMMatrixMultiply(Transform, Projection);
-    Transform = XMMatrixInverse(&Determinant, Transform);
+    Transform = XMMatrixInverse(nullptr, Transform);
 
-    Result = XMVectorMultiplyAdd(V, Scale, Offset);
+    XMVECTOR Result = XMVectorMultiplyAdd(V, Scale, Offset);
 
-    Result = XMVector3TransformCoord(Result, Transform);
+    return XMVector3TransformCoord(Result, Transform);
 
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMMATRIX        Transform;
-    XMVECTOR        Scale;
-    XMVECTOR        Offset;
-    XMVECTOR        Determinant;
-    XMVECTOR        Result;
-    const XMVECTORF32  D = {-1.0f, 1.0f, 0.0f, 0.0f};
-
-    Scale = XMVectorSet(ViewportWidth * 0.5f,
-                        -ViewportHeight * 0.5f,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
-    Scale = XMVectorReciprocal(Scale);
-
-    Offset = XMVectorSet(-ViewportX,
-                        -ViewportY,
-                        -ViewportMinZ,
-                        0.0f);
-    Offset = _mm_mul_ps(Offset,Scale);
-    Offset = _mm_add_ps(Offset,D);
-
-    Transform = XMMatrixMultiply(World, View);
-    Transform = XMMatrixMultiply(Transform, Projection);
-    Transform = XMMatrixInverse(&Determinant, Transform);
-
-    Result = _mm_mul_ps(V,Scale);
-    Result = _mm_add_ps(Result,Offset);
-
-    Result = XMVector3TransformCoord(Result, Transform);
-
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline XMFLOAT3* XMVector3UnprojectStream
 (
     XMFLOAT3*       pOutputStream, 
@@ -9292,90 +8871,35 @@ inline XMFLOAT3* XMVector3UnprojectStream
     float           ViewportHeight, 
     float           ViewportMinZ, 
     float           ViewportMaxZ, 
-    CXMMATRIX     Projection, 
-    CXMMATRIX     View, 
-    CXMMATRIX     World)
+    CXMMATRIX       Projection, 
+    CXMMATRIX       View, 
+    CXMMATRIX       World)
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMMATRIX        Transform;
-    XMVECTOR        Scale;
-    XMVECTOR        Offset;
-    XMVECTOR        V;
-    XMVECTOR        Determinant;
-    XMVECTOR        Result;
-    size_t          i;
-    const uint8_t*  pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*           pOutputVector = (uint8_t*)pOutputStream;
-    const XMVECTOR  D = XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    Scale = XMVectorSet(ViewportWidth * 0.5f,
-                        -ViewportHeight * 0.5f,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
+    static const XMVECTORF32 D = { -1.0f, 1.0f, 0.0f, 0.0f };
+
+    XMVECTOR Scale = XMVectorSet(ViewportWidth * 0.5f, -ViewportHeight * 0.5f, ViewportMaxZ - ViewportMinZ, 1.0f);
     Scale = XMVectorReciprocal(Scale);
 
-    Offset = XMVectorSet(-ViewportX,
-                        -ViewportY,
-                        -ViewportMinZ,
-                        0.0f);
-    Offset = XMVectorMultiplyAdd(Scale, Offset, D);
+    XMVECTOR Offset = XMVectorSet(-ViewportX, -ViewportY, -ViewportMinZ, 0.0f);
+    Offset = XMVectorMultiplyAdd(Scale, Offset, D.v);
 
-    Transform = XMMatrixMultiply(World, View);
+    XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform = XMMatrixMultiply(Transform, Projection);
-    Transform = XMMatrixInverse(&Determinant, Transform);
+    Transform = XMMatrixInverse(nullptr, Transform);
 
-    for (i = 0; i < VectorCount; i++)
-    {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
-
-        Result = XMVectorMultiplyAdd(V, Scale, Offset);
-
-        Result = XMVector3TransformCoord(Result, Transform);
-
-        XMStoreFloat3((XMFLOAT3*)pOutputVector, Result);
-
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-
-    return pOutputStream;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMMATRIX        Transform;
-    XMVECTOR        Scale;
-    XMVECTOR        Offset;
-    XMVECTOR        V;
-    XMVECTOR        Determinant;
-    XMVECTOR        Result;
-    const uint8_t*  pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*        pOutputVector = (uint8_t*)pOutputStream;
-    const XMVECTORF32  D = {-1.0f, 1.0f, 0.0f, 0.0f};
-
-    Scale = XMVectorSet(ViewportWidth * 0.5f,
-                        -ViewportHeight * 0.5f,
-                        ViewportMaxZ - ViewportMinZ,
-                        1.0f);
-    Scale = XMVectorReciprocal(Scale);
-
-    Offset = XMVectorSet(-ViewportX,
-                        -ViewportY,
-                        -ViewportMinZ,
-                        0.0f);
-    Offset = _mm_mul_ps(Offset,Scale);
-    Offset = _mm_add_ps(Offset,D);
-
-    Transform = XMMatrixMultiply(World, View);
-    Transform = XMMatrixMultiply(Transform, Projection);
-    Transform = XMMatrixInverse(&Determinant, Transform);
+    const uint8_t* pInputVector = (const uint8_t*)pInputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
 
     for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
+        XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
-        Result = XMVectorMultiplyAdd(V, Scale, Offset);
+        XMVECTOR Result = XMVectorMultiplyAdd(V, Scale, Offset);
 
         Result = XMVector3TransformCoord(Result, Transform);
 
@@ -9386,7 +8910,8 @@ inline XMFLOAT3* XMVector3UnprojectStream
     }
 
     return pOutputStream;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+
+#else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
@@ -9410,6 +8935,11 @@ inline bool XMVector4Equal
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2]) && (V1.vector4_f32[3] == V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9446,6 +8976,22 @@ inline uint32_t XMVector4EqualR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     int iTest = _mm_movemask_ps(vTemp);
@@ -9473,6 +9019,11 @@ inline bool XMVector4EqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2]) && (V1.vector4_u32[3] == V2.vector4_u32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])==0xf) != 0);
@@ -9507,6 +9058,22 @@ inline uint32_t XMVector4EqualIntR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     int iTest = _mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0]);
@@ -9542,6 +9109,12 @@ inline bool XMVector4NearEqual
             (dy <= Epsilon.vector4_f32[1]) &&
             (dz <= Epsilon.vector4_f32[2]) &&
             (dw <= Epsilon.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vDelta = vsubq_f32( V1, V2 );
+    __n128 vResult = vacleq_f32( vDelta, Epsilon );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -9565,6 +9138,11 @@ inline bool XMVector4NotEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2]) || (V1.vector4_f32[3] != V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) != 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpneq_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)) != 0);
@@ -9583,6 +9161,11 @@ inline bool XMVector4NotEqualInt
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2]) || (V1.vector4_u32[3] != V2.vector4_u32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vceqq_u32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) != 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])!=0xF) != 0);
@@ -9601,6 +9184,11 @@ inline bool XMVector4Greater
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2]) && (V1.vector4_f32[3] > V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgtq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9635,6 +9223,22 @@ inline uint32_t XMVector4GreaterR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgtq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     uint32_t CR = 0;
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
@@ -9661,6 +9265,11 @@ inline bool XMVector4GreaterOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2]) && (V1.vector4_f32[3] >= V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgeq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9695,6 +9304,22 @@ inline uint32_t XMVector4GreaterOrEqualR
     }
     return CR;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcgeq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+
+    uint32_t CR = 0;
+    if ( r == 0xFFFFFFFFU )
+    {
+        CR = XM_CRMASK_CR6TRUE;
+    }
+    else if ( !r )
+    {
+        CR = XM_CRMASK_CR6FALSE;
+    }
+    return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
     uint32_t CR = 0;
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
@@ -9722,6 +9347,11 @@ inline bool XMVector4Less
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2]) && (V1.vector4_f32[3] < V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcltq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9740,6 +9370,11 @@ inline bool XMVector4LessOrEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2]) && (V1.vector4_f32[3] <= V2.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vResult = vcleq_f32( V1, V2 );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9761,6 +9396,19 @@ inline bool XMVector4InBounds
         (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
         (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) &&
         (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3])) != 0);
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test if less than or equal
+    __n128 vTemp1 = vcleq_f32(V,Bounds);
+    // Negate the bounds
+    __n128 vTemp2 = vnegq_f32(Bounds);
+    // Test if greater or equal (Reversed)
+    vTemp2 = vcleq_f32(vTemp2,V);
+    // Blend answers
+    vTemp1 = vandq_u32(vTemp1,vTemp2);
+    // in bounds?
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -9777,40 +9425,6 @@ inline bool XMVector4InBounds
 #endif
 }
 
-//------------------------------------------------------------------------------
-
-inline uint32_t XMVector4InBoundsR
-(
-    FXMVECTOR V, 
-    FXMVECTOR Bounds
-)
-{
-#if defined(_XM_NO_INTRINSICS_)
-
-    uint32_t CR = 0;
-    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
-        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
-        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) &&
-        (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]))
-    {
-        CR = XM_CRMASK_CR6BOUNDS;
-    }
-    return CR;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Test if less than or equal
-    XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
-    // Negate the bounds
-    XMVECTOR vTemp2 = _mm_mul_ps(Bounds,g_XMNegativeOne);
-    // Test if greater or equal (Reversed)
-    vTemp2 = _mm_cmple_ps(vTemp2,V);
-    // Blend answers
-    vTemp1 = _mm_and_ps(vTemp1,vTemp2);
-    // All in bounds?
-    return (_mm_movemask_ps(vTemp1)==0x0f) ? XM_CRMASK_CR6BOUNDS : 0;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
-}
 
 //------------------------------------------------------------------------------
 
@@ -9824,6 +9438,13 @@ inline bool XMVector4IsNaN
             XMISNAN(V.vector4_f32[1]) ||
             XMISNAN(V.vector4_f32[2]) ||
             XMISNAN(V.vector4_f32[3]));
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Test against itself. NaN is always not equal
+    __n128 vTempNan = vceqq_f32( V, V );
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTempNan), vget_high_u8(vTempNan));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    // If any are NaN, the mask is zero
+    return ( vget_lane_u32(vTemp.val[1], 1) != 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test against itself. NaN is always not equal
     XMVECTOR vTempNan = _mm_cmpneq_ps(V,V);
@@ -9847,6 +9468,15 @@ inline bool XMVector4IsInfinite
             XMISINF(V.vector4_f32[2]) ||
             XMISINF(V.vector4_f32[3]));
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Mask off the sign bit
+    __n128 vTempInf = vandq_u32( V, g_XMAbsMask );
+    // Compare to infinity
+    vTempInf = vceqq_f32(vTempInf, g_XMInfinity );
+    // If any are infinity, the signs are true.
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTempInf), vget_high_u8(vTempInf));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    return ( vget_lane_u32(vTemp.val[1], 1) != 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     XMVECTOR vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -9873,14 +9503,20 @@ inline XMVECTOR XMVector4Dot
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-
     Result.vector4_f32[0] =
     Result.vector4_f32[1] =
     Result.vector4_f32[2] =
     Result.vector4_f32[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1] + V1.vector4_f32[2] * V2.vector4_f32[2] + V1.vector4_f32[3] * V2.vector4_f32[3];
-
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n128 vTemp = vmulq_f32( V1, V2 );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    return vcombine_f32( v1, v1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp2 = V2;
     XMVECTOR vTemp = _mm_mul_ps(V1,vTemp2);
@@ -9902,6 +9538,11 @@ inline XMVECTOR XMVector4Cross
     FXMVECTOR V3
 )
 {
+    // [ ((v2.z*v3.w-v2.w*v3.z)*v1.y)-((v2.y*v3.w-v2.w*v3.y)*v1.z)+((v2.y*v3.z-v2.z*v3.y)*v1.w),
+    //   ((v2.w*v3.z-v2.z*v3.w)*v1.x)-((v2.w*v3.x-v2.x*v3.w)*v1.z)+((v2.z*v3.x-v2.x*v3.z)*v1.w),
+    //   ((v2.y*v3.w-v2.w*v3.y)*v1.x)-((v2.x*v3.w-v2.w*v3.x)*v1.y)+((v2.x*v3.y-v2.y*v3.x)*v1.w),
+    //   ((v2.z*v3.y-v2.y*v3.z)*v1.x)-((v2.z*v3.x-v2.x*v3.z)*v1.y)+((v2.y*v3.x-v2.x*v3.y)*v1.z) ]
+
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;   
 
@@ -9911,6 +9552,87 @@ inline XMVECTOR XMVector4Cross
     Result.vector4_f32[3] = (((V2.vector4_f32[2]*V3.vector4_f32[1])-(V2.vector4_f32[1]*V3.vector4_f32[2]))*V1.vector4_f32[0])-(((V2.vector4_f32[2]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[2]))*V1.vector4_f32[1])+(((V2.vector4_f32[1]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[1]))*V1.vector4_f32[2]);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    const __n64 select = vget_low_f32( g_XMMaskX );
+
+    // Term1: V2zwyz * V3wzwy
+    const __n64 v2xy = vget_low_f32(V2);
+    const __n64 v2zw = vget_high_f32(V2);
+    const __n64 v2yx = vrev64_f32(v2xy);
+    const __n64 v2wz = vrev64_f32(v2zw);
+    const __n64 v2yz = vbsl_f32( select, v2yx, v2wz );
+
+    const __n64 v3zw = vget_high_f32(V3);
+    const __n64 v3wz = vrev64_f32(v3zw);
+    const __n64 v3xy = vget_low_f32(V3);
+    const __n64 v3wy = vbsl_f32( select, v3wz, v3xy );
+
+    __n128 vTemp1 = vcombine_f32(v2zw,v2yz);
+    __n128 vTemp2 = vcombine_f32(v3wz,v3wy);
+    __n128 vResult = vmulq_f32( vTemp1, vTemp2 );
+
+    // - V2wzwy * V3zwyz
+    const __n64 v2wy = vbsl_f32( select, v2wz, v2xy );
+
+    const __n64 v3yx = vrev64_f32(v3xy);
+    const __n64 v3yz = vbsl_f32( select, v3yx, v3wz );
+
+    vTemp1 = vcombine_f32(v2wz,v2wy);
+    vTemp2 = vcombine_f32(v3zw,v3yz);
+    vResult = vmlsq_f32( vResult, vTemp1, vTemp2 );
+
+    // term1 * V1yxxx
+    const __n64 v1xy = vget_low_f32(V1);
+    const __n64 v1yx = vrev64_f32(v1xy);
+
+    vTemp1 = vcombine_f32( v1yx, vdup_lane_f32( v1yx, 1 ) );
+    vResult = vmulq_f32( vResult, vTemp1 );
+
+    // Term2: V2ywxz * V3wxwx
+    const __n64 v2yw = vrev64_f32(v2wy);
+    const __n64 v2xz = vbsl_f32( select, v2xy, v2wz );
+
+    const __n64 v3wx = vbsl_f32( select, v3wz, v3yx );
+
+    vTemp1 = vcombine_f32(v2yw,v2xz);
+    vTemp2 = vcombine_f32(v3wx,v3wx);
+    __n128 vTerm = vmulq_f32( vTemp1, vTemp2 );
+
+    // - V2wxwx * V3ywxz
+    const __n64 v2wx = vbsl_f32( select, v2wz, v2yx );
+
+    const __n64 v3yw = vrev64_f32(v3wy);
+    const __n64 v3xz = vbsl_f32( select, v3xy, v3wz );
+
+    vTemp1 = vcombine_f32(v2wx,v2wx);
+    vTemp2 = vcombine_f32(v3yw,v3xz);
+    vTerm = vmlsq_f32( vTerm, vTemp1, vTemp2 );
+
+    // vResult - term2 * V1zzyy
+    const __n64 v1zw = vget_high_f32(V1);
+
+    vTemp1 = vcombine_f32( vdup_lane_f32(v1zw, 0), vdup_lane_f32(v1yx, 0) );
+    vResult = vmlsq_f32( vResult, vTerm, vTemp1 );
+
+    // Term3: V2yzxy * V3zxyx
+    const __n64 v3zx = vrev64_f32(v3xz);
+
+    vTemp1 = vcombine_f32(v2yz,v2xy);
+    vTemp2 = vcombine_f32(v3zx,v3yx);
+    vTerm = vmulq_f32( vTemp1, vTemp2 );
+
+    // - V2zxyx * V3yzxy
+    const __n64 v2zx = vrev64_f32(v2xz);
+
+    vTemp1 = vcombine_f32(v2zx,v2yx);
+    vTemp2 = vcombine_f32(v3yz,v3xy);
+    vTerm = vmlsq_f32( vTerm, vTemp1, vTemp2 );
+
+    // vResult + term3 * V1wwwz
+    const __n64 v1wz = vrev64_f32(v1zw);
+
+    vTemp1 = vcombine_f32( vdup_lane_f32( v1wz, 0 ), v1wz );
+    return vmlaq_f32( vResult, vTerm, vTemp1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     // V2zwyz * V3wzwy
     XMVECTOR vResult = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(2,1,3,2));
@@ -9983,6 +9705,17 @@ inline XMVECTOR XMVector4ReciprocalLengthEst
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt (estimate)
+    v2 = vrsqrte_f32( v1 );
+    return vcombine_f32(v2, v2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10021,6 +9754,23 @@ inline XMVECTOR XMVector4ReciprocalLength
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt
+    __n64  S0 = vrsqrte_f32(v1);
+    __n64  P0 = vmul_f32( v1, S0 );
+    __n64  R0 = vrsqrts_f32( P0, S0 );
+    __n64  S1 = vmul_f32( S0, R0 );
+    __n64  P1 = vmul_f32( v1, S1 );
+    __n64  R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10061,6 +9811,21 @@ inline XMVECTOR XMVector4LengthEst
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( v1, zero );
+    // Sqrt (estimate)
+    __n64 Result = vrsqrte_f32( v1 );
+    Result = vmul_f32( v1, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10099,6 +9864,27 @@ inline XMVECTOR XMVector4Length
 
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    const __n64 zero = vdup_n_u32(0);
+    __n64 VEqualsZero = vceq_f32( v1, zero );
+    // Sqrt
+    __n64 S0 = vrsqrte_f32( v1 );
+    __n64 P0 = vmul_f32( v1, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( v1, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    __n64 Result = vmul_f32( S1, R1 );
+    Result = vmul_f32( v1, Result );
+    Result = vbsl_f32( VEqualsZero, zero, Result );
+    return vcombine_f32( Result, Result );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10137,6 +9923,18 @@ inline XMVECTOR XMVector4NormalizeEst
     Result = XMVectorMultiply(V, Result);
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    // Reciprocal sqrt (estimate)
+    v2 = vrsqrte_f32( v1 );
+    // Normalize
+    return vmulq_f32( V, vcombine_f32(v2,v2) );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10186,6 +9984,28 @@ inline XMVECTOR XMVector4Normalize
     vResult.vector4_f32[3] = V.vector4_f32[3]*fLength;
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // Dot4
+    __n128 vTemp = vmulq_f32( V, V );
+    __n64 v1 = vget_low_f32( vTemp );
+    __n64 v2 = vget_high_f32( vTemp );
+    v1 = vpadd_f32( v1, v1 );
+    v2 = vpadd_f32( v2, v2 );
+    v1 = vadd_f32( v1, v2 );
+    __n64 VEqualsZero = vceq_f32( v1, vdup_n_u32(0) );
+    __n64 VEqualsInf = vceq_f32( v1, vget_low_f32(g_XMInfinity) );
+    // Reciprocal sqrt (2 iterations of Newton-Raphson)
+    __n64 S0 = vrsqrte_f32( v1 );
+    __n64 P0 = vmul_f32( v1, S0 );
+    __n64 R0 = vrsqrts_f32( P0, S0 );
+    __n64 S1 = vmul_f32( S0, R0 );
+    __n64 P1 = vmul_f32( v1, S1 );
+    __n64 R1 = vrsqrts_f32( P1, S1 );
+    v2 = vmul_f32( S1, R1 );
+    // Normalize
+    __n128 vResult = vmulq_f32( V, vcombine_f32(v2,v2) );
+    vResult = vbslq_f32( vcombine_f32(VEqualsZero,VEqualsZero), vdupq_n_f32(0), vResult );
+    return vbslq_f32( vcombine_f32(VEqualsInf,VEqualsInf), g_XMQNaN, vResult );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -10232,22 +10052,10 @@ inline XMVECTOR XMVector4ClampLength
     float    LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampMax;
-    XMVECTOR ClampMin;
-
-    ClampMax = XMVectorReplicate(LengthMax);
-    ClampMin = XMVectorReplicate(LengthMin);
+    XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
+    XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
 
     return XMVector4ClampLengthV(V, ClampMin, ClampMax);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampMax = _mm_set_ps1(LengthMax);
-    XMVECTOR ClampMin = _mm_set_ps1(LengthMin);
-    return XMVector4ClampLengthV(V, ClampMin, ClampMax);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -10259,102 +10067,42 @@ inline XMVECTOR XMVector4ClampLengthV
     FXMVECTOR LengthMax
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR Zero;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
-    assert((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[2] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[3] == LengthMin.vector4_f32[0]));
-    assert((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[2] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[3] == LengthMax.vector4_f32[0]));
+    assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetW(LengthMin) == XMVectorGetX(LengthMin)));
+    assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetW(LengthMax) == XMVectorGetX(LengthMax)));
     assert(XMVector4GreaterOrEqual(LengthMin, XMVectorZero()));
     assert(XMVector4GreaterOrEqual(LengthMax, XMVectorZero()));
     assert(XMVector4GreaterOrEqual(LengthMax, LengthMin));
 
-    LengthSq = XMVector4LengthSq(V);
+    XMVECTOR LengthSq = XMVector4LengthSq(V);
 
-    Zero = XMVectorZero();
+    const XMVECTOR Zero = XMVectorZero();
 
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
+    XMVECTOR RcpLength = XMVectorReciprocalSqrt(LengthSq);
 
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
-    ZeroLength = XMVectorEqual(LengthSq, Zero);
+    XMVECTOR InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity.v);
+    XMVECTOR ZeroLength = XMVectorEqual(LengthSq, Zero);
 
-    Normal = XMVectorMultiply(V, RcpLength);
+    XMVECTOR Normal = XMVectorMultiply(V, RcpLength);
 
-    Length = XMVectorMultiply(LengthSq, RcpLength);
+    XMVECTOR Length = XMVectorMultiply(LengthSq, RcpLength);
 
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
+    XMVECTOR Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
     Length = XMVectorSelect(LengthSq, Length, Select);
     Normal = XMVectorSelect(LengthSq, Normal, Select);
 
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
+    XMVECTOR ControlMax = XMVectorGreater(Length, LengthMax);
+    XMVECTOR ControlMin = XMVectorLess(Length, LengthMin);
 
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
+    XMVECTOR ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
     ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
 
-    Result = XMVectorMultiply(Normal, ClampLength);
+    XMVECTOR Result = XMVectorMultiply(Normal, ClampLength);
 
     // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax, ControlMin);
+    XMVECTOR Control = XMVectorEqualInt(ControlMax, ControlMin);
     Result = XMVectorSelect(Result, V, Control);
 
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR ClampLength;
-    XMVECTOR LengthSq;
-    XMVECTOR RcpLength;
-    XMVECTOR Length;
-    XMVECTOR Normal;
-    XMVECTOR Zero;
-    XMVECTOR InfiniteLength;
-    XMVECTOR ZeroLength;
-    XMVECTOR Select;
-    XMVECTOR ControlMax;
-    XMVECTOR ControlMin;
-    XMVECTOR Control;
-    XMVECTOR Result;
-
-    assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetW(LengthMin) == XMVectorGetX(LengthMin)));
-    assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetW(LengthMax) == XMVectorGetX(LengthMax)));
-    assert(XMVector4GreaterOrEqual(LengthMin, g_XMZero));
-    assert(XMVector4GreaterOrEqual(LengthMax, g_XMZero));
-    assert(XMVector4GreaterOrEqual(LengthMax, LengthMin));
-
-    LengthSq = XMVector4LengthSq(V);
-    Zero = XMVectorZero();
-    RcpLength = XMVectorReciprocalSqrt(LengthSq);
-    InfiniteLength = XMVectorEqualInt(LengthSq, g_XMInfinity);
-    ZeroLength = XMVectorEqual(LengthSq, Zero);
-    Normal = _mm_mul_ps(V, RcpLength);
-    Length = _mm_mul_ps(LengthSq, RcpLength);
-    Select = XMVectorEqualInt(InfiniteLength, ZeroLength);
-    Length = XMVectorSelect(LengthSq, Length, Select);
-    Normal = XMVectorSelect(LengthSq, Normal, Select);
-    ControlMax = XMVectorGreater(Length, LengthMax);
-    ControlMin = XMVectorLess(Length, LengthMin);
-    ClampLength = XMVectorSelect(Length, LengthMax, ControlMax);
-    ClampLength = XMVectorSelect(ClampLength, LengthMin, ControlMin);
-    Result = _mm_mul_ps(Normal, ClampLength);
-    // Preserve the original vector (with no precision loss) if the length falls within the given range
-    Control = XMVectorEqualInt(ControlMax,ControlMin);
-    Result = XMVectorSelect(Result,V,Control);
-    return Result;
-
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -10365,26 +10113,13 @@ inline XMVECTOR XMVector4Reflect
     FXMVECTOR Normal
 )
 {
-#if defined(_XM_NO_INTRINSICS_) 
-
-    XMVECTOR Result;
-
     // Result = Incident - (2 * dot(Incident, Normal)) * Normal
-    Result = XMVector4Dot(Incident, Normal);
+
+    XMVECTOR Result = XMVector4Dot(Incident, Normal);
     Result = XMVectorAdd(Result, Result);
     Result = XMVectorNegativeMultiplySubtract(Result, Normal, Incident);
 
     return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Result = Incident - (2 * dot(Incident, Normal)) * Normal
-    XMVECTOR Result = XMVector4Dot(Incident,Normal);
-    Result = _mm_add_ps(Result,Result);
-    Result = _mm_mul_ps(Result,Normal);
-    Result = _mm_sub_ps(Incident,Result);
-    return Result;
-#else // _XM_VMX128_INTRINSICS_
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -10396,17 +10131,8 @@ inline XMVECTOR XMVector4Refract
     float    RefractionIndex
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
-
-    XMVECTOR Index;
-    Index = XMVectorReplicate(RefractionIndex);
+    XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector4RefractV(Incident, Normal, Index);
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Index = _mm_set_ps1(RefractionIndex);
-    return XMVector4RefractV(Incident,Normal,Index);
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
-#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -10454,10 +10180,41 @@ inline XMVECTOR XMVector4RefractV
         return Result;
     }
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
-    // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTOR IDotN = XMVector4Dot(Incident,Normal);
 
+    // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
+    __n128 R = vmlsq_f32( g_XMOne, IDotN, IDotN);
+    R = vmulq_f32(R, RefractionIndex);
+    R = vmlsq_f32(g_XMOne, R, RefractionIndex );
+
+    __n128 vResult = vcleq_f32(R,g_XMZero);
+    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
+    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    if ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU )
+    {
+        // Total internal reflection
+        vResult = g_XMZero;
+    }
+    else
+    {
+        // Sqrt(R)
+        __n128 S0 = vrsqrteq_f32(R);
+        __n128 P0 = vmulq_f32( R, S0 );
+        __n128 R0 = vrsqrtsq_f32( P0, S0 );
+        __n128 S1 = vmulq_f32( S0, R0 );
+        __n128 P1 = vmulq_f32( R, S1 );
+        __n128 R1 = vrsqrtsq_f32( P1, S1 );
+        __n128 S2 = vmulq_f32( S1, R1 );
+        R = vmulq_f32( R, S2 );
+        // R = RefractionIndex * IDotN + sqrt(R)
+        R = vmlaq_f32( R, RefractionIndex, IDotN );
+        // Result = RefractionIndex * Incident - Normal * R
+        vResult = vmulq_f32(RefractionIndex, Incident);
+        vResult = vmlsq_f32( vResult, R, Normal );
+    }
+    return vResult;
+#elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR IDotN = XMVector4Dot(Incident,Normal);
 
     // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
@@ -10505,6 +10262,11 @@ inline XMVECTOR XMVector4Orthogonal
     Result.vector4_f32[3] = -V.vector4_f32[1];
     return Result;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    static const XMVECTORF32 Negate = { 1.f, 1.f, -1.f, -1.f };
+
+    __n128 Result = vcombine_f32( vget_high_f32( V ), vget_low_f32( V ) );
+    return vmulq_f32( Result, Negate );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 FlipZW = {1.0f,1.0f,-1.0f,-1.0f};
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,0,3,2));
@@ -10522,27 +10284,13 @@ inline XMVECTOR XMVector4AngleBetweenNormalsEst
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
-
-    Result = XMVector4Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector4Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
     Result = XMVectorACosEst(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector4Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);;
-    vResult = XMVectorACosEst(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -10555,27 +10303,13 @@ inline XMVECTOR XMVector4AngleBetweenNormals
     FXMVECTOR N2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
-
-    Result = XMVector4Dot(N1, N2);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    Result = XMVectorClamp(Result, NegativeOne, One);
+    XMVECTOR Result = XMVector4Dot(N1, N2);
+    Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
     Result = XMVectorACos(Result);
-
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = XMVector4Dot(N1,N2);
-    // Clamp to -1.0f to 1.0f
-    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-    vResult = _mm_min_ps(vResult,g_XMOne);;
-    vResult = XMVectorACos(vResult);
-    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -10588,47 +10322,19 @@ inline XMVECTOR XMVector4AngleBetweenVectors
     FXMVECTOR V2
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR NegativeOne;
-    XMVECTOR One;
-    XMVECTOR Result;
+    XMVECTOR L1 = XMVector4ReciprocalLength(V1);
+    XMVECTOR L2 = XMVector4ReciprocalLength(V2);
 
-    L1 = XMVector4ReciprocalLength(V1);
-    L2 = XMVector4ReciprocalLength(V2);
-
-    Dot = XMVector4Dot(V1, V2);
+    XMVECTOR Dot = XMVector4Dot(V1, V2);
 
     L1 = XMVectorMultiply(L1, L2);
 
-    CosAngle = XMVectorMultiply(Dot, L1);
-    NegativeOne = XMVectorSplatConstant(-1, 0);
-    One = XMVectorSplatOne();
-    CosAngle = XMVectorClamp(CosAngle, NegativeOne, One);
+    XMVECTOR CosAngle = XMVectorMultiply(Dot, L1);
+    CosAngle = XMVectorClamp(CosAngle, g_XMNegativeOne.v, g_XMOne.v);
 
-    Result = XMVectorACos(CosAngle);
-
-    return Result;
-
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR L1;
-    XMVECTOR L2;
-    XMVECTOR Dot;
-    XMVECTOR CosAngle;
-    XMVECTOR Result;
-
-    L1 = XMVector4ReciprocalLength(V1);
-    L2 = XMVector4ReciprocalLength(V2);
-    Dot = XMVector4Dot(V1, V2);
-    L1 = _mm_mul_ps(L1,L2);
-    CosAngle = _mm_mul_ps(Dot,L1);
-    CosAngle = XMVectorClamp(CosAngle, g_XMNegativeOne, g_XMOne);
-    Result = XMVectorACos(CosAngle);
-    return Result;
+    return XMVectorACos(CosAngle);
 
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -10655,6 +10361,17 @@ inline XMVECTOR XMVector4Transform
     };
     return vResult;
 
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    __n64 VL = vget_low_f32( V );
+    XMVECTOR vTemp1 = vdupq_lane_f32( VL, 0 ); // X
+    XMVECTOR vTemp2 = vdupq_lane_f32( VL, 1 ); // Y
+    XMVECTOR vResult = vmulq_f32( vTemp1, M.r[0] );
+    vResult = vmlaq_f32( vResult, vTemp2, M.r[1] );
+    __n64 VH = vget_high_f32( V );
+    vTemp1 = vdupq_lane_f32( VH, 0 ); // Z
+    vTemp2 = vdupq_lane_f32( VH, 1 ); // W
+    vResult = vmlaq_f32( vResult, vTemp1, M.r[2] );
+    return vmlaq_f32( vResult, vTemp2, M.r[3] );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat x,y,z and w
     XMVECTOR vTempX = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
@@ -10676,7 +10393,7 @@ inline XMVECTOR XMVector4Transform
 }
 
 //------------------------------------------------------------------------------
-
+_Use_decl_annotations_
 inline XMFLOAT4* XMVector4TransformStream
 (
     XMFLOAT4*       pOutputStream, 
@@ -10684,39 +10401,34 @@ inline XMFLOAT4* XMVector4TransformStream
     const XMFLOAT4* pInputStream, 
     size_t          InputStride, 
     size_t          VectorCount, 
-    CXMMATRIX     M
+    CXMMATRIX       M
 )
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
-#if defined(_XM_NO_INTRINSICS_)
 
-    XMVECTOR V;
-    XMVECTOR X;
-    XMVECTOR Y;
-    XMVECTOR Z;
-    XMVECTOR W;
-    XMVECTOR Result;
-    size_t   i;
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS) || defined(_XM_ARM_NEON_INTRINSICS_)
+
     const uint8_t* pInputVector = (const uint8_t*)pInputStream;
-    uint8_t*    pOutputVector = (uint8_t*)pOutputStream;
+    uint8_t* pOutputVector = (uint8_t*)pOutputStream;
 
-    for (i = 0; i < VectorCount; i++)
+    const XMVECTOR row0 = M.r[0];
+    const XMVECTOR row1 = M.r[1];
+    const XMVECTOR row2 = M.r[2];
+    const XMVECTOR row3 = M.r[3];
+
+    for (size_t i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat4((const XMFLOAT4*)pInputVector);
-        W = XMVectorSplatW(V);
-        Z = XMVectorSplatZ(V);
-        Y = XMVectorSplatY(V);
-        X = XMVectorSplatX(V);
-//        W = XMVectorReplicate(((XMFLOAT4*)pInputVector)->w);
-//        Z = XMVectorReplicate(((XMFLOAT4*)pInputVector)->z);
-//        Y = XMVectorReplicate(((XMFLOAT4*)pInputVector)->y);
-//        X = XMVectorReplicate(((XMFLOAT4*)pInputVector)->x);
+        XMVECTOR V = XMLoadFloat4((const XMFLOAT4*)pInputVector);
+        XMVECTOR W = XMVectorSplatW(V);
+        XMVECTOR Z = XMVectorSplatZ(V);
+        XMVECTOR Y = XMVectorSplatY(V);
+        XMVECTOR X = XMVectorSplatX(V);
 
-        Result = XMVectorMultiply(W, M.r[3]);
-        Result = XMVectorMultiplyAdd(Z, M.r[2], Result);
-        Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
-        Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+        XMVECTOR Result = XMVectorMultiply(W, row3);
+        Result = XMVectorMultiplyAdd(Z, row2, Result);
+        Result = XMVectorMultiplyAdd(Y, row1, Result);
+        Result = XMVectorMultiplyAdd(X, row0, Result);
 
         XMStoreFloat4((XMFLOAT4*)pOutputVector, Result);
 
@@ -10726,32 +10438,7 @@ inline XMFLOAT4* XMVector4TransformStream
 
     return pOutputStream;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    const uint8_t*pInputVector = reinterpret_cast<const uint8_t *>(pInputStream);
-    uint8_t* pOutputVector = reinterpret_cast<uint8_t *>(pOutputStream);
-    for (size_t i = 0; i < VectorCount; i++)
-    {
-        // Fetch the row and splat it
-        XMVECTOR vTempx = _mm_loadu_ps(reinterpret_cast<const float *>(pInputVector));
-        XMVECTOR vTempy = _mm_shuffle_ps(vTempx,vTempx,_MM_SHUFFLE(1,1,1,1));
-        XMVECTOR vTempz = _mm_shuffle_ps(vTempx,vTempx,_MM_SHUFFLE(2,2,2,2));
-        XMVECTOR vTempw = _mm_shuffle_ps(vTempx,vTempx,_MM_SHUFFLE(3,3,3,3));
-        vTempx = _mm_shuffle_ps(vTempx,vTempx,_MM_SHUFFLE(0,0,0,0));
-        vTempx = _mm_mul_ps(vTempx,M.r[0]);
-        vTempy = _mm_mul_ps(vTempy,M.r[1]);
-        vTempz = _mm_mul_ps(vTempz,M.r[2]);
-        vTempw = _mm_mul_ps(vTempw,M.r[3]);
-        vTempx = _mm_add_ps(vTempx,vTempy);
-        vTempw = _mm_add_ps(vTempw,vTempz); 
-        vTempw = _mm_add_ps(vTempw,vTempx);
-        // Store the transformed vector
-        _mm_storeu_ps(reinterpret_cast<float *>(pOutputVector),vTempw);
-
-        pInputVector += InputStride; 
-        pOutputVector += OutputStride;
-    }
-    return pOutputStream;
-#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
@@ -10930,4 +10617,5 @@ inline XMVECTOR operator*
 #undef XMISNAN
 #undef XMISINF
 #endif
+
 

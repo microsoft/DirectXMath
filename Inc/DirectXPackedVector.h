@@ -854,9 +854,9 @@ struct XMU555
     XMU555() {}
     explicit XMU555(uint16_t Packed) : v(Packed) {}
     XMU555(int8_t _x, int8_t _y, int8_t _z, bool _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
-    XMU555(_In_reads_(3) const int8_t *pArray, bool _w) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}
+    XMU555(_In_reads_(3) const int8_t *pArray, _In_ bool _w) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}
     XMU555(float _x, float _y, float _z, bool _w);
-    XMU555(_In_reads_(3) const float *pArray, bool _w);
+    XMU555(_In_reads_(3) const float *pArray, _In_ bool _w);
 
     operator uint16_t () const { return v; }
 
@@ -936,39 +936,39 @@ XMVECTOR        XMLoadU555(_In_ const XMU555* pSource);
  *
  ****************************************************************************/
 
-void            XMStoreColor(_Out_ XMCOLOR* pDestination, FXMVECTOR V);
+void            XMStoreColor(_Out_ XMCOLOR* pDestination, _In_ FXMVECTOR V);
 
-void            XMStoreHalf2(_Out_ XMHALF2* pDestination, FXMVECTOR V);
-void            XMStoreShortN2(_Out_ XMSHORTN2* pDestination, FXMVECTOR V);
-void            XMStoreShort2(_Out_ XMSHORT2* pDestination, FXMVECTOR V);
-void            XMStoreUShortN2(_Out_ XMUSHORTN2* pDestination, FXMVECTOR V);
-void            XMStoreUShort2(_Out_ XMUSHORT2* pDestination, FXMVECTOR V);
-void            XMStoreByteN2(_Out_ XMBYTEN2* pDestination, FXMVECTOR V);
-void            XMStoreByte2(_Out_ XMBYTE2* pDestination, FXMVECTOR V);
-void            XMStoreUByteN2(_Out_ XMUBYTEN2* pDestination, FXMVECTOR V);
-void            XMStoreUByte2(_Out_ XMUBYTE2* pDestination, FXMVECTOR V);
+void            XMStoreHalf2(_Out_ XMHALF2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreShortN2(_Out_ XMSHORTN2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreShort2(_Out_ XMSHORT2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUShortN2(_Out_ XMUSHORTN2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUShort2(_Out_ XMUSHORT2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreByteN2(_Out_ XMBYTEN2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreByte2(_Out_ XMBYTE2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUByteN2(_Out_ XMUBYTEN2* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUByte2(_Out_ XMUBYTE2* pDestination, _In_ FXMVECTOR V);
 
-void            XMStoreU565(_Out_ XMU565* pDestination, FXMVECTOR V);
-void            XMStoreFloat3PK(_Out_ XMFLOAT3PK* pDestination, FXMVECTOR V);
-void            XMStoreFloat3SE(_Out_ XMFLOAT3SE* pDestination, FXMVECTOR V);
+void            XMStoreU565(_Out_ XMU565* pDestination, _In_ FXMVECTOR V);
+void            XMStoreFloat3PK(_Out_ XMFLOAT3PK* pDestination, _In_ FXMVECTOR V);
+void            XMStoreFloat3SE(_Out_ XMFLOAT3SE* pDestination, _In_ FXMVECTOR V);
 
-void            XMStoreHalf4(_Out_ XMHALF4* pDestination, FXMVECTOR V);
-void            XMStoreShortN4(_Out_ XMSHORTN4* pDestination, FXMVECTOR V);
-void            XMStoreShort4(_Out_ XMSHORT4* pDestination, FXMVECTOR V);
-void            XMStoreUShortN4(_Out_ XMUSHORTN4* pDestination, FXMVECTOR V);
-void            XMStoreUShort4(_Out_ XMUSHORT4* pDestination, FXMVECTOR V);
-void            XMStoreXDecN4(_Out_ XMXDECN4* pDestination, FXMVECTOR V);
-void            XMStoreXDec4(_Out_ XMXDEC4* pDestination, FXMVECTOR V);
-void            XMStoreDecN4(_Out_ XMDECN4* pDestination, FXMVECTOR V);
-void            XMStoreDec4(_Out_ XMDEC4* pDestination, FXMVECTOR V);
-void            XMStoreUDecN4(_Out_ XMUDECN4* pDestination, FXMVECTOR V);
-void            XMStoreUDec4(_Out_ XMUDEC4* pDestination, FXMVECTOR V);
-void            XMStoreByteN4(_Out_ XMBYTEN4* pDestination, FXMVECTOR V);
-void            XMStoreByte4(_Out_ XMBYTE4* pDestination, FXMVECTOR V);
-void            XMStoreUByteN4(_Out_ XMUBYTEN4* pDestination, FXMVECTOR V);
-void            XMStoreUByte4(_Out_ XMUBYTE4* pDestination, FXMVECTOR V);
-void            XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, FXMVECTOR V);
-void            XMStoreU555(_Out_ XMU555* pDestination, FXMVECTOR V);
+void            XMStoreHalf4(_Out_ XMHALF4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreShortN4(_Out_ XMSHORTN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreShort4(_Out_ XMSHORT4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUShortN4(_Out_ XMUSHORTN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUShort4(_Out_ XMUSHORT4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreXDecN4(_Out_ XMXDECN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUDecN4(_Out_ XMUDECN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUDec4(_Out_ XMUDEC4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreByteN4(_Out_ XMBYTEN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreByte4(_Out_ XMBYTE4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUByteN4(_Out_ XMUBYTEN4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUByte4(_Out_ XMUBYTE4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V);
 
 
 /****************************************************************************
