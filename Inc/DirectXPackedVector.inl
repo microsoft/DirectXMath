@@ -250,7 +250,7 @@ inline XMVECTOR PackedVector::XMLoadShortN2
     // x needs to be sign extended
     vTemp = _mm_xor_ps(vTemp,g_XMFlipX16Y16);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x - 0x8000 to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16);
     // Convert -1.0f - 1.0f
@@ -286,7 +286,7 @@ inline XMVECTOR PackedVector::XMLoadShort2
     // x needs to be sign extended
     vTemp = _mm_xor_ps(vTemp,g_XMFlipX16Y16);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x - 0x8000 to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16);
     // Y is 65536 too large
@@ -322,7 +322,7 @@ inline XMVECTOR PackedVector::XMLoadUShortN2
     // y needs to be sign flipped
     vTemp = _mm_xor_ps(vTemp,g_XMFlipY);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // y + 0x8000 to undo the signed order.
     vTemp = _mm_add_ps(vTemp,FixaddY16);
     // Y is 65536 times too large
@@ -358,7 +358,7 @@ inline XMVECTOR PackedVector::XMLoadUShort2
     // y needs to be sign flipped
     vTemp = _mm_xor_ps(vTemp,g_XMFlipY);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // Y is 65536 times too large
     vTemp = _mm_mul_ps(vTemp,g_XMFixupY16);
     // y + 0x8000 to undo the signed order.
@@ -452,7 +452,7 @@ inline XMVECTOR PackedVector::XMLoadU565
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult,U565And);
     // Convert to float
-    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
     // Normalize x, y, and z
     vResult = _mm_mul_ps(vResult,U565Mul);
     return vResult;
@@ -741,17 +741,17 @@ inline XMVECTOR PackedVector::XMLoadShortN4
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
-    __m128 vTemp = _mm_and_ps(reinterpret_cast<const __m128 *>(&vIntd)[0],g_XMMaskX16Y16Z16W16);
+    __m128 vTemp = _mm_and_ps(_mm_castpd_ps(vIntd),g_XMMaskX16Y16Z16W16);
     // x and z are unsigned! Flip the bits to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMFlipX16Y16Z16W16);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x and z - 0x8000 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16Z16W16);
     // Convert to -1.0f - 1.0f
     vTemp = _mm_mul_ps(vTemp,g_XMNormalizeX16Y16Z16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(3,1,2,0));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
     // Clamp result (for case of -32768)
     return _mm_max_ps( vTemp, g_XMNegativeOne );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
@@ -782,17 +782,17 @@ inline XMVECTOR PackedVector::XMLoadShort4
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
-    __m128 vTemp = _mm_and_ps(reinterpret_cast<const __m128 *>(&vIntd)[0],g_XMMaskX16Y16Z16W16);
+    __m128 vTemp = _mm_and_ps(_mm_castpd_ps(vIntd),g_XMMaskX16Y16Z16W16);
     // x and z are unsigned! Flip the bits to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMFlipX16Y16Z16W16);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x and z - 0x8000 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16Z16W16);
     // Fix y and w because they are 65536 too large
     vTemp = _mm_mul_ps(vTemp,g_XMFixupY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
-    return _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(3,1,2,0));
+    return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -825,17 +825,17 @@ inline XMVECTOR PackedVector::XMLoadUShortN4
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
-    __m128 vTemp = _mm_and_ps(reinterpret_cast<const __m128 *>(&vIntd)[0],g_XMMaskX16Y16Z16W16);
+    __m128 vTemp = _mm_and_ps(_mm_castpd_ps(vIntd),g_XMMaskX16Y16Z16W16);
     // y and w are signed! Flip the bits to convert the order to unsigned
     vTemp = _mm_xor_ps(vTemp,g_XMFlipZW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // y and w + 0x8000 to complete the conversion
     vTemp = _mm_add_ps(vTemp,FixaddY16W16);
     // Fix y and w because they are 65536 too large
     vTemp = _mm_mul_ps(vTemp,FixupY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
-    return _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(3,1,2,0));
+    return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -865,17 +865,17 @@ inline XMVECTOR PackedVector::XMLoadUShort4
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
-    __m128 vTemp = _mm_and_ps(reinterpret_cast<const __m128 *>(&vIntd)[0],g_XMMaskX16Y16Z16W16);
+    __m128 vTemp = _mm_and_ps(_mm_castpd_ps(vIntd),g_XMMaskX16Y16Z16W16);
     // y and w are signed! Flip the bits to convert the order to unsigned
     vTemp = _mm_xor_ps(vTemp,g_XMFlipZW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // Fix y and w because they are 65536 too large
     vTemp = _mm_mul_ps(vTemp,g_XMFixupY16W16);
     // y and w + 0x8000 to complete the conversion
     vTemp = _mm_add_ps(vTemp,FixaddY16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
-    return _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(3,1,2,0));
+    return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(3,1,2,0));
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -910,7 +910,7 @@ inline XMVECTOR PackedVector::XMLoadXDecN4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMFlipA2B10G10R10);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMFixAA2B10G10R10);
     // Convert 0-255 to 0.0f-1.0f
@@ -953,7 +953,7 @@ inline XMVECTOR PackedVector::XMLoadXDec4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,XDec4Xor);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,XDec4Add);
     // Convert 0-255 to 0.0f-1.0f
@@ -993,7 +993,7 @@ inline XMVECTOR PackedVector::XMLoadUDecN4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMFlipW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMAddUDec4);
     // Convert 0-255 to 0.0f-1.0f
@@ -1031,7 +1031,7 @@ inline XMVECTOR PackedVector::XMLoadUDec4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMFlipW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMAddUDec4);
     // Convert 0-255 to 0.0f-1.0f
@@ -1074,7 +1074,7 @@ inline XMVECTOR PackedVector::XMLoadDecN4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMXorDec4);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMAddDec4);
     // Convert 0-255 to 0.0f-1.0f
@@ -1117,7 +1117,7 @@ inline XMVECTOR PackedVector::XMLoadDec4
     // a is unsigned! Flip the bit to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMXorDec4);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // RGB + 0, A + 0x80000000.f to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMAddDec4);
     // Convert 0-255 to 0.0f-1.0f
@@ -1152,7 +1152,7 @@ inline XMVECTOR PackedVector::XMLoadUByteN4
     // w is signed! Flip the bits to convert the order to unsigned
     vTemp = _mm_xor_ps(vTemp,g_XMFlipW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // w + 0x80 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMAddUDec4);
     // Fix y, z and w because they are too large
@@ -1187,7 +1187,7 @@ inline XMVECTOR PackedVector::XMLoadUByte4
     // w is signed! Flip the bits to convert the order to unsigned
     vTemp = _mm_xor_ps(vTemp,g_XMFlipW);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // w + 0x80 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMAddUDec4);
     // Fix y, z and w because they are too large
@@ -1222,7 +1222,7 @@ inline XMVECTOR PackedVector::XMLoadByteN4
     // x,y and z are unsigned! Flip the bits to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMXorByte4);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x, y and z - 0x80 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMAddByte4);
     // Fix y, z and w because they are too large
@@ -1258,7 +1258,7 @@ inline XMVECTOR PackedVector::XMLoadByte4
     // x,y and z are unsigned! Flip the bits to convert the order to signed
     vTemp = _mm_xor_ps(vTemp,g_XMXorByte4);
     // Convert to floating point numbers
-    vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
     // x, y and z - 0x80 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMAddByte4);
     // Fix y, z and w because they are too large
@@ -1284,7 +1284,7 @@ inline XMVECTOR PackedVector::XMLoadUNibble4
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult,UNibble4And);
     // Convert to float
-    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
     // Normalize x, y, and z
     vResult = _mm_mul_ps(vResult,UNibble4Mul);
     return vResult;
@@ -1315,7 +1315,7 @@ inline XMVECTOR PackedVector::XMLoadU555
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult,U555And);
     // Convert to float
-    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
     // Normalize x, y, and z
     vResult = _mm_mul_ps(vResult,U555Mul);
     return vResult;
@@ -1369,7 +1369,7 @@ inline void PackedVector::XMStoreColor
     // Convert to 0-255
     vResult = _mm_mul_ps(vResult,Scale);
     // Shuffle RGBA to ARGB
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,0,1,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,0,1,2));
     // Convert to int 
     __m128i vInt = _mm_cvtps_epi32(vResult);
     // Mash to shorts
@@ -1431,7 +1431,7 @@ inline void PackedVector::XMStoreShortN2
     vResult = _mm_mul_ps(vResult,Scale);
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti = _mm_packs_epi32(vResulti,vResulti);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1469,7 +1469,7 @@ inline void PackedVector::XMStoreShort2
     __m128i vInt = _mm_cvtps_epi32(vResult);
     // Pack the ints into shorts
     vInt = _mm_packs_epi32(vInt,vInt);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),reinterpret_cast<const __m128 *>(&vInt)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->x),_mm_castsi128_ps(vInt));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1942,7 +1942,7 @@ inline void PackedVector::XMStoreShortN4
     vResult = _mm_mul_ps(vResult,Scale);
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti = _mm_packs_epi32(vResulti,vResulti);
-    _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),reinterpret_cast<const __m128d *>(&vResulti)[0]);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),_mm_castsi128_pd(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1991,7 +1991,7 @@ inline void PackedVector::XMStoreShort4
     __m128i vInt = _mm_cvtps_epi32(vResult);
     // Pack the ints into shorts
     vInt = _mm_packs_epi32(vInt,vInt);
-    _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),reinterpret_cast<const __m128d *>(&vInt)[0]);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->x),_mm_castsi128_pd(vInt));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2138,13 +2138,13 @@ inline void PackedVector::XMStoreXDecN4
     __m128i vResultw = _mm_and_si128(vResulti,g_XMMaskW);
     vResulti = _mm_add_epi32(vResulti,vResultw);
     // Do a horizontal or of all 4 entries
-    vResult = _mm_shuffle_ps(reinterpret_cast<const __m128 *>(&vResulti)[0],reinterpret_cast<const __m128 *>(&vResulti)[0],_MM_SHUFFLE(0,3,2,1));
-    vResulti = _mm_or_si128(vResulti,reinterpret_cast<const __m128i *>(&vResult)[0]);
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-    vResulti = _mm_or_si128(vResulti,reinterpret_cast<const __m128i *>(&vResult)[0]);
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-    vResulti = _mm_or_si128(vResulti,reinterpret_cast<const __m128i *>(&vResult)[0]);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vResulti),_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2197,7 +2197,7 @@ inline void PackedVector::XMStoreXDec4
     vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2248,7 +2248,7 @@ inline void PackedVector::XMStoreUDecN4
     vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2299,7 +2299,7 @@ inline void PackedVector::XMStoreUDec4
     vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2348,7 +2348,7 @@ inline void PackedVector::XMStoreDecN4
     vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(1,1,1,1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2399,7 +2399,7 @@ inline void PackedVector::XMStoreDec4
     vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(1,1,1,1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2451,7 +2451,7 @@ inline void PackedVector::XMStoreUByteN4
     vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2503,7 +2503,7 @@ inline void PackedVector::XMStoreUByte4
     vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2553,7 +2553,7 @@ inline void PackedVector::XMStoreByteN4
     vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(1,1,1,1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2605,7 +2605,7 @@ inline void PackedVector::XMStoreByte4
     vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(1,1,1,1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti,vResulti2);
-    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }

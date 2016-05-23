@@ -17,7 +17,7 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 302
+#define DIRECTX_MATH_VERSION 303
 
 #if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
 #if defined(_M_AMD64) || defined(_M_IX86) || defined(_M_ARM)
@@ -28,6 +28,8 @@
 #error DirectX Math does not support this target
 #endif
 #endif // !_XM_BIGENDIAN_ && !_XM_LITTLEENDIAN_
+
+
 
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #if defined(_M_IX86) || defined(_M_AMD64)
@@ -62,15 +64,7 @@
 #endif
 #endif
 
-#ifdef _WIN32_WCE
-inline float powf(float _X, float _Y) { return ((float)pow((double)_X, (double)_Y)); }
-inline float logf(float _X) { return ((float)log((double)_X)); }
-inline float tanf(float _X) { return ((float)tan((double)_X)); }
-inline float atanf(float _X) { return ((float)atan((double)_X)); }
-inline float sinhf(float _X) { return ((float)sinh((double)_X)); }
-inline float coshf(float _X) { return ((float)cosh((double)_X)); }
-inline float tanhf(float _X) { return ((float)tanh((double)_X)); }
-#endif
+
 
 #include <sal.h>
 #include <assert.h>
@@ -261,8 +255,8 @@ __declspec(align(16)) struct XMVECTORF32
     inline operator XMVECTOR() const { return v; }
     inline operator const float*() const { return f; }
 #if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
-    inline operator __m128i() const { return reinterpret_cast<const __m128i *>(&v)[0]; }
-    inline operator __m128d() const { return reinterpret_cast<const __m128d *>(&v)[0]; }
+    inline operator __m128i() const { return _mm_castps_si128(v); }
+    inline operator __m128d() const { return _mm_castps_pd(v); }
 #endif
 };
 
@@ -276,8 +270,8 @@ __declspec(align(16)) struct XMVECTORI32
 
     inline operator XMVECTOR() const { return v; }
 #if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
-    inline operator __m128i() const { return reinterpret_cast<const __m128i *>(&v)[0]; }
-    inline operator __m128d() const { return reinterpret_cast<const __m128d *>(&v)[0]; }
+    inline operator __m128i() const { return _mm_castps_si128(v); }
+    inline operator __m128d() const { return _mm_castps_pd(v); }
 #endif
 };
 
@@ -291,8 +285,8 @@ __declspec(align(16)) struct XMVECTORU8
 
     inline operator XMVECTOR() const { return v; }
 #if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
-    inline operator __m128i() const { return reinterpret_cast<const __m128i *>(&v)[0]; }
-    inline operator __m128d() const { return reinterpret_cast<const __m128d *>(&v)[0]; }
+    inline operator __m128i() const { return _mm_castps_si128(v); }
+    inline operator __m128d() const { return _mm_castps_pd(v); }
 #endif
 };
 
@@ -306,8 +300,8 @@ __declspec(align(16)) struct XMVECTORU32
 
     inline operator XMVECTOR() const { return v; }
 #if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
-    inline operator __m128i() const { return reinterpret_cast<const __m128i *>(&v)[0]; }
-    inline operator __m128d() const { return reinterpret_cast<const __m128d *>(&v)[0]; }
+    inline operator __m128i() const { return _mm_castps_si128(v); }
+    inline operator __m128d() const { return _mm_castps_pd(v); }
 #endif
 };
 
@@ -350,6 +344,7 @@ struct XMMATRIX
 __declspec(align(16)) struct XMMATRIX
 #endif
 {
+#ifdef _XM_NO_INTRINSICS_
     union
     {
         XMVECTOR r[4];
@@ -362,6 +357,9 @@ __declspec(align(16)) struct XMMATRIX
         };
         float m[4][4];
     };
+#else
+    XMVECTOR r[4];
+#endif
 
     XMMATRIX() {}
     XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, GXMVECTOR R3) { r[0] = R0; r[1] = R1; r[2] = R2; r[3] = R3; }
@@ -371,8 +369,10 @@ __declspec(align(16)) struct XMMATRIX
              float m30, float m31, float m32, float m33);
     explicit XMMATRIX(_In_reads_(16) const float *pArray);
 
+#ifdef _XM_NO_INTRINSICS_
     float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
     float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
+#endif
 
     XMMATRIX&   operator= (const XMMATRIX& M) { r[0] = M.r[0]; r[1] = M.r[1]; r[2] = M.r[2]; r[3] = M.r[3]; return *this; }
 
@@ -403,7 +403,7 @@ struct XMFLOAT2
 
     XMFLOAT2() {}
     XMFLOAT2(float _x, float _y) : x(_x), y(_y) {}
-    XMFLOAT2(_In_reads_(2) const float *pArray) : x(pArray[0]), y(pArray[1]) {}
+    explicit XMFLOAT2(_In_reads_(2) const float *pArray) : x(pArray[0]), y(pArray[1]) {}
 
     XMFLOAT2& operator= (const XMFLOAT2& Float2) { x = Float2.x; y = Float2.y; return *this; }
 };
@@ -413,7 +413,7 @@ __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
 {
     XMFLOAT2A() : XMFLOAT2() {}
     XMFLOAT2A(float _x, float _y) : XMFLOAT2(_x, _y) {}
-    XMFLOAT2A(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
+    explicit XMFLOAT2A(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
 
     XMFLOAT2A& operator= (const XMFLOAT2A& Float2) { x = Float2.x; y = Float2.y; return *this; }
 };
@@ -455,7 +455,7 @@ struct XMFLOAT3
 
     XMFLOAT3() {}
     XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
-    XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+    explicit XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
     XMFLOAT3& operator= (const XMFLOAT3& Float3) { x = Float3.x; y = Float3.y; z = Float3.z; return *this; }
 };
@@ -465,7 +465,7 @@ __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
 {
     XMFLOAT3A() : XMFLOAT3() {}
     XMFLOAT3A(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
-    XMFLOAT3A(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
+    explicit XMFLOAT3A(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
 
     XMFLOAT3A& operator= (const XMFLOAT3A& Float3) { x = Float3.x; y = Float3.y; z = Float3.z; return *this; }
 };
@@ -482,7 +482,7 @@ struct XMINT3
     XMINT3(int32_t _x, int32_t _y, int32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMINT3(_In_reads_(3) const int32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
-    XMINT3& operator= (const XMINT3& Int3) { x = Int3.x; y = Int3.y; z = Int3.z; return *this; }
+    XMINT3& operator= (const XMINT3& i3) { x = i3.x; y = i3.y; z = i3.z; return *this; }
 };
 
 // 3D Vector; 32 bit unsigned integer components
@@ -496,7 +496,7 @@ struct XMUINT3
     XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMUINT3(_In_reads_(3) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
-    XMUINT3& operator= (const XMUINT3& UInt3) { x = UInt3.x; y = UInt3.y; z = UInt3.z; return *this; }
+    XMUINT3& operator= (const XMUINT3& u3) { x = u3.x; y = u3.y; z = u3.z; return *this; }
 };
 
 //------------------------------------------------------------------------------
@@ -510,7 +510,7 @@ struct XMFLOAT4
 
     XMFLOAT4() {}
     XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
-    XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
+    explicit XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
     XMFLOAT4& operator= (const XMFLOAT4& Float4) { x = Float4.x; y = Float4.y; z = Float4.z; w = Float4.w; return *this; }
 };
@@ -520,7 +520,7 @@ __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
 {
     XMFLOAT4A() : XMFLOAT4() {}
     XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
-    XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
+    explicit XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
 
     XMFLOAT4A& operator= (const XMFLOAT4A& Float4) { x = Float4.x; y = Float4.y; z = Float4.z; w = Float4.w; return *this; }
 };
@@ -1368,6 +1368,8 @@ template<class T> inline T XMMax(T a, T b) { return (a > b) ? a : b; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
+#define XM_PERMUTE_PS( v, c ) _mm_shuffle_ps( v, v, c )
+
 // PermuteHelper internal template (SSE only)
 namespace Internal
 {
@@ -1384,8 +1386,8 @@ namespace Internal
                 WhichW ? 0xFFFFFFFF : 0,
             };
 
-            XMVECTOR shuffled1 = _mm_shuffle_ps(v1, v1, Shuffle);
-            XMVECTOR shuffled2 = _mm_shuffle_ps(v2, v2, Shuffle);
+            XMVECTOR shuffled1 = XM_PERMUTE_PS(v1, Shuffle);
+            XMVECTOR shuffled2 = XM_PERMUTE_PS(v2, Shuffle);
 
             XMVECTOR masked1 = _mm_andnot_ps(selectMask, shuffled1);
             XMVECTOR masked2 = _mm_and_ps(selectMask, shuffled2);
@@ -1397,13 +1399,13 @@ namespace Internal
     // Fast path for permutes that only read from the first vector.
     template<uint32_t Shuffle> struct PermuteHelper<Shuffle, false, false, false, false>
     {
-        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2) { (v2); return _mm_shuffle_ps(v1, v1, Shuffle); }
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2) { (v2); return XM_PERMUTE_PS(v1, Shuffle); }
     };
 
     // Fast path for permutes that only read from the second vector.
     template<uint32_t Shuffle> struct PermuteHelper<Shuffle, true, true, true, true>
     {
-        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2){ (v1); return _mm_shuffle_ps(v2, v2, Shuffle); }
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2){ (v1); return XM_PERMUTE_PS(v2, Shuffle); }
     };
 
     // Fast path for permutes that read XY from the first vector, ZW from the second.
@@ -1488,7 +1490,7 @@ template<> inline XMVECTOR XMVectorPermute<1,2,3,4>(FXMVECTOR V1, FXMVECTOR V2) 
 template<> inline XMVECTOR XMVectorPermute<2,3,4,5>(FXMVECTOR V1, FXMVECTOR V2) { return vextq_f32(V1, V2, 2); }
 template<> inline XMVECTOR XMVectorPermute<3,4,5,6>(FXMVECTOR V1, FXMVECTOR V2) { return vextq_f32(V1, V2, 3); }
 
-#endif _XM_ARM_NEON_INTRINSICS_ && !_XM_NO_INTRINSICS_
+#endif // _XM_ARM_NEON_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
 //------------------------------------------------------------------------------
 
@@ -1502,7 +1504,7 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
     static_assert(SwizzleW <= 3, "SwizzleW template parameter out of range");
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    return _mm_shuffle_ps( V, V, _MM_SHUFFLE( SwizzleW, SwizzleZ, SwizzleY, SwizzleX ) );
+    return XM_PERMUTE_PS( V, _MM_SHUFFLE( SwizzleW, SwizzleZ, SwizzleY, SwizzleX ) );
 #elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     return __vpermwi(V, ((SwizzleX & 3) << 6) | ((SwizzleY & 3) << 4) | ((SwizzleZ & 3) << 2) | (SwizzleW & 3) );
 #else
@@ -1514,6 +1516,7 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
 
 // Specialized swizzles
 template<> inline XMVECTOR XMVectorSwizzle<0,1,2,3>(FXMVECTOR V) { return V; }
+
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
@@ -1548,7 +1551,7 @@ template<> inline XMVECTOR XMVectorSwizzle<1,2,3,0>(FXMVECTOR V) { return vextq_
 template<> inline XMVECTOR XMVectorSwizzle<2,3,0,1>(FXMVECTOR V) { return vextq_f32(V, V, 2); }
 template<> inline XMVECTOR XMVectorSwizzle<3,0,1,2>(FXMVECTOR V) { return vextq_f32(V, V, 3); }
 
-#endif _XM_ARM_NEON_INTRINSICS_ && !_XM_NO_INTRINSICS_
+#endif // _XM_ARM_NEON_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
 //------------------------------------------------------------------------------
 
@@ -1760,7 +1763,7 @@ inline XMVECTOR XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, uint32_t C2,
     vTemp = _mm_cmpeq_epi32(vTemp,g_vMask1);
     // 0xFFFFFFFF -> 1.0f, 0x00000000 -> 0.0f
     vTemp = _mm_and_si128(vTemp,g_XMOne);
-    return reinterpret_cast<const __m128 *>(&vTemp)[0];
+    return _mm_castsi128_ps(vTemp);
 #endif
 }
 
@@ -1799,7 +1802,7 @@ inline XMVECTOR XMVectorSplatConstant(int32_t IntConstant, uint32_t DivExponent)
     // Splat the scalar value (It's really a float)
     vScale = _mm_set1_epi32(uScale);
     // Multiply by the reciprocal (Perform a right shift by DivExponent)
-    vResult = _mm_mul_ps(vResult,reinterpret_cast<const __m128 *>(&vScale)[0]);
+    vResult = _mm_mul_ps(vResult,_mm_castsi128_ps(vScale));
     return vResult;
 #endif
 }
@@ -1824,12 +1827,13 @@ inline XMVECTOR XMVectorSplatConstantInt(int32_t IntConstant)
 }
 
 // Implemented for VMX128 intrinsics as #defines aboves
-#endif _XM_NO_INTRINSICS_ || _XM_SSE_INTRINSICS_ || _XM_ARM_NEON_INTRINSICS_
+#endif // _XM_NO_INTRINSICS_ || _XM_SSE_INTRINSICS_ || _XM_ARM_NEON_INTRINSICS_
 
 #include "DirectXMathConvert.inl"
 #include "DirectXMathVector.inl"
 #include "DirectXMathMatrix.inl"
 #include "DirectXMathMisc.inl"
+
 
 #pragma prefast(pop)
 #pragma warning(pop)

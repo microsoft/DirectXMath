@@ -156,23 +156,23 @@ inline XMVECTOR XMQuaternionMultiply
     XMVECTOR Q2Z = Q2;
     XMVECTOR vResult = Q2;
     // Splat with one instruction
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
-    Q2X = _mm_shuffle_ps(Q2X,Q2X,_MM_SHUFFLE(0,0,0,0));
-    Q2Y = _mm_shuffle_ps(Q2Y,Q2Y,_MM_SHUFFLE(1,1,1,1));
-    Q2Z = _mm_shuffle_ps(Q2Z,Q2Z,_MM_SHUFFLE(2,2,2,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,3,3,3));
+    Q2X = XM_PERMUTE_PS(Q2X,_MM_SHUFFLE(0,0,0,0));
+    Q2Y = XM_PERMUTE_PS(Q2Y,_MM_SHUFFLE(1,1,1,1));
+    Q2Z = XM_PERMUTE_PS(Q2Z,_MM_SHUFFLE(2,2,2,2));
     // Retire Q1 and perform Q1*Q2W
     vResult = _mm_mul_ps(vResult,Q1);
     XMVECTOR Q1Shuffle = Q1;
     // Shuffle the copies of Q1
-    Q1Shuffle = _mm_shuffle_ps(Q1Shuffle,Q1Shuffle,_MM_SHUFFLE(0,1,2,3));
+    Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle,_MM_SHUFFLE(0,1,2,3));
     // Mul by Q1WZYX
     Q2X = _mm_mul_ps(Q2X,Q1Shuffle);
-    Q1Shuffle = _mm_shuffle_ps(Q1Shuffle,Q1Shuffle,_MM_SHUFFLE(2,3,0,1));
+    Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle,_MM_SHUFFLE(2,3,0,1));
     // Flip the signs on y and z
     Q2X = _mm_mul_ps(Q2X,ControlWZYX);
     // Mul by Q1ZWXY
     Q2Y = _mm_mul_ps(Q2Y,Q1Shuffle);
-    Q1Shuffle = _mm_shuffle_ps(Q1Shuffle,Q1Shuffle,_MM_SHUFFLE(0,1,2,3));
+    Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle,_MM_SHUFFLE(0,1,2,3));
     // Flip the signs on z and w
     Q2Y = _mm_mul_ps(Q2Y,ControlZWXY);
     // Mul by Q1YXWZ
@@ -438,7 +438,7 @@ inline XMVECTOR XMQuaternionSlerpV
 
     XMVECTOR Omega = XMVectorATan2(SinOmega, CosOmega);
 
-    XMVECTOR V01 = _mm_shuffle_ps(T,T,_MM_SHUFFLE(2,3,0,1));
+    XMVECTOR V01 = XM_PERMUTE_PS(T,_MM_SHUFFLE(2,3,0,1));
     V01 = _mm_and_ps(V01,MaskXY);
     V01 = _mm_xor_ps(V01,SignMask2);
     V01 = _mm_add_ps(g_XMIdentityR0, V01);
@@ -897,11 +897,11 @@ inline XMVECTOR XMQuaternionRotationMatrix
     XMVECTOR r2 = M.r[2];  // (r20, r21, r22, 0)
 
     // (r00, r00, r00, r00)
-    XMVECTOR r00 = _mm_shuffle_ps(r0, r0, _MM_SHUFFLE(0,0,0,0));
+    XMVECTOR r00 = XM_PERMUTE_PS(r0, _MM_SHUFFLE(0,0,0,0));
     // (r11, r11, r11, r11)
-    XMVECTOR r11 = _mm_shuffle_ps(r1, r1, _MM_SHUFFLE(1,1,1,1));
+    XMVECTOR r11 = XM_PERMUTE_PS(r1, _MM_SHUFFLE(1,1,1,1));
     // (r22, r22, r22, r22)
-    XMVECTOR r22 = _mm_shuffle_ps(r2, r2, _MM_SHUFFLE(2,2,2,2));
+    XMVECTOR r22 = XM_PERMUTE_PS(r2, _MM_SHUFFLE(2,2,2,2));
 
     // x^2 >= y^2 equivalent to r11 - r00 <= 0
     // (r11 - r00, r11 - r00, r11 - r00, r11 - r00)
@@ -935,7 +935,7 @@ inline XMVECTOR XMQuaternionRotationMatrix
     // (r10, r10, r20, r21)
     t1 = _mm_shuffle_ps(r1, r2, _MM_SHUFFLE(1,0,0,0));
     // (r10, r20, r21, r10)
-    t1 = _mm_shuffle_ps(t1, t1, _MM_SHUFFLE(1,3,2,0));
+    t1 = XM_PERMUTE_PS(t1, _MM_SHUFFLE(1,3,2,0));
     // (4*x*y, 4*x*z, 4*y*z, unused)
     XMVECTOR xyxzyz = _mm_add_ps(t0, t1);
 
@@ -944,7 +944,7 @@ inline XMVECTOR XMQuaternionRotationMatrix
     // (r12, r12, r02, r01)
     t1 = _mm_shuffle_ps(r1, r0, _MM_SHUFFLE(1,2,2,2));
     // (r12, r02, r01, r12)
-    t1 = _mm_shuffle_ps(t1, t1, _MM_SHUFFLE(1,3,2,0));
+    t1 = XM_PERMUTE_PS(t1, _MM_SHUFFLE(1,3,2,0));
     // (4*x*w, 4*y*w, 4*z*w, unused)
     XMVECTOR xwywzw = _mm_sub_ps(t0, t1);
     xwywzw = _mm_mul_ps(XMMPMP, xwywzw);
@@ -1137,15 +1137,15 @@ inline XMVECTOR XMPlaneNormalizeEst
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(P,P);
     // x=Dot.y, y=Dot.z
-    XMVECTOR vTemp = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(2,1,2,1));
     // Result.x = x+y
     vDot = _mm_add_ss(vDot,vTemp);
     // x=Dot.z
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // Result.x = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-    vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    vDot = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vDot = _mm_rsqrt_ps(vDot);
     // Get the reciprocal
@@ -1183,11 +1183,11 @@ inline XMVECTOR XMPlaneNormalize
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z only
     XMVECTOR vLengthSq = _mm_mul_ps(P,P);
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,1,2,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Failsafe on zero (Or epsilon) length planes
@@ -1531,24 +1531,11 @@ inline XMVECTOR XMColorAdjustSaturation
     return vbslq_f32( g_XMSelect1110, vResult, vColor );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
-// Mul RGB by intensity constants
-    XMVECTOR vLuminance = _mm_mul_ps(vColor,gvLuminance);      
-// vResult.x = vLuminance.y, vResult.y = vLuminance.y,
-// vResult.z = vLuminance.z, vResult.w = vLuminance.z 
-    XMVECTOR vResult = vLuminance;
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(2,2,1,1)); 
-// vLuminance.x += vLuminance.y
-    vLuminance = _mm_add_ss(vLuminance,vResult);
-// Splat vLuminance.z
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(2,2,2,2));
-// vLuminance.x += vLuminance.z (Dot product)
-    vLuminance = _mm_add_ss(vLuminance,vResult);
-// Splat vLuminance
-    vLuminance = _mm_shuffle_ps(vLuminance,vLuminance,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vLuminance = XMVector3Dot( vColor, gvLuminance );
 // Splat fSaturation
     XMVECTOR vSaturation = _mm_set_ps1(fSaturation);
 // vResult = ((vColor-vLuminance)*vSaturation)+vLuminance;
-    vResult = _mm_sub_ps(vColor,vLuminance);
+    XMVECTOR vResult = _mm_sub_ps(vColor,vLuminance);
     vResult = _mm_mul_ps(vResult,vSaturation);
     vResult = _mm_add_ps(vResult,vLuminance);
 // Retain w from the source color

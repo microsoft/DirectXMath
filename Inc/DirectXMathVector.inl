@@ -142,7 +142,7 @@ inline XMVECTOR XMVectorReplicateInt
     return vdupq_n_u32( Value );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_set1_epi32( Value );
-    return reinterpret_cast<const __m128 *>(&vTemp)[0];
+    return _mm_castsi128_ps(vTemp);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -215,7 +215,7 @@ inline XMVECTOR XMVectorSplatX
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32( vget_low_f32( V ), 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_shuffle_ps( V, V, _MM_SHUFFLE(0, 0, 0, 0) );
+    return XM_PERMUTE_PS( V, _MM_SHUFFLE(0, 0, 0, 0) );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -237,7 +237,7 @@ inline XMVECTOR XMVectorSplatY
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32( vget_low_f32( V ), 1 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_shuffle_ps( V, V, _MM_SHUFFLE(1, 1, 1, 1) );
+    return XM_PERMUTE_PS( V, _MM_SHUFFLE(1, 1, 1, 1) );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -259,7 +259,7 @@ inline XMVECTOR XMVectorSplatZ
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32( vget_high_f32( V ), 0 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_shuffle_ps( V, V, _MM_SHUFFLE(2, 2, 2, 2) );
+    return XM_PERMUTE_PS( V, _MM_SHUFFLE(2, 2, 2, 2) );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -281,7 +281,7 @@ inline XMVECTOR XMVectorSplatW
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32( vget_high_f32( V ), 1 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_shuffle_ps( V, V, _MM_SHUFFLE(3, 3, 3, 3) );
+    return XM_PERMUTE_PS( V, _MM_SHUFFLE(3, 3, 3, 3) );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -401,7 +401,6 @@ inline float XMVectorGetByIndex(FXMVECTOR V, size_t i)
 
 //------------------------------------------------------------------------------
 // Return the X component in an FPU register. 
-// This causes Load/Hit/Store on VMX targets
 inline float XMVectorGetX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -415,7 +414,6 @@ inline float XMVectorGetX(FXMVECTOR V)
 }
 
 // Return the Y component in an FPU register. 
-// This causes Load/Hit/Store on VMX targets
 inline float XMVectorGetY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -423,14 +421,13 @@ inline float XMVectorGetY(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_f32(V, 1);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     return _mm_cvtss_f32(vTemp);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Return the Z component in an FPU register. 
-// This causes Load/Hit/Store on VMX targets
 inline float XMVectorGetZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -438,14 +435,13 @@ inline float XMVectorGetZ(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_f32(V, 2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     return _mm_cvtss_f32(vTemp);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Return the W component in an FPU register. 
-// This causes Load/Hit/Store on VMX targets
 inline float XMVectorGetW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -453,7 +449,7 @@ inline float XMVectorGetW(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_f32(V, 3);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     return _mm_cvtss_f32(vTemp);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -462,7 +458,6 @@ inline float XMVectorGetW(FXMVECTOR V)
 //------------------------------------------------------------------------------
 
 // Store a component indexed by i into a 32 bit float location in memory.
-// This causes Load/Hit/Store on VMX targets
 _Use_decl_annotations_
 inline void XMVectorGetByIndexPtr(float *f, FXMVECTOR V, size_t i)
 {
@@ -506,7 +501,7 @@ inline void XMVectorGetYPtr(float *y, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(y,vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -522,7 +517,7 @@ inline void XMVectorGetZPtr(float *z, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(z,vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -538,7 +533,7 @@ inline void XMVectorGetWPtr(float *w, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(w,vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -565,7 +560,6 @@ inline uint32_t XMVectorGetIntByIndex(FXMVECTOR V, size_t i)
 //------------------------------------------------------------------------------
 
 // Return the X component in an integer register. 
-// This causes Load/Hit/Store on VMX targets
 inline uint32_t XMVectorGetIntX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -573,13 +567,12 @@ inline uint32_t XMVectorGetIntX(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 0);
 #elif defined(_XM_SSE_INTRINSICS_)
-    return static_cast<uint32_t>(_mm_cvtsi128_si32(reinterpret_cast<const __m128i *>(&V)[0]));
+    return static_cast<uint32_t>(_mm_cvtsi128_si32(_mm_castps_si128(V)));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Return the Y component in an integer register. 
-// This causes Load/Hit/Store on VMX targets
 inline uint32_t XMVectorGetIntY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -587,14 +580,13 @@ inline uint32_t XMVectorGetIntY(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 1);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(1,1,1,1));
+    __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(1,1,1,1));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Return the Z component in an integer register. 
-// This causes Load/Hit/Store on VMX targets
 inline uint32_t XMVectorGetIntZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -602,14 +594,13 @@ inline uint32_t XMVectorGetIntZ(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(2,2,2,2));
+    __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(2,2,2,2));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Return the W component in an integer register. 
-// This causes Load/Hit/Store on VMX targets
 inline uint32_t XMVectorGetIntW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -617,7 +608,7 @@ inline uint32_t XMVectorGetIntW(FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 3);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(3,3,3,3));
+    __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(3,3,3,3));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -626,7 +617,6 @@ inline uint32_t XMVectorGetIntW(FXMVECTOR V)
 //------------------------------------------------------------------------------
 
 // Store a component indexed by i into a 32 bit integer location in memory.
-// This causes Load/Hit/Store on VMX targets
 _Use_decl_annotations_
 inline void XMVectorGetIntByIndexPtr(uint32_t *x, FXMVECTOR V, size_t i)
 {
@@ -670,7 +660,7 @@ inline void XMVectorGetIntYPtr(uint32_t *y, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(reinterpret_cast<float *>(y),vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -686,7 +676,7 @@ inline void XMVectorGetIntZPtr(uint32_t *z, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(reinterpret_cast<float *>(z),vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -702,7 +692,7 @@ inline void XMVectorGetIntWPtr(uint32_t *w, FXMVECTOR V)
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(reinterpret_cast<float *>(w),vResult);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -711,7 +701,6 @@ inline void XMVectorGetIntWPtr(uint32_t *w, FXMVECTOR V)
 //------------------------------------------------------------------------------
 
 // Set a single indexed floating point component
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
 {
     assert( i < 4 );
@@ -736,7 +725,6 @@ inline XMVECTOR XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a passed floating point value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetX(FXMVECTOR V, float x)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -757,7 +745,6 @@ inline XMVECTOR XMVectorSetX(FXMVECTOR V, float x)
 }
 
 // Sets the Y component of a vector to a passed floating point value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetY(FXMVECTOR V, float y)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -771,19 +758,18 @@ inline XMVECTOR XMVectorSetY(FXMVECTOR V, float y)
     return vsetq_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
     // Convert input to vector
     XMVECTOR vTemp = _mm_set_ss(y);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap y and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,2,0,1));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,2,0,1));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 // Sets the Z component of a vector to a passed floating point value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetZ(FXMVECTOR V, float z)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -797,20 +783,19 @@ inline XMVECTOR XMVectorSetZ(FXMVECTOR V, float z)
     return vsetq_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
     // Convert input to vector
     XMVECTOR vTemp = _mm_set_ss(z);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap z and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,0,1,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,0,1,2));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Sets the W component of a vector to a passed floating point value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetW(FXMVECTOR V, float w)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -824,13 +809,13 @@ inline XMVECTOR XMVectorSetW(FXMVECTOR V, float w)
     return vsetq_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
     // Convert input to vector
     XMVECTOR vTemp = _mm_set_ss(w);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap w and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,2,1,3));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,2,1,3));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -839,7 +824,6 @@ inline XMVECTOR XMVectorSetW(FXMVECTOR V, float w)
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to a floating point value passed by pointer
-// This causes Load/Hit/Store on VMX targets
 _Use_decl_annotations_
 inline XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V, const float *f, size_t i)
 {
@@ -903,13 +887,13 @@ inline XMVECTOR XMVectorSetYPtr(FXMVECTOR V, const float *y)
     return vld1q_lane_f32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(y);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap y and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,2,0,1));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,2,0,1));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -931,13 +915,13 @@ inline XMVECTOR XMVectorSetZPtr(FXMVECTOR V, const float *z)
     return vld1q_lane_f32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(z);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap z and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,0,1,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,0,1,2));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -959,13 +943,13 @@ inline XMVECTOR XMVectorSetWPtr(FXMVECTOR V, const float *w)
     return vld1q_lane_f32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(w);
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap w and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,2,1,3));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,2,1,3));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -974,7 +958,6 @@ inline XMVECTOR XMVectorSetWPtr(FXMVECTOR V, const float *w)
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer passed by value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_t i)
 {
     assert( i < 4 );
@@ -1001,7 +984,6 @@ inline XMVECTOR XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_t i)
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer passed by value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetIntX(FXMVECTOR V, uint32_t x)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -1015,14 +997,13 @@ inline XMVECTOR XMVectorSetIntX(FXMVECTOR V, uint32_t x)
     return vsetq_lane_u32(x,V,0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cvtsi32_si128(x);
-    XMVECTOR vResult = _mm_move_ss(V,reinterpret_cast<const __m128 *>(&vTemp)[0]);
+    XMVECTOR vResult = _mm_move_ss(V,_mm_castsi128_ps(vTemp));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Sets the Y component of a vector to an integer passed by value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetIntY(FXMVECTOR V, uint32_t y)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -1036,20 +1017,19 @@ inline XMVECTOR XMVectorSetIntY(FXMVECTOR V, uint32_t y)
     return vsetq_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
     // Convert input to vector
     __m128i vTemp = _mm_cvtsi32_si128(y);
     // Replace the x component
-    vResult = _mm_move_ss(vResult,reinterpret_cast<const __m128 *>(&vTemp)[0]);
+    vResult = _mm_move_ss(vResult,_mm_castsi128_ps(vTemp));
     // Swap y and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,2,0,1));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,2,0,1));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Sets the Z component of a vector to an integer passed by value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -1063,20 +1043,19 @@ inline XMVECTOR XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
     return vsetq_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
     // Convert input to vector
     __m128i vTemp = _mm_cvtsi32_si128(z);
     // Replace the x component
-    vResult = _mm_move_ss(vResult,reinterpret_cast<const __m128 *>(&vTemp)[0]);
+    vResult = _mm_move_ss(vResult,_mm_castsi128_ps(vTemp));
     // Swap z and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,0,1,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,0,1,2));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
 
 // Sets the W component of a vector to an integer passed by value
-// This causes Load/Hit/Store on VMX targets
 inline XMVECTOR XMVectorSetIntW(FXMVECTOR V, uint32_t w)
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -1090,13 +1069,13 @@ inline XMVECTOR XMVectorSetIntW(FXMVECTOR V, uint32_t w)
     return vsetq_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
     // Convert input to vector
     __m128i vTemp = _mm_cvtsi32_si128(w);
     // Replace the x component
-    vResult = _mm_move_ss(vResult,reinterpret_cast<const __m128 *>(&vTemp)[0]);
+    vResult = _mm_move_ss(vResult,_mm_castsi128_ps(vTemp));
     // Swap w and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,2,1,3));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,2,1,3));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1105,7 +1084,6 @@ inline XMVECTOR XMVectorSetIntW(FXMVECTOR V, uint32_t w)
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer value passed by pointer
-// This causes Load/Hit/Store on VMX targets
 _Use_decl_annotations_
 inline XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t *x, size_t i)
 {
@@ -1171,13 +1149,13 @@ inline XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t *y)
     return vld1q_lane_u32(y,V,1);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float *>(y));
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap y and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,2,0,1));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,2,0,1));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1199,13 +1177,13 @@ inline XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t *z)
     return vld1q_lane_u32(z,V,2);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,0,1,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float *>(z));
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap z and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,0,1,2));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(3,0,1,2));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1227,13 +1205,13 @@ inline XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V, const uint32_t *w)
     return vld1q_lane_u32(w,V,3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,2,1,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
     // Convert input to vector
     XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float *>(w));
     // Replace the x component
     vResult = _mm_move_ss(vResult,vTemp);
     // Swap w and x again
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,2,1,3));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,2,1,3));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1287,7 +1265,7 @@ inline XMVECTOR XMVectorSwizzle
     const __n64 rH = vtbl2_u8( tbl, idx );
 
     return vcombine_f32( rL, rH );
-#elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_VMX128_INTRINSICS_)
 #else
     const uint32_t *aPtr = (const uint32_t* )(&V);
 
@@ -1682,7 +1660,7 @@ inline XMVECTOR XMVectorEqualInt
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vceqq_u32( V1, V2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_cmpeq_epi32( _mm_castps_si128(V1),_mm_castps_si128(V2) );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1735,7 +1713,7 @@ inline XMVECTOR XMVectorEqualIntR
     *pCR = CR;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_cmpeq_epi32( _mm_castps_si128(V1),_mm_castps_si128(V2) );
     int iTemp = _mm_movemask_ps(reinterpret_cast<const __m128*>(&V)[0]);
     uint32_t CR = 0;
     if (iTemp==0x0F)
@@ -1841,7 +1819,7 @@ inline XMVECTOR XMVectorNotEqualInt
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vmvnq_u32(vceqq_u32(V1, V2));
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_cmpeq_epi32( _mm_castps_si128(V1),_mm_castps_si128(V2) );
     return _mm_xor_ps(reinterpret_cast<__m128 *>(&V)[0],g_XMNegOneMask);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -2365,7 +2343,7 @@ inline XMVECTOR XMVectorRound
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
-    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
     // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
     vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
     // Convert to int and back to float for rounding
@@ -2375,7 +2353,7 @@ inline XMVECTOR XMVectorRound
     // All numbers less than 8388608 will use the round to int
     vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     // All others, use the ORIGINAL value
-    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vTest = _mm_andnot_si128(vTest,_mm_castps_si128(V));
     vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -2426,7 +2404,7 @@ inline XMVECTOR XMVectorTruncate
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
-    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
     // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
     vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
     // Convert to int and back to float for rounding with truncation
@@ -2436,7 +2414,7 @@ inline XMVECTOR XMVectorTruncate
     // All numbers less than 8388608 will use the round to int
     vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     // All others, use the ORIGINAL value
-    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vTest = _mm_andnot_si128(vTest,_mm_castps_si128(V));
     vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -2466,7 +2444,7 @@ inline XMVECTOR XMVectorFloor
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
-    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
     // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
     vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
     // Convert to int and back to float for rounding
@@ -2477,7 +2455,7 @@ inline XMVECTOR XMVectorFloor
     // All numbers less than 8388608 will use the round to int
     vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     // All others, use the ORIGINAL value
-    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vTest = _mm_andnot_si128(vTest,_mm_castps_si128(V));
     vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -2506,7 +2484,7 @@ inline XMVECTOR XMVectorCeiling
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
-    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
     // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
     vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
     // Convert to int and back to float for rounding
@@ -2517,7 +2495,7 @@ inline XMVECTOR XMVectorCeiling
     // All numbers less than 8388608 will use the round to int
     vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     // All others, use the ORIGINAL value
-    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vTest = _mm_andnot_si128(vTest,_mm_castps_si128(V));
     vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -2630,7 +2608,7 @@ inline XMVECTOR XMVectorAndCInt
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vbicq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_andnot_si128( reinterpret_cast<const __m128i *>(&V2)[0], reinterpret_cast<const __m128i *>(&V1)[0] );
+    __m128i V = _mm_andnot_si128( _mm_castps_si128(V2), _mm_castps_si128(V1) );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -2656,7 +2634,7 @@ inline XMVECTOR XMVectorOrInt
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vorrq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_or_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_or_si128( _mm_castps_si128(V1), _mm_castps_si128(V2) );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -2684,7 +2662,7 @@ inline XMVECTOR XMVectorNorInt
     return vbicq_u32(g_XMNegOneMask, Result);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i Result;
-    Result = _mm_or_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
+    Result = _mm_or_si128( _mm_castps_si128(V1), _mm_castps_si128(V2) );
     Result = _mm_andnot_si128( Result,g_XMNegOneMask);
     return reinterpret_cast<__m128 *>(&Result)[0];
 #else // _XM_VMX128_INTRINSICS_
@@ -2711,7 +2689,7 @@ inline XMVECTOR XMVectorXorInt
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return veorq_u32(V1,V2);
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_xor_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_xor_si128( _mm_castps_si128(V1), _mm_castps_si128(V2) );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -3512,23 +3490,23 @@ inline XMVECTOR XMVectorSin
 
     // Compute polynomial approximation
     const XMVECTOR SC1 = g_XMSinCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( SC1, SC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( SC1, _MM_SHUFFLE(0, 0, 0, 0) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
     const XMVECTOR SC0 = g_XMSinCoefficients0;
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( SC0,  _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
     Result = _mm_add_ps(Result, g_XMOne);
@@ -3610,23 +3588,23 @@ inline XMVECTOR XMVectorCos
 
     // Compute polynomial approximation
     const XMVECTOR CC1 = g_XMCosCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( CC1, CC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( CC1, _MM_SHUFFLE(0, 0, 0, 0) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
     const XMVECTOR CC0 = g_XMCosCoefficients0;
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
     Result = _mm_add_ps(Result, g_XMOne);
@@ -3737,23 +3715,23 @@ inline void XMVectorSinCos
 
     // Compute polynomial approximation of sine
     const XMVECTOR SC1 = g_XMSinCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( SC1, SC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( SC1, _MM_SHUFFLE(0, 0, 0, 0) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
     const XMVECTOR SC0 = g_XMSinCoefficients0;
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SC0, SC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( SC0, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
     Result = _mm_add_ps(Result, g_XMOne);
@@ -3762,23 +3740,23 @@ inline void XMVectorSinCos
 
     // Compute polynomial approximation of cosine
     const XMVECTOR CC1 = g_XMCosCoefficients1;
-    vConstants = _mm_shuffle_ps( CC1, CC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( CC1, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_mul_ps(vConstants, x2);
 
     const XMVECTOR CC0 = g_XMCosCoefficients0;
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( CC0,  _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( CC0,  _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CC0, CC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( CC0, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
     Result = _mm_add_ps(Result, g_XMOne);
@@ -4060,35 +4038,35 @@ inline XMVECTOR XMVectorASin
 
     // Compute polynomial approximation
     const XMVECTOR AC1 = g_XMArcCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
     const XMVECTOR AC0 = g_XMArcCoefficients0;
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(3, 3, 3, 3) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AC0,_MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
@@ -4169,35 +4147,35 @@ inline XMVECTOR XMVectorACos
 
     // Compute polynomial approximation
     const XMVECTOR AC1 = g_XMArcCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC1, AC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AC1, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
     const XMVECTOR AC0 = g_XMArcCoefficients0;
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(3, 3, 3, 3) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AC0, AC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AC0, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
@@ -4291,35 +4269,35 @@ inline XMVECTOR XMVectorATan
 
     // Compute polynomial approximation
     const XMVECTOR TC1 = g_XMATanCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( TC1, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( TC1, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( TC1, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( TC1, TC1, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( TC1, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
     const XMVECTOR TC0 = g_XMATanCoefficients0;
-    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( TC0, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( TC0, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( TC0, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( TC0, TC0, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( TC0, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
     Result = _mm_add_ps(Result, g_XMOne);
@@ -4458,14 +4436,14 @@ inline XMVECTOR XMVectorSinEst
 
     // Compute polynomial approximation
     const XMVECTOR SEC = g_XMSinCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
@@ -4541,14 +4519,14 @@ inline XMVECTOR XMVectorCosEst
 
     // Compute polynomial approximation
     const XMVECTOR CEC = g_XMCosCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
@@ -4646,14 +4624,14 @@ inline void XMVectorSinCosEst
 
     // Compute polynomial approximation for sine
     const XMVECTOR SEC = g_XMSinCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( SEC, SEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( SEC, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
@@ -4663,14 +4641,14 @@ inline void XMVectorSinCosEst
 
     // Compute polynomial approximation for cosine
     const XMVECTOR CEC = g_XMCosCoefficients1;
-    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(3, 3, 3, 3) );
     Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( CEC, CEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( CEC, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
@@ -4766,18 +4744,18 @@ inline XMVECTOR XMVectorASinEst
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMArcEstCoefficients;
-    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
@@ -4845,18 +4823,18 @@ inline XMVECTOR XMVectorACosEst
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMArcEstCoefficients;
-    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 t0 = _mm_mul_ps(vConstants, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(2, 2, 2, 2) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(1, 1, 1, 1) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, x);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(0, 0, 0, 0) );
     t0 = _mm_add_ps(t0, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
@@ -4974,18 +4952,18 @@ inline XMVECTOR XMVectorATanEst
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMATanEstCoefficients1;
-    XMVECTOR vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(3, 3, 3, 3) );
+    XMVECTOR vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(3, 3, 3, 3) );
     __m128 Result = _mm_mul_ps(vConstants, x2);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(2, 2, 2, 2) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(2, 2, 2, 2) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(1, 1, 1, 1) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(1, 1, 1, 1) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
-    vConstants = _mm_shuffle_ps( AEC, AEC, _MM_SHUFFLE(0, 0, 0, 0) );
+    vConstants = XM_PERMUTE_PS( AEC, _MM_SHUFFLE(0, 0, 0, 0) );
     Result = _mm_add_ps(Result, vConstants);
     Result = _mm_mul_ps(Result, x2);
 
@@ -5261,18 +5239,18 @@ inline XMVECTOR XMVectorHermiteV
     T3 = _mm_add_ps(T3,g_XMIdentityR0);
     // Now, I have the constants created
     // Mul the x constant to Position0
-    XMVECTOR vResult = _mm_shuffle_ps(T3,T3,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(T3,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,Position0);
     // Mul the y constant to Tangent0
-    T2 = _mm_shuffle_ps(T3,T3,_MM_SHUFFLE(1,1,1,1));
+    T2 = XM_PERMUTE_PS(T3,_MM_SHUFFLE(1,1,1,1));
     T2 = _mm_mul_ps(T2,Tangent0);
     vResult = _mm_add_ps(vResult,T2);
     // Mul the z constant to Position1
-    T2 = _mm_shuffle_ps(T3,T3,_MM_SHUFFLE(2,2,2,2));
+    T2 = XM_PERMUTE_PS(T3,_MM_SHUFFLE(2,2,2,2));
     T2 = _mm_mul_ps(T2,Position1);
     vResult = _mm_add_ps(vResult,T2);
     // Mul the w constant to Tangent1
-    T3 = _mm_shuffle_ps(T3,T3,_MM_SHUFFLE(3,3,3,3));
+    T3 = XM_PERMUTE_PS(T3,_MM_SHUFFLE(3,3,3,3));
     T3 = _mm_mul_ps(T3,Tangent1);
     vResult = _mm_add_ps(vResult,T3);
     return vResult;
@@ -5639,8 +5617,8 @@ inline bool XMVector2EqualInt
     __n64 vTemp = vceq_u32( vget_low_u32(V1), vget_low_u32(V2) );
     return ( vget_lane_u64( vTemp, 0 ) == 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)==3) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return (((_mm_movemask_ps(_mm_castsi128_ps(vTemp))&3)==3) != 0);
 #else // _XM_VMX128_INTRINSICS_
     return XMComparisonAllTrue(XMVector2EqualIntR(V1, V2));
 #endif
@@ -5683,8 +5661,8 @@ inline uint32_t XMVector2EqualIntR
     }
     return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    int iTest = _mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3;
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    int iTest = _mm_movemask_ps(_mm_castsi128_ps(vTemp))&3;
     uint32_t CR = 0;
     if (iTest==3)
     {
@@ -5768,8 +5746,8 @@ inline bool XMVector2NotEqualInt
     __n64 vTemp = vceq_u32( vget_low_u32(V1), vget_low_u32(V2) );
     return ( vget_lane_u64( vTemp, 0 ) != 0xFFFFFFFFFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)!=3) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return (((_mm_movemask_ps(_mm_castsi128_ps(vTemp))&3)!=3) != 0);
 #else // _XM_VMX128_INTRINSICS_
     return XMComparisonAnyFalse(XMVector2EqualIntR(V1, V2));
 #endif
@@ -6091,10 +6069,10 @@ inline XMVECTOR XMVector2Dot
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V1,V2);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -6128,15 +6106,15 @@ inline XMVECTOR XMVector2Cross
     return vcombine_f32( vTemp, vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap x and y
-    XMVECTOR vResult = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(0,1,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V2,_MM_SHUFFLE(0,1,0,1));
     // Perform the muls
     vResult = _mm_mul_ps(vResult,V1);
     // Splat y
-    XMVECTOR vTemp = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(1,1,1,1));
     // Sub the values
     vResult = _mm_sub_ss(vResult,vTemp);
     // Splat the cross product
-    vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,0,0,0));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,0,0,0));
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -6178,11 +6156,11 @@ inline XMVECTOR XMVector2ReciprocalLengthEst
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     vLengthSq = _mm_rsqrt_ss(vLengthSq);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -6220,12 +6198,12 @@ inline XMVECTOR XMVector2ReciprocalLength
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     vLengthSq = _mm_sqrt_ss(vLengthSq);
     vLengthSq = _mm_div_ss(g_XMOne,vLengthSq);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -6261,11 +6239,11 @@ inline XMVECTOR XMVector2LengthEst
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     vLengthSq = _mm_sqrt_ss(vLengthSq);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -6307,10 +6285,10 @@ inline XMVECTOR XMVector2Length
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
@@ -6347,11 +6325,11 @@ inline XMVECTOR XMVector2NormalizeEst
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has y splatted
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     // x+y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     vLengthSq = _mm_rsqrt_ss(vLengthSq);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     vLengthSq = _mm_mul_ps(vLengthSq,V);
     return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
@@ -6404,9 +6382,9 @@ inline XMVECTOR XMVector2Normalize
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,1,1,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -6591,12 +6569,9 @@ inline XMVECTOR XMVector2RefractV
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
     // Get the 2D Dot product of Incident-Normal
-    XMVECTOR IDotN = _mm_mul_ps(Incident,Normal);
-    XMVECTOR vTemp = _mm_shuffle_ps(IDotN,IDotN,_MM_SHUFFLE(1,1,1,1));
-    IDotN = _mm_add_ss(IDotN,vTemp);
-    IDotN = _mm_shuffle_ps(IDotN,IDotN,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR IDotN = XMVector2Dot(Incident, Normal);
     // vTemp = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
-    vTemp = _mm_mul_ps(IDotN,IDotN);
+    XMVECTOR vTemp = _mm_mul_ps(IDotN,IDotN);
     vTemp = _mm_sub_ps(g_XMOne,vTemp);
     vTemp = _mm_mul_ps(vTemp,RefractionIndex);
     vTemp = _mm_mul_ps(vTemp,RefractionIndex);
@@ -6641,7 +6616,7 @@ inline XMVECTOR XMVector2Orthogonal
     __n64 Result = vmul_f32( vrev64_f32( VL ), vget_low_f32( Negate ) );
     return vcombine_f32( Result, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,2,0,1));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
     vResult = _mm_mul_ps(vResult,g_XMNegateX);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -6851,9 +6826,9 @@ inline XMVECTOR XMVector2Transform
     __n128 X = vdupq_lane_f32( VL, 0 );
     return vmlaq_f32( Result, X, M.r[0] );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     vTemp = _mm_mul_ps(vTemp,M.r[1]);
     vResult = _mm_add_ps(vResult,vTemp);
     vResult = _mm_add_ps(vResult,M.r[3]);
@@ -7007,9 +6982,9 @@ inline XMVECTOR XMVector2TransformNormal
     __n128 X = vdupq_lane_f32( VL, 0 );
     return vmlaq_f32( Result, X, M.r[0] );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     vTemp = _mm_mul_ps(vTemp,M.r[1]);
     vResult = _mm_add_ps(vResult,vTemp);
     return vResult;
@@ -7167,8 +7142,8 @@ inline bool XMVector3EqualInt
     vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return ( (vget_lane_u32(vTemp.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)==7) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return (((_mm_movemask_ps(_mm_castsi128_ps(vTemp))&7)==7) != 0);
 #else // _XM_VMX128_INTRINSICS_
     return XMComparisonAllTrue(XMVector3EqualIntR(V1, V2));
 #endif
@@ -7214,8 +7189,8 @@ inline uint32_t XMVector3EqualIntR
     }
     return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    int iTemp = _mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7;
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    int iTemp = _mm_movemask_ps(_mm_castsi128_ps(vTemp))&7;
     uint32_t CR = 0;
     if (iTemp==7)
     {
@@ -7307,8 +7282,8 @@ inline bool XMVector3NotEqualInt
     vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return ( (vget_lane_u32(vTemp.val[1], 1)  & 0xFFFFFFU) != 0xFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)!=7) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return (((_mm_movemask_ps(_mm_castsi128_ps(vTemp))&7)!=7) != 0);
 #else // _XM_VMX128_INTRINSICS_
     return XMComparisonAnyFalse(XMVector3EqualIntR(V1, V2));
 #endif
@@ -7657,15 +7632,15 @@ inline XMVECTOR XMVector3Dot
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V1,V2);
     // x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
-    XMVECTOR vTemp = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(2,1,2,1));
     // Result.vector4_f32[0] = x+y
     vDot = _mm_add_ss(vDot,vTemp);
     // x=Dot.vector4_f32[2]
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // Result.vector4_f32[0] = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-    return _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    return XM_PERMUTE_PS(vDot,_MM_SHUFFLE(0,0,0,0));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7703,15 +7678,15 @@ inline XMVECTOR XMVector3Cross
     return veorq_u32( vResult, g_XMFlipY );
 #elif defined(_XM_SSE_INTRINSICS_)
     // y1,z1,x1,w1
-    XMVECTOR vTemp1 = _mm_shuffle_ps(V1,V1,_MM_SHUFFLE(3,0,2,1));
+    XMVECTOR vTemp1 = XM_PERMUTE_PS(V1,_MM_SHUFFLE(3,0,2,1));
     // z2,x2,y2,w2
-    XMVECTOR vTemp2 = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(3,1,0,2));
+    XMVECTOR vTemp2 = XM_PERMUTE_PS(V2,_MM_SHUFFLE(3,1,0,2));
     // Perform the left operation
     XMVECTOR vResult = _mm_mul_ps(vTemp1,vTemp2);
     // z1,x1,y1,w1
-    vTemp1 = _mm_shuffle_ps(vTemp1,vTemp1,_MM_SHUFFLE(3,0,2,1));
+    vTemp1 = XM_PERMUTE_PS(vTemp1,_MM_SHUFFLE(3,0,2,1));
     // y2,z2,x2,w2
-    vTemp2 = _mm_shuffle_ps(vTemp2,vTemp2,_MM_SHUFFLE(3,1,0,2));
+    vTemp2 = XM_PERMUTE_PS(vTemp2,_MM_SHUFFLE(3,1,0,2));
     // Perform the right operation
     vTemp1 = _mm_mul_ps(vTemp1,vTemp2);
     // Subract the right from left, and return answer
@@ -7763,15 +7738,15 @@ inline XMVECTOR XMVector3ReciprocalLengthEst
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and y
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,2,1,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,2,1,2));
     // x+z, y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // y,y,y,y
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vLengthSq = _mm_rsqrt_ps(vLengthSq);
     return vLengthSq;
@@ -7816,15 +7791,15 @@ inline XMVECTOR XMVector3ReciprocalLength
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
     // x=Dot.y, y=Dot.z
-    XMVECTOR vTemp = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(2,1,2,1));
     // Result.x = x+y
     vDot = _mm_add_ss(vDot,vTemp);
     // x=Dot.z
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // Result.x = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-    vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    vDot = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vDot = _mm_sqrt_ps(vDot);
     // Get the reciprocal
@@ -7869,15 +7844,15 @@ inline XMVECTOR XMVector3LengthEst
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and y
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,2,1,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,2,1,2));
     // x+z, y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // y,y,y,y
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the length
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -7926,15 +7901,15 @@ inline XMVECTOR XMVector3Length
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and y
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,2,1,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,2,1,2));
     // x+z, y
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // y,y,y,y
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the length
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -7974,15 +7949,15 @@ inline XMVECTOR XMVector3NormalizeEst
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
     // x=Dot.y, y=Dot.z
-    XMVECTOR vTemp = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(2,1,2,1));
     // Result.x = x+y
     vDot = _mm_add_ss(vDot,vTemp);
     // x=Dot.z
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     // Result.x = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-    vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    vDot = XM_PERMUTE_PS(vDot,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vDot = _mm_rsqrt_ps(vDot);
     // Perform the normalization
@@ -8042,11 +8017,11 @@ inline XMVECTOR XMVector3Normalize
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,1,2,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,1,2,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,1,1,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -8491,12 +8466,12 @@ inline XMVECTOR XMVector3Transform
     vTemp = vdupq_lane_f32( vget_high_f32( V ), 0 ); // Z
     return vmlaq_f32( vResult, vTemp, M.r[2] );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     vTemp = _mm_mul_ps(vTemp,M.r[1]);
     vResult = _mm_add_ps(vResult,vTemp);
-    vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
+    vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     vTemp = _mm_mul_ps(vTemp,M.r[2]);
     vResult = _mm_add_ps(vResult,vTemp);
     vResult = _mm_add_ps(vResult,M.r[3]);
@@ -8662,12 +8637,12 @@ inline XMVECTOR XMVector3TransformNormal
     vTemp = vdupq_lane_f32( vget_high_f32( V ), 0 ); // Z
     return vmlaq_f32( vResult, vTemp, M.r[2] );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,0,0,0));
     vResult = _mm_mul_ps(vResult,M.r[0]);
-    XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     vTemp = _mm_mul_ps(vTemp,M.r[1]);
     vResult = _mm_add_ps(vResult,vTemp);
-    vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
+    vTemp = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     vTemp = _mm_mul_ps(vTemp,M.r[2]);
     vResult = _mm_add_ps(vResult,vTemp);
     return vResult;
@@ -9025,8 +9000,8 @@ inline bool XMVector4EqualInt
     vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return ( vget_lane_u32(vTemp.val[1], 1) == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])==0xf) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return ((_mm_movemask_ps(_mm_castsi128_ps(vTemp))==0xf) != 0);
 #else
     return XMComparisonAllTrue(XMVector4EqualIntR(V1, V2));
 #endif
@@ -9075,8 +9050,8 @@ inline uint32_t XMVector4EqualIntR
     }
     return CR;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    int iTest = _mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0]);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    int iTest = _mm_movemask_ps(_mm_castsi128_ps(vTemp));
     uint32_t CR = 0;
     if (iTest==0xf)     // All equal?
     {
@@ -9167,8 +9142,8 @@ inline bool XMVector4NotEqualInt
     vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return ( vget_lane_u32(vTemp.val[1], 1) != 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
-    return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])!=0xF) != 0);
+    __m128i vTemp = _mm_cmpeq_epi32(_mm_castps_si128(V1),_mm_castps_si128(V2));
+    return ((_mm_movemask_ps(_mm_castsi128_ps(vTemp))!=0xF) != 0);
 #else
     return XMComparisonAnyFalse(XMVector4EqualIntR(V1, V2));
 #endif
@@ -9524,7 +9499,7 @@ inline XMVECTOR XMVector4Dot
     vTemp2 = _mm_add_ps(vTemp2,vTemp);          // Add Z = X+Z; W = Y+W;
     vTemp = _mm_shuffle_ps(vTemp,vTemp2,_MM_SHUFFLE(0,3,0,0));  // Copy W to the Z position
     vTemp = _mm_add_ps(vTemp,vTemp2);           // Add Z and W together
-    return _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(2,2,2,2));    // Splat Z and return
+    return XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(2,2,2,2));    // Splat Z and return
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -9635,43 +9610,43 @@ inline XMVECTOR XMVector4Cross
     return vmlaq_f32( vResult, vTerm, vTemp1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     // V2zwyz * V3wzwy
-    XMVECTOR vResult = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(2,1,3,2));
-    XMVECTOR vTemp3 = _mm_shuffle_ps(V3,V3,_MM_SHUFFLE(1,3,2,3));
+    XMVECTOR vResult = XM_PERMUTE_PS(V2,_MM_SHUFFLE(2,1,3,2));
+    XMVECTOR vTemp3 = XM_PERMUTE_PS(V3,_MM_SHUFFLE(1,3,2,3));
     vResult = _mm_mul_ps(vResult,vTemp3);
     // - V2wzwy * V3zwyz
-    XMVECTOR vTemp2 = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(1,3,2,3));
-    vTemp3 = _mm_shuffle_ps(vTemp3,vTemp3,_MM_SHUFFLE(1,3,0,1));
+    XMVECTOR vTemp2 = XM_PERMUTE_PS(V2,_MM_SHUFFLE(1,3,2,3));
+    vTemp3 = XM_PERMUTE_PS(vTemp3,_MM_SHUFFLE(1,3,0,1));
     vTemp2 = _mm_mul_ps(vTemp2,vTemp3);
     vResult = _mm_sub_ps(vResult,vTemp2);
     // term1 * V1yxxx
-    XMVECTOR vTemp1 = _mm_shuffle_ps(V1,V1,_MM_SHUFFLE(0,0,0,1));
+    XMVECTOR vTemp1 = XM_PERMUTE_PS(V1,_MM_SHUFFLE(0,0,0,1));
     vResult = _mm_mul_ps(vResult,vTemp1);
 
     // V2ywxz * V3wxwx
-    vTemp2 = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(2,0,3,1));
-    vTemp3 = _mm_shuffle_ps(V3,V3,_MM_SHUFFLE(0,3,0,3));
+    vTemp2 = XM_PERMUTE_PS(V2,_MM_SHUFFLE(2,0,3,1));
+    vTemp3 = XM_PERMUTE_PS(V3,_MM_SHUFFLE(0,3,0,3));
     vTemp3 = _mm_mul_ps(vTemp3,vTemp2);
     // - V2wxwx * V3ywxz
-    vTemp2 = _mm_shuffle_ps(vTemp2,vTemp2,_MM_SHUFFLE(2,1,2,1));
-    vTemp1 = _mm_shuffle_ps(V3,V3,_MM_SHUFFLE(2,0,3,1));
+    vTemp2 = XM_PERMUTE_PS(vTemp2,_MM_SHUFFLE(2,1,2,1));
+    vTemp1 = XM_PERMUTE_PS(V3,_MM_SHUFFLE(2,0,3,1));
     vTemp2 = _mm_mul_ps(vTemp2,vTemp1);
     vTemp3 = _mm_sub_ps(vTemp3,vTemp2);
     // vResult - temp * V1zzyy
-    vTemp1 = _mm_shuffle_ps(V1,V1,_MM_SHUFFLE(1,1,2,2));
+    vTemp1 = XM_PERMUTE_PS(V1,_MM_SHUFFLE(1,1,2,2));
     vTemp1 = _mm_mul_ps(vTemp1,vTemp3);
     vResult = _mm_sub_ps(vResult,vTemp1);
 
     // V2yzxy * V3zxyx
-    vTemp2 = _mm_shuffle_ps(V2,V2,_MM_SHUFFLE(1,0,2,1));
-    vTemp3 = _mm_shuffle_ps(V3,V3,_MM_SHUFFLE(0,1,0,2));
+    vTemp2 = XM_PERMUTE_PS(V2,_MM_SHUFFLE(1,0,2,1));
+    vTemp3 = XM_PERMUTE_PS(V3,_MM_SHUFFLE(0,1,0,2));
     vTemp3 = _mm_mul_ps(vTemp3,vTemp2);
     // - V2zxyx * V3yzxy
-    vTemp2 = _mm_shuffle_ps(vTemp2,vTemp2,_MM_SHUFFLE(2,0,2,1));
-    vTemp1 = _mm_shuffle_ps(V3,V3,_MM_SHUFFLE(1,0,2,1));
+    vTemp2 = XM_PERMUTE_PS(vTemp2,_MM_SHUFFLE(2,0,2,1));
+    vTemp1 = XM_PERMUTE_PS(V3,_MM_SHUFFLE(1,0,2,1));
     vTemp1 = _mm_mul_ps(vTemp1,vTemp2);
     vTemp3 = _mm_sub_ps(vTemp3,vTemp1);
     // vResult + term * V1wwwz
-    vTemp1 = _mm_shuffle_ps(V1,V1,_MM_SHUFFLE(2,3,3,3));
+    vTemp1 = XM_PERMUTE_PS(V1,_MM_SHUFFLE(2,3,3,3));
     vTemp3 = _mm_mul_ps(vTemp3,vTemp1);
     vResult = _mm_add_ps(vResult,vTemp3);
     return vResult;
@@ -9720,17 +9695,17 @@ inline XMVECTOR XMVector4ReciprocalLengthEst
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     vLengthSq = _mm_rsqrt_ps(vLengthSq);
     return vLengthSq;
@@ -9775,17 +9750,17 @@ inline XMVECTOR XMVector4ReciprocalLength
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     // Accurate!
@@ -9830,17 +9805,17 @@ inline XMVECTOR XMVector4LengthEst
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -9889,17 +9864,17 @@ inline XMVECTOR XMVector4Length
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -9939,17 +9914,17 @@ inline XMVECTOR XMVector4NormalizeEst
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     XMVECTOR vResult = _mm_rsqrt_ps(vLengthSq);
     // Reciprocal mul to perform the normalization
@@ -10010,17 +9985,17 @@ inline XMVECTOR XMVector4Normalize
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     // vTemp has z and w
-    XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(3,2,3,2));
+    XMVECTOR vTemp = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(3,2,3,2));
     // x+z, y+w
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // x+z,x+z,x+z,y+w
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,0,0,0));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(1,0,0,0));
     // ??,??,y+w,y+w
     vTemp = _mm_shuffle_ps(vTemp,vLengthSq,_MM_SHUFFLE(3,3,0,0));
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = XM_PERMUTE_PS(vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -10269,7 +10244,7 @@ inline XMVECTOR XMVector4Orthogonal
     return vmulq_f32( Result, Negate );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 FlipZW = {1.0f,1.0f,-1.0f,-1.0f};
-    XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,0,3,2));
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,0,3,2));
     vResult = _mm_mul_ps(vResult,FlipZW);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -10374,10 +10349,10 @@ inline XMVECTOR XMVector4Transform
     return vmlaq_f32( vResult, vTemp2, M.r[3] );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat x,y,z and w
-    XMVECTOR vTempX = _mm_shuffle_ps(V,V,_MM_SHUFFLE(0,0,0,0));
-    XMVECTOR vTempY = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR vTempZ = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
-    XMVECTOR vTempW = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
+    XMVECTOR vTempX = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vTempY = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR vTempZ = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
+    XMVECTOR vTempW = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     // Mul by the matrix
     vTempX = _mm_mul_ps(vTempX,M.r[0]);
     vTempY = _mm_mul_ps(vTempY,M.r[1]);
