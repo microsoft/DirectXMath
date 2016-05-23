@@ -7655,6 +7655,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
         }
     }
 
+    XM_SFENCE();
+
     return pOutputStream;
 #endif
 }
@@ -8022,6 +8024,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
         }
     }
 
+    XM_SFENCE();
+
     return pOutputStream;
 #endif
 }
@@ -8326,6 +8330,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
             pOutputVector += OutputStride;
         }
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #endif
@@ -10052,6 +10058,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
         }
     }
 
+    XM_SFENCE();
+
     return pOutputStream;
 #endif
 }
@@ -10550,6 +10558,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
         pOutputVector += OutputStride;
     }
 
+    XM_SFENCE();
+
     return pOutputStream;
 #endif
 }
@@ -10973,6 +10983,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
         pOutputVector += OutputStride;
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #endif
@@ -11541,6 +11553,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
         pOutputVector += OutputStride;
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #endif
@@ -12128,6 +12142,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
         pOutputVector += OutputStride;
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #endif
@@ -13842,6 +13858,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
             }
         }
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #endif

@@ -1965,8 +1965,8 @@ inline void XM_CALLCONV BoundingOrientedBox::Transform( BoundingOrientedBox& Out
     XMVECTOR dY = XMVector3Length( M.r[1] );
     XMVECTOR dZ = XMVector3Length( M.r[2] );
 
-    XMVECTOR VectorScale = XMVectorSelect( dX, dY, g_XMSelect1000 );
-    VectorScale = XMVectorSelect( VectorScale, dZ, g_XMSelect1100 );
+    XMVECTOR VectorScale = XMVectorSelect( dY, dX, g_XMSelect1000 );
+    VectorScale = XMVectorSelect( dZ, VectorScale, g_XMSelect1100 );
     vExtents = vExtents * VectorScale;
 
     // Store the box.

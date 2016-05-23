@@ -45,7 +45,7 @@ struct XMCOLOR
         uint32_t c;
     };
 
-    XMCOLOR() {}
+    XMCOLOR() XM_CTOR_DEFAULT
     XMCOLOR(uint32_t Color) : c(Color) {}
     XMCOLOR(float _r, float _g, float _b, float _a);
     explicit XMCOLOR(_In_reads_(4) const float *pArray);
@@ -75,7 +75,7 @@ struct XMHALF2
         uint32_t v;
     };
 
-    XMHALF2() {}
+    XMHALF2() XM_CTOR_DEFAULT
     explicit XMHALF2(uint32_t Packed) : v(Packed) {}
     XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {}
     explicit XMHALF2(_In_reads_(2) const HALF *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -100,7 +100,7 @@ struct XMSHORTN2
         uint32_t v;
     };
 
-    XMSHORTN2() {}
+    XMSHORTN2() XM_CTOR_DEFAULT
     explicit XMSHORTN2(uint32_t Packed) : v(Packed) {}
     XMSHORTN2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
     explicit XMSHORTN2(_In_reads_(2) const int16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -124,7 +124,7 @@ struct XMSHORT2
         uint32_t v;
     };
 
-    XMSHORT2() {}
+    XMSHORT2() XM_CTOR_DEFAULT
     explicit XMSHORT2(uint32_t Packed) : v(Packed) {}
     XMSHORT2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
     explicit XMSHORT2(_In_reads_(2) const int16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -148,7 +148,7 @@ struct XMUSHORTN2
         uint32_t v;
     };
 
-    XMUSHORTN2() {}
+    XMUSHORTN2() XM_CTOR_DEFAULT
     explicit XMUSHORTN2(uint32_t Packed) : v(Packed) {}
     XMUSHORTN2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
     explicit XMUSHORTN2(_In_reads_(2) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -172,7 +172,7 @@ struct XMUSHORT2
         uint32_t v;
     };
 
-    XMUSHORT2() {}
+    XMUSHORT2() XM_CTOR_DEFAULT
     explicit XMUSHORT2(uint32_t Packed) : v(Packed) {}
     XMUSHORT2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
     explicit XMUSHORT2(_In_reads_(2) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -197,7 +197,7 @@ struct XMBYTEN2
         uint16_t v;
     };
 
-    XMBYTEN2() {}
+    XMBYTEN2() XM_CTOR_DEFAULT
     explicit XMBYTEN2(uint16_t Packed) : v(Packed) {}
     XMBYTEN2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
     explicit XMBYTEN2(_In_reads_(2) const int8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -221,7 +221,7 @@ struct XMBYTE2
         uint16_t v;
     };
 
-    XMBYTE2() {}
+    XMBYTE2() XM_CTOR_DEFAULT
     explicit XMBYTE2(uint16_t Packed) : v(Packed) {}
     XMBYTE2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
     explicit XMBYTE2(_In_reads_(2) const int8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -245,7 +245,7 @@ struct XMUBYTEN2
         uint16_t v;
     };
 
-    XMUBYTEN2() {}
+    XMUBYTEN2() XM_CTOR_DEFAULT
     explicit XMUBYTEN2(uint16_t Packed) : v(Packed) {}
     XMUBYTEN2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
     explicit XMUBYTEN2(_In_reads_(2) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -269,7 +269,7 @@ struct XMUBYTE2
         uint16_t v;
     };
 
-    XMUBYTE2() {}
+    XMUBYTE2() XM_CTOR_DEFAULT
     explicit XMUBYTE2(uint16_t Packed) : v(Packed) {}
     XMUBYTE2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
     explicit XMUBYTE2(_In_reads_(2) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
@@ -295,7 +295,7 @@ struct XMU565
         uint16_t v;
     };
 
-    XMU565() {}
+    XMU565() XM_CTOR_DEFAULT
     explicit XMU565(uint16_t Packed) : v(Packed) {}
     XMU565(uint8_t _x, uint8_t _y, uint8_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMU565(_In_reads_(3) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
@@ -333,7 +333,7 @@ struct XMFLOAT3PK
         uint32_t v;
     };
 
-    XMFLOAT3PK() {}
+    XMFLOAT3PK() XM_CTOR_DEFAULT
     explicit XMFLOAT3PK(uint32_t Packed) : v(Packed) {}
     XMFLOAT3PK(float _x, float _y, float _z);
     explicit XMFLOAT3PK(_In_reads_(3) const float *pArray);
@@ -366,7 +366,7 @@ struct XMFLOAT3SE
         uint32_t v;
     };
 
-    XMFLOAT3SE() {}
+    XMFLOAT3SE() XM_CTOR_DEFAULT
     explicit XMFLOAT3SE(uint32_t Packed) : v(Packed) {}
     XMFLOAT3SE(float _x, float _y, float _z);
     explicit XMFLOAT3SE(_In_reads_(3) const float *pArray);
@@ -393,7 +393,7 @@ struct XMHALF4
         uint64_t v;
     };
 
-    XMHALF4() {}
+    XMHALF4() XM_CTOR_DEFAULT
     explicit XMHALF4(uint64_t Packed) : v(Packed) {}
     XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMHALF4(_In_reads_(4) const HALF *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -420,7 +420,7 @@ struct XMSHORTN4
         uint64_t v;
     };
 
-    XMSHORTN4() {}
+    XMSHORTN4() XM_CTOR_DEFAULT
     explicit XMSHORTN4(uint64_t Packed) : v(Packed) {}
     XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMSHORTN4(_In_reads_(4) const int16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -446,7 +446,7 @@ struct XMSHORT4
         uint64_t v;
     };
 
-    XMSHORT4() {}
+    XMSHORT4() XM_CTOR_DEFAULT
     explicit XMSHORT4(uint64_t Packed) : v(Packed) {}
     XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMSHORT4(_In_reads_(4) const int16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -472,7 +472,7 @@ struct XMUSHORTN4
         uint64_t v;
     };
 
-    XMUSHORTN4() {}
+    XMUSHORTN4() XM_CTOR_DEFAULT
     explicit XMUSHORTN4(uint64_t Packed) : v(Packed) {}
     XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUSHORTN4(_In_reads_(4) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -498,7 +498,7 @@ struct XMUSHORT4
         uint64_t v;
     };
 
-    XMUSHORT4() {}
+    XMUSHORT4() XM_CTOR_DEFAULT
     explicit XMUSHORT4(uint64_t Packed) : v(Packed) {}
     XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUSHORT4(_In_reads_(4) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -530,7 +530,7 @@ struct XMXDECN4
         uint32_t v;
     };
 
-    XMXDECN4() {}
+    XMXDECN4() XM_CTOR_DEFAULT
     explicit XMXDECN4(uint32_t Packed) : v(Packed) {}
     XMXDECN4(float _x, float _y, float _z, float _w);
     explicit XMXDECN4(_In_reads_(4) const float *pArray);
@@ -561,7 +561,7 @@ struct XMXDEC4
         uint32_t v;
     };
 
-    XMXDEC4() {}
+    XMXDEC4() XM_CTOR_DEFAULT
     explicit XMXDEC4(uint32_t Packed) : v(Packed) {}
     XMXDEC4(float _x, float _y, float _z, float _w);
     explicit XMXDEC4(_In_reads_(4) const float *pArray);
@@ -592,7 +592,7 @@ struct XMDECN4
         uint32_t v;
     };
 
-    XMDECN4() {}
+    XMDECN4() XM_CTOR_DEFAULT
     explicit XMDECN4(uint32_t Packed) : v(Packed) {}
     XMDECN4(float _x, float _y, float _z, float _w);
     explicit XMDECN4(_In_reads_(4) const float *pArray);
@@ -623,7 +623,7 @@ struct XMDEC4
         uint32_t v;
     };
 
-    XMDEC4() {}
+    XMDEC4() XM_CTOR_DEFAULT
     explicit XMDEC4(uint32_t Packed) : v(Packed) {}
     XMDEC4(float _x, float _y, float _z, float _w);
     explicit XMDEC4(_In_reads_(4) const float *pArray);
@@ -654,7 +654,7 @@ struct XMUDECN4
         uint32_t v;
     };
 
-    XMUDECN4() {}
+    XMUDECN4() XM_CTOR_DEFAULT
     explicit XMUDECN4(uint32_t Packed) : v(Packed) {}
     XMUDECN4(float _x, float _y, float _z, float _w);
     explicit XMUDECN4(_In_reads_(4) const float *pArray);
@@ -685,7 +685,7 @@ struct XMUDEC4
         uint32_t v;
     };
 
-    XMUDEC4() {}
+    XMUDEC4() XM_CTOR_DEFAULT
     explicit XMUDEC4(uint32_t Packed) : v(Packed) {}
     XMUDEC4(float _x, float _y, float _z, float _w);
     explicit XMUDEC4(_In_reads_(4) const float *pArray);
@@ -712,7 +712,7 @@ struct XMBYTEN4
         uint32_t v;
     };
 
-    XMBYTEN4() {}
+    XMBYTEN4() XM_CTOR_DEFAULT
     XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMBYTEN4(uint32_t Packed) : v(Packed) {}
     explicit XMBYTEN4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -738,7 +738,7 @@ struct XMBYTE4
         uint32_t v;
     };
 
-    XMBYTE4() {}
+    XMBYTE4() XM_CTOR_DEFAULT
     XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMBYTE4(uint32_t Packed) : v(Packed) {}
     explicit XMBYTE4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -764,7 +764,7 @@ struct XMUBYTEN4
         uint32_t v;
     };
 
-    XMUBYTEN4() {}
+    XMUBYTEN4() XM_CTOR_DEFAULT
     XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUBYTEN4(uint32_t Packed) : v(Packed) {}
     explicit XMUBYTEN4(_In_reads_(4) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -790,7 +790,7 @@ struct XMUBYTE4
         uint32_t v;
     };
 
-    XMUBYTE4() {}
+    XMUBYTE4() XM_CTOR_DEFAULT
     XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUBYTE4(uint32_t Packed) : v(Packed) {}
     explicit XMUBYTE4(_In_reads_(4) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -817,7 +817,7 @@ struct XMUNIBBLE4
         uint16_t v;
     };
 
-    XMUNIBBLE4() {}
+    XMUNIBBLE4() XM_CTOR_DEFAULT
     explicit XMUNIBBLE4(uint16_t Packed) : v(Packed) {}
     XMUNIBBLE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUNIBBLE4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
@@ -846,7 +846,7 @@ struct XMU555
         uint16_t v;
     };
 
-    XMU555() {}
+    XMU555() XM_CTOR_DEFAULT
     explicit XMU555(uint16_t Packed) : v(Packed) {}
     XMU555(int8_t _x, int8_t _y, int8_t _z, bool _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
     XMU555(_In_reads_(3) const int8_t *pArray, _In_ bool _w) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}

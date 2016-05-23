@@ -1962,6 +1962,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(ViewWidth, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
@@ -2049,6 +2050,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(ViewWidth, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
@@ -2136,6 +2138,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
     assert(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
@@ -2237,6 +2240,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
     assert(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
@@ -2338,6 +2342,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(ViewRight, ViewLeft, 0.00001f));
     assert(!XMScalarNearEqual(ViewTop, ViewBottom, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
@@ -2435,6 +2440,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
     float FarZ
 )
 {
+    assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(ViewRight, ViewLeft, 0.00001f));
     assert(!XMScalarNearEqual(ViewTop, ViewBottom, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));

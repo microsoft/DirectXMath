@@ -399,7 +399,6 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
     static const XMVECTORU32 SignMask2 = {0x80000000,0x00000000,0x00000000,0x00000000};
-    static const XMVECTORU32 MaskXY = {0xFFFFFFFF,0xFFFFFFFF,0x00000000,0x00000000};
 
     XMVECTOR CosOmega = XMQuaternionDot(Q0, Q1);
 
@@ -418,7 +417,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
     XMVECTOR Omega = XMVectorATan2(SinOmega, CosOmega);
 
     XMVECTOR V01 = XM_PERMUTE_PS(T,_MM_SHUFFLE(2,3,0,1));
-    V01 = _mm_and_ps(V01,MaskXY);
+    V01 = _mm_and_ps(V01,g_XMMaskXY);
     V01 = _mm_xor_ps(V01,SignMask2);
     V01 = _mm_add_ps(g_XMIdentityR0, V01);
 
