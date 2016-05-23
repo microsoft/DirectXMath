@@ -188,10 +188,10 @@ XMFINLINE XMVECTOR XMVectorSplatX
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.x = V.x;
-    vResult.y = V.x;
-    vResult.z = V.x;
-    vResult.w = V.x;
+    vResult.vector4_f32[0] = 
+    vResult.vector4_f32[1] = 
+    vResult.vector4_f32[2] = 
+    vResult.vector4_f32[3] = V.vector4_f32[0];
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(0, 0, 0, 0) );
@@ -208,10 +208,10 @@ XMFINLINE XMVECTOR XMVectorSplatY
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.x = V.y;
-    vResult.y = V.y;
-    vResult.z = V.y;
-    vResult.w = V.y;
+    vResult.vector4_f32[0] = 
+    vResult.vector4_f32[1] = 
+    vResult.vector4_f32[2] = 
+    vResult.vector4_f32[3] = V.vector4_f32[1];
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(1, 1, 1, 1) );
@@ -228,10 +228,10 @@ XMFINLINE XMVECTOR XMVectorSplatZ
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.x = V.z;
-    vResult.y = V.z;
-    vResult.z = V.z;
-    vResult.w = V.z;
+    vResult.vector4_f32[0] = 
+    vResult.vector4_f32[1] = 
+    vResult.vector4_f32[2] = 
+    vResult.vector4_f32[3] = V.vector4_f32[2];
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(2, 2, 2, 2) );
@@ -248,10 +248,10 @@ XMFINLINE XMVECTOR XMVectorSplatW
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.x = V.w;
-    vResult.y = V.w;
-    vResult.z = V.w;
-    vResult.w = V.w;
+    vResult.vector4_f32[0] = 
+    vResult.vector4_f32[1] = 
+    vResult.vector4_f32[2] = 
+    vResult.vector4_f32[3] = V.vector4_f32[3];
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_shuffle_ps( V, V, _MM_SHUFFLE(3, 3, 3, 3) );
@@ -265,10 +265,10 @@ XMFINLINE XMVECTOR XMVectorSplatOne()
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.x = 1.0f;
-    vResult.y = 1.0f;
-    vResult.z = 1.0f;
-    vResult.w = 1.0f;
+    vResult.vector4_f32[0] = 
+    vResult.vector4_f32[1] = 
+    vResult.vector4_f32[2] = 
+    vResult.vector4_f32[3] = 1.0f;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMOne;
@@ -282,10 +282,10 @@ XMFINLINE XMVECTOR XMVectorSplatInfinity()
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.u[0] = 0x7F800000;
-    vResult.u[1] = 0x7F800000;
-    vResult.u[2] = 0x7F800000;
-    vResult.u[3] = 0x7F800000;
+    vResult.vector4_u32[0] = 
+    vResult.vector4_u32[1] = 
+    vResult.vector4_u32[2] = 
+    vResult.vector4_u32[3] = 0x7F800000;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMInfinity;
@@ -299,10 +299,10 @@ XMFINLINE XMVECTOR XMVectorSplatQNaN()
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.u[0] = 0x7FC00000;
-    vResult.u[1] = 0x7FC00000;
-    vResult.u[2] = 0x7FC00000;
-    vResult.u[3] = 0x7FC00000;
+    vResult.vector4_u32[0] = 
+    vResult.vector4_u32[1] = 
+    vResult.vector4_u32[2] = 
+    vResult.vector4_u32[3] = 0x7FC00000;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMQNaN;
@@ -316,10 +316,10 @@ XMFINLINE XMVECTOR XMVectorSplatEpsilon()
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.u[0] = 0x34000000;
-    vResult.u[1] = 0x34000000;
-    vResult.u[2] = 0x34000000;
-    vResult.u[3] = 0x34000000;
+    vResult.vector4_u32[0] = 
+    vResult.vector4_u32[1] = 
+    vResult.vector4_u32[2] = 
+    vResult.vector4_u32[3] = 0x34000000;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     return g_XMEpsilon;
@@ -333,10 +333,10 @@ XMFINLINE XMVECTOR XMVectorSplatSignMask()
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult;
-    vResult.u[0] = 0x80000000U;
-    vResult.u[1] = 0x80000000U;
-    vResult.u[2] = 0x80000000U;
-    vResult.u[3] = 0x80000000U;
+    vResult.vector4_u32[0] = 
+    vResult.vector4_u32[1] = 
+    vResult.vector4_u32[2] = 
+    vResult.vector4_u32[3] = 0x80000000U;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_set1_epi32( 0x80000000 );
@@ -352,7 +352,7 @@ XMFINLINE FLOAT XMVectorGetByIndex(FXMVECTOR V,UINT i)
 {
     XMASSERT( i <= 3 );
 #if defined(_XM_NO_INTRINSICS_)
-    return V.v[i];
+    return V.vector4_f32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
     return V.m128_f32[i];
 #else // _XM_VMX128_INTRINSICS_
@@ -365,7 +365,7 @@ XMFINLINE FLOAT XMVectorGetByIndex(FXMVECTOR V,UINT i)
 XMFINLINE FLOAT XMVectorGetX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.x;
+    return V.vector4_f32[0];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER>=1500)
     return _mm_cvtss_f32(V);    
@@ -381,7 +381,7 @@ XMFINLINE FLOAT XMVectorGetX(FXMVECTOR V)
 XMFINLINE FLOAT XMVectorGetY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.y;
+    return V.vector4_f32[1];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
@@ -398,7 +398,7 @@ XMFINLINE FLOAT XMVectorGetY(FXMVECTOR V)
 XMFINLINE FLOAT XMVectorGetZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.z;
+    return V.vector4_f32[2];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
@@ -415,7 +415,7 @@ XMFINLINE FLOAT XMVectorGetZ(FXMVECTOR V)
 XMFINLINE FLOAT XMVectorGetW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.w;
+    return V.vector4_f32[3];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER>=1500)
     XMVECTOR vTemp = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
@@ -436,7 +436,7 @@ XMFINLINE VOID XMVectorGetByIndexPtr(FLOAT *f,FXMVECTOR V,UINT i)
     XMASSERT( f != 0 );
     XMASSERT( i <  4 );
 #if defined(_XM_NO_INTRINSICS_)
-    *f = V.v[i];
+    *f = V.vector4_f32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
     *f = V.m128_f32[i];
 #else // _XM_VMX128_INTRINSICS_
@@ -450,7 +450,7 @@ XMFINLINE VOID XMVectorGetXPtr(FLOAT *x,FXMVECTOR V)
 {
     XMASSERT( x != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *x = V.x;
+    *x = V.vector4_f32[0];
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_ss(x,V);
 #else // _XM_VMX128_INTRINSICS_
@@ -462,7 +462,7 @@ XMFINLINE VOID XMVectorGetYPtr(FLOAT *y,FXMVECTOR V)
 {
     XMASSERT( y != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *y = V.y;
+    *y = V.vector4_f32[1];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(y,vResult);
@@ -475,7 +475,7 @@ XMFINLINE VOID XMVectorGetZPtr(FLOAT *z,FXMVECTOR V)
 {
     XMASSERT( z != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *z = V.z;
+    *z = V.vector4_f32[2];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(z,vResult);
@@ -488,7 +488,7 @@ XMFINLINE VOID XMVectorGetWPtr(FLOAT *w,FXMVECTOR V)
 {
     XMASSERT( w != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *w = V.w;
+    *w = V.vector4_f32[3];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(w,vResult);
@@ -504,7 +504,7 @@ XMFINLINE UINT XMVectorGetIntByIndex(FXMVECTOR V, UINT i)
 {
     XMASSERT( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
-    return V.u[i];
+    return V.vector4_u32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER<1400)
     XMVECTORU32 tmp;
@@ -524,7 +524,7 @@ XMFINLINE UINT XMVectorGetIntByIndex(FXMVECTOR V, UINT i)
 XMFINLINE UINT XMVectorGetIntX(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.u[0];
+    return V.vector4_u32[0];
 #elif defined(_XM_SSE_INTRINSICS_)
     return static_cast<UINT>(_mm_cvtsi128_si32(reinterpret_cast<const __m128i *>(&V)[0]));
 #else // _XM_VMX128_INTRINSICS_
@@ -536,7 +536,7 @@ XMFINLINE UINT XMVectorGetIntX(FXMVECTOR V)
 XMFINLINE UINT XMVectorGetIntY(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.u[1];
+    return V.vector4_u32[1];
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(1,1,1,1));
     return static_cast<UINT>(_mm_cvtsi128_si32(vResulti));
@@ -549,7 +549,7 @@ XMFINLINE UINT XMVectorGetIntY(FXMVECTOR V)
 XMFINLINE UINT XMVectorGetIntZ(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.u[2];
+    return V.vector4_u32[2];
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(2,2,2,2));
     return static_cast<UINT>(_mm_cvtsi128_si32(vResulti));
@@ -562,7 +562,7 @@ XMFINLINE UINT XMVectorGetIntZ(FXMVECTOR V)
 XMFINLINE UINT XMVectorGetIntW(FXMVECTOR V)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return V.u[3];
+    return V.vector4_u32[3];
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(reinterpret_cast<const __m128i *>(&V)[0],_MM_SHUFFLE(3,3,3,3));
     return static_cast<UINT>(_mm_cvtsi128_si32(vResulti));
@@ -579,7 +579,7 @@ XMFINLINE VOID XMVectorGetIntByIndexPtr(UINT *x,FXMVECTOR V,UINT i)
     XMASSERT( x != 0 );
     XMASSERT( i <  4 );
 #if defined(_XM_NO_INTRINSICS_)
-    *x = V.u[i];
+    *x = V.vector4_u32[i];
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_MSC_VER) && (_MSC_VER<1400)
     XMVECTORU32 tmp;
@@ -599,7 +599,7 @@ XMFINLINE VOID XMVectorGetIntXPtr(UINT *x,FXMVECTOR V)
 {
     XMASSERT( x != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *x = V.u[0];
+    *x = V.vector4_u32[0];
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_ss(reinterpret_cast<float *>(x),V);
 #else // _XM_VMX128_INTRINSICS_
@@ -611,7 +611,7 @@ XMFINLINE VOID XMVectorGetIntYPtr(UINT *y,FXMVECTOR V)
 {
     XMASSERT( y != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *y = V.u[1];
+    *y = V.vector4_u32[1];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(reinterpret_cast<float *>(y),vResult);
@@ -624,7 +624,7 @@ XMFINLINE VOID XMVectorGetIntZPtr(UINT *z,FXMVECTOR V)
 {
     XMASSERT( z != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *z = V.u[2];
+    *z = V.vector4_u32[2];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(reinterpret_cast<float *>(z),vResult);
@@ -637,7 +637,7 @@ XMFINLINE VOID XMVectorGetIntWPtr(UINT *w,FXMVECTOR V)
 {
     XMASSERT( w != 0 );
 #if defined(_XM_NO_INTRINSICS_)
-    *w = V.u[3];
+    *w = V.vector4_u32[3];
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(reinterpret_cast<float *>(w),vResult);
@@ -655,7 +655,7 @@ XMFINLINE XMVECTOR XMVectorSetByIndex(FXMVECTOR V, FLOAT f,UINT i)
     XMVECTOR U;
     XMASSERT( i <= 3 );
     U = V;
-    U.v[i] = f;
+    U.vector4_f32[i] = f;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( i <= 3 );
@@ -674,10 +674,10 @@ XMFINLINE XMVECTOR XMVectorSetX(FXMVECTOR V, FLOAT x)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.v[0] = x;
-    U.v[1] = V.v[1];
-    U.v[2] = V.v[2];
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = x;
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -699,10 +699,10 @@ XMFINLINE XMVECTOR XMVectorSetY(FXMVECTOR V, FLOAT y)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.v[0] = V.v[0];
-    U.v[1] = y;
-    U.v[2] = V.v[2];
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = y;
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -729,10 +729,10 @@ XMFINLINE XMVECTOR XMVectorSetZ(FXMVECTOR V, FLOAT z)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.v[0] = V.v[0];
-    U.v[1] = V.v[1];
-    U.v[2] = z;
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = z;
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -760,10 +760,10 @@ XMFINLINE XMVECTOR XMVectorSetW(FXMVECTOR V, FLOAT w)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.v[0] = V.v[0];
-    U.v[1] = V.v[1];
-    U.v[2] = V.v[2];
-    U.v[3] = w;
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = w;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -796,7 +796,7 @@ XMFINLINE XMVECTOR XMVectorSetByIndexPtr(FXMVECTOR V,CONST FLOAT *f,UINT i)
     XMASSERT( f != 0 );
     XMASSERT( i <= 3 );
     U = V;
-    U.v[i] = *f;
+    U.vector4_f32[i] = *f;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( f != 0 );
@@ -816,10 +816,10 @@ XMFINLINE XMVECTOR XMVectorSetXPtr(FXMVECTOR V,CONST FLOAT *x)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( x != 0 );
-    U.v[0] = *x;
-    U.v[1] = V.v[1];
-    U.v[2] = V.v[2];
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = *x;
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( x != 0 );
@@ -836,10 +836,10 @@ XMFINLINE XMVECTOR XMVectorSetYPtr(FXMVECTOR V,CONST FLOAT *y)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( y != 0 );
-    U.v[0] = V.v[0];
-    U.v[1] = *y;
-    U.v[2] = V.v[2];
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = *y;
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( y != 0 );
@@ -862,10 +862,10 @@ XMFINLINE XMVECTOR XMVectorSetZPtr(FXMVECTOR V,CONST FLOAT *z)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( z != 0 );
-    U.v[0] = V.v[0];
-    U.v[1] = V.v[1];
-    U.v[2] = *z;
-    U.v[3] = V.v[3];
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = *z;
+    U.vector4_f32[3] = V.vector4_f32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( z != 0 );
@@ -888,10 +888,10 @@ XMFINLINE XMVECTOR XMVectorSetWPtr(FXMVECTOR V,CONST FLOAT *w)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( w != 0 );
-    U.v[0] = V.v[0];
-    U.v[1] = V.v[1];
-    U.v[2] = V.v[2];
-    U.v[3] = *w;
+    U.vector4_f32[0] = V.vector4_f32[0];
+    U.vector4_f32[1] = V.vector4_f32[1];
+    U.vector4_f32[2] = V.vector4_f32[2];
+    U.vector4_f32[3] = *w;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( w != 0 );
@@ -918,7 +918,7 @@ XMFINLINE XMVECTOR XMVectorSetIntByIndex(FXMVECTOR V, UINT x, UINT i)
     XMVECTOR U;
     XMASSERT( i <= 3 );
     U = V;
-    U.u[i] = x;
+    U.vector4_u32[i] = x;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( i <= 3 );
@@ -938,10 +938,10 @@ XMFINLINE XMVECTOR XMVectorSetIntX(FXMVECTOR V, UINT x)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.u[0] = x;
-    U.u[1] = V.u[1];
-    U.u[2] = V.u[2];
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = x;
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -963,10 +963,10 @@ XMFINLINE XMVECTOR XMVectorSetIntY(FXMVECTOR V, UINT y)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.u[0] = V.u[0];
-    U.u[1] = y;
-    U.u[2] = V.u[2];
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = y;
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -993,10 +993,10 @@ XMFINLINE XMVECTOR XMVectorSetIntZ(FXMVECTOR V, UINT z)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.u[0] = V.u[0];
-    U.u[1] = V.u[1];
-    U.u[2] = z;
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = z;
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -1024,10 +1024,10 @@ XMFINLINE XMVECTOR XMVectorSetIntW(FXMVECTOR V, UINT w)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
-    U.u[0] = V.u[0];
-    U.u[1] = V.u[1];
-    U.u[2] = V.u[2];
-    U.u[3] = w;
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = w;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_XM_ISVS2005_)
@@ -1060,7 +1060,7 @@ XMFINLINE XMVECTOR XMVectorSetIntByIndexPtr(FXMVECTOR V, CONST UINT *x,UINT i)
     XMASSERT( x != 0 );
     XMASSERT( i <= 3 );
     U = V;
-    U.u[i] = *x;
+    U.vector4_u32[i] = *x;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( x != 0 );
@@ -1081,10 +1081,10 @@ XMFINLINE XMVECTOR XMVectorSetIntXPtr(FXMVECTOR V,CONST UINT *x)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( x != 0 );
-    U.u[0] = *x;
-    U.u[1] = V.u[1];
-    U.u[2] = V.u[2];
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = *x;
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( x != 0 );
@@ -1101,10 +1101,10 @@ XMFINLINE XMVECTOR XMVectorSetIntYPtr(FXMVECTOR V,CONST UINT *y)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( y != 0 );
-    U.u[0] = V.u[0];
-    U.u[1] = *y;
-    U.u[2] = V.u[2];
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = *y;
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( y != 0 );
@@ -1127,10 +1127,10 @@ XMFINLINE XMVECTOR XMVectorSetIntZPtr(FXMVECTOR V,CONST UINT *z)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( z != 0 );
-    U.u[0] = V.u[0];
-    U.u[1] = V.u[1];
-    U.u[2] = *z;
-    U.u[3] = V.u[3];
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = *z;
+    U.vector4_u32[3] = V.vector4_u32[3];
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( z != 0 );
@@ -1153,10 +1153,10 @@ XMFINLINE XMVECTOR XMVectorSetIntWPtr(FXMVECTOR V,CONST UINT *w)
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR U;
     XMASSERT( w != 0 );
-    U.u[0] = V.u[0];
-    U.u[1] = V.u[1];
-    U.u[2] = V.u[2];
-    U.u[3] = *w;
+    U.vector4_u32[0] = V.vector4_u32[0];
+    U.vector4_u32[1] = V.vector4_u32[1];
+    U.vector4_u32[2] = V.vector4_u32[2];
+    U.vector4_u32[3] = *w;
     return U;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT( w != 0 );
@@ -1239,10 +1239,10 @@ XMFINLINE XMVECTOR XMVectorPermute
     BYTE *pWork;
 
     // Indices must be in range from 0 to 31
-    XMASSERT((Control.u[0] & 0xE0E0E0E0) == 0);
-    XMASSERT((Control.u[1] & 0xE0E0E0E0) == 0);
-    XMASSERT((Control.u[2] & 0xE0E0E0E0) == 0);
-    XMASSERT((Control.u[3] & 0xE0E0E0E0) == 0);
+    XMASSERT((Control.vector4_u32[0] & 0xE0E0E0E0) == 0);
+    XMASSERT((Control.vector4_u32[1] & 0xE0E0E0E0) == 0);
+    XMASSERT((Control.vector4_u32[2] & 0xE0E0E0E0) == 0);
+    XMASSERT((Control.vector4_u32[3] & 0xE0E0E0E0) == 0);
 
     // 0-15 = V1, 16-31 = V2
     aByte[0] = (const BYTE*)(&V1);
@@ -1266,8 +1266,8 @@ XMFINLINE XMVECTOR XMVectorPermute
 #elif defined(_XM_SSE_INTRINSICS_)
 #if defined(_PREFAST_) || defined(XMDEBUG)
     // Indices must be in range from 0 to 31
-    static const XMVECTORI32 g_PremuteTest = {0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0};
-    XMVECTOR vAssert = _mm_and_ps(Control,g_PremuteTest);
+    static const XMVECTORI32 PremuteTest = {0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0,0xE0E0E0E0};
+    XMVECTOR vAssert = _mm_and_ps(Control,PremuteTest);
     __m128i vAsserti = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&vAssert)[0],g_XMZero);
     XMASSERT(_mm_movemask_ps(*reinterpret_cast<const __m128 *>(&vAsserti)) == 0xf);
 #endif
@@ -1332,10 +1332,10 @@ XMFINLINE XMVECTOR XMVectorSelectControl
     XMASSERT(VectorIndex2 < 2);
     XMASSERT(VectorIndex3 < 2);
 
-    ControlVector.u[0] = ControlElement[VectorIndex0];
-    ControlVector.u[1] = ControlElement[VectorIndex1];
-    ControlVector.u[2] = ControlElement[VectorIndex2];
-    ControlVector.u[3] = ControlElement[VectorIndex3];
+    ControlVector.vector4_u32[0] = ControlElement[VectorIndex0];
+    ControlVector.vector4_u32[1] = ControlElement[VectorIndex1];
+    ControlVector.vector4_u32[2] = ControlElement[VectorIndex2];
+    ControlVector.vector4_u32[3] = ControlElement[VectorIndex3];
 
     return ControlVector;
 
@@ -1355,10 +1355,10 @@ XMFINLINE XMVECTOR XMVectorSelect
 
     XMVECTOR Result;
 
-    Result.u[0] = (V1.u[0] & ~Control.u[0]) | (V2.u[0] & Control.u[0]);
-    Result.u[1] = (V1.u[1] & ~Control.u[1]) | (V2.u[1] & Control.u[1]);
-    Result.u[2] = (V1.u[2] & ~Control.u[2]) | (V2.u[2] & Control.u[2]);
-    Result.u[3] = (V1.u[3] & ~Control.u[3]) | (V2.u[3] & Control.u[3]);
+    Result.vector4_u32[0] = (V1.vector4_u32[0] & ~Control.vector4_u32[0]) | (V2.vector4_u32[0] & Control.vector4_u32[0]);
+    Result.vector4_u32[1] = (V1.vector4_u32[1] & ~Control.vector4_u32[1]) | (V2.vector4_u32[1] & Control.vector4_u32[1]);
+    Result.vector4_u32[2] = (V1.vector4_u32[2] & ~Control.vector4_u32[2]) | (V2.vector4_u32[2] & Control.vector4_u32[2]);
+    Result.vector4_u32[3] = (V1.vector4_u32[3] & ~Control.vector4_u32[3]) | (V2.vector4_u32[3] & Control.vector4_u32[3]);
 
     return Result;
 
@@ -1382,10 +1382,10 @@ XMFINLINE XMVECTOR XMVectorMergeXY
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[0];
-    Result.u[1] = V2.u[0];
-    Result.u[2] = V1.u[1];
-    Result.u[3] = V2.u[1];
+    Result.vector4_u32[0] = V1.vector4_u32[0];
+    Result.vector4_u32[1] = V2.vector4_u32[0];
+    Result.vector4_u32[2] = V1.vector4_u32[1];
+    Result.vector4_u32[3] = V2.vector4_u32[1];
 
     return Result;
 
@@ -1407,10 +1407,10 @@ XMFINLINE XMVECTOR XMVectorMergeZW
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[2];
-    Result.u[1] = V2.u[2];
-    Result.u[2] = V1.u[3];
-    Result.u[3] = V2.u[3];
+    Result.vector4_u32[0] = V1.vector4_u32[2];
+    Result.vector4_u32[1] = V2.vector4_u32[2];
+    Result.vector4_u32[2] = V1.vector4_u32[3];
+    Result.vector4_u32[3] = V2.vector4_u32[3];
 
     return Result;
 
@@ -1436,10 +1436,10 @@ XMFINLINE XMVECTOR XMVectorEqual
 
     XMVECTOR Control;
 
-    Control.u[0] = (V1.v[0] == V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] == V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] == V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] == V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] == V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] == V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] == V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] == V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
 
     return Control;
 
@@ -1464,10 +1464,10 @@ XMFINLINE XMVECTOR XMVectorEqualR
 
     XMASSERT( pCR );
 
-    ux = (V1.x == V2.x) ? 0xFFFFFFFFU : 0;
-    uy = (V1.y == V2.y) ? 0xFFFFFFFFU : 0;
-    uz = (V1.z == V2.z) ? 0xFFFFFFFFU : 0;
-    uw = (V1.w == V2.w) ? 0xFFFFFFFFU : 0;
+    ux = (V1.vector4_f32[0] == V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uy = (V1.vector4_f32[1] == V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uz = (V1.vector4_f32[2] == V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uw = (V1.vector4_f32[3] == V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     CR = 0;
     if (ux&uy&uz&uw)
     {
@@ -1480,10 +1480,10 @@ XMFINLINE XMVECTOR XMVectorEqualR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
-    Control.u[0] = ux;
-    Control.u[1] = uy;
-    Control.u[2] = uz;
-    Control.u[3] = uw;
+    Control.vector4_u32[0] = ux;
+    Control.vector4_u32[1] = uy;
+    Control.vector4_u32[2] = uz;
+    Control.vector4_u32[3] = uw;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1522,10 +1522,10 @@ XMFINLINE XMVECTOR XMVectorEqualInt
 
     XMVECTOR Control;
 
-    Control.u[0] = (V1.u[0] == V2.u[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.u[1] == V2.u[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.u[2] == V2.u[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.u[3] == V2.u[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_u32[0] == V2.vector4_u32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_u32[1] == V2.vector4_u32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_u32[2] == V2.vector4_u32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_u32[3] == V2.vector4_u32[3]) ? 0xFFFFFFFF : 0;
 
     return Control;
 
@@ -1601,20 +1601,20 @@ XMFINLINE XMVECTOR XMVectorNearEqual
     FLOAT fDeltax, fDeltay, fDeltaz, fDeltaw;
     XMVECTOR Control;
 
-    fDeltax = V1.x-V2.x;
-    fDeltay = V1.y-V2.y;
-    fDeltaz = V1.z-V2.z;
-    fDeltaw = V1.w-V2.w;
+    fDeltax = V1.vector4_f32[0]-V2.vector4_f32[0];
+    fDeltay = V1.vector4_f32[1]-V2.vector4_f32[1];
+    fDeltaz = V1.vector4_f32[2]-V2.vector4_f32[2];
+    fDeltaw = V1.vector4_f32[3]-V2.vector4_f32[3];
 
     fDeltax = fabsf(fDeltax);
     fDeltay = fabsf(fDeltay);
     fDeltaz = fabsf(fDeltaz);
     fDeltaw = fabsf(fDeltaw);
 
-    Control.u[0] = (fDeltax <= Epsilon.x) ? 0xFFFFFFFFU : 0;
-    Control.u[1] = (fDeltay <= Epsilon.y) ? 0xFFFFFFFFU : 0;
-    Control.u[2] = (fDeltaz <= Epsilon.z) ? 0xFFFFFFFFU : 0;
-    Control.u[3] = (fDeltaw <= Epsilon.w) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[0] = (fDeltax <= Epsilon.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[1] = (fDeltay <= Epsilon.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[2] = (fDeltaz <= Epsilon.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[3] = (fDeltaw <= Epsilon.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
 
     return Control;
 
@@ -1642,10 +1642,10 @@ XMFINLINE XMVECTOR XMVectorNotEqual
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.v[0] != V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] != V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] != V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] != V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] != V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] != V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] != V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] != V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1665,10 +1665,10 @@ XMFINLINE XMVECTOR XMVectorNotEqualInt
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.u[0] != V2.u[0]) ? 0xFFFFFFFFU : 0;
-    Control.u[1] = (V1.u[1] != V2.u[1]) ? 0xFFFFFFFFU : 0;
-    Control.u[2] = (V1.u[2] != V2.u[2]) ? 0xFFFFFFFFU : 0;
-    Control.u[3] = (V1.u[3] != V2.u[3]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[0] = (V1.vector4_u32[0] != V2.vector4_u32[0]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[1] = (V1.vector4_u32[1] != V2.vector4_u32[1]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[2] = (V1.vector4_u32[2] != V2.vector4_u32[2]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[3] = (V1.vector4_u32[3] != V2.vector4_u32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1689,10 +1689,10 @@ XMFINLINE XMVECTOR XMVectorGreater
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.v[0] > V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] > V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] > V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] > V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] > V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] > V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] > V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1716,10 +1716,10 @@ XMFINLINE XMVECTOR XMVectorGreaterR
 
     XMASSERT( pCR );
 
-    ux = (V1.x > V2.x) ? 0xFFFFFFFFU : 0;
-    uy = (V1.y > V2.y) ? 0xFFFFFFFFU : 0;
-    uz = (V1.z > V2.z) ? 0xFFFFFFFFU : 0;
-    uw = (V1.w > V2.w) ? 0xFFFFFFFFU : 0;
+    ux = (V1.vector4_f32[0] > V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uy = (V1.vector4_f32[1] > V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uz = (V1.vector4_f32[2] > V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uw = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     CR = 0;
     if (ux&uy&uz&uw)
     {
@@ -1732,10 +1732,10 @@ XMFINLINE XMVECTOR XMVectorGreaterR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
-    Control.u[0] = ux;
-    Control.u[1] = uy;
-    Control.u[2] = uz;
-    Control.u[3] = uw;
+    Control.vector4_u32[0] = ux;
+    Control.vector4_u32[1] = uy;
+    Control.vector4_u32[2] = uz;
+    Control.vector4_u32[3] = uw;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1769,10 +1769,10 @@ XMFINLINE XMVECTOR XMVectorGreaterOrEqual
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.v[0] >= V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] >= V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] >= V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] >= V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] >= V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] >= V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] >= V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] >= V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1796,10 +1796,10 @@ XMFINLINE XMVECTOR XMVectorGreaterOrEqualR
 
     XMASSERT( pCR );
 
-    ux = (V1.x >= V2.x) ? 0xFFFFFFFFU : 0;
-    uy = (V1.y >= V2.y) ? 0xFFFFFFFFU : 0;
-    uz = (V1.z >= V2.z) ? 0xFFFFFFFFU : 0;
-    uw = (V1.w >= V2.w) ? 0xFFFFFFFFU : 0;
+    ux = (V1.vector4_f32[0] >= V2.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uy = (V1.vector4_f32[1] >= V2.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uz = (V1.vector4_f32[2] >= V2.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uw = (V1.vector4_f32[3] >= V2.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     CR = 0;
     if (ux&uy&uz&uw)
     {
@@ -1812,10 +1812,10 @@ XMFINLINE XMVECTOR XMVectorGreaterOrEqualR
         CR = XM_CRMASK_CR6FALSE;
     }
     *pCR = CR;
-    Control.u[0] = ux;
-    Control.u[1] = uy;
-    Control.u[2] = uz;
-    Control.u[3] = uw;
+    Control.vector4_u32[0] = ux;
+    Control.vector4_u32[1] = uy;
+    Control.vector4_u32[2] = uz;
+    Control.vector4_u32[3] = uw;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1849,10 +1849,10 @@ XMFINLINE XMVECTOR XMVectorLess
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.v[0] < V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] < V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] < V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] < V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] < V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] < V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] < V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] < V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1872,10 +1872,10 @@ XMFINLINE XMVECTOR XMVectorLessOrEqual
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V1.v[0] <= V2.v[0]) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V1.v[1] <= V2.v[1]) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V1.v[2] <= V2.v[2]) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V1.v[3] <= V2.v[3]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V1.vector4_f32[0] <= V2.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V1.vector4_f32[1] <= V2.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V1.vector4_f32[2] <= V2.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V1.vector4_f32[3] <= V2.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1895,10 +1895,10 @@ XMFINLINE XMVECTOR XMVectorInBounds
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = (V.x <= Bounds.x && V.x >= -Bounds.x) ? 0xFFFFFFFF : 0;
-    Control.u[1] = (V.y <= Bounds.y && V.y >= -Bounds.y) ? 0xFFFFFFFF : 0;
-    Control.u[2] = (V.z <= Bounds.z && V.z >= -Bounds.z) ? 0xFFFFFFFF : 0;
-    Control.u[3] = (V.w <= Bounds.w && V.w >= -Bounds.w) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[0] = (V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[1] = (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[2] = (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) ? 0xFFFFFFFF : 0;
+    Control.vector4_u32[3] = (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]) ? 0xFFFFFFFF : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1930,10 +1930,10 @@ XMFINLINE XMVECTOR XMVectorInBoundsR
 
     XMASSERT( pCR != 0 );
 
-    ux = (V.x <= Bounds.x && V.x >= -Bounds.x) ? 0xFFFFFFFFU : 0;
-    uy = (V.y <= Bounds.y && V.y >= -Bounds.y) ? 0xFFFFFFFFU : 0;
-    uz = (V.z <= Bounds.z && V.z >= -Bounds.z) ? 0xFFFFFFFFU : 0;
-    uw = (V.w <= Bounds.w && V.w >= -Bounds.w) ? 0xFFFFFFFFU : 0;
+    ux = (V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    uy = (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    uz = (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    uw = (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
 
     CR = 0;
 
@@ -1943,10 +1943,10 @@ XMFINLINE XMVECTOR XMVectorInBoundsR
         CR = XM_CRMASK_CR6BOUNDS;
     }
     *pCR = CR;
-    Control.u[0] = ux;
-    Control.u[1] = uy;
-    Control.u[2] = uz;
-    Control.u[3] = uw;
+    Control.vector4_u32[0] = ux;
+    Control.vector4_u32[1] = uy;
+    Control.vector4_u32[2] = uz;
+    Control.vector4_u32[3] = uw;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -1981,10 +1981,10 @@ XMFINLINE XMVECTOR XMVectorIsNaN
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = XMISNAN(V.x) ? 0xFFFFFFFFU : 0;
-    Control.u[1] = XMISNAN(V.y) ? 0xFFFFFFFFU : 0;
-    Control.u[2] = XMISNAN(V.z) ? 0xFFFFFFFFU : 0;
-    Control.u[3] = XMISNAN(V.w) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[0] = XMISNAN(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[1] = XMISNAN(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[2] = XMISNAN(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[3] = XMISNAN(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2014,10 +2014,10 @@ XMFINLINE XMVECTOR XMVectorIsInfinite
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Control;
-    Control.u[0] = XMISINF(V.x) ? 0xFFFFFFFFU : 0;
-    Control.u[1] = XMISINF(V.y) ? 0xFFFFFFFFU : 0;
-    Control.u[2] = XMISINF(V.z) ? 0xFFFFFFFFU : 0;
-    Control.u[3] = XMISINF(V.w) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[0] = XMISINF(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[1] = XMISINF(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[2] = XMISINF(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0;
+    Control.vector4_u32[3] = XMISINF(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0;
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2046,10 +2046,10 @@ XMFINLINE XMVECTOR XMVectorMin
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-    Result.v[0] = (V1.v[0] < V2.v[0]) ? V1.v[0] : V2.v[0];
-    Result.v[1] = (V1.v[1] < V2.v[1]) ? V1.v[1] : V2.v[1];
-    Result.v[2] = (V1.v[2] < V2.v[2]) ? V1.v[2] : V2.v[2];
-    Result.v[3] = (V1.v[3] < V2.v[3]) ? V1.v[3] : V2.v[3];
+    Result.vector4_f32[0] = (V1.vector4_f32[0] < V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0];
+    Result.vector4_f32[1] = (V1.vector4_f32[1] < V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1];
+    Result.vector4_f32[2] = (V1.vector4_f32[2] < V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2];
+    Result.vector4_f32[3] = (V1.vector4_f32[3] < V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3];
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2069,10 +2069,10 @@ XMFINLINE XMVECTOR XMVectorMax
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-    Result.v[0] = (V1.v[0] > V2.v[0]) ? V1.v[0] : V2.v[0];
-    Result.v[1] = (V1.v[1] > V2.v[1]) ? V1.v[1] : V2.v[1];
-    Result.v[2] = (V1.v[2] > V2.v[2]) ? V1.v[2] : V2.v[2];
-    Result.v[3] = (V1.v[3] > V2.v[3]) ? V1.v[3] : V2.v[3];
+    Result.vector4_f32[0] = (V1.vector4_f32[0] > V2.vector4_f32[0]) ? V1.vector4_f32[0] : V2.vector4_f32[0];
+    Result.vector4_f32[1] = (V1.vector4_f32[1] > V2.vector4_f32[1]) ? V1.vector4_f32[1] : V2.vector4_f32[1];
+    Result.vector4_f32[2] = (V1.vector4_f32[2] > V2.vector4_f32[2]) ? V1.vector4_f32[2] : V2.vector4_f32[2];
+    Result.vector4_f32[3] = (V1.vector4_f32[3] > V2.vector4_f32[3]) ? V1.vector4_f32[3] : V2.vector4_f32[3];
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2132,10 +2132,10 @@ XMFINLINE XMVECTOR XMVectorTruncate
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;
-    Result.x = (FLOAT)((INT)V.x);
-    Result.y = (FLOAT)((INT)V.y);
-    Result.z = (FLOAT)((INT)V.z);
-    Result.w = (FLOAT)((INT)V.w);
+    Result.vector4_f32[0] = (FLOAT)((INT)V.vector4_f32[0]);
+    Result.vector4_f32[1] = (FLOAT)((INT)V.vector4_f32[1]);
+    Result.vector4_f32[2] = (FLOAT)((INT)V.vector4_f32[2]);
+    Result.vector4_f32[3] = (FLOAT)((INT)V.vector4_f32[3]);
 
     return Result;
 
@@ -2169,10 +2169,10 @@ XMFINLINE XMVECTOR XMVectorFloor
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR vResult = {
-        floorf(V.x),
-        floorf(V.y),
-        floorf(V.z),
-        floorf(V.w)
+        floorf(V.vector4_f32[0]),
+        floorf(V.vector4_f32[1]),
+        floorf(V.vector4_f32[2]),
+        floorf(V.vector4_f32[3])
     };
     return vResult;
 
@@ -2194,10 +2194,10 @@ XMFINLINE XMVECTOR XMVectorCeiling
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
-        ceilf(V.x),
-        ceilf(V.y),
-        ceilf(V.z),
-        ceilf(V.w)
+        ceilf(V.vector4_f32[0]),
+        ceilf(V.vector4_f32[1]),
+        ceilf(V.vector4_f32[2]),
+        ceilf(V.vector4_f32[3])
     };
     return vResult;
 
@@ -2276,10 +2276,10 @@ XMFINLINE XMVECTOR XMVectorAndInt
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[0] & V2.u[0];
-    Result.u[1] = V1.u[1] & V2.u[1];
-    Result.u[2] = V1.u[2] & V2.u[2];
-    Result.u[3] = V1.u[3] & V2.u[3];
+    Result.vector4_u32[0] = V1.vector4_u32[0] & V2.vector4_u32[0];
+    Result.vector4_u32[1] = V1.vector4_u32[1] & V2.vector4_u32[1];
+    Result.vector4_u32[2] = V1.vector4_u32[2] & V2.vector4_u32[2];
+    Result.vector4_u32[3] = V1.vector4_u32[3] & V2.vector4_u32[3];
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2300,10 +2300,10 @@ XMFINLINE XMVECTOR XMVectorAndCInt
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[0] & ~V2.u[0];
-    Result.u[1] = V1.u[1] & ~V2.u[1];
-    Result.u[2] = V1.u[2] & ~V2.u[2];
-    Result.u[3] = V1.u[3] & ~V2.u[3];
+    Result.vector4_u32[0] = V1.vector4_u32[0] & ~V2.vector4_u32[0];
+    Result.vector4_u32[1] = V1.vector4_u32[1] & ~V2.vector4_u32[1];
+    Result.vector4_u32[2] = V1.vector4_u32[2] & ~V2.vector4_u32[2];
+    Result.vector4_u32[3] = V1.vector4_u32[3] & ~V2.vector4_u32[3];
 
     return Result;
 
@@ -2326,10 +2326,10 @@ XMFINLINE XMVECTOR XMVectorOrInt
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[0] | V2.u[0];
-    Result.u[1] = V1.u[1] | V2.u[1];
-    Result.u[2] = V1.u[2] | V2.u[2];
-    Result.u[3] = V1.u[3] | V2.u[3];
+    Result.vector4_u32[0] = V1.vector4_u32[0] | V2.vector4_u32[0];
+    Result.vector4_u32[1] = V1.vector4_u32[1] | V2.vector4_u32[1];
+    Result.vector4_u32[2] = V1.vector4_u32[2] | V2.vector4_u32[2];
+    Result.vector4_u32[3] = V1.vector4_u32[3] | V2.vector4_u32[3];
 
     return Result;
 
@@ -2352,10 +2352,10 @@ XMFINLINE XMVECTOR XMVectorNorInt
 
     XMVECTOR Result;
 
-    Result.u[0] = ~(V1.u[0] | V2.u[0]);
-    Result.u[1] = ~(V1.u[1] | V2.u[1]);
-    Result.u[2] = ~(V1.u[2] | V2.u[2]);
-    Result.u[3] = ~(V1.u[3] | V2.u[3]);
+    Result.vector4_u32[0] = ~(V1.vector4_u32[0] | V2.vector4_u32[0]);
+    Result.vector4_u32[1] = ~(V1.vector4_u32[1] | V2.vector4_u32[1]);
+    Result.vector4_u32[2] = ~(V1.vector4_u32[2] | V2.vector4_u32[2]);
+    Result.vector4_u32[3] = ~(V1.vector4_u32[3] | V2.vector4_u32[3]);
 
     return Result;
 
@@ -2380,10 +2380,10 @@ XMFINLINE XMVECTOR XMVectorXorInt
 
     XMVECTOR Result;
 
-    Result.u[0] = V1.u[0] ^ V2.u[0];
-    Result.u[1] = V1.u[1] ^ V2.u[1];
-    Result.u[2] = V1.u[2] ^ V2.u[2];
-    Result.u[3] = V1.u[3] ^ V2.u[3];
+    Result.vector4_u32[0] = V1.vector4_u32[0] ^ V2.vector4_u32[0];
+    Result.vector4_u32[1] = V1.vector4_u32[1] ^ V2.vector4_u32[1];
+    Result.vector4_u32[2] = V1.vector4_u32[2] ^ V2.vector4_u32[2];
+    Result.vector4_u32[3] = V1.vector4_u32[3] ^ V2.vector4_u32[3];
 
     return Result;
 
@@ -2409,10 +2409,10 @@ XMFINLINE XMVECTOR XMVectorNegate
 
     XMVECTOR Result;
 
-    Result.v[0] = -V.v[0];
-    Result.v[1] = -V.v[1];
-    Result.v[2] = -V.v[2];
-    Result.v[3] = -V.v[3];
+    Result.vector4_f32[0] = -V.vector4_f32[0];
+    Result.vector4_f32[1] = -V.vector4_f32[1];
+    Result.vector4_f32[2] = -V.vector4_f32[2];
+    Result.vector4_f32[3] = -V.vector4_f32[3];
 
     return Result;
 
@@ -2438,10 +2438,10 @@ XMFINLINE XMVECTOR XMVectorAdd
 
     XMVECTOR Result;
 
-    Result.v[0] = V1.v[0] + V2.v[0];
-    Result.v[1] = V1.v[1] + V2.v[1];
-    Result.v[2] = V1.v[2] + V2.v[2];
-    Result.v[3] = V1.v[3] + V2.v[3];
+    Result.vector4_f32[0] = V1.vector4_f32[0] + V2.vector4_f32[0];
+    Result.vector4_f32[1] = V1.vector4_f32[1] + V2.vector4_f32[1];
+    Result.vector4_f32[2] = V1.vector4_f32[2] + V2.vector4_f32[2];
+    Result.vector4_f32[3] = V1.vector4_f32[3] + V2.vector4_f32[3];
 
     return Result;
 
@@ -2512,10 +2512,10 @@ XMFINLINE XMVECTOR XMVectorSubtract
 
     XMVECTOR Result;
 
-    Result.x = V1.x - V2.x;
-    Result.y = V1.y - V2.y;
-    Result.z = V1.z - V2.z;
-    Result.w = V1.w - V2.w;
+    Result.vector4_f32[0] = V1.vector4_f32[0] - V2.vector4_f32[0];
+    Result.vector4_f32[1] = V1.vector4_f32[1] - V2.vector4_f32[1];
+    Result.vector4_f32[2] = V1.vector4_f32[2] - V2.vector4_f32[2];
+    Result.vector4_f32[3] = V1.vector4_f32[3] - V2.vector4_f32[3];
 
     return Result;
 
@@ -2584,10 +2584,10 @@ XMFINLINE XMVECTOR XMVectorMultiply
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result = {
-        V1.x * V2.x,
-        V1.y * V2.y,
-        V1.z * V2.z,
-        V1.w * V2.w
+        V1.vector4_f32[0] * V2.vector4_f32[0],
+        V1.vector4_f32[1] * V2.vector4_f32[1],
+        V1.vector4_f32[2] * V2.vector4_f32[2],
+        V1.vector4_f32[3] * V2.vector4_f32[3]
     };
     return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2607,10 +2607,10 @@ XMFINLINE XMVECTOR XMVectorMultiplyAdd
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
-        (V1.x * V2.x) + V3.x,
-        (V1.y * V2.y) + V3.y,
-        (V1.z * V2.z) + V3.z,
-        (V1.w * V2.w) + V3.w
+        (V1.vector4_f32[0] * V2.vector4_f32[0]) + V3.vector4_f32[0],
+        (V1.vector4_f32[1] * V2.vector4_f32[1]) + V3.vector4_f32[1],
+        (V1.vector4_f32[2] * V2.vector4_f32[2]) + V3.vector4_f32[2],
+        (V1.vector4_f32[3] * V2.vector4_f32[3]) + V3.vector4_f32[3]
     };
     return vResult;
 
@@ -2633,10 +2633,10 @@ XMFINLINE XMVECTOR XMVectorNegativeMultiplySubtract
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR vResult = {
-        V3.x - (V1.x * V2.x),
-        V3.y - (V1.y * V2.y),
-        V3.z - (V1.z * V2.z),
-        V3.w - (V1.w * V2.w)
+        V3.vector4_f32[0] - (V1.vector4_f32[0] * V2.vector4_f32[0]),
+        V3.vector4_f32[1] - (V1.vector4_f32[1] * V2.vector4_f32[1]),
+        V3.vector4_f32[2] - (V1.vector4_f32[2] * V2.vector4_f32[2]),
+        V3.vector4_f32[3] - (V1.vector4_f32[3] * V2.vector4_f32[3])
     };
     return vResult;
 
@@ -2657,10 +2657,10 @@ XMFINLINE XMVECTOR XMVectorScale
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
-        V.x * ScaleFactor,
-        V.y * ScaleFactor,
-        V.z * ScaleFactor,
-        V.w * ScaleFactor
+        V.vector4_f32[0] * ScaleFactor,
+        V.vector4_f32[1] * ScaleFactor,
+        V.vector4_f32[2] * ScaleFactor,
+        V.vector4_f32[3] * ScaleFactor
     };
     return vResult;
 
@@ -2684,25 +2684,25 @@ XMFINLINE XMVECTOR XMVectorReciprocalEst
     UINT     i;
 
     // Avoid C4701
-    Result.v[0] = 0.0f;
+    Result.vector4_f32[0] = 0.0f;
 
     for (i = 0; i < 4; i++)
     {
-        if (XMISINF(V.v[i]))
+        if (XMISINF(V.vector4_f32[i]))
         {
-            Result.v[i] = (V.v[i] < 0.0f) ? -0.0f : 0.0f;
+            Result.vector4_f32[i] = (V.vector4_f32[i] < 0.0f) ? -0.0f : 0.0f;
         }
-        else if (V.v[i] == -0.0f)
+        else if (V.vector4_f32[i] == -0.0f)
         {
-            Result.u[i] = 0xFF800000;
+            Result.vector4_u32[i] = 0xFF800000;
         }
-        else if (V.v[i] == 0.0f)
+        else if (V.vector4_f32[i] == 0.0f)
         {
-            Result.u[i] = 0x7F800000;
+            Result.vector4_u32[i] = 0x7F800000;
         }
         else
         {
-            Result.v[i] = 1.0f / V.v[i];
+            Result.vector4_f32[i] = 1.0f / V.vector4_f32[i];
         }
     }
 
@@ -2807,29 +2807,29 @@ XMFINLINE XMVECTOR XMVectorReciprocalSqrtEst
     UINT     i;
 
     // Avoid C4701
-    Result.v[0] = 0.0f;
+    Result.vector4_f32[0] = 0.0f;
 
     for (i = 0; i < 4; i++)
     {
-        if (V.v[i] == 0.0f)
+        if (V.vector4_f32[i] == 0.0f)
         {
-            Result.u[i] = 0x7F800000;
+            Result.vector4_u32[i] = 0x7F800000;
         }
-        else if (V.v[i] == -0.0f)
+        else if (V.vector4_f32[i] == -0.0f)
         {
-            Result.u[i] = 0xFF800000;
+            Result.vector4_u32[i] = 0xFF800000;
         }
-        else if (V.v[i] < 0.0f)
+        else if (V.vector4_f32[i] < 0.0f)
         {
-            Result.u[i] = 0x7FFFFFFF;
+            Result.vector4_u32[i] = 0x7FFFFFFF;
         }
-        else if (XMISINF(V.v[i]))
+        else if (XMISINF(V.vector4_f32[i]))
         {
-            Result.v[i] = 0.0f;
+            Result.vector4_f32[i] = 0.0f;
         }
         else
         {
-            Result.v[i] = 1.0f / sqrtf(V.v[i]);
+            Result.vector4_f32[i] = 1.0f / sqrtf(V.vector4_f32[i]);
         }
     }
 
@@ -2870,10 +2870,10 @@ XMFINLINE XMVECTOR XMVectorExpEst
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-    Result.x = powf(2.0f, V.x);
-    Result.y = powf(2.0f, V.y);
-    Result.z = powf(2.0f, V.z);
-    Result.w = powf(2.0f, V.w);
+    Result.vector4_f32[0] = powf(2.0f, V.vector4_f32[0]);
+    Result.vector4_f32[1] = powf(2.0f, V.vector4_f32[1]);
+    Result.vector4_f32[2] = powf(2.0f, V.vector4_f32[2]);
+    Result.vector4_f32[3] = powf(2.0f, V.vector4_f32[3]);
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2995,10 +2995,10 @@ XMFINLINE XMVECTOR XMVectorLogEst
     FLOAT fScale = (1.0f / logf(2.0f));
     XMVECTOR Result;
 
-    Result.x = logf(V.x)*fScale;
-    Result.y = logf(V.y)*fScale;
-    Result.z = logf(V.z)*fScale;
-    Result.w = logf(V.w)*fScale;
+    Result.vector4_f32[0] = logf(V.vector4_f32[0])*fScale;
+    Result.vector4_f32[1] = logf(V.vector4_f32[1])*fScale;
+    Result.vector4_f32[2] = logf(V.vector4_f32[2])*fScale;
+    Result.vector4_f32[3] = logf(V.vector4_f32[3])*fScale;
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -3025,10 +3025,10 @@ XMINLINE XMVECTOR XMVectorLog
     FLOAT fScale = (1.0f / logf(2.0f));
     XMVECTOR Result;
 
-    Result.x = logf(V.x)*fScale;
-    Result.y = logf(V.y)*fScale;
-    Result.z = logf(V.z)*fScale;
-    Result.w = logf(V.w)*fScale;
+    Result.vector4_f32[0] = logf(V.vector4_f32[0])*fScale;
+    Result.vector4_f32[1] = logf(V.vector4_f32[1])*fScale;
+    Result.vector4_f32[2] = logf(V.vector4_f32[2])*fScale;
+    Result.vector4_f32[3] = logf(V.vector4_f32[3])*fScale;
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -3056,10 +3056,10 @@ XMFINLINE XMVECTOR XMVectorPowEst
 
     XMVECTOR Result;
 
-    Result.x = powf(V1.x, V2.x);
-    Result.y = powf(V1.y, V2.y);
-    Result.z = powf(V1.z, V2.z);
-    Result.w = powf(V1.w, V2.w);
+    Result.vector4_f32[0] = powf(V1.vector4_f32[0], V2.vector4_f32[0]);
+    Result.vector4_f32[1] = powf(V1.vector4_f32[1], V2.vector4_f32[1]);
+    Result.vector4_f32[2] = powf(V1.vector4_f32[2], V2.vector4_f32[2]);
+    Result.vector4_f32[3] = powf(V1.vector4_f32[3], V2.vector4_f32[3]);
 
     return Result;
 
@@ -3099,10 +3099,10 @@ XMFINLINE XMVECTOR XMVectorAbs
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
-        fabsf(V.x),
-        fabsf(V.y),
-        fabsf(V.z),
-        fabsf(V.w)
+        fabsf(V.vector4_f32[0]),
+        fabsf(V.vector4_f32[1]),
+        fabsf(V.vector4_f32[2]),
+        fabsf(V.vector4_f32[3])
     };
     return vResult;
 
@@ -3682,7 +3682,7 @@ XMINLINE XMVECTOR XMVectorTan
 
     for (i = 0; i < 4; i++)
     {
-        VB.u[i] = (UINT)VB.v[i];
+        VB.vector4_u32[i] = (UINT)VB.vector4_f32[i];
     }
 
     VC2 = XMVectorMultiply(VC, VC);
@@ -4130,7 +4130,7 @@ XMINLINE XMVECTOR XMVectorACos
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    static CONST XMVECTORF32 s_OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
+    static CONST XMVECTORF32 OnePlusEpsilon = {1.00000011921f, 1.00000011921f, 1.00000011921f, 1.00000011921f};
     // Uses only 6 registers for good code on x86 targets
     // acos(V) = PI / 2 - asin(V)
     // Get abs(V)
@@ -4191,7 +4191,7 @@ XMINLINE XMVECTOR XMVectorACos
     vConstants = _mm_sub_ps(V,vConstants);
     R1 = _mm_mul_ps(R1,vConstants);
     // Episilon exists to allow 1.0 as an answer
-    vConstants = _mm_sub_ps(s_OnePlusEpsilon, vAbsV);
+    vConstants = _mm_sub_ps(OnePlusEpsilon, vAbsV);
     // Use sqrt instead of rsqrt for precision
     vConstants = _mm_sqrt_ps(vConstants);
     R1 = _mm_div_ps(R1,vConstants);
@@ -5399,10 +5399,10 @@ XMFINLINE XMVECTOR XMVectorHermiteV
     T2 = XMVectorMultiply(T, T);
     T3 = XMVectorMultiply(T , T2);
 
-    P0 = XMVectorReplicate(2.0f * T3.v[0] - 3.0f * T2.v[0] + 1.0f);
-    T0 = XMVectorReplicate(T3.v[1] - 2.0f * T2.v[1] + T.v[1]);
-    P1 = XMVectorReplicate(-2.0f * T3.v[2] + 3.0f * T2.v[2]);
-    T1 = XMVectorReplicate(T3.v[3] - T2.v[3]);
+    P0 = XMVectorReplicate(2.0f * T3.vector4_f32[0] - 3.0f * T2.vector4_f32[0] + 1.0f);
+    T0 = XMVectorReplicate(T3.vector4_f32[1] - 2.0f * T2.vector4_f32[1] + T.vector4_f32[1]);
+    P1 = XMVectorReplicate(-2.0f * T3.vector4_f32[2] + 3.0f * T2.vector4_f32[2]);
+    T1 = XMVectorReplicate(T3.vector4_f32[3] - T2.vector4_f32[3]);
 
     Result = XMVectorMultiply(P0, Position0);
     Result = XMVectorMultiplyAdd(T0, Tangent0, Result);
@@ -5412,8 +5412,8 @@ XMFINLINE XMVECTOR XMVectorHermiteV
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 g_XMCatMulT2 = {-3.0f,-2.0f,3.0f,-1.0f};
-    static const XMVECTORF32 g_XMCatMulT3 = {2.0f,1.0f,-2.0f,1.0f};
+    static const XMVECTORF32 CatMulT2 = {-3.0f,-2.0f,3.0f,-1.0f};
+    static const XMVECTORF32 CatMulT3 = {2.0f,1.0f,-2.0f,1.0f};
 
     // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
     //          (t^3 - 2 * t^2 + t) * Tangent0 +
@@ -5422,9 +5422,9 @@ XMFINLINE XMVECTOR XMVectorHermiteV
     XMVECTOR T2 = _mm_mul_ps(T,T);
     XMVECTOR T3 = _mm_mul_ps(T,T2);
     // Mul by the constants against t^2
-    T2 = _mm_mul_ps(T2,g_XMCatMulT2);
+    T2 = _mm_mul_ps(T2,CatMulT2);
     // Mul by the constants against t^3
-    T3 = _mm_mul_ps(T3,g_XMCatMulT3);
+    T3 = _mm_mul_ps(T3,CatMulT3);
     // T3 now has the pre-result.
     T3 = _mm_add_ps(T3,T2);
     // I need to add t.y only
@@ -5526,34 +5526,34 @@ XMFINLINE XMVECTOR XMVectorCatmullRomV
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    float fx = T.x;
-    float fy = T.y;
-    float fz = T.z;
-    float fw = T.w;
+    float fx = T.vector4_f32[0];
+    float fy = T.vector4_f32[1];
+    float fz = T.vector4_f32[2];
+    float fw = T.vector4_f32[3];
     XMVECTOR vResult = {
-        0.5f*((-fx*fx*fx+2*fx*fx-fx)*Position0.x+
-        (3*fx*fx*fx-5*fx*fx+2)*Position1.x+
-        (-3*fx*fx*fx+4*fx*fx+fx)*Position2.x+
-        (fx*fx*fx-fx*fx)*Position3.x),
-        0.5f*((-fy*fy*fy+2*fy*fy-fy)*Position0.y+
-        (3*fy*fy*fy-5*fy*fy+2)*Position1.y+
-        (-3*fy*fy*fy+4*fy*fy+fy)*Position2.y+
-        (fy*fy*fy-fy*fy)*Position3.y),
-        0.5f*((-fz*fz*fz+2*fz*fz-fz)*Position0.z+
-        (3*fz*fz*fz-5*fz*fz+2)*Position1.z+
-        (-3*fz*fz*fz+4*fz*fz+fz)*Position2.z+
-        (fz*fz*fz-fz*fz)*Position3.z),
-        0.5f*((-fw*fw*fw+2*fw*fw-fw)*Position0.w+
-        (3*fw*fw*fw-5*fw*fw+2)*Position1.w+
-        (-3*fw*fw*fw+4*fw*fw+fw)*Position2.w+
-        (fw*fw*fw-fw*fw)*Position3.w)
+        0.5f*((-fx*fx*fx+2*fx*fx-fx)*Position0.vector4_f32[0]+
+        (3*fx*fx*fx-5*fx*fx+2)*Position1.vector4_f32[0]+
+        (-3*fx*fx*fx+4*fx*fx+fx)*Position2.vector4_f32[0]+
+        (fx*fx*fx-fx*fx)*Position3.vector4_f32[0]),
+        0.5f*((-fy*fy*fy+2*fy*fy-fy)*Position0.vector4_f32[1]+
+        (3*fy*fy*fy-5*fy*fy+2)*Position1.vector4_f32[1]+
+        (-3*fy*fy*fy+4*fy*fy+fy)*Position2.vector4_f32[1]+
+        (fy*fy*fy-fy*fy)*Position3.vector4_f32[1]),
+        0.5f*((-fz*fz*fz+2*fz*fz-fz)*Position0.vector4_f32[2]+
+        (3*fz*fz*fz-5*fz*fz+2)*Position1.vector4_f32[2]+
+        (-3*fz*fz*fz+4*fz*fz+fz)*Position2.vector4_f32[2]+
+        (fz*fz*fz-fz*fz)*Position3.vector4_f32[2]),
+        0.5f*((-fw*fw*fw+2*fw*fw-fw)*Position0.vector4_f32[3]+
+        (3*fw*fw*fw-5*fw*fw+2)*Position1.vector4_f32[3]+
+        (-3*fw*fw*fw+4*fw*fw+fw)*Position2.vector4_f32[3]+
+        (fw*fw*fw-fw*fw)*Position3.vector4_f32[3])
     };
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 g_Catmul2 = {2.0f,2.0f,2.0f,2.0f};
-    static const XMVECTORF32 g_Catmul3 = {3.0f,3.0f,3.0f,3.0f};
-    static const XMVECTORF32 g_Catmul4 = {4.0f,4.0f,4.0f,4.0f};
-    static const XMVECTORF32 g_Catmul5 = {5.0f,5.0f,5.0f,5.0f};
+    static const XMVECTORF32 Catmul2 = {2.0f,2.0f,2.0f,2.0f};
+    static const XMVECTORF32 Catmul3 = {3.0f,3.0f,3.0f,3.0f};
+    static const XMVECTORF32 Catmul4 = {4.0f,4.0f,4.0f,4.0f};
+    static const XMVECTORF32 Catmul5 = {5.0f,5.0f,5.0f,5.0f};
     // Cache T^2 and T^3
     XMVECTOR T2 = _mm_mul_ps(T,T);
     XMVECTOR T3 = _mm_mul_ps(T,T2);
@@ -5563,15 +5563,15 @@ XMFINLINE XMVECTOR XMVectorCatmullRomV
     vResult = _mm_sub_ps(vResult,T3);
     vResult = _mm_mul_ps(vResult,Position0);
     // Perform the Position1 term and add
-    XMVECTOR vTemp = _mm_mul_ps(T3,g_Catmul3);
-    XMVECTOR vTemp2 = _mm_mul_ps(T2,g_Catmul5);
+    XMVECTOR vTemp = _mm_mul_ps(T3,Catmul3);
+    XMVECTOR vTemp2 = _mm_mul_ps(T2,Catmul5);
     vTemp = _mm_sub_ps(vTemp,vTemp2);
-    vTemp = _mm_add_ps(vTemp,g_Catmul2);
+    vTemp = _mm_add_ps(vTemp,Catmul2);
     vTemp = _mm_mul_ps(vTemp,Position1);
     vResult = _mm_add_ps(vResult,vTemp);
     // Perform the Position2 term and add
-    vTemp = _mm_mul_ps(T2,g_Catmul4);
-    vTemp2 = _mm_mul_ps(T3,g_Catmul3);
+    vTemp = _mm_mul_ps(T2,Catmul4);
+    vTemp2 = _mm_mul_ps(T3,Catmul3);
     vTemp = _mm_sub_ps(vTemp,vTemp2);
     vTemp = _mm_add_ps(vTemp,T);
     vTemp = _mm_mul_ps(vTemp,Position2);
@@ -5689,7 +5689,7 @@ XMFINLINE BOOL XMVector2Equal
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x == V2.x) && (V1.y == V2.y)) != 0);
+    return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
 // z and w are don't care
@@ -5712,13 +5712,13 @@ XMFINLINE UINT XMVector2EqualR
 
     UINT CR = 0;
 
-    if ((V1.x == V2.x) && 
-        (V1.y == V2.y))
+    if ((V1.vector4_f32[0] == V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] == V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x != V2.x) && 
-        (V1.y != V2.y))
+    else if ((V1.vector4_f32[0] != V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] != V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -5750,7 +5750,7 @@ XMFINLINE BOOL XMVector2EqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] == V2.u[0]) && (V1.u[1] == V2.u[1])) != 0);
+    return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)==3) != 0);
@@ -5770,13 +5770,13 @@ XMFINLINE UINT XMVector2EqualIntR
 #if defined(_XM_NO_INTRINSICS_)
 
     UINT CR = 0;
-    if ((V1.u[0] == V2.u[0]) && 
-        (V1.u[1] == V2.u[1]))
+    if ((V1.vector4_u32[0] == V2.vector4_u32[0]) && 
+        (V1.vector4_u32[1] == V2.vector4_u32[1]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.u[0] != V2.u[0]) && 
-        (V1.u[1] != V2.u[1]))
+    else if ((V1.vector4_u32[0] != V2.vector4_u32[0]) && 
+        (V1.vector4_u32[1] != V2.vector4_u32[1]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -5810,10 +5810,10 @@ XMFINLINE BOOL XMVector2NearEqual
 {
 #if defined(_XM_NO_INTRINSICS_)
     FLOAT dx, dy;
-    dx = fabsf(V1.x-V2.x);
-    dy = fabsf(V1.y-V2.y);
-    return ((dx <= Epsilon.x) &&
-            (dy <= Epsilon.y));
+    dx = fabsf(V1.vector4_f32[0]-V2.vector4_f32[0]);
+    dy = fabsf(V1.vector4_f32[1]-V2.vector4_f32[1]);
+    return ((dx <= Epsilon.vector4_f32[0]) &&
+            (dy <= Epsilon.vector4_f32[1]));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -5837,7 +5837,7 @@ XMFINLINE BOOL XMVector2NotEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x != V2.x) || (V1.y != V2.y)) != 0);
+    return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
 // z and w are don't care
@@ -5856,7 +5856,7 @@ XMFINLINE BOOL XMVector2NotEqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] != V2.u[0]) || (V1.u[1] != V2.u[1])) != 0);
+    return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&3)!=3) != 0);
@@ -5874,7 +5874,7 @@ XMFINLINE BOOL XMVector2Greater
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x > V2.x) && (V1.y > V2.y)) != 0);
+    return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1])) != 0);
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
@@ -5896,13 +5896,13 @@ XMFINLINE UINT XMVector2GreaterR
 #if defined(_XM_NO_INTRINSICS_)
 
     UINT CR = 0;
-    if ((V1.x > V2.x) && 
-        (V1.y > V2.y))
+    if ((V1.vector4_f32[0] > V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] > V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x <= V2.x) && 
-        (V1.y <= V2.y))
+    else if ((V1.vector4_f32[0] <= V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] <= V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -5933,7 +5933,7 @@ XMFINLINE BOOL XMVector2GreaterOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x >= V2.x) && (V1.y >= V2.y)) != 0);
+    return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -5952,13 +5952,13 @@ XMFINLINE UINT XMVector2GreaterOrEqualR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V1.x >= V2.x) && 
-        (V1.y >= V2.y))
+    if ((V1.vector4_f32[0] >= V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] >= V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x < V2.x) && 
-        (V1.y < V2.y))
+    else if ((V1.vector4_f32[0] < V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] < V2.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -5990,7 +5990,7 @@ XMFINLINE BOOL XMVector2Less
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x < V2.x) && (V1.y < V2.y)) != 0);
+    return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -6008,7 +6008,7 @@ XMFINLINE BOOL XMVector2LessOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x <= V2.x) && (V1.y <= V2.y)) != 0);
+    return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&3)==3) != 0);
@@ -6026,8 +6026,8 @@ XMFINLINE BOOL XMVector2InBounds
 )
 {
  #if defined(_XM_NO_INTRINSICS_)
-    return (((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y)) != 0);
+    return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1])) != 0);
  #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -6054,8 +6054,8 @@ XMFINLINE UINT XMVector2InBoundsR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y))
+    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]))
     {
         CR = XM_CRMASK_CR6BOUNDS;
     }
@@ -6084,8 +6084,8 @@ XMFINLINE BOOL XMVector2IsNaN
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (XMISNAN(V.x) ||
-            XMISNAN(V.y));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the exponent
     __m128i vTempInf = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMInfinity);
@@ -6112,8 +6112,8 @@ XMFINLINE BOOL XMVector2IsInfinite
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (XMISINF(V.x) ||
-            XMISINF(V.y));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     __m128 vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -6141,10 +6141,10 @@ XMFINLINE XMVECTOR XMVector2Dot
 
     XMVECTOR Result;
 
-    Result.v[0] =
-    Result.v[1] =
-    Result.v[2] =
-    Result.v[3] = V1.v[0] * V2.v[0] + V1.v[1] * V2.v[1];
+    Result.vector4_f32[0] =
+    Result.vector4_f32[1] =
+    Result.vector4_f32[2] =
+    Result.vector4_f32[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1];
 
     return Result;
 
@@ -6170,7 +6170,7 @@ XMFINLINE XMVECTOR XMVector2Cross
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    FLOAT fCross = (V1.x * V2.y) - (V1.y * V2.x);
+    FLOAT fCross = (V1.vector4_f32[0] * V2.vector4_f32[1]) - (V1.vector4_f32[1] * V2.vector4_f32[0]);
     XMVECTOR vResult = { 
         fCross,
         fCross,
@@ -6462,8 +6462,8 @@ XMFINLINE XMVECTOR XMVector2ClampLengthV
     XMVECTOR Control;
     XMVECTOR Result;
 
-    XMASSERT((LengthMin.y == LengthMin.x));
-    XMASSERT((LengthMax.y == LengthMax.x));
+    XMASSERT((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]));
+    XMASSERT((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]));
     XMASSERT(XMVector2GreaterOrEqual(LengthMin, XMVectorZero()));
     XMASSERT(XMVector2GreaterOrEqual(LengthMax, XMVectorZero()));
     XMASSERT(XMVector2GreaterOrEqual(LengthMax, LengthMin));
@@ -6607,25 +6607,25 @@ XMFINLINE XMVECTOR XMVector2RefractV
     XMVECTOR vResult;
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
-    IDotN = (Incident.x*Normal.x)+(Incident.y*Normal.y);
+    IDotN = (Incident.vector4_f32[0]*Normal.vector4_f32[0])+(Incident.vector4_f32[1]*Normal.vector4_f32[1]);
     // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
     RY = 1.0f-(IDotN*IDotN);
-    RX = 1.0f-(RY*RefractionIndex.x*RefractionIndex.x);
-    RY = 1.0f-(RY*RefractionIndex.y*RefractionIndex.y);
+    RX = 1.0f-(RY*RefractionIndex.vector4_f32[0]*RefractionIndex.vector4_f32[0]);
+    RY = 1.0f-(RY*RefractionIndex.vector4_f32[1]*RefractionIndex.vector4_f32[1]);
     if (RX>=0.0f) {
-        RX = (RefractionIndex.x*Incident.x)-(Normal.x*((RefractionIndex.x*IDotN)+sqrtf(RX)));
+        RX = (RefractionIndex.vector4_f32[0]*Incident.vector4_f32[0])-(Normal.vector4_f32[0]*((RefractionIndex.vector4_f32[0]*IDotN)+sqrtf(RX)));
     } else {
         RX = 0.0f;
     }
     if (RY>=0.0f) {
-        RY = (RefractionIndex.y*Incident.y)-(Normal.y*((RefractionIndex.y*IDotN)+sqrtf(RY)));
+        RY = (RefractionIndex.vector4_f32[1]*Incident.vector4_f32[1])-(Normal.vector4_f32[1]*((RefractionIndex.vector4_f32[1]*IDotN)+sqrtf(RY)));
     } else {
         RY = 0.0f;
     }
-    vResult.x = RX;
-    vResult.y = RY;
-    vResult.z = 0.0f;   
-    vResult.w = 0.0f;
+    vResult.vector4_f32[0] = RX;
+    vResult.vector4_f32[1] = RY;
+    vResult.vector4_f32[2] = 0.0f;   
+    vResult.vector4_f32[3] = 0.0f;
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) + 
@@ -6668,8 +6668,8 @@ XMFINLINE XMVECTOR XMVector2Orthogonal
 
     XMVECTOR Result;
 
-    Result.v[0] = -V.v[1];
-    Result.v[1] = V.v[0];
+    Result.vector4_f32[0] = -V.vector4_f32[1];
+    Result.vector4_f32[1] = V.vector4_f32[0];
 
     return Result;
 
@@ -7298,7 +7298,7 @@ XMFINLINE BOOL XMVector3Equal
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x == V2.x) && (V1.y == V2.y) && (V1.z == V2.z)) != 0);
+    return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7317,15 +7317,15 @@ XMFINLINE UINT XMVector3EqualR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V1.x == V2.x) && 
-        (V1.y == V2.y) &&
-        (V1.z == V2.z))
+    if ((V1.vector4_f32[0] == V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] == V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] == V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x != V2.x) && 
-        (V1.y != V2.y) &&
-        (V1.z != V2.z))
+    else if ((V1.vector4_f32[0] != V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] != V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] != V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -7356,7 +7356,7 @@ XMFINLINE BOOL XMVector3EqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] == V2.u[0]) && (V1.u[1] == V2.u[1]) && (V1.u[2] == V2.u[2])) != 0);
+    return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)==7) != 0);
@@ -7375,15 +7375,15 @@ XMFINLINE UINT XMVector3EqualIntR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V1.u[0] == V2.u[0]) && 
-        (V1.u[1] == V2.u[1]) &&
-        (V1.u[2] == V2.u[2]))
+    if ((V1.vector4_u32[0] == V2.vector4_u32[0]) && 
+        (V1.vector4_u32[1] == V2.vector4_u32[1]) &&
+        (V1.vector4_u32[2] == V2.vector4_u32[2]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.u[0] != V2.u[0]) && 
-        (V1.u[1] != V2.u[1]) &&
-        (V1.u[2] != V2.u[2]))
+    else if ((V1.vector4_u32[0] != V2.vector4_u32[0]) && 
+        (V1.vector4_u32[1] != V2.vector4_u32[1]) &&
+        (V1.vector4_u32[2] != V2.vector4_u32[2]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -7417,12 +7417,12 @@ XMFINLINE BOOL XMVector3NearEqual
 #if defined(_XM_NO_INTRINSICS_)
     FLOAT dx, dy, dz;
 
-    dx = fabsf(V1.x-V2.x);
-    dy = fabsf(V1.y-V2.y);
-    dz = fabsf(V1.z-V2.z);
-    return (((dx <= Epsilon.x) &&
-            (dy <= Epsilon.y) &&
-            (dz <= Epsilon.z)) != 0);
+    dx = fabsf(V1.vector4_f32[0]-V2.vector4_f32[0]);
+    dy = fabsf(V1.vector4_f32[1]-V2.vector4_f32[1]);
+    dz = fabsf(V1.vector4_f32[2]-V2.vector4_f32[2]);
+    return (((dx <= Epsilon.vector4_f32[0]) &&
+            (dy <= Epsilon.vector4_f32[1]) &&
+            (dz <= Epsilon.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -7446,7 +7446,7 @@ XMFINLINE BOOL XMVector3NotEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x != V2.x) || (V1.y != V2.y) || (V1.z != V2.z)) != 0);
+    return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)!=7) != 0);
@@ -7464,7 +7464,7 @@ XMFINLINE BOOL XMVector3NotEqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] != V2.u[0]) || (V1.u[1] != V2.u[1]) || (V1.u[2] != V2.u[2])) != 0);
+    return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return (((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])&7)!=7) != 0);
@@ -7482,7 +7482,7 @@ XMFINLINE BOOL XMVector3Greater
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x > V2.x) && (V1.y > V2.y) && (V1.z > V2.z)) != 0);
+    return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7501,15 +7501,15 @@ XMFINLINE UINT XMVector3GreaterR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V1.x > V2.x) && 
-        (V1.y > V2.y) &&
-        (V1.z > V2.z))
+    if ((V1.vector4_f32[0] > V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] > V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] > V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x <= V2.x) && 
-        (V1.y <= V2.y) &&
-        (V1.z <= V2.z))
+    else if ((V1.vector4_f32[0] <= V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] <= V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] <= V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -7541,7 +7541,7 @@ XMFINLINE BOOL XMVector3GreaterOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x >= V2.x) && (V1.y >= V2.y) && (V1.z >= V2.z)) != 0);
+    return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7561,15 +7561,15 @@ XMFINLINE UINT XMVector3GreaterOrEqualR
 #if defined(_XM_NO_INTRINSICS_)
 
     UINT CR = 0;
-    if ((V1.x >= V2.x) && 
-        (V1.y >= V2.y) &&
-        (V1.z >= V2.z))
+    if ((V1.vector4_f32[0] >= V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] >= V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] >= V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x < V2.x) && 
-        (V1.y < V2.y) &&
-        (V1.z < V2.z))
+    else if ((V1.vector4_f32[0] < V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] < V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] < V2.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -7601,7 +7601,7 @@ XMFINLINE BOOL XMVector3Less
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x < V2.x) && (V1.y < V2.y) && (V1.z < V2.z)) != 0);
+    return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7619,7 +7619,7 @@ XMFINLINE BOOL XMVector3LessOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x <= V2.x) && (V1.y <= V2.y) && (V1.z <= V2.z)) != 0);
+    return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return (((_mm_movemask_ps(vTemp)&7)==7) != 0);
@@ -7637,9 +7637,9 @@ XMFINLINE BOOL XMVector3InBounds
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y) &&
-        (V.z <= Bounds.z && V.z >= -Bounds.z)) != 0);
+    return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
+        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -7666,9 +7666,9 @@ XMFINLINE UINT XMVector3InBoundsR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y) &&
-        (V.z <= Bounds.z && V.z >= -Bounds.z))
+    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
+        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]))
     {
         CR = XM_CRMASK_CR6BOUNDS;
     }
@@ -7698,9 +7698,9 @@ XMFINLINE BOOL XMVector3IsNaN
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (XMISNAN(V.x) ||
-            XMISNAN(V.y) ||
-            XMISNAN(V.z));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]) ||
+            XMISNAN(V.vector4_f32[2]));
 
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the exponent
@@ -7727,9 +7727,9 @@ XMFINLINE BOOL XMVector3IsInfinite
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (XMISINF(V.x) ||
-            XMISINF(V.y) ||
-            XMISINF(V.z));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]) ||
+            XMISINF(V.vector4_f32[2]));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
     __m128 vTemp = _mm_and_ps(V,g_XMAbsMask);
@@ -7754,7 +7754,7 @@ XMFINLINE XMVECTOR XMVector3Dot
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    FLOAT fValue = V1.x * V2.x + V1.y * V2.y + V1.z * V2.z;
+    FLOAT fValue = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1] + V1.vector4_f32[2] * V2.vector4_f32[2];
     XMVECTOR vResult = {
         fValue,
         fValue,
@@ -7766,13 +7766,13 @@ XMFINLINE XMVECTOR XMVector3Dot
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V1,V2);
-    // x=Dot.y, y=Dot.z
+    // x=Dot.vector4_f32[1], y=Dot.vector4_f32[2]
     XMVECTOR vTemp = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(2,1,2,1));
-    // Result.x = x+y
+    // Result.vector4_f32[0] = x+y
     vDot = _mm_add_ss(vDot,vTemp);
-    // x=Dot.z
+    // x=Dot.vector4_f32[2]
     vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
-    // Result.x = (x+y)+z
+    // Result.vector4_f32[0] = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
 	return _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
@@ -7790,9 +7790,9 @@ XMFINLINE XMVECTOR XMVector3Cross
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR vResult = {
-        (V1.y * V2.z) - (V1.z * V2.y),
-        (V1.z * V2.x) - (V1.x * V2.z),
-        (V1.x * V2.y) - (V1.y * V2.x),
+        (V1.vector4_f32[1] * V2.vector4_f32[2]) - (V1.vector4_f32[2] * V2.vector4_f32[1]),
+        (V1.vector4_f32[2] * V2.vector4_f32[0]) - (V1.vector4_f32[0] * V2.vector4_f32[2]),
+        (V1.vector4_f32[0] * V2.vector4_f32[1]) - (V1.vector4_f32[1] * V2.vector4_f32[0]),
         0.0f
     };
     return vResult;
@@ -8023,16 +8023,16 @@ XMFINLINE XMVECTOR XMVector3Normalize
     FLOAT fLengthSq;
     XMVECTOR vResult;
 
-    fLengthSq = sqrtf((V.x*V.x)+(V.y*V.y)+(V.z*V.z));
+    fLengthSq = sqrtf((V.vector4_f32[0]*V.vector4_f32[0])+(V.vector4_f32[1]*V.vector4_f32[1])+(V.vector4_f32[2]*V.vector4_f32[2]));
     // Prevent divide by zero
     if (fLengthSq) {
         fLengthSq = 1.0f/fLengthSq;
     }
     
-    vResult.x = V.x*fLengthSq;
-    vResult.y = V.y*fLengthSq;
-    vResult.z = V.z*fLengthSq;
-    vResult.w = V.w*fLengthSq;
+    vResult.vector4_f32[0] = V.vector4_f32[0]*fLengthSq;
+    vResult.vector4_f32[1] = V.vector4_f32[1]*fLengthSq;
+    vResult.vector4_f32[2] = V.vector4_f32[2]*fLengthSq;
+    vResult.vector4_f32[3] = V.vector4_f32[3]*fLengthSq;
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -8109,8 +8109,8 @@ XMFINLINE XMVECTOR XMVector3ClampLengthV
     XMVECTOR Control;
     XMVECTOR Result;
 
-    XMASSERT((LengthMin.y == LengthMin.x) && (LengthMin.z == LengthMin.x));
-    XMASSERT((LengthMax.y == LengthMax.x) && (LengthMax.z == LengthMax.x));
+    XMASSERT((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[2] == LengthMin.vector4_f32[0]));
+    XMASSERT((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[2] == LengthMax.vector4_f32[0]));
     XMASSERT(XMVector3GreaterOrEqual(LengthMin, XMVectorZero()));
     XMASSERT(XMVector3GreaterOrEqual(LengthMax, XMVectorZero()));
     XMASSERT(XMVector3GreaterOrEqual(LengthMax, LengthMin));
@@ -9463,7 +9463,7 @@ XMFINLINE BOOL XMVector4Equal
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x == V2.x) && (V1.y == V2.y) && (V1.z == V2.z) && (V1.w == V2.w)) != 0);
+    return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2]) && (V1.vector4_f32[3] == V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9484,17 +9484,17 @@ XMFINLINE UINT XMVector4EqualR
 
     UINT CR = 0;
 
-    if ((V1.x == V2.x) && 
-        (V1.y == V2.y) &&
-        (V1.z == V2.z) &&
-        (V1.w == V2.w))
+    if ((V1.vector4_f32[0] == V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] == V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] == V2.vector4_f32[2]) &&
+        (V1.vector4_f32[3] == V2.vector4_f32[3]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x != V2.x) && 
-        (V1.y != V2.y) &&
-        (V1.z != V2.z) &&
-        (V1.w != V2.w))
+    else if ((V1.vector4_f32[0] != V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] != V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] != V2.vector4_f32[2]) &&
+        (V1.vector4_f32[3] != V2.vector4_f32[3]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -9526,7 +9526,7 @@ XMFINLINE BOOL XMVector4EqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] == V2.u[0]) && (V1.u[1] == V2.u[1]) && (V1.u[2] == V2.u[2]) && (V1.u[3] == V2.u[3])) != 0);
+    return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2]) && (V1.vector4_u32[3] == V2.vector4_u32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])==0xf) != 0);
@@ -9545,17 +9545,17 @@ XMFINLINE UINT XMVector4EqualIntR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if (V1.u[0] == V2.u[0] && 
-        V1.u[1] == V2.u[1] &&
-        V1.u[2] == V2.u[2] &&
-        V1.u[3] == V2.u[3])
+    if (V1.vector4_u32[0] == V2.vector4_u32[0] && 
+        V1.vector4_u32[1] == V2.vector4_u32[1] &&
+        V1.vector4_u32[2] == V2.vector4_u32[2] &&
+        V1.vector4_u32[3] == V2.vector4_u32[3])
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if (V1.u[0] != V2.u[0] && 
-        V1.u[1] != V2.u[1] &&
-        V1.u[2] != V2.u[2] &&
-        V1.u[3] != V2.u[3])
+    else if (V1.vector4_u32[0] != V2.vector4_u32[0] && 
+        V1.vector4_u32[1] != V2.vector4_u32[1] &&
+        V1.vector4_u32[2] != V2.vector4_u32[2] &&
+        V1.vector4_u32[3] != V2.vector4_u32[3])
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -9588,14 +9588,14 @@ XMFINLINE BOOL XMVector4NearEqual
 #if defined(_XM_NO_INTRINSICS_)
     FLOAT dx, dy, dz, dw;
 
-    dx = fabsf(V1.x-V2.x);
-    dy = fabsf(V1.y-V2.y);
-    dz = fabsf(V1.z-V2.z);
-    dw = fabsf(V1.w-V2.w);
-    return (((dx <= Epsilon.x) &&
-            (dy <= Epsilon.y) &&
-            (dz <= Epsilon.z) &&
-            (dw <= Epsilon.w)) != 0);
+    dx = fabsf(V1.vector4_f32[0]-V2.vector4_f32[0]);
+    dy = fabsf(V1.vector4_f32[1]-V2.vector4_f32[1]);
+    dz = fabsf(V1.vector4_f32[2]-V2.vector4_f32[2]);
+    dw = fabsf(V1.vector4_f32[3]-V2.vector4_f32[3]);
+    return (((dx <= Epsilon.vector4_f32[0]) &&
+            (dy <= Epsilon.vector4_f32[1]) &&
+            (dz <= Epsilon.vector4_f32[2]) &&
+            (dw <= Epsilon.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1,V2);
@@ -9618,7 +9618,7 @@ XMFINLINE BOOL XMVector4NotEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x != V2.x) || (V1.y != V2.y) || (V1.z != V2.z) || (V1.w != V2.w)) != 0);
+    return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2]) || (V1.vector4_f32[3] != V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpneq_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)) != 0);
@@ -9636,7 +9636,7 @@ XMFINLINE BOOL XMVector4NotEqualInt
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.u[0] != V2.u[0]) || (V1.u[1] != V2.u[1]) || (V1.u[2] != V2.u[2]) || (V1.u[3] != V2.u[3])) != 0);
+    return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2]) || (V1.vector4_u32[3] != V2.vector4_u32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vTemp = _mm_cmpeq_epi32(reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0]);
     return ((_mm_movemask_ps(reinterpret_cast<const __m128 *>(&vTemp)[0])!=0xF) != 0);
@@ -9654,7 +9654,7 @@ XMFINLINE BOOL XMVector4Greater
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x > V2.x) && (V1.y > V2.y) && (V1.z > V2.z) && (V1.w > V2.w)) != 0);
+    return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2]) && (V1.vector4_f32[3] > V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9673,17 +9673,17 @@ XMFINLINE UINT XMVector4GreaterR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if (V1.x > V2.x && 
-        V1.y > V2.y &&
-        V1.z > V2.z &&
-        V1.w > V2.w)
+    if (V1.vector4_f32[0] > V2.vector4_f32[0] && 
+        V1.vector4_f32[1] > V2.vector4_f32[1] &&
+        V1.vector4_f32[2] > V2.vector4_f32[2] &&
+        V1.vector4_f32[3] > V2.vector4_f32[3])
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if (V1.x <= V2.x && 
-        V1.y <= V2.y &&
-        V1.z <= V2.z &&
-        V1.w <= V2.w)
+    else if (V1.vector4_f32[0] <= V2.vector4_f32[0] && 
+        V1.vector4_f32[1] <= V2.vector4_f32[1] &&
+        V1.vector4_f32[2] <= V2.vector4_f32[2] &&
+        V1.vector4_f32[3] <= V2.vector4_f32[3])
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -9714,7 +9714,7 @@ XMFINLINE BOOL XMVector4GreaterOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x >= V2.x) && (V1.y >= V2.y) && (V1.z >= V2.z) && (V1.w >= V2.w)) != 0);
+    return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2]) && (V1.vector4_f32[3] >= V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9733,17 +9733,17 @@ XMFINLINE UINT XMVector4GreaterOrEqualR
 {
 #if defined(_XM_NO_INTRINSICS_)
     UINT CR = 0;
-    if ((V1.x >= V2.x) && 
-        (V1.y >= V2.y) &&
-        (V1.z >= V2.z) &&
-        (V1.w >= V2.w))
+    if ((V1.vector4_f32[0] >= V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] >= V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] >= V2.vector4_f32[2]) &&
+        (V1.vector4_f32[3] >= V2.vector4_f32[3]))
     {
         CR = XM_CRMASK_CR6TRUE;
     }
-    else if ((V1.x < V2.x) && 
-        (V1.y < V2.y) &&
-        (V1.z < V2.z) &&
-        (V1.w < V2.w))
+    else if ((V1.vector4_f32[0] < V2.vector4_f32[0]) && 
+        (V1.vector4_f32[1] < V2.vector4_f32[1]) &&
+        (V1.vector4_f32[2] < V2.vector4_f32[2]) &&
+        (V1.vector4_f32[3] < V2.vector4_f32[3]))
     {
         CR = XM_CRMASK_CR6FALSE;
     }
@@ -9775,7 +9775,7 @@ XMFINLINE BOOL XMVector4Less
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x < V2.x) && (V1.y < V2.y) && (V1.z < V2.z) && (V1.w < V2.w)) != 0);
+    return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2]) && (V1.vector4_f32[3] < V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmplt_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9793,7 +9793,7 @@ XMFINLINE BOOL XMVector4LessOrEqual
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V1.x <= V2.x) && (V1.y <= V2.y) && (V1.z <= V2.z) && (V1.w <= V2.w)) != 0);
+    return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2]) && (V1.vector4_f32[3] <= V2.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmple_ps(V1,V2);
     return ((_mm_movemask_ps(vTemp)==0x0f) != 0);
@@ -9811,10 +9811,10 @@ XMFINLINE BOOL XMVector4InBounds
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y) &&
-        (V.z <= Bounds.z && V.z >= -Bounds.z) &&
-        (V.w <= Bounds.w && V.w >= -Bounds.w)) != 0);
+    return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
+        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) &&
+        (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3])) != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test if less than or equal
     XMVECTOR vTemp1 = _mm_cmple_ps(V,Bounds);
@@ -9842,10 +9842,10 @@ XMFINLINE UINT XMVector4InBoundsR
 #if defined(_XM_NO_INTRINSICS_)
 
     UINT CR = 0;
-    if ((V.x <= Bounds.x && V.x >= -Bounds.x) && 
-        (V.y <= Bounds.y && V.y >= -Bounds.y) &&
-        (V.z <= Bounds.z && V.z >= -Bounds.z) &&
-        (V.w <= Bounds.w && V.w >= -Bounds.w))
+    if ((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) && 
+        (V.vector4_f32[1] <= Bounds.vector4_f32[1] && V.vector4_f32[1] >= -Bounds.vector4_f32[1]) &&
+        (V.vector4_f32[2] <= Bounds.vector4_f32[2] && V.vector4_f32[2] >= -Bounds.vector4_f32[2]) &&
+        (V.vector4_f32[3] <= Bounds.vector4_f32[3] && V.vector4_f32[3] >= -Bounds.vector4_f32[3]))
     {
         CR = XM_CRMASK_CR6BOUNDS;
     }
@@ -9874,10 +9874,10 @@ XMFINLINE BOOL XMVector4IsNaN
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (XMISNAN(V.x) ||
-            XMISNAN(V.y) ||
-            XMISNAN(V.z) ||
-            XMISNAN(V.w));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]) ||
+            XMISNAN(V.vector4_f32[2]) ||
+            XMISNAN(V.vector4_f32[3]));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Test against itself. NaN is always not equal
     XMVECTOR vTempNan = _mm_cmpneq_ps(V,V);
@@ -9896,10 +9896,10 @@ XMFINLINE BOOL XMVector4IsInfinite
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (XMISINF(V.x) ||
-            XMISINF(V.y) ||
-            XMISINF(V.z) ||
-            XMISINF(V.w));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]) ||
+            XMISINF(V.vector4_f32[2]) ||
+            XMISINF(V.vector4_f32[3]));
 
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bit
@@ -9928,10 +9928,10 @@ XMFINLINE XMVECTOR XMVector4Dot
 
     XMVECTOR Result;
 
-    Result.v[0] =
-    Result.v[1] =
-    Result.v[2] =
-    Result.v[3] = V1.v[0] * V2.v[0] + V1.v[1] * V2.v[1] + V1.v[2] * V2.v[2] + V1.v[3] * V2.v[3];
+    Result.vector4_f32[0] =
+    Result.vector4_f32[1] =
+    Result.vector4_f32[2] =
+    Result.vector4_f32[3] = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1] + V1.vector4_f32[2] * V2.vector4_f32[2] + V1.vector4_f32[3] * V2.vector4_f32[3];
 
     return Result;
 
@@ -9959,10 +9959,10 @@ XMFINLINE XMVECTOR XMVector4Cross
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;   
 
-    Result.x = (((V2.z*V3.w)-(V2.w*V3.z))*V1.y)-(((V2.y*V3.w)-(V2.w*V3.y))*V1.z)+(((V2.y*V3.z)-(V2.z*V3.y))*V1.w);
-    Result.y = (((V2.w*V3.z)-(V2.z*V3.w))*V1.x)-(((V2.w*V3.x)-(V2.x*V3.w))*V1.z)+(((V2.z*V3.x)-(V2.x*V3.z))*V1.w);
-    Result.z = (((V2.y*V3.w)-(V2.w*V3.y))*V1.x)-(((V2.x*V3.w)-(V2.w*V3.x))*V1.y)+(((V2.x*V3.y)-(V2.y*V3.x))*V1.w);
-    Result.w = (((V2.z*V3.y)-(V2.y*V3.z))*V1.x)-(((V2.z*V3.x)-(V2.x*V3.z))*V1.y)+(((V2.y*V3.x)-(V2.x*V3.y))*V1.z);
+    Result.vector4_f32[0] = (((V2.vector4_f32[2]*V3.vector4_f32[3])-(V2.vector4_f32[3]*V3.vector4_f32[2]))*V1.vector4_f32[1])-(((V2.vector4_f32[1]*V3.vector4_f32[3])-(V2.vector4_f32[3]*V3.vector4_f32[1]))*V1.vector4_f32[2])+(((V2.vector4_f32[1]*V3.vector4_f32[2])-(V2.vector4_f32[2]*V3.vector4_f32[1]))*V1.vector4_f32[3]);
+    Result.vector4_f32[1] = (((V2.vector4_f32[3]*V3.vector4_f32[2])-(V2.vector4_f32[2]*V3.vector4_f32[3]))*V1.vector4_f32[0])-(((V2.vector4_f32[3]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[3]))*V1.vector4_f32[2])+(((V2.vector4_f32[2]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[2]))*V1.vector4_f32[3]);
+    Result.vector4_f32[2] = (((V2.vector4_f32[1]*V3.vector4_f32[3])-(V2.vector4_f32[3]*V3.vector4_f32[1]))*V1.vector4_f32[0])-(((V2.vector4_f32[0]*V3.vector4_f32[3])-(V2.vector4_f32[3]*V3.vector4_f32[0]))*V1.vector4_f32[1])+(((V2.vector4_f32[0]*V3.vector4_f32[1])-(V2.vector4_f32[1]*V3.vector4_f32[0]))*V1.vector4_f32[3]);
+    Result.vector4_f32[3] = (((V2.vector4_f32[2]*V3.vector4_f32[1])-(V2.vector4_f32[1]*V3.vector4_f32[2]))*V1.vector4_f32[0])-(((V2.vector4_f32[2]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[2]))*V1.vector4_f32[1])+(((V2.vector4_f32[1]*V3.vector4_f32[0])-(V2.vector4_f32[0]*V3.vector4_f32[1]))*V1.vector4_f32[2]);
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -10328,8 +10328,8 @@ XMFINLINE XMVECTOR XMVector4ClampLengthV
     XMVECTOR Control;
     XMVECTOR Result;
 
-    XMASSERT((LengthMin.y == LengthMin.x) && (LengthMin.z == LengthMin.x) && (LengthMin.w == LengthMin.x));
-    XMASSERT((LengthMax.y == LengthMax.x) && (LengthMax.z == LengthMax.x) && (LengthMax.w == LengthMax.x));
+    XMASSERT((LengthMin.vector4_f32[1] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[2] == LengthMin.vector4_f32[0]) && (LengthMin.vector4_f32[3] == LengthMin.vector4_f32[0]));
+    XMASSERT((LengthMax.vector4_f32[1] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[2] == LengthMax.vector4_f32[0]) && (LengthMax.vector4_f32[3] == LengthMax.vector4_f32[0]));
     XMASSERT(XMVector4GreaterOrEqual(LengthMin, XMVectorZero()));
     XMASSERT(XMVector4GreaterOrEqual(LengthMax, XMVectorZero()));
     XMASSERT(XMVector4GreaterOrEqual(LengthMax, LengthMin));
@@ -10552,16 +10552,16 @@ XMFINLINE XMVECTOR XMVector4Orthogonal
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR Result;
-    Result.v[0] = V.v[2];
-    Result.v[1] = V.v[3];
-    Result.v[2] = -V.v[0];
-    Result.v[3] = -V.v[1];
+    Result.vector4_f32[0] = V.vector4_f32[2];
+    Result.vector4_f32[1] = V.vector4_f32[3];
+    Result.vector4_f32[2] = -V.vector4_f32[0];
+    Result.vector4_f32[3] = -V.vector4_f32[1];
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 g_XMFlipZW = {1.0f,1.0f,-1.0f,-1.0f};
+    static const XMVECTORF32 FlipZW = {1.0f,1.0f,-1.0f,-1.0f};
     XMVECTOR vResult = _mm_shuffle_ps(V,V,_MM_SHUFFLE(1,0,3,2));
-    vResult = _mm_mul_ps(vResult,g_XMFlipZW);
+    vResult = _mm_mul_ps(vResult,FlipZW);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -10696,10 +10696,10 @@ XMFINLINE XMVECTOR XMVector4Transform
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    FLOAT fX = (M.m[0][0]*V.x)+(M.m[1][0]*V.y)+(M.m[2][0]*V.z)+(M.m[3][0]*V.w);
-    FLOAT fY = (M.m[0][1]*V.x)+(M.m[1][1]*V.y)+(M.m[2][1]*V.z)+(M.m[3][1]*V.w);
-    FLOAT fZ = (M.m[0][2]*V.x)+(M.m[1][2]*V.y)+(M.m[2][2]*V.z)+(M.m[3][2]*V.w);
-    FLOAT fW = (M.m[0][3]*V.x)+(M.m[1][3]*V.y)+(M.m[2][3]*V.z)+(M.m[3][3]*V.w);
+    FLOAT fX = (M.m[0][0]*V.vector4_f32[0])+(M.m[1][0]*V.vector4_f32[1])+(M.m[2][0]*V.vector4_f32[2])+(M.m[3][0]*V.vector4_f32[3]);
+    FLOAT fY = (M.m[0][1]*V.vector4_f32[0])+(M.m[1][1]*V.vector4_f32[1])+(M.m[2][1]*V.vector4_f32[2])+(M.m[3][1]*V.vector4_f32[3]);
+    FLOAT fZ = (M.m[0][2]*V.vector4_f32[0])+(M.m[1][2]*V.vector4_f32[1])+(M.m[2][2]*V.vector4_f32[2])+(M.m[3][2]*V.vector4_f32[3]);
+    FLOAT fW = (M.m[0][3]*V.vector4_f32[0])+(M.m[1][3]*V.vector4_f32[1])+(M.m[2][3]*V.vector4_f32[2])+(M.m[3][3]*V.vector4_f32[3]);
     XMVECTOR vResult = {
         fX,
         fY,
@@ -11001,18 +11001,6 @@ XMFINLINE XMVECTOR operator*
 
 XMFINLINE _XMFLOAT2::_XMFLOAT2
 (
-    FLOAT _x,
-    FLOAT _y
-)
-{
-    x = _x;
-    y = _y;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMFLOAT2::_XMFLOAT2
-(
     CONST FLOAT* pArray
 )
 {
@@ -11037,18 +11025,6 @@ XMFINLINE _XMFLOAT2& _XMFLOAT2::operator=
  * XMHALF2 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHALF2::_XMHALF2
-(
-    HALF _x,
-    HALF _y
-)
-{
-    x = _x;
-    y = _y;
-}
 
 //------------------------------------------------------------------------------
 
@@ -11106,18 +11082,6 @@ XMFINLINE _XMHALF2& _XMHALF2::operator=
 
 XMFINLINE _XMSHORTN2::_XMSHORTN2
 (
-    SHORT _x,
-    SHORT _y
-)
-{
-    x = _x;
-    y = _y;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMSHORTN2::_XMSHORTN2
-(
     CONST SHORT* pArray
 )
 {
@@ -11163,18 +11127,6 @@ XMFINLINE _XMSHORTN2& _XMSHORTN2::operator=
  * XMSHORT2 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMSHORT2::_XMSHORT2
-(
-    SHORT _x,
-    SHORT _y
-)
-{
-    x = _x;
-    y = _y;
-}
 
 //------------------------------------------------------------------------------
 
@@ -11230,18 +11182,6 @@ XMFINLINE _XMSHORT2& _XMSHORT2::operator=
 
 XMFINLINE _XMUSHORTN2::_XMUSHORTN2
 (
-    USHORT _x,
-    USHORT _y
-)
-{
-    x = _x;
-    y = _y;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUSHORTN2::_XMUSHORTN2
-(
     CONST USHORT* pArray
 )
 {
@@ -11287,18 +11227,6 @@ XMFINLINE _XMUSHORTN2& _XMUSHORTN2::operator=
  * XMUSHORT2 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUSHORT2::_XMUSHORT2
-(
-    USHORT _x,
-    USHORT _y
-)
-{
-    x = _x;
-    y = _y;
-}
 
 //------------------------------------------------------------------------------
 
@@ -11354,20 +11282,6 @@ XMFINLINE _XMUSHORT2& _XMUSHORT2::operator=
 
 XMFINLINE _XMFLOAT3::_XMFLOAT3
 (
-    FLOAT _x,
-    FLOAT _y,
-    FLOAT _z
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMFLOAT3::_XMFLOAT3
-(
     CONST FLOAT* pArray
 )
 {
@@ -11399,16 +11313,6 @@ XMFINLINE _XMFLOAT3& _XMFLOAT3::operator=
 
 XMFINLINE _XMHENDN3::_XMHENDN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHENDN3::_XMHENDN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11425,13 +11329,6 @@ XMFINLINE _XMHENDN3::_XMHENDN3
 )
 {
     XMStoreHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHENDN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11466,16 +11363,6 @@ XMFINLINE _XMHENDN3& _XMHENDN3::operator=
 
 XMFINLINE _XMHEND3::_XMHEND3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHEND3::_XMHEND3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11492,13 +11379,6 @@ XMFINLINE _XMHEND3::_XMHEND3
 )
 {
     XMStoreHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHEND3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11533,16 +11413,6 @@ XMFINLINE _XMHEND3& _XMHEND3::operator=
 
 XMFINLINE _XMUHENDN3::_XMUHENDN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUHENDN3::_XMUHENDN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11559,13 +11429,6 @@ XMFINLINE _XMUHENDN3::_XMUHENDN3
 )
 {
     XMStoreUHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUHENDN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11600,16 +11463,6 @@ XMFINLINE _XMUHENDN3& _XMUHENDN3::operator=
 
 XMFINLINE _XMUHEND3::_XMUHEND3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUHEND3::_XMUHEND3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11626,13 +11479,6 @@ XMFINLINE _XMUHEND3::_XMUHEND3
 )
 {
     XMStoreUHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUHEND3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11667,16 +11513,6 @@ XMFINLINE _XMUHEND3& _XMUHEND3::operator=
 
 XMFINLINE _XMDHENN3::_XMDHENN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDHENN3::_XMDHENN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11693,13 +11529,6 @@ XMFINLINE _XMDHENN3::_XMDHENN3
 )
 {
     XMStoreDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDHENN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11734,16 +11563,6 @@ XMFINLINE _XMDHENN3& _XMDHENN3::operator=
 
 XMFINLINE _XMDHEN3::_XMDHEN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDHEN3::_XMDHEN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11760,13 +11579,6 @@ XMFINLINE _XMDHEN3::_XMDHEN3
 )
 {
     XMStoreDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDHEN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11801,16 +11613,6 @@ XMFINLINE _XMDHEN3& _XMDHEN3::operator=
 
 XMFINLINE _XMUDHENN3::_XMUDHENN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDHENN3::_XMUDHENN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11827,13 +11629,6 @@ XMFINLINE _XMUDHENN3::_XMUDHENN3
 )
 {
     XMStoreUDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDHENN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11868,16 +11663,6 @@ XMFINLINE _XMUDHENN3& _XMUDHENN3::operator=
 
 XMFINLINE _XMUDHEN3::_XMUDHEN3
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDHEN3::_XMUDHEN3
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z
@@ -11894,13 +11679,6 @@ XMFINLINE _XMUDHEN3::_XMUDHEN3
 )
 {
     XMStoreUDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDHEN3::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -11927,25 +11705,145 @@ XMFINLINE _XMUDHEN3& _XMUDHEN3::operator=
 
 /****************************************************************************
  *
- * XMFLOAT4 operators
+ * XMU565 operators
  *
  ****************************************************************************/
 
-//------------------------------------------------------------------------------
+XMFINLINE _XMU565::_XMU565
+(
+    CONST CHAR *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+}
 
-XMFINLINE _XMFLOAT4::_XMFLOAT4
+XMFINLINE _XMU565::_XMU565
 (
     FLOAT _x,
     FLOAT _y,
-    FLOAT _z,
-    FLOAT _w
+    FLOAT _z
 )
 {
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
+    XMStoreU565(this, XMVectorSet( _x, _y, _z, 0.0f ));
 }
+
+XMFINLINE _XMU565::_XMU565
+(
+    CONST FLOAT *pArray
+)
+{
+    XMStoreU565(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+}
+
+XMFINLINE _XMU565& _XMU565::operator=
+(
+    CONST _XMU565& U565
+)
+{
+    v = U565.v;
+    return *this;
+}
+
+XMFINLINE _XMU565& _XMU565::operator=
+(
+    CONST USHORT Packed
+)
+{
+    v = Packed;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMFLOAT3PK operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMFLOAT3PK::_XMFLOAT3PK
+(
+    FLOAT _x,
+    FLOAT _y,
+    FLOAT _z
+)
+{
+    XMStoreFloat3PK(this, XMVectorSet( _x, _y, _z, 0.0f ));
+}
+
+XMFINLINE _XMFLOAT3PK::_XMFLOAT3PK
+(
+    CONST FLOAT *pArray
+)
+{
+    XMStoreFloat3PK(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+}
+
+XMFINLINE _XMFLOAT3PK& _XMFLOAT3PK::operator=
+(
+    CONST _XMFLOAT3PK& float3pk
+)
+{
+    v = float3pk.v;
+    return *this;
+}
+
+XMFINLINE _XMFLOAT3PK& _XMFLOAT3PK::operator=
+(
+    CONST UINT Packed
+)
+{
+    v = Packed;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMFLOAT3SE operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMFLOAT3SE::_XMFLOAT3SE
+(
+    FLOAT _x,
+    FLOAT _y,
+    FLOAT _z
+)
+{
+    XMStoreFloat3SE(this, XMVectorSet( _x, _y, _z, 0.0f ));
+}
+
+XMFINLINE _XMFLOAT3SE::_XMFLOAT3SE
+(
+    CONST FLOAT *pArray
+)
+{
+    XMStoreFloat3SE(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+}
+
+XMFINLINE _XMFLOAT3SE& _XMFLOAT3SE::operator=
+(
+    CONST _XMFLOAT3SE& float3se
+)
+{
+    v = float3se.v;
+    return *this;
+}
+
+XMFINLINE _XMFLOAT3SE& _XMFLOAT3SE::operator=
+(
+    CONST UINT Packed
+)
+{
+    v = Packed;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMFLOAT4 operators
+ *
+ ****************************************************************************/
 
 //------------------------------------------------------------------------------
 
@@ -11979,22 +11877,6 @@ XMFINLINE _XMFLOAT4& _XMFLOAT4::operator=
  * XMHALF4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMHALF4::_XMHALF4
-(
-    HALF _x,
-    HALF _y,
-    HALF _z,
-    HALF _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
 
 //------------------------------------------------------------------------------
 
@@ -12059,22 +11941,6 @@ XMFINLINE _XMHALF4& _XMHALF4::operator=
 
 XMFINLINE _XMSHORTN4::_XMSHORTN4
 (
-    SHORT _x,
-    SHORT _y,
-    SHORT _z,
-    SHORT _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMSHORTN4::_XMSHORTN4
-(
     CONST SHORT* pArray
 )
 {
@@ -12126,22 +11992,6 @@ XMFINLINE _XMSHORTN4& _XMSHORTN4::operator=
  * XMSHORT4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMSHORT4::_XMSHORT4
-(
-    SHORT _x,
-    SHORT _y,
-    SHORT _z,
-    SHORT _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
 
 //------------------------------------------------------------------------------
 
@@ -12203,22 +12053,6 @@ XMFINLINE _XMSHORT4& _XMSHORT4::operator=
 
 XMFINLINE _XMUSHORTN4::_XMUSHORTN4
 (
-    USHORT _x,
-    USHORT _y,
-    USHORT _z,
-    USHORT _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUSHORTN4::_XMUSHORTN4
-(
     CONST USHORT* pArray
 )
 {
@@ -12270,22 +12104,6 @@ XMFINLINE _XMUSHORTN4& _XMUSHORTN4::operator=
  * XMUSHORT4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUSHORT4::_XMUSHORT4
-(
-    USHORT _x,
-    USHORT _y,
-    USHORT _z,
-    USHORT _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
 
 //------------------------------------------------------------------------------
 
@@ -12347,16 +12165,6 @@ XMFINLINE _XMUSHORT4& _XMUSHORT4::operator=
 
 XMFINLINE _XMXDECN4::_XMXDECN4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXDECN4::_XMXDECN4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12374,13 +12182,6 @@ XMFINLINE _XMXDECN4::_XMXDECN4
 )
 {
     XMStoreXDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXDECN4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12415,16 +12216,6 @@ XMFINLINE _XMXDECN4& _XMXDECN4::operator=
 
 XMFINLINE _XMXDEC4::_XMXDEC4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXDEC4::_XMXDEC4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12442,13 +12233,6 @@ XMFINLINE _XMXDEC4::_XMXDEC4
 )
 {
     XMStoreXDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXDEC4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12483,16 +12267,6 @@ XMFINLINE _XMXDEC4& _XMXDEC4::operator=
 
 XMFINLINE _XMDECN4::_XMDECN4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDECN4::_XMDECN4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12510,13 +12284,6 @@ XMFINLINE _XMDECN4::_XMDECN4
 )
 {
     XMStoreDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDECN4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12551,16 +12318,6 @@ XMFINLINE _XMDECN4& _XMDECN4::operator=
 
 XMFINLINE _XMDEC4::_XMDEC4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDEC4::_XMDEC4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12578,13 +12335,6 @@ XMFINLINE _XMDEC4::_XMDEC4
 )
 {
     XMStoreDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMDEC4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12619,16 +12369,6 @@ XMFINLINE _XMDEC4& _XMDEC4::operator=
 
 XMFINLINE _XMUDECN4::_XMUDECN4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDECN4::_XMUDECN4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12646,13 +12386,6 @@ XMFINLINE _XMUDECN4::_XMUDECN4
 )
 {
     XMStoreUDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDECN4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12687,16 +12420,6 @@ XMFINLINE _XMUDECN4& _XMUDECN4::operator=
 
 XMFINLINE _XMUDEC4::_XMUDEC4
 (
-    UINT Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDEC4::_XMUDEC4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12714,13 +12437,6 @@ XMFINLINE _XMUDEC4::_XMUDEC4
 )
 {
     XMStoreUDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUDEC4::operator UINT ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12755,16 +12471,6 @@ XMFINLINE _XMUDEC4& _XMUDEC4::operator=
 
 XMFINLINE _XMXICON4::_XMXICON4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXICON4::_XMXICON4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12782,13 +12488,6 @@ XMFINLINE _XMXICON4::_XMXICON4
 )
 {
     XMStoreXIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXICON4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12823,16 +12522,6 @@ XMFINLINE _XMXICON4& _XMXICON4::operator=
 
 XMFINLINE _XMXICO4::_XMXICO4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXICO4::_XMXICO4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12850,13 +12539,6 @@ XMFINLINE _XMXICO4::_XMXICO4
 )
 {
     XMStoreXIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMXICO4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12891,16 +12573,6 @@ XMFINLINE _XMXICO4& _XMXICO4::operator=
 
 XMFINLINE _XMICON4::_XMICON4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMICON4::_XMICON4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12918,13 +12590,6 @@ XMFINLINE _XMICON4::_XMICON4
 )
 {
     XMStoreIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMICON4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -12959,16 +12624,6 @@ XMFINLINE _XMICON4& _XMICON4::operator=
 
 XMFINLINE _XMICO4::_XMICO4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMICO4::_XMICO4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -12986,13 +12641,6 @@ XMFINLINE _XMICO4::_XMICO4
 )
 {
     XMStoreIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMICO4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -13027,16 +12675,6 @@ XMFINLINE _XMICO4& _XMICO4::operator=
 
 XMFINLINE _XMUICON4::_XMUICON4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUICON4::_XMUICON4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -13054,13 +12692,6 @@ XMFINLINE _XMUICON4::_XMUICON4
 )
 {
     XMStoreUIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUICON4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -13095,16 +12726,6 @@ XMFINLINE _XMUICON4& _XMUICON4::operator=
 
 XMFINLINE _XMUICO4::_XMUICO4
 (
-    UINT64 Packed
-)
-{
-    v = Packed;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUICO4::_XMUICO4
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -13122,13 +12743,6 @@ XMFINLINE _XMUICO4::_XMUICO4
 )
 {
     XMStoreUIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUICO4::operator UINT64 ()
-{
-    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -13163,16 +12777,6 @@ XMFINLINE _XMUICO4& _XMUICO4::operator=
 
 XMFINLINE _XMCOLOR::_XMCOLOR
 (
-    UINT Color
-)
-{
-    c = Color;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMCOLOR::_XMCOLOR
-(
     FLOAT _x,
     FLOAT _y,
     FLOAT _z,
@@ -13190,13 +12794,6 @@ XMFINLINE _XMCOLOR::_XMCOLOR
 )
 {
     XMStoreColor(this, XMLoadFloat4((XMFLOAT4*)pArray));
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMCOLOR::operator UINT ()
-{
-    return c;
 }
 
 //------------------------------------------------------------------------------
@@ -13226,32 +12823,6 @@ XMFINLINE _XMCOLOR& _XMCOLOR::operator=
  * XMBYTEN4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMBYTEN4::_XMBYTEN4
-(
-    CHAR _x,
-    CHAR _y,
-    CHAR _z,
-    CHAR _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMBYTEN4::_XMBYTEN4
-(
-    UINT _v
-)
-{
-    v = _v;
-}
 
 //------------------------------------------------------------------------------
 
@@ -13313,32 +12884,6 @@ XMFINLINE _XMBYTEN4& _XMBYTEN4::operator=
 
 XMFINLINE _XMBYTE4::_XMBYTE4
 (
-    CHAR _x,
-    CHAR _y,
-    CHAR _z,
-    CHAR _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMBYTE4::_XMBYTE4
-(
-    UINT _v
-)
-{
-    v = _v;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMBYTE4::_XMBYTE4
-(
     CONST CHAR* pArray
 )
 {
@@ -13390,32 +12935,6 @@ XMFINLINE _XMBYTE4& _XMBYTE4::operator=
  * XMUBYTEN4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUBYTEN4::_XMUBYTEN4
-(
-    BYTE _x,
-    BYTE _y,
-    BYTE _z,
-    BYTE _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUBYTEN4::_XMUBYTEN4
-(
-    UINT _v
-)
-{
-    v = _v;
-}
 
 //------------------------------------------------------------------------------
 
@@ -13477,32 +12996,6 @@ XMFINLINE _XMUBYTEN4& _XMUBYTEN4::operator=
 
 XMFINLINE _XMUBYTE4::_XMUBYTE4
 (
-    BYTE _x,
-    BYTE _y,
-    BYTE _z,
-    BYTE _w
-)
-{
-    x = _x;
-    y = _y;
-    z = _z;
-    w = _w;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUBYTE4::_XMUBYTE4
-(
-    UINT _v
-)
-{
-    v = _v;
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE _XMUBYTE4::_XMUBYTE4
-(
     CONST BYTE* pArray
 )
 {
@@ -13546,6 +13039,137 @@ XMFINLINE _XMUBYTE4& _XMUBYTE4::operator=
     y = UByte4.y;
     z = UByte4.z;
     w = UByte4.w;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUNIBBLE4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
+(
+    CONST CHAR *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+    w = pArray[3];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
+(
+    FLOAT _x,
+    FLOAT _y,
+    FLOAT _z,
+    FLOAT _w
+)
+{
+    XMStoreUNibble4(this, XMVectorSet( _x, _y, _z, _w ));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
+(
+    CONST FLOAT *pArray
+)
+{
+    XMStoreUNibble4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
+(
+    CONST _XMUNIBBLE4& UNibble4
+)
+{
+    v = UNibble4.v;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUNIBBLE4& _XMUNIBBLE4::operator=
+(
+    CONST USHORT Packed
+)
+{
+    v = Packed;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMU555 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMU555::_XMU555
+(
+    CONST CHAR *pArray,
+    BOOL _w
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+    w = _w;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMU555::_XMU555
+(
+    FLOAT _x,
+    FLOAT _y,
+    FLOAT _z,
+    BOOL _w
+)
+{
+    XMStoreU555(this, XMVectorSet(_x, _y, _z, ((_w) ? 1.0f : 0.0f) ));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMU555::_XMU555
+(
+    CONST FLOAT *pArray,
+    BOOL _w
+)
+{
+    XMVECTOR V = XMLoadFloat3((XMFLOAT3*)pArray);
+    XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f) ));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMU555& _XMU555::operator=
+(
+    CONST _XMU555& U555
+)
+{
+    v = U555.v;
+    return *this;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMU555& _XMU555::operator=
+(
+    CONST USHORT Packed
+)
+{
+    v = Packed;
     return *this;
 }
 

@@ -22,7 +22,7 @@ Abstract:
 #error XNAMATH and XBOXMATH are incompatible in the same compilation module. Use one or the other.
 #endif
 
-#define XNAMATH_VERSION 200
+#define XNAMATH_VERSION 201
 
 #if !defined(_XM_X64_) && !defined(_XM_X86_)
 #if defined(_M_AMD64) || defined(_AMD64_)
@@ -45,6 +45,7 @@ Abstract:
 #else
 #error xnamath.h only supports x86, x64, or XBox 360 targets
 #endif
+
 
 #if defined(_XM_SSE_INTRINSICS_)
 #ifndef _XM_NO_INTRINSICS_
@@ -187,6 +188,9 @@ typedef struct __vector4
 {
     union
     {
+        float        vector4_f32[4];
+        unsigned int vector4_u32[4];
+#ifndef XM_STRICT_VECTOR4
         struct
         {
             FLOAT x;
@@ -196,6 +200,7 @@ typedef struct __vector4
         };
         FLOAT v[4];
         UINT  u[4];
+#endif // !XM_STRICT_VECTOR4
     };
 } __vector4;
 #endif // _XM_NO_INTRINSICS_
@@ -338,16 +343,16 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
 
 #ifdef __cplusplus
 
-                _XMMATRIX() {};
-                _XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3);
-                _XMMATRIX(FLOAT m00, FLOAT m01, FLOAT m02, FLOAT m03,
-                         FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
-                         FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
-                         FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
-                _XMMATRIX(CONST FLOAT *pArray);
+    _XMMATRIX() {};
+    _XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3);
+    _XMMATRIX(FLOAT m00, FLOAT m01, FLOAT m02, FLOAT m03,
+              FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
+              FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
+              FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
+    _XMMATRIX(CONST FLOAT *pArray);
 
-    FLOAT       operator() (UINT Row, UINT Column) CONST;
-    FLOAT&      operator() (UINT Row, UINT Column);
+    FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
+    FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
 
     _XMMATRIX&  operator= (CONST _XMMATRIX&);
 
@@ -383,7 +388,7 @@ typedef struct _XMFLOAT2
 #ifdef __cplusplus
 
     _XMFLOAT2() {};
-    _XMFLOAT2(FLOAT _x, FLOAT _y);
+    _XMFLOAT2(FLOAT _x, FLOAT _y) : x(_x), y(_y) {};
     _XMFLOAT2(CONST FLOAT *pArray);
 
     _XMFLOAT2& operator= (CONST _XMFLOAT2& Float2);
@@ -404,7 +409,7 @@ typedef struct _XMHALF2
 #ifdef __cplusplus
 
     _XMHALF2() {};
-    _XMHALF2(HALF _x, HALF _y);
+    _XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {};
     _XMHALF2(CONST HALF *pArray);
     _XMHALF2(FLOAT _x, FLOAT _y);
     _XMHALF2(CONST FLOAT *pArray);
@@ -424,7 +429,7 @@ typedef struct _XMSHORTN2
 #ifdef __cplusplus
 
     _XMSHORTN2() {};
-    _XMSHORTN2(SHORT _x, SHORT _y);
+    _XMSHORTN2(SHORT _x, SHORT _y) : x(_x), y(_y) {};
     _XMSHORTN2(CONST SHORT *pArray);
     _XMSHORTN2(FLOAT _x, FLOAT _y);
     _XMSHORTN2(CONST FLOAT *pArray);
@@ -444,7 +449,7 @@ typedef struct _XMSHORT2
 #ifdef __cplusplus
 
     _XMSHORT2() {};
-    _XMSHORT2(SHORT _x, SHORT _y);
+    _XMSHORT2(SHORT _x, SHORT _y) : x(_x), y(_y) {};
     _XMSHORT2(CONST SHORT *pArray);
     _XMSHORT2(FLOAT _x, FLOAT _y);
     _XMSHORT2(CONST FLOAT *pArray);
@@ -464,7 +469,7 @@ typedef struct _XMUSHORTN2
 #ifdef __cplusplus
 
     _XMUSHORTN2() {};
-    _XMUSHORTN2(USHORT _x, USHORT _y);
+    _XMUSHORTN2(USHORT _x, USHORT _y) : x(_x), y(_y) {};
     _XMUSHORTN2(CONST USHORT *pArray);
     _XMUSHORTN2(FLOAT _x, FLOAT _y);
     _XMUSHORTN2(CONST FLOAT *pArray);
@@ -484,7 +489,7 @@ typedef struct _XMUSHORT2
 #ifdef __cplusplus
 
     _XMUSHORT2() {};
-    _XMUSHORT2(USHORT _x, USHORT _y);
+    _XMUSHORT2(USHORT _x, USHORT _y) : x(_x), y(_y) {};
     _XMUSHORT2(CONST USHORT *pArray);
     _XMUSHORT2(FLOAT _x, FLOAT _y);
     _XMUSHORT2(CONST FLOAT *pArray);
@@ -505,7 +510,7 @@ typedef struct _XMFLOAT3
 #ifdef __cplusplus
 
     _XMFLOAT3() {};
-    _XMFLOAT3(FLOAT _x, FLOAT _y, FLOAT _z);
+    _XMFLOAT3(FLOAT _x, FLOAT _y, FLOAT _z) : x(_x), y(_y), z(_z) {};
     _XMFLOAT3(CONST FLOAT *pArray);
 
     _XMFLOAT3& operator= (CONST _XMFLOAT3& Float3);
@@ -539,11 +544,11 @@ typedef struct _XMHENDN3
 #ifdef __cplusplus
 
     _XMHENDN3() {};
-    _XMHENDN3(UINT Packed);
+    _XMHENDN3(UINT Packed) : v(Packed) {};
     _XMHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMHENDN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMHENDN3& operator= (CONST _XMHENDN3& HenDN3);
     _XMHENDN3& operator= (CONST UINT Packed);
@@ -574,11 +579,11 @@ typedef struct _XMHEND3
 #ifdef __cplusplus
 
     _XMHEND3() {};
-    _XMHEND3(UINT Packed);
+    _XMHEND3(UINT Packed) : v(Packed) {};
     _XMHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMHEND3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMHEND3& operator= (CONST _XMHEND3& HenD3);
     _XMHEND3& operator= (CONST UINT Packed);
@@ -609,11 +614,11 @@ typedef struct _XMUHENDN3
 #ifdef __cplusplus
 
     _XMUHENDN3() {};
-    _XMUHENDN3(UINT Packed);
+    _XMUHENDN3(UINT Packed) : v(Packed) {};
     _XMUHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMUHENDN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUHENDN3& operator= (CONST _XMUHENDN3& UHenDN3);
     _XMUHENDN3& operator= (CONST UINT Packed);
@@ -644,11 +649,11 @@ typedef struct _XMUHEND3
 #ifdef __cplusplus
 
     _XMUHEND3() {};
-    _XMUHEND3(UINT Packed);
+    _XMUHEND3(UINT Packed) : v(Packed) {};
     _XMUHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMUHEND3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUHEND3& operator= (CONST _XMUHEND3& UHenD3);
     _XMUHEND3& operator= (CONST UINT Packed);
@@ -679,11 +684,11 @@ typedef struct _XMDHENN3
 #ifdef __cplusplus
 
     _XMDHENN3() {};
-    _XMDHENN3(UINT Packed);
+    _XMDHENN3(UINT Packed) : v(Packed) {};
     _XMDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMDHENN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMDHENN3& operator= (CONST _XMDHENN3& DHenN3);
     _XMDHENN3& operator= (CONST UINT Packed);
@@ -714,11 +719,11 @@ typedef struct _XMDHEN3
 #ifdef __cplusplus
 
     _XMDHEN3() {};
-    _XMDHEN3(UINT Packed);
+    _XMDHEN3(UINT Packed) : v(Packed) {};
     _XMDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMDHEN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMDHEN3& operator= (CONST _XMDHEN3& DHen3);
     _XMDHEN3& operator= (CONST UINT Packed);
@@ -749,11 +754,11 @@ typedef struct _XMUDHENN3
 #ifdef __cplusplus
 
     _XMUDHENN3() {};
-    _XMUDHENN3(UINT Packed);
+    _XMUDHENN3(UINT Packed) : v(Packed) {};
     _XMUDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMUDHENN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUDHENN3& operator= (CONST _XMUDHENN3& UDHenN3);
     _XMUDHENN3& operator= (CONST UINT Packed);
@@ -784,11 +789,11 @@ typedef struct _XMUDHEN3
 #ifdef __cplusplus
 
     _XMUDHEN3() {};
-    _XMUDHEN3(UINT Packed);
+    _XMUDHEN3(UINT Packed) : v(Packed) {};
     _XMUDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
     _XMUDHEN3(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUDHEN3& operator= (CONST _XMUDHEN3& UDHen3);
     _XMUDHEN3& operator= (CONST UINT Packed);
@@ -796,6 +801,115 @@ typedef struct _XMUDHEN3
 #endif // __cplusplus
 
 } XMUDHEN3;
+
+// 3D vector: 5/6/5 unsigned integer components
+typedef struct _XMU565
+{
+    union
+    {
+        struct
+        {
+            USHORT x  : 5;
+            USHORT y  : 6;
+            USHORT z  : 5;
+        };
+        USHORT v;
+    };
+
+#ifdef __cplusplus
+
+    _XMU565() {};
+    _XMU565(USHORT Packed) : v(Packed) {};
+    _XMU565(CHAR _x, CHAR _y, CHAR _z) : x(_x), y(_y), z(_z) {};
+    _XMU565(CONST CHAR *pArray);
+    _XMU565(FLOAT _x, FLOAT _y, FLOAT _z);
+    _XMU565(CONST FLOAT *pArray);
+
+    operator USHORT () { return v; }
+
+    _XMU565& operator= (CONST _XMU565& U565);
+    _XMU565& operator= (CONST USHORT Packed);
+
+#endif // __cplusplus
+
+} XMU565;
+
+// 3D vector: 11/11/10 floating-point components
+// The 3D vector is packed into 32 bits as follows: a 5-bit biased exponent
+// and 6-bit mantissa for x component, a 5-bit biased exponent and
+// 6-bit mantissa for y component, a 5-bit biased exponent and a 5-bit
+// mantissa for z. The z component is stored in the most significant bits
+// and the x component in the least significant bits. No sign bits so
+// all partial-precision numbers are positive.
+// (Z10Y11X11): [32] ZZZZZzzz zzzYYYYY yyyyyyXX XXXxxxxx [0]
+typedef struct _XMFLOAT3PK
+{
+    union
+    {
+        struct
+        {
+            UINT xm : 6;
+            UINT xe : 5;
+            UINT ym : 6;
+            UINT ye : 5;
+            UINT zm : 5;
+            UINT ze : 5;
+        };
+        UINT v;
+    };
+
+#ifdef __cplusplus
+
+    _XMFLOAT3PK() {};
+    _XMFLOAT3PK(UINT Packed) : v(Packed) {};
+    _XMFLOAT3PK(FLOAT _x, FLOAT _y, FLOAT _z);
+    _XMFLOAT3PK(CONST FLOAT *pArray);
+
+    operator UINT () { return v; }
+
+    _XMFLOAT3PK& operator= (CONST _XMFLOAT3PK& float3pk);
+    _XMFLOAT3PK& operator= (CONST UINT Packed);
+
+#endif // __cplusplus
+
+} XMFLOAT3PK;
+
+// 3D vector: 9/9/9 floating-point components with shared 5-bit exponent
+// The 3D vector is packed into 32 bits as follows: a 5-bit biased exponent
+// with 9-bit mantissa for the x, y, and z component. The shared exponent
+// is stored in the most significant bits and the x component mantissa is in
+// the least significant bits. No sign bits so all partial-precision numbers
+// are positive.
+// (E5Z9Y9X9): [32] EEEEEzzz zzzzzzyy yyyyyyyx xxxxxxxx [0]
+typedef struct _XMFLOAT3SE
+{
+    union
+    {
+        struct
+        {
+            UINT xm : 9;
+            UINT ym : 9;
+            UINT zm : 9;
+            UINT e  : 5;
+        };
+        UINT v;
+    };
+
+#ifdef __cplusplus
+
+    _XMFLOAT3SE() {};
+    _XMFLOAT3SE(UINT Packed) : v(Packed) {};
+    _XMFLOAT3SE(FLOAT _x, FLOAT _y, FLOAT _z);
+    _XMFLOAT3SE(CONST FLOAT *pArray);
+
+    operator UINT () { return v; }
+
+    _XMFLOAT3SE& operator= (CONST _XMFLOAT3SE& float3se);
+    _XMFLOAT3SE& operator= (CONST UINT Packed);
+
+#endif // __cplusplus
+
+} XMFLOAT3SE;
 
 // 4D Vector; 32 bit floating point components
 typedef struct _XMFLOAT4
@@ -808,7 +922,7 @@ typedef struct _XMFLOAT4
 #ifdef __cplusplus
 
     _XMFLOAT4() {};
-    _XMFLOAT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
+    _XMFLOAT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMFLOAT4(CONST FLOAT *pArray);
 
     _XMFLOAT4& operator= (CONST _XMFLOAT4& Float4);
@@ -831,7 +945,7 @@ typedef struct _XMHALF4
 #ifdef __cplusplus
 
     _XMHALF4() {};
-    _XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w);
+    _XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMHALF4(CONST HALF *pArray);
     _XMHALF4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMHALF4(CONST FLOAT *pArray);
@@ -853,7 +967,7 @@ typedef struct _XMSHORTN4
 #ifdef __cplusplus
 
     _XMSHORTN4() {};
-    _XMSHORTN4(SHORT _x, SHORT _y, SHORT _z, SHORT _w);
+    _XMSHORTN4(SHORT _x, SHORT _y, SHORT _z, SHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMSHORTN4(CONST SHORT *pArray);
     _XMSHORTN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMSHORTN4(CONST FLOAT *pArray);
@@ -875,7 +989,7 @@ typedef struct _XMSHORT4
 #ifdef __cplusplus
 
     _XMSHORT4() {};
-    _XMSHORT4(SHORT _x, SHORT _y, SHORT _z, SHORT _w);
+    _XMSHORT4(SHORT _x, SHORT _y, SHORT _z, SHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMSHORT4(CONST SHORT *pArray);
     _XMSHORT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMSHORT4(CONST FLOAT *pArray);
@@ -897,7 +1011,7 @@ typedef struct _XMUSHORTN4
 #ifdef __cplusplus
 
     _XMUSHORTN4() {};
-    _XMUSHORTN4(USHORT _x, USHORT _y, USHORT _z, USHORT _w);
+    _XMUSHORTN4(USHORT _x, USHORT _y, USHORT _z, USHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMUSHORTN4(CONST USHORT *pArray);
     _XMUSHORTN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUSHORTN4(CONST FLOAT *pArray);
@@ -919,7 +1033,7 @@ typedef struct _XMUSHORT4
 #ifdef __cplusplus
 
     _XMUSHORT4() {};
-    _XMUSHORT4(USHORT _x, USHORT _y, USHORT _z, USHORT _w);
+    _XMUSHORT4(USHORT _x, USHORT _y, USHORT _z, USHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
     _XMUSHORT4(CONST USHORT *pArray);
     _XMUSHORT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUSHORT4(CONST FLOAT *pArray);
@@ -953,11 +1067,11 @@ typedef struct _XMXDECN4
 #ifdef __cplusplus
 
     _XMXDECN4() {};
-    _XMXDECN4(UINT Packed);
+    _XMXDECN4(UINT Packed) : v(Packed) {};
     _XMXDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMXDECN4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMXDECN4& operator= (CONST _XMXDECN4& XDecN4);
     _XMXDECN4& operator= (CONST UINT Packed);
@@ -989,11 +1103,11 @@ typedef struct _XMXDEC4
 #ifdef __cplusplus
 
     _XMXDEC4() {};
-    _XMXDEC4(UINT Packed);
+    _XMXDEC4(UINT Packed) : v(Packed) {};
     _XMXDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMXDEC4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMXDEC4& operator= (CONST _XMXDEC4& XDec4);
     _XMXDEC4& operator= (CONST UINT Packed);
@@ -1025,11 +1139,11 @@ typedef struct _XMDECN4
 #ifdef __cplusplus
 
     _XMDECN4() {};
-    _XMDECN4(UINT Packed);
+    _XMDECN4(UINT Packed) : v(Packed) {};
     _XMDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMDECN4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMDECN4& operator= (CONST _XMDECN4& DecN4);
     _XMDECN4& operator= (CONST UINT Packed);
@@ -1061,11 +1175,11 @@ typedef struct _XMDEC4
 #ifdef __cplusplus
 
     _XMDEC4() {};
-    _XMDEC4(UINT Packed);
+    _XMDEC4(UINT Packed) : v(Packed) {};
     _XMDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMDEC4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMDEC4& operator= (CONST _XMDEC4& Dec4);
     _XMDEC4& operator= (CONST UINT Packed);
@@ -1097,11 +1211,11 @@ typedef struct _XMUDECN4
 #ifdef __cplusplus
 
     _XMUDECN4() {};
-    _XMUDECN4(UINT Packed);
+    _XMUDECN4(UINT Packed) : v(Packed) {};
     _XMUDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUDECN4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUDECN4& operator= (CONST _XMUDECN4& UDecN4);
     _XMUDECN4& operator= (CONST UINT Packed);
@@ -1133,11 +1247,11 @@ typedef struct _XMUDEC4
 #ifdef __cplusplus
 
     _XMUDEC4() {};
-    _XMUDEC4(UINT Packed);
+    _XMUDEC4(UINT Packed) : v(Packed) {};
     _XMUDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUDEC4(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return v; }
 
     _XMUDEC4& operator= (CONST _XMUDEC4& UDec4);
     _XMUDEC4& operator= (CONST UINT Packed);
@@ -1169,11 +1283,11 @@ typedef struct _XMXICON4
 #ifdef __cplusplus
 
     _XMXICON4() {};
-    _XMXICON4(UINT64 Packed);
+    _XMXICON4(UINT64 Packed) : v(Packed) {};
     _XMXICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMXICON4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMXICON4& operator= (CONST _XMXICON4& XIcoN4);
     _XMXICON4& operator= (CONST UINT64 Packed);
@@ -1205,11 +1319,11 @@ typedef struct _XMXICO4
 #ifdef __cplusplus
 
     _XMXICO4() {};
-    _XMXICO4(UINT64 Packed);
+    _XMXICO4(UINT64 Packed) : v(Packed) {};
     _XMXICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMXICO4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMXICO4& operator= (CONST _XMXICO4& XIco4);
     _XMXICO4& operator= (CONST UINT64 Packed);
@@ -1241,11 +1355,11 @@ typedef struct _XMICON4
 #ifdef __cplusplus
 
     _XMICON4() {};
-    _XMICON4(UINT64 Packed);
+    _XMICON4(UINT64 Packed) : v(Packed) {};
     _XMICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMICON4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMICON4& operator= (CONST _XMICON4& IcoN4);
     _XMICON4& operator= (CONST UINT64 Packed);
@@ -1277,11 +1391,11 @@ typedef struct _XMICO4
 #ifdef __cplusplus
 
     _XMICO4() {};
-    _XMICO4(UINT64 Packed);
+    _XMICO4(UINT64 Packed) : v(Packed) {};
     _XMICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMICO4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMICO4& operator= (CONST _XMICO4& Ico4);
     _XMICO4& operator= (CONST UINT64 Packed);
@@ -1313,11 +1427,11 @@ typedef struct _XMUICON4
 #ifdef __cplusplus
 
     _XMUICON4() {};
-    _XMUICON4(UINT64 Packed);
+    _XMUICON4(UINT64 Packed) : v(Packed) {};
     _XMUICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUICON4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMUICON4& operator= (CONST _XMUICON4& UIcoN4);
     _XMUICON4& operator= (CONST UINT64 Packed);
@@ -1349,11 +1463,11 @@ typedef struct _XMUICO4
 #ifdef __cplusplus
 
     _XMUICO4() {};
-    _XMUICO4(UINT64 Packed);
+    _XMUICO4(UINT64 Packed) : v(Packed) {};
     _XMUICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUICO4(CONST FLOAT *pArray);
 
-    operator UINT64 ();
+    operator UINT64 () { return v; }
 
     _XMUICO4& operator= (CONST _XMUICO4& UIco4);
     _XMUICO4& operator= (CONST UINT64 Packed);
@@ -1385,11 +1499,11 @@ typedef struct _XMCOLOR
 #ifdef __cplusplus
 
     _XMCOLOR() {};
-    _XMCOLOR(UINT Color);
+    _XMCOLOR(UINT Color) : c(Color) {};
     _XMCOLOR(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMCOLOR(CONST FLOAT *pArray);
 
-    operator UINT ();
+    operator UINT () { return c; }
 
     _XMCOLOR& operator= (CONST _XMCOLOR& Color);
     _XMCOLOR& operator= (CONST UINT Color);
@@ -1416,8 +1530,8 @@ typedef struct _XMBYTEN4
 #ifdef __cplusplus
 
     _XMBYTEN4() {};
-    _XMBYTEN4(CHAR _x, CHAR _y, CHAR _z, CHAR _w);
-    _XMBYTEN4(UINT _v);
+    _XMBYTEN4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
+    _XMBYTEN4(UINT Packed) : v(Packed) {};
     _XMBYTEN4(CONST CHAR *pArray);
     _XMBYTEN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMBYTEN4(CONST FLOAT *pArray);
@@ -1446,8 +1560,8 @@ typedef struct _XMBYTE4
 #ifdef __cplusplus
 
     _XMBYTE4() {};
-    _XMBYTE4(CHAR _x, CHAR _y, CHAR _z, CHAR _w);
-    _XMBYTE4(UINT _v);
+    _XMBYTE4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
+    _XMBYTE4(UINT Packed) : v(Packed) {};
     _XMBYTE4(CONST CHAR *pArray);
     _XMBYTE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMBYTE4(CONST FLOAT *pArray);
@@ -1476,8 +1590,8 @@ typedef struct _XMUBYTEN4
 #ifdef __cplusplus
 
     _XMUBYTEN4() {};
-    _XMUBYTEN4(BYTE _x, BYTE _y, BYTE _z, BYTE _w);
-    _XMUBYTEN4(UINT _v);
+    _XMUBYTEN4(BYTE _x, BYTE _y, BYTE _z, BYTE _w) : x(_x), y(_y), z(_z), w(_w) {};
+    _XMUBYTEN4(UINT Packed) : v(Packed) {};
     _XMUBYTEN4(CONST BYTE *pArray);
     _XMUBYTEN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUBYTEN4(CONST FLOAT *pArray);
@@ -1506,8 +1620,8 @@ typedef struct _XMUBYTE4
 #ifdef __cplusplus
 
     _XMUBYTE4() {};
-    _XMUBYTE4(BYTE _x, BYTE _y, BYTE _z, BYTE _w);
-    _XMUBYTE4(UINT _v);
+    _XMUBYTE4(BYTE _x, BYTE _y, BYTE _z, BYTE _w) : x(_x), y(_y), z(_z), w(_w) {};
+    _XMUBYTE4(UINT Packed) : v(Packed) {};
     _XMUBYTE4(CONST BYTE *pArray);
     _XMUBYTE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     _XMUBYTE4(CONST FLOAT *pArray);
@@ -1517,6 +1631,72 @@ typedef struct _XMUBYTE4
 #endif // __cplusplus
 
 } XMUBYTE4;
+
+// 4D vector; 4 bit unsigned integer components
+typedef struct _XMUNIBBLE4
+{
+    union
+    {
+        struct
+        {
+            USHORT x  : 4;
+            USHORT y  : 4;
+            USHORT z  : 4;
+            USHORT w  : 4;
+        };
+        USHORT v;
+    };
+
+#ifdef __cplusplus
+
+    _XMUNIBBLE4() {};
+    _XMUNIBBLE4(USHORT Packed) : v(Packed) {};
+    _XMUNIBBLE4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
+    _XMUNIBBLE4(CONST CHAR *pArray);
+    _XMUNIBBLE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
+    _XMUNIBBLE4(CONST FLOAT *pArray);
+
+    operator USHORT () { return v; }
+
+    _XMUNIBBLE4& operator= (CONST _XMUNIBBLE4& UNibble4);
+    _XMUNIBBLE4& operator= (CONST USHORT Packed);
+
+#endif // __cplusplus
+
+} XMUNIBBLE4;
+
+// 4D vector: 5/5/5/1 unsigned integer components
+typedef struct _XMU555
+{
+    union
+    {
+        struct
+        {
+            USHORT x  : 5;
+            USHORT y  : 5;
+            USHORT z  : 5;
+            USHORT w  : 1;
+        };
+        USHORT v;
+    };
+
+#ifdef __cplusplus
+
+    _XMU555() {};
+    _XMU555(USHORT Packed) : v(Packed) {};
+    _XMU555(CHAR _x, CHAR _y, CHAR _z, BOOL _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {};
+    _XMU555(CONST CHAR *pArray, BOOL _w);
+    _XMU555(FLOAT _x, FLOAT _y, FLOAT _z, BOOL _w);
+    _XMU555(CONST FLOAT *pArray, BOOL _w);
+
+    operator USHORT () { return v; }
+
+    _XMU555& operator= (CONST _XMU555& U555);
+    _XMU555& operator= (CONST USHORT Packed);
+
+#endif // __cplusplus
+
+} XMU555;
 
 // 3x3 Matrix: 32 bit floating point components
 typedef struct _XMFLOAT3X3
@@ -1534,14 +1714,14 @@ typedef struct _XMFLOAT3X3
 
 #ifdef __cplusplus
 
-                _XMFLOAT3X3() {};
-                _XMFLOAT3X3(FLOAT m00, FLOAT m01, FLOAT m02,
-                         FLOAT m10, FLOAT m11, FLOAT m12,
-                         FLOAT m20, FLOAT m21, FLOAT m22);
-                _XMFLOAT3X3(CONST FLOAT *pArray);
+    _XMFLOAT3X3() {};
+    _XMFLOAT3X3(FLOAT m00, FLOAT m01, FLOAT m02,
+                FLOAT m10, FLOAT m11, FLOAT m12,
+                FLOAT m20, FLOAT m21, FLOAT m22);
+    _XMFLOAT3X3(CONST FLOAT *pArray);
 
-    FLOAT       operator() (UINT Row, UINT Column) CONST;
-    FLOAT&      operator() (UINT Row, UINT Column);
+    FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
+    FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
 
     _XMFLOAT3X3& operator= (CONST _XMFLOAT3X3& Float3x3);
 
@@ -1566,15 +1746,15 @@ typedef struct _XMFLOAT4X3
 
 #ifdef __cplusplus
 
-                _XMFLOAT4X3() {};
-                _XMFLOAT4X3(FLOAT m00, FLOAT m01, FLOAT m02,
-                         FLOAT m10, FLOAT m11, FLOAT m12,
-                         FLOAT m20, FLOAT m21, FLOAT m22,
-                         FLOAT m30, FLOAT m31, FLOAT m32);
-                _XMFLOAT4X3(CONST FLOAT *pArray);
+    _XMFLOAT4X3() {};
+    _XMFLOAT4X3(FLOAT m00, FLOAT m01, FLOAT m02,
+                FLOAT m10, FLOAT m11, FLOAT m12,
+                FLOAT m20, FLOAT m21, FLOAT m22,
+                FLOAT m30, FLOAT m31, FLOAT m32);
+    _XMFLOAT4X3(CONST FLOAT *pArray);
 
-    FLOAT       operator() (UINT Row, UINT Column) CONST;
-    FLOAT&      operator() (UINT Row, UINT Column);
+    FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
+    FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
 
     _XMFLOAT4X3& operator= (CONST _XMFLOAT4X3& Float4x3);
 
@@ -1602,15 +1782,15 @@ typedef struct _XMFLOAT4X4
 
 #ifdef __cplusplus
 
-                _XMFLOAT4X4() {};
-                _XMFLOAT4X4(FLOAT m00, FLOAT m01, FLOAT m02, FLOAT m03,
-                         FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
-                         FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
-                         FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
-                _XMFLOAT4X4(CONST FLOAT *pArray);
+    _XMFLOAT4X4() {};
+    _XMFLOAT4X4(FLOAT m00, FLOAT m01, FLOAT m02, FLOAT m03,
+                FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
+                FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
+                FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
+    _XMFLOAT4X4(CONST FLOAT *pArray);
 
-    FLOAT       operator() (UINT Row, UINT Column) CONST;
-    FLOAT&      operator() (UINT Row, UINT Column);
+    FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
+    FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
 
     _XMFLOAT4X4& operator= (CONST _XMFLOAT4X4& Float4x4);
 
@@ -1668,8 +1848,8 @@ XMVECTOR XMVectorSplatConstantInt(INT IntConstant);
 XMVECTOR        XMLoadInt(__in CONST UINT* pSource);
 XMVECTOR        XMLoadFloat(__in CONST FLOAT* pSource);
 
-XMVECTOR        XMLoadInt2(__in CONST UINT* pSource);
-XMVECTOR        XMLoadInt2A(__in CONST UINT* PSource);
+XMVECTOR        XMLoadInt2(__in_ecount(2) CONST UINT* pSource);
+XMVECTOR        XMLoadInt2A(__in_ecount(2) CONST UINT* PSource);
 XMVECTOR        XMLoadFloat2(__in CONST XMFLOAT2* pSource);
 XMVECTOR        XMLoadFloat2A(__in CONST XMFLOAT2A* pSource);
 XMVECTOR        XMLoadHalf2(__in CONST XMHALF2* pSource);
@@ -1678,8 +1858,8 @@ XMVECTOR        XMLoadShort2(__in CONST XMSHORT2* pSource);
 XMVECTOR        XMLoadUShortN2(__in CONST XMUSHORTN2* pSource);
 XMVECTOR        XMLoadUShort2(__in CONST XMUSHORT2* pSource);
 
-XMVECTOR        XMLoadInt3(__in CONST UINT* pSource);
-XMVECTOR        XMLoadInt3A(__in CONST UINT* pSource);
+XMVECTOR        XMLoadInt3(__in_ecount(3) CONST UINT* pSource);
+XMVECTOR        XMLoadInt3A(__in_ecount(3) CONST UINT* pSource);
 XMVECTOR        XMLoadFloat3(__in CONST XMFLOAT3* pSource);
 XMVECTOR        XMLoadFloat3A(__in CONST XMFLOAT3A* pSource);
 XMVECTOR        XMLoadHenDN3(__in CONST XMHENDN3* pSource);
@@ -1690,9 +1870,12 @@ XMVECTOR        XMLoadDHenN3(__in CONST XMDHENN3* pSource);
 XMVECTOR        XMLoadDHen3(__in CONST XMDHEN3* pSource);
 XMVECTOR        XMLoadUDHenN3(__in CONST XMUDHENN3* pSource);
 XMVECTOR        XMLoadUDHen3(__in CONST XMUDHEN3* pSource);
+XMVECTOR        XMLoadU565(__in CONST XMU565* pSource);
+XMVECTOR        XMLoadFloat3PK(__in CONST XMFLOAT3PK* pSource);
+XMVECTOR        XMLoadFloat3SE(__in CONST XMFLOAT3SE* pSource);
 
-XMVECTOR        XMLoadInt4(__in CONST UINT* pSource);
-XMVECTOR        XMLoadInt4A(__in CONST UINT* pSource);
+XMVECTOR        XMLoadInt4(__in_ecount(4) CONST UINT* pSource);
+XMVECTOR        XMLoadInt4A(__in_ecount(4) CONST UINT* pSource);
 XMVECTOR        XMLoadFloat4(__in CONST XMFLOAT4* pSource);
 XMVECTOR        XMLoadFloat4A(__in CONST XMFLOAT4A* pSource);
 XMVECTOR        XMLoadHalf4(__in CONST XMHALF4* pSource);
@@ -1716,6 +1899,8 @@ XMVECTOR        XMLoadByteN4(__in CONST XMBYTEN4* pSource);
 XMVECTOR        XMLoadByte4(__in CONST XMBYTE4* pSource);
 XMVECTOR        XMLoadUByteN4(__in CONST XMUBYTEN4* pSource);
 XMVECTOR        XMLoadUByte4(__in CONST XMUBYTE4* pSource);
+XMVECTOR        XMLoadUNibble4(__in CONST XMUNIBBLE4* pSource);
+XMVECTOR        XMLoadU555(__in CONST XMU555* pSource);
 XMVECTOR        XMLoadColor(__in CONST XMCOLOR* pSource);
 
 XMMATRIX        XMLoadFloat3x3(__in CONST XMFLOAT3X3* pSource);
@@ -1733,8 +1918,8 @@ XMMATRIX        XMLoadFloat4x4A(__in CONST XMFLOAT4X4A* pSource);
 VOID            XMStoreInt(__out UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat(__out FLOAT* pDestination, FXMVECTOR V);
 
-VOID            XMStoreInt2(__out UINT* pDestination, FXMVECTOR V);
-VOID            XMStoreInt2A(__out UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt2(__out_ecount(2) UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt2A(__out_ecount(2) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat2(__out XMFLOAT2* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat2A(__out XMFLOAT2A* pDestination, FXMVECTOR V);
 VOID            XMStoreHalf2(__out XMHALF2* pDestination, FXMVECTOR V);
@@ -1743,8 +1928,8 @@ VOID            XMStoreShort2(__out XMSHORT2* pDestination, FXMVECTOR V);
 VOID            XMStoreUShortN2(__out XMUSHORTN2* pDestination, FXMVECTOR V);
 VOID            XMStoreUShort2(__out XMUSHORT2* pDestination, FXMVECTOR V);
 
-VOID            XMStoreInt3(__out UINT* pDestination, FXMVECTOR V);
-VOID            XMStoreInt3A(__out UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt3(__out_ecount(3) UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt3A(__out_ecount(3) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat3(__out XMFLOAT3* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat3A(__out XMFLOAT3A* pDestination, FXMVECTOR V);
 VOID            XMStoreHenDN3(__out XMHENDN3* pDestination, FXMVECTOR V);
@@ -1755,9 +1940,12 @@ VOID            XMStoreDHenN3(__out XMDHENN3* pDestination, FXMVECTOR V);
 VOID            XMStoreDHen3(__out XMDHEN3* pDestination, FXMVECTOR V);
 VOID            XMStoreUDHenN3(__out XMUDHENN3* pDestination, FXMVECTOR V);
 VOID            XMStoreUDHen3(__out XMUDHEN3* pDestination, FXMVECTOR V);
+VOID            XMStoreU565(__out XMU565* pDestination, FXMVECTOR V);
+VOID            XMStoreFloat3PK(__out XMFLOAT3PK* pDestination, FXMVECTOR V);
+VOID            XMStoreFloat3SE(__out XMFLOAT3SE* pDestination, FXMVECTOR V);
 
-VOID            XMStoreInt4(__out UINT* pDestination, FXMVECTOR V);
-VOID            XMStoreInt4A(__out UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt4(__out_ecount(4) UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt4A(__out_ecount(4) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreInt4NC(__out UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat4(__out XMFLOAT4* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat4A(__out XMFLOAT4A* pDestination, FXMVECTOR V);
@@ -1783,6 +1971,8 @@ VOID            XMStoreByteN4(__out XMBYTEN4* pDestination, FXMVECTOR V);
 VOID            XMStoreByte4(__out XMBYTE4* pDestination, FXMVECTOR V);
 VOID            XMStoreUByteN4(__out XMUBYTEN4* pDestination, FXMVECTOR V);
 VOID            XMStoreUByte4(__out XMUBYTE4* pDestination, FXMVECTOR V);
+VOID            XMStoreUNibble4(__out XMUNIBBLE4* pDestination, FXMVECTOR V);
+VOID            XMStoreU555(__out XMU555* pDestination, FXMVECTOR V);
 VOID            XMStoreColor(__out XMCOLOR* pDestination, FXMVECTOR V);
 
 VOID            XMStoreFloat3x3(__out XMFLOAT3X3* pDestination, CXMMATRIX M);
@@ -2460,8 +2650,42 @@ XMGLOBALCONST XMVECTORI32 g_XMSwizzleYZXW       = {XM_PERMUTE_0Y, XM_PERMUTE_0Z,
 XMGLOBALCONST XMVECTORI32 g_XMSwizzleZXYW       = {XM_PERMUTE_0Z, XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_0W};
 XMGLOBALCONST XMVECTORI32 g_XMPermute0X0Y1X1Y   = {XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y};
 XMGLOBALCONST XMVECTORI32 g_XMPermute0Z0W1Z1W   = {XM_PERMUTE_0Z, XM_PERMUTE_0W, XM_PERMUTE_1Z, XM_PERMUTE_1W};
-
 #endif // !_XM_NO_INTRINSICS_
+
+#ifdef _XM_SSE_INTRINSICS_
+XMGLOBALCONST XMVECTORF32 g_XMFixupY16          = {1.0f,1.0f/65536.0f,0.0f,0.0f};
+XMGLOBALCONST XMVECTORF32 g_XMFixupY16W16       = {1.0f,1.0f,1.0f/65536.0f,1.0f/65536.0f};
+XMGLOBALCONST XMVECTORI32 g_XMFlipY             = {0,0x80000000,0,0};
+XMGLOBALCONST XMVECTORI32 g_XMFlipZ             = {0,0,0x80000000,0};
+XMGLOBALCONST XMVECTORI32 g_XMFlipW             = {0,0,0,0x80000000};
+XMGLOBALCONST XMVECTORI32 g_XMFlipYZ            = {0,0x80000000,0x80000000,0};
+XMGLOBALCONST XMVECTORI32 g_XMFlipZW            = {0,0,0x80000000,0x80000000};
+XMGLOBALCONST XMVECTORI32 g_XMFlipYW            = {0,0x80000000,0,0x80000000};
+XMGLOBALCONST XMVECTORI32 g_XMMaskHenD3         = {0x7FF,0x7ff<<11,0x3FF<<22,0};
+XMGLOBALCONST XMVECTORI32 g_XMMaskDHen3         = {0x3FF,0x7ff<<10,0x7FF<<21,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddUHenD3         = {0,0,32768.0f*65536.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddHenD3          = {-1024.0f,-1024.0f*2048.0f,0,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddDHen3          = {-512.0f,-1024.0f*1024.0f,0,0};
+XMGLOBALCONST XMVECTORF32 g_XMMulHenD3          = {1.0f,1.0f/2048.0f,1.0f/(2048.0f*2048.0f),0};
+XMGLOBALCONST XMVECTORF32 g_XMMulDHen3          = {1.0f,1.0f/1024.0f,1.0f/(1024.0f*2048.0f),0};
+XMGLOBALCONST XMVECTORI32 g_XMXorHenD3          = {0x400,0x400<<11,0,0};
+XMGLOBALCONST XMVECTORI32 g_XMXorDHen3          = {0x200,0x400<<10,0,0};
+XMGLOBALCONST XMVECTORI32 g_XMMaskIco4          = {0xFFFFF,0xFFFFF000,0xFFFFF,0xF0000000};
+XMGLOBALCONST XMVECTORI32 g_XMXorXIco4          = {0x80000,0,0x80000,0x80000000};
+XMGLOBALCONST XMVECTORI32 g_XMXorIco4           = {0x80000,0,0x80000,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddXIco4          = {-8.0f*65536.0f,0,-8.0f*65536.0f,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMAddUIco4          = {0,32768.0f*65536.0f,0,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMAddIco4           = {-8.0f*65536.0f,0,-8.0f*65536.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMMulIco4           = {1.0f,1.0f/4096.0f,1.0f,1.0f/(4096.0f*65536.0f)};
+XMGLOBALCONST XMVECTORI32 g_XMMaskDec4          = {0x3FF,0x3FF<<10,0x3FF<<20,0x3<<30};
+XMGLOBALCONST XMVECTORI32 g_XMXorDec4           = {0x200,0x200<<10,0x200<<20,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddUDec4          = {0,0,0,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMAddDec4           = {-512.0f,-512.0f*1024.0f,-512.0f*1024.0f*1024.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMMulDec4           = {1.0f,1.0f/1024.0f,1.0f/(1024.0f*1024.0f),1.0f/(1024.0f*1024.0f*1024.0f)};
+XMGLOBALCONST XMVECTORI32 g_XMMaskByte4         = {0xFF,0xFF00,0xFF0000,0xFF000000};
+XMGLOBALCONST XMVECTORI32 g_XMXorByte4          = {0x80,0x8000,0x800000,0x00000000};
+XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0f*65536.0f,0};
+#endif
 
 #endif // _XM_NO_INTRINSICS_
 
@@ -2492,10 +2716,23 @@ XMGLOBALCONST XMVECTORI32 g_XMPermute0Z0W1Z1W   = {XM_PERMUTE_0Z, XM_PERMUTE_0W,
 XMFINLINE XMVECTOR XMVectorSetBinaryConstant(UINT C0, UINT C1, UINT C2, UINT C3)
 {
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTORF32 vResult = { (C0&1)*1.f, (C1&1)*1.f, (C2&1)*1.f, (C3&1)*1.f};
+    XMVECTORU32 vResult;
+    vResult.u[0] = (0-(C0&1)) & 0x3F800000;
+    vResult.u[1] = (0-(C1&1)) & 0x3F800000;
+    vResult.u[2] = (0-(C2&1)) & 0x3F800000;
+    vResult.u[3] = (0-(C3&1)) & 0x3F800000;
     return vResult.v;
 #else // XM_SSE_INTRINSICS_
-    return _mm_set_ps( (C3&1)*1.f, (C2&1)*1.f, (C1&1)*1.f, (C0&1)*1.f );
+    static const XMVECTORU32 g_vMask1 = {1,1,1,1};
+    // Move the parms to a vector
+    __m128i vTemp = _mm_set_epi32(C3,C2,C1,C0);
+    // Mask off the low bits
+    vTemp = _mm_and_si128(vTemp,g_vMask1);
+    // 0xFFFFFFFF on true bits
+    vTemp = _mm_cmpeq_epi32(vTemp,g_vMask1);
+    // 0xFFFFFFFF -> 1.0f, 0x00000000 -> 0.0f
+    vTemp = _mm_and_si128(vTemp,g_XMOne);
+    return reinterpret_cast<const __m128 *>(&vTemp)[0];
 #endif
 }
 
@@ -2505,13 +2742,25 @@ XMFINLINE XMVECTOR XMVectorSplatConstant(INT IntConstant, UINT DivExponent)
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT( IntConstant >= -16 && IntConstant <= 15 );
+    XMASSERT(DivExponent<32);
     {
     XMVECTORI32 V = { IntConstant, IntConstant, IntConstant, IntConstant };
     return XMConvertVectorIntToFloat( V.v, DivExponent);
     }
 #else // XM_SSE_INTRINSICS_
     XMASSERT( IntConstant >= -16 && IntConstant <= 15 );
-    return _mm_set_ps1((float)(IntConstant) / (float)(1 << DivExponent) );
+    XMASSERT(DivExponent<32);
+    // Splat the int
+    __m128i vScale = _mm_set1_epi32(IntConstant);
+    // Convert to a float
+    XMVECTOR vResult = _mm_cvtepi32_ps(vScale);
+    // Convert DivExponent into 1.0f/(1<<DivExponent)
+    UINT uScale = 0x3F800000U - (DivExponent << 23);
+    // Splat the scalar value (It's really a float)
+    vScale = _mm_set1_epi32(uScale);
+    // Multiply by the reciprocal (Perform a right shift by DivExponent)
+    vResult = _mm_mul_ps(vResult,reinterpret_cast<const __m128 *>(&vScale)[0]);
+    return vResult;
 #endif
 }
 
@@ -2546,7 +2795,8 @@ XMFINLINE XMVECTOR XMVectorRotateLeft(FXMVECTOR V, UINT Elements)
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT( Elements < 4 );
     {
-    XMVECTORF32 vResult = { V.v[Elements & 3], V.v[(Elements + 1) & 3], V.v[(Elements + 2) & 3], V.v[(Elements + 3) & 3] };
+    XMVECTORF32 vResult = { V.vector4_f32[Elements & 3], V.vector4_f32[(Elements + 1) & 3],
+                            V.vector4_f32[(Elements + 2) & 3], V.vector4_f32[(Elements + 3) & 3] };
     return vResult.v;
     }
 #else // XM_SSE_INTRINSICS_
@@ -2565,7 +2815,8 @@ XMFINLINE XMVECTOR XMVectorRotateRight(FXMVECTOR V, UINT Elements)
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT( Elements < 4 );
     {
-    XMVECTORF32 vResult = { V.v[(4 - (Elements)) & 3], V.v[(5 - (Elements)) & 3], V.v[(6 - (Elements)) & 3], V.v[(7 - (Elements)) & 3] };
+    XMVECTORF32 vResult = { V.vector4_f32[(4 - (Elements)) & 3], V.vector4_f32[(5 - (Elements)) & 3],
+                            V.vector4_f32[(6 - (Elements)) & 3], V.vector4_f32[(7 - (Elements)) & 3] };
     return vResult.v;
     }
 #else // XM_SSE_INTRINSICS_
@@ -2584,7 +2835,7 @@ XMFINLINE XMVECTOR XMVectorSwizzle(FXMVECTOR V, UINT E0, UINT E1, UINT E2, UINT 
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT( (E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4) );
     {
-    XMVECTORF32 vResult = { V.v[E0], V.v[E1], V.v[E2], V.v[E3] };
+    XMVECTORF32 vResult = { V.vector4_f32[E0], V.vector4_f32[E1], V.vector4_f32[E2], V.vector4_f32[E3] };
     return vResult.v;
     }
 #else // XM_SSE_INTRINSICS_

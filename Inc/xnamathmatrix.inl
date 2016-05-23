@@ -1010,9 +1010,9 @@ XMFINLINE XMMATRIX XMMatrixTranslationFromVector
     M.m[2][2] = 1.0f;
     M.m[2][3] = 0.0f;
 
-    M.m[3][0] = Offset.x;
-    M.m[3][1] = Offset.y;
-    M.m[3][2] = Offset.z;
+    M.m[3][0] = Offset.vector4_f32[0];
+    M.m[3][1] = Offset.vector4_f32[1];
+    M.m[3][2] = Offset.vector4_f32[2];
     M.m[3][3] = 1.0f;
     return M;
 
@@ -1070,19 +1070,19 @@ XMFINLINE XMMATRIX XMMatrixScalingFromVector
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMMATRIX M;
-    M.m[0][0] = Scale.x;
+    M.m[0][0] = Scale.vector4_f32[0];
     M.m[0][1] = 0.0f;
     M.m[0][2] = 0.0f;
     M.m[0][3] = 0.0f;
 
     M.m[1][0] = 0.0f;
-    M.m[1][1] = Scale.y;
+    M.m[1][1] = Scale.vector4_f32[1];
     M.m[1][2] = 0.0f;
     M.m[1][3] = 0.0f;
 
     M.m[2][0] = 0.0f;
     M.m[2][1] = 0.0f;
-    M.m[2][2] = Scale.z;
+    M.m[2][2] = Scale.vector4_f32[2];
     M.m[2][3] = 0.0f;
 
     M.m[3][0] = 0.0f;
@@ -1626,21 +1626,21 @@ XMINLINE XMMATRIX XMMatrixTransformation2D
 
     // M = Inverse(MScalingOrigin) * Transpose(MScalingOrientation) * MScaling * MScalingOrientation *
     //         MScalingOrigin * Inverse(MRotationOrigin) * MRotation * MRotationOrigin * MTranslation;
-    static const XMVECTORU32 g_XMMask2 = {0xFFFFFFFF,0xFFFFFFFF,0,0};
-    static const XMVECTORF32 g_XMZWOne = {0,0,1.0f,1.0f};
+    static const XMVECTORU32 Mask2 = {0xFFFFFFFF,0xFFFFFFFF,0,0};
+    static const XMVECTORF32 ZWOne = {0,0,1.0f,1.0f};
 
-    VScalingOrigin       = _mm_and_ps(ScalingOrigin, g_XMMask2);
+    VScalingOrigin       = _mm_and_ps(ScalingOrigin, Mask2);
     NegScalingOrigin     = XMVectorNegate(VScalingOrigin);
 
     MScalingOriginI      = XMMatrixTranslationFromVector(NegScalingOrigin);
     MScalingOrientation  = XMMatrixRotationZ(ScalingOrientation);
     MScalingOrientationT = XMMatrixTranspose(MScalingOrientation);
-    VScaling             = _mm_and_ps(Scaling, g_XMMask2);
-    VScaling = _mm_or_ps(VScaling,g_XMZWOne);
+    VScaling             = _mm_and_ps(Scaling, Mask2);
+    VScaling = _mm_or_ps(VScaling,ZWOne);
     MScaling             = XMMatrixScalingFromVector(VScaling);
-    VRotationOrigin      = _mm_and_ps(RotationOrigin, g_XMMask2);
+    VRotationOrigin      = _mm_and_ps(RotationOrigin, Mask2);
     MRotation            = XMMatrixRotationZ(Rotation);
-    VTranslation         = _mm_and_ps(Translation,g_XMMask2);
+    VTranslation         = _mm_and_ps(Translation, Mask2);
 
     M      = XMMatrixMultiply(MScalingOriginI, MScalingOrientationT);
     M      = XMMatrixMultiply(M, MScaling);
@@ -1788,17 +1788,17 @@ XMINLINE XMMATRIX XMMatrixAffineTransformation2D
     XMVECTOR VRotationOrigin;
     XMMATRIX MRotation;
     XMVECTOR VTranslation;
-    static const XMVECTORU32 g_XMMask2 = {0xFFFFFFFFU,0xFFFFFFFFU,0,0};
-    static const XMVECTORF32 g_XMZW1 = {0,0,1.0f,1.0f};
+    static const XMVECTORU32 Mask2 = {0xFFFFFFFFU,0xFFFFFFFFU,0,0};
+    static const XMVECTORF32 ZW1 = {0,0,1.0f,1.0f};
 
     // M = MScaling * Inverse(MRotationOrigin) * MRotation * MRotationOrigin * MTranslation;
 
-    VScaling = _mm_and_ps(Scaling, g_XMMask2);
-    VScaling = _mm_or_ps(VScaling,g_XMZW1);
+    VScaling = _mm_and_ps(Scaling, Mask2);
+    VScaling = _mm_or_ps(VScaling, ZW1);
     MScaling = XMMatrixScalingFromVector(VScaling);
-    VRotationOrigin = _mm_and_ps(RotationOrigin, g_XMMask2);
+    VRotationOrigin = _mm_and_ps(RotationOrigin, Mask2);
     MRotation = XMMatrixRotationZ(Rotation);
-    VTranslation = _mm_and_ps(Translation,g_XMMask2);
+    VTranslation = _mm_and_ps(Translation, Mask2);
 
     M      = MScaling;
     M.r[3] = _mm_sub_ps(M.r[3], VRotationOrigin);
@@ -2335,7 +2335,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
     M.r[2] = XMVectorSet(0.0f, 0.0f, FarZ / (FarZ - NearZ), 1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, -M.r[2].v[2] * NearZ, 0.0f);
+    M.r[3] = XMVectorSet(0.0f, 0.0f, -M.r[2].vector4_f32[2] * NearZ, 0.0f);
 
     return M;
 
@@ -2411,7 +2411,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
     M.r[2] = XMVectorSet(0.0f, 0.0f, FarZ / (NearZ - FarZ), -1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].v[2] * NearZ, 0.0f);
+    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].vector4_f32[2] * NearZ, 0.0f);
 
     return M;
 
@@ -2490,7 +2490,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterLH
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
                          FarZ / (FarZ - NearZ),
                          1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, -M.r[2].v[2] * NearZ, 0.0f);
+    M.r[3] = XMVectorSet(0.0f, 0.0f, -M.r[2].vector4_f32[2] * NearZ, 0.0f);
 
     return M;
 
@@ -2567,7 +2567,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterRH
                          (ViewTop + ViewBottom) * ReciprocalHeight,
                          FarZ / (NearZ - FarZ),
                          -1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].v[2] * NearZ, 0.0f);
+    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].vector4_f32[2] * NearZ, 0.0f);
 
     return M;
 
@@ -2698,7 +2698,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicRH
     M.r[0] = XMVectorSet(2.0f / ViewWidth, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, 2.0f / ViewHeight, 0.0f, 0.0f);
     M.r[2] = XMVectorSet(0.0f, 0.0f, 1.0f / (NearZ - FarZ), 0.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].v[2] * NearZ, 1.0f);
+    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].vector4_f32[2] * NearZ, 1.0f);
 
     return M;
 
@@ -2770,7 +2770,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicOffCenterLH
     M.r[2] = XMVectorSet(0.0f, 0.0f, 1.0f / (FarZ - NearZ), 0.0f);
     M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
-                         -M.r[2].v[2] * NearZ,
+                         -M.r[2].vector4_f32[2] * NearZ,
                          1.0f);
 
     return M;
@@ -2848,7 +2848,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicOffCenterRH
     M.r[2] = XMVectorSet(0.0f, 0.0f, 1.0f / (NearZ - FarZ), 0.0f);
     M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
-                         M.r[2].v[2] * NearZ,
+                         M.r[2].vector4_f32[2] * NearZ,
                          1.0f);
 
     return M;
@@ -2951,28 +2951,6 @@ XMFINLINE _XMMATRIX::_XMMATRIX
 
 //------------------------------------------------------------------------------
 
-XMFINLINE FLOAT _XMMATRIX::operator()
-(
-    UINT Row,
-    UINT Column
-) CONST
-{
-	return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT& _XMMATRIX::operator()
-(
-    UINT Row,
-    UINT Column
-)
-{
-	return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
 XMFINLINE _XMMATRIX& _XMMATRIX::operator=
 (
     CONST _XMMATRIX& M
@@ -3068,28 +3046,6 @@ XMFINLINE _XMFLOAT3X3::_XMFLOAT3X3
 
 //------------------------------------------------------------------------------
 
-XMFINLINE FLOAT _XMFLOAT3X3::operator()
-(
-    UINT Row,
-    UINT Column
-) CONST
-{
-    return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT& _XMFLOAT3X3::operator()
-(
-    UINT Row,
-    UINT Column
-)
-{
-    return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
 XMFINLINE _XMFLOAT3X3& _XMFLOAT3X3::operator=
 (
     CONST _XMFLOAT3X3& Float3x3
@@ -3158,28 +3114,6 @@ XMFINLINE _XMFLOAT4X3::_XMFLOAT4X3
             m[Row][Column] = pArray[Row * 3 + Column];
         }
     }
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT _XMFLOAT4X3::operator()
-(
-    UINT Row,
-    UINT Column
-) CONST
-{
-    return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT& _XMFLOAT4X3::operator()
-(
-    UINT Row,
-    UINT Column
-)
-{
-    return m[Row][Column];
 }
 
 //------------------------------------------------------------------------------
@@ -3254,28 +3188,6 @@ XMFINLINE _XMFLOAT4X4::_XMFLOAT4X4
             m[Row][Column] = pArray[Row * 4 + Column];
         }
     }
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT _XMFLOAT4X4::operator()
-(
-    UINT Row,
-    UINT Column
-) CONST
-{
-    return m[Row][Column];
-}
-
-//------------------------------------------------------------------------------
-
-XMFINLINE FLOAT& _XMFLOAT4X4::operator()
-(
-    UINT Row,
-    UINT Column
-)
-{
-    return m[Row][Column];
 }
 
 //------------------------------------------------------------------------------
