@@ -1,0 +1,118 @@
+-----------
+DirectXMath
+-----------
+
+Copyright (c) Microsoft Corporation. All rights reserved.
+
+May 23, 2016
+
+This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
+for use in games and graphics apps
+
+
+This code is designed to build with Visual Studio 2012, 2013 or 2015. It is recommended that you
+make use of VS 2013 Update 5 or VS 2015 Update 2.
+
+These components are designed to work without requiring any content from the DirectX SDK. For details,
+see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
+
+Inc\
+    DirectXMath Files (in the DirectX C++ namespace)
+        DirectXMath.h - Core library
+        DirectXPackedVector.h - Load/Store functions and types for working with various compressed GPU formats
+        DirectXColors.h - .NET-style Color defines in sRGB color space
+        DirectXCollision.h - Bounding volume collision library
+
+Extentions\
+    Advanced instruction set variants for guarded codepaths
+        DirectXMathSSE3.h - SSE3
+        DirectXMathBE.h - Supplemental SSE3 (SSSE3)
+        DirectXMathSSE4.h - SSE4.1
+        DirectXMathAVX.h - Advanced Vector Extensions (AVX)
+        DirectXMathAVX2.h - Advanced Vector Extensions 2 (AVX2)
+        DirectXMathF16C.h - Half-precision conversions (F16C)
+        DirectXMathFMA3.h - Fused multiply-accumulate (FMA3)
+        DirectXMathFMA4.h - Fused multiply-accumulate (FMA4)
+
+SHMath\
+    Spherical Harmonics math functions
+        DirectXSH.h - Header for SHMath functions
+        DirectXSH.cpp, DirectXSHD3D11.cpp - Implementation
+
+XDSP\
+    XDSP.h - Digital Signal Processing helper functions
+
+All content and source code for this package are subject to the terms of the MIT License.
+<http://opensource.org/licenses/MIT>.
+
+Documentation is available at <https://msdn.microsoft.com/en-us/library/windows/desktop/hh437833.aspx>.
+
+For the latest version of DirectXMath, bug reports, etc. please visit the project site.
+<https://github.com/Microsoft/DirectXMath>
+
+
+---------------
+RELEASE HISTORY
+---------------
+
+May 2016
+    DirectXMath 3.08 released under the MIT license
+
+November 2015 (3.08)
+    Added use of _mm_sfence for Stream methods
+    Fixed bug with non-uniform scaling transforms for BoundingOrientedBox
+    Added asserts for Near/FarZ in XMMatrix* methods
+    Added use of =default for PODs with VS 2013/2015
+    Additional SSE and ARM-NEON optimizations for PackedVector functions
+
+April 2015 (3.07)
+    Fix customer reported bugs in BoundingBox methods
+    Fix customer reported bug in XMStoreFloat3SE  
+    Fix customer reported bug in XMVectorATan2, XMVectorATan2Est  
+    Fix customer reported bug in XMVectorRound 
+
+October 2013 (3.06)
+    Fixed load/store of XMFLOAT3SE to properly match the DXGI_FORMAT_R9G9B9E5_SHAREDEXP
+    Added XMLoadUDecN4_XR and XMStoreUDecN4_XR to match DXGI_FORMAT_R10G10B10_XR_BIAS_A2_UNORM
+    Added XMColorRGBToSRGB and XMColorSRGBToRGB to convert linear RGB <-> sRGB
+
+July 2013 (3.05)
+    Use x86/x64 __vectorcall calling-convention when available (XM_CALLCONV, HXMVECTOR, FXMMATRIX introduced)
+    Fixed bug with XMVectorFloor and XMVectorCeiling when given whole odd numbers (i.e. 105.0)
+    Improved XMVectorRound algorithm
+    ARM-NEON optimizations for XMVectorExp2, XMVectorLog2, XMVectorExpE, and XMVectorLogE  
+    ARM-NEON code paths use multiply-by-scalar intrinsics when supported
+    Additional optimizations for ARM-NEON Stream functions
+    Fixed potential warning C4723 using operator/ or operator/=
+
+March 2013 (3.04)
+    XMVectorExp2, XMVectorLog2, XMVectorExpE, and XMVectorLogE functions added to provide base-e support in addition to the existing base-2 support
+    XMVectorExp and XMVectorLog are now aliases for XMVectorExp2 and XMVectorLog2  
+    Additional optimizations for Stream functions
+    XMVector3Cross now ensures w component is zero on ARM
+    XMConvertHalfToFloat and XMConvertFloatToHalf  now use IEEE 754 standard float16 behavior for INF/QNAN
+    Updated matrix version Transform for  BoundingOrientedBox  and  BoundingFrustum  to handle scaling
+
+March 2012 (3.03)
+    Breaking change: Removed union members from XMMATRIX type to make it a fully 'opaque' type
+    Marked single-parameter C++ constructors for XMFLOAT2, XMFLOAT2A, XMFLOAT3, XMFLOAT3A, XMFLOAT4, and XMFLOAT4A explicit
+
+February 2012 (3.02)
+    ARM-NEON intrinsics (selected by default for the ARM platform)
+    reworked XMVectorPermute, change of XM_PERMUTE_ defines, removal of XMVectorPermuteControl
+    Addition of XM_SWIZZLE_ defines
+    Optimizations for transcendental functions
+    Template forms for permute, swizzle, shift-left, rotate-left, rotation-right, and insert
+    Removal of deprecated types and functions
+        (XM_CACHE_LINE_SIZE define, XMVectorExpEst, XMVectorLogEst, XMVectorPowEst, XMVectorSinHEs, XMVectorCosHEst, XMVectorTanHEst,
+         XMVector2InBoundsR, XMVector3InBoundsR, XMVector4InBoundsR)
+    Removed XM_STRICT_VECTOR4; XMVECTOR in NO-INTRINSICS always defined without .x, .y, .z, .w, .v, or .u
+    Additional bounding types
+    SAL fixes and improvements
+
+September 2011 (3.00)
+    Renamed and reorganized the headers
+    Introduced C++ namespaces
+    Removed the Xbox 360-specific GPU types
+        (HENDN3, XMHEND3, XMUHENDN3, XMUHEND3, XMDHENN3, XMDHEN3,
+         XMUDHENN3, XMUDHEN3, XMXICON4, XMXICO4, XMICON4, XMICO4, XMUICON4, XMUICO4 )
