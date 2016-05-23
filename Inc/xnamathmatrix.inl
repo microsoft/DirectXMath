@@ -1,15 +1,11 @@
-/*++
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Module Name:
-
-    xnamathmatrix.inl
-
-Abstract:
-
-	XNA math library for Windows and Xbox 360: Matrix functions
---*/
+/************************************************************************
+*                                                                       *
+* xnamathmatrix.inl -- SIMD C++ Math library for Windows and Xbox 360   *
+*                      Matrix functions                                 *
+*                                                                       *
+* Copyright (c) Microsoft Corp. All rights reserved.                    *
+*                                                                       *
+************************************************************************/
 
 #if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
@@ -396,7 +392,7 @@ XMFINLINE XMMATRIX XMMatrixTranspose
     mResult.r[2] = _mm_shuffle_ps(vTemp3, vTemp4,_MM_SHUFFLE(2,0,2,0));
     // x.w,y.w,z.w,w.w
     mResult.r[3] = _mm_shuffle_ps(vTemp3, vTemp4,_MM_SHUFFLE(3,1,3,1));
-	return mResult;
+    return mResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -805,89 +801,89 @@ XMINLINE XMVECTOR XMMatrixDeterminant
 
 XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVECTOR *outTrans, CXMMATRIX M )
 {
-	FLOAT fDet;
-	FLOAT *pfScales;
-	XMVECTOR *ppvBasis[3];
-	XMMATRIX matTemp;
-	UINT a, b, c;
-	static const XMVECTOR *pvCanonicalBasis[3] = {
-	    &g_XMIdentityR0.v,
-	    &g_XMIdentityR1.v,
-	    &g_XMIdentityR2.v
+    FLOAT fDet;
+    FLOAT *pfScales;
+    XMVECTOR *ppvBasis[3];
+    XMMATRIX matTemp;
+    UINT a, b, c;
+    static const XMVECTOR *pvCanonicalBasis[3] = {
+        &g_XMIdentityR0.v,
+        &g_XMIdentityR1.v,
+        &g_XMIdentityR2.v
     };
 
     // Get the translation
     outTrans[0] = M.r[3];
 
-	ppvBasis[0] = &matTemp.r[0];
-	ppvBasis[1] = &matTemp.r[1];
-	ppvBasis[2] = &matTemp.r[2];
+    ppvBasis[0] = &matTemp.r[0];
+    ppvBasis[1] = &matTemp.r[1];
+    ppvBasis[2] = &matTemp.r[2];
 
-	matTemp.r[0] = M.r[0];
-	matTemp.r[1] = M.r[1];
-	matTemp.r[2] = M.r[2];
+    matTemp.r[0] = M.r[0];
+    matTemp.r[1] = M.r[1];
+    matTemp.r[2] = M.r[2];
     matTemp.r[3] = g_XMIdentityR3.v;
 
-	pfScales = (FLOAT *)outScale;
+    pfScales = (FLOAT *)outScale;
 
-	XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0])); 
-	XMVectorGetXPtr(&pfScales[1],XMVector3Length(ppvBasis[1][0])); 
-	XMVectorGetXPtr(&pfScales[2],XMVector3Length(ppvBasis[2][0])); 
+    XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0])); 
+    XMVectorGetXPtr(&pfScales[1],XMVector3Length(ppvBasis[1][0])); 
+    XMVectorGetXPtr(&pfScales[2],XMVector3Length(ppvBasis[2][0])); 
 
-	XMRANKDECOMPOSE(a, b, c, pfScales[0], pfScales[1], pfScales[2])
+    XMRANKDECOMPOSE(a, b, c, pfScales[0], pfScales[1], pfScales[2])
 
-	if(pfScales[a] < XM_DECOMP_EPSILON)
-	{
-		ppvBasis[a][0] = pvCanonicalBasis[a][0];
-	}
+    if(pfScales[a] < XM_DECOMP_EPSILON)
+    {
+        ppvBasis[a][0] = pvCanonicalBasis[a][0];
+    }
     ppvBasis[a][0] = XMVector3Normalize(ppvBasis[a][0]);
 
-	if(pfScales[b] < XM_DECOMP_EPSILON)
-	{
-		UINT aa, bb, cc;
-		FLOAT fAbsX, fAbsY, fAbsZ;
+    if(pfScales[b] < XM_DECOMP_EPSILON)
+    {
+        UINT aa, bb, cc;
+        FLOAT fAbsX, fAbsY, fAbsZ;
 
-		fAbsX = fabsf(XMVectorGetX(ppvBasis[a][0]));
-		fAbsY = fabsf(XMVectorGetY(ppvBasis[a][0]));
-		fAbsZ = fabsf(XMVectorGetZ(ppvBasis[a][0]));
+        fAbsX = fabsf(XMVectorGetX(ppvBasis[a][0]));
+        fAbsY = fabsf(XMVectorGetY(ppvBasis[a][0]));
+        fAbsZ = fabsf(XMVectorGetZ(ppvBasis[a][0]));
 
-		XMRANKDECOMPOSE(aa, bb, cc, fAbsX, fAbsY, fAbsZ)
+        XMRANKDECOMPOSE(aa, bb, cc, fAbsX, fAbsY, fAbsZ)
 
-		ppvBasis[b][0] = XMVector3Cross(ppvBasis[a][0],pvCanonicalBasis[cc][0]);
-	}
+        ppvBasis[b][0] = XMVector3Cross(ppvBasis[a][0],pvCanonicalBasis[cc][0]);
+    }
 
-	ppvBasis[b][0] = XMVector3Normalize(ppvBasis[b][0]);
+    ppvBasis[b][0] = XMVector3Normalize(ppvBasis[b][0]);
 
-	if(pfScales[c] < XM_DECOMP_EPSILON)
-	{
-		ppvBasis[c][0] = XMVector3Cross(ppvBasis[a][0],ppvBasis[b][0]);
-	}
-		
-	ppvBasis[c][0] = XMVector3Normalize(ppvBasis[c][0]);
+    if(pfScales[c] < XM_DECOMP_EPSILON)
+    {
+        ppvBasis[c][0] = XMVector3Cross(ppvBasis[a][0],ppvBasis[b][0]);
+    }
+        
+    ppvBasis[c][0] = XMVector3Normalize(ppvBasis[c][0]);
 
-	fDet = XMVectorGetX(XMMatrixDeterminant(matTemp));
+    fDet = XMVectorGetX(XMMatrixDeterminant(matTemp));
 
-	// use Kramer's rule to check for handedness of coordinate system
-	if(fDet < 0.0f)
-	{
-		// switch coordinate system by negating the scale and inverting the basis vector on the x-axis
-		pfScales[a] = -pfScales[a];
-		ppvBasis[a][0] = XMVectorNegate(ppvBasis[a][0]);
+    // use Kramer's rule to check for handedness of coordinate system
+    if(fDet < 0.0f)
+    {
+        // switch coordinate system by negating the scale and inverting the basis vector on the x-axis
+        pfScales[a] = -pfScales[a];
+        ppvBasis[a][0] = XMVectorNegate(ppvBasis[a][0]);
 
-		fDet = -fDet;
-	}
+        fDet = -fDet;
+    }
 
-	fDet -= 1.0f;
-	fDet *= fDet;
+    fDet -= 1.0f;
+    fDet *= fDet;
 
-	if(XM_DECOMP_EPSILON < fDet)
-	{
+    if(XM_DECOMP_EPSILON < fDet)
+    {
 //		Non-SRT matrix encountered
-		return FALSE;
-	}
+        return FALSE;
+    }
 
-	// generate the quaternion from the matrix
-	outRotQuat[0] = XMQuaternionRotationMatrix(matTemp);
+    // generate the quaternion from the matrix
+    outRotQuat[0] = XMQuaternionRotationMatrix(matTemp);
     return TRUE;
 }
 
@@ -1502,7 +1498,7 @@ XMFINLINE XMMATRIX XMMatrixRotationQuaternion
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMMATRIX M;
+    XMMATRIX M;
     XMVECTOR               Q0, Q1;
     XMVECTOR               V0, V1, V2;
     XMVECTOR               R0, R1, R2;
@@ -1805,7 +1801,7 @@ XMINLINE XMMATRIX XMMatrixAffineTransformation2D
     M      = XMMatrixMultiply(M, MRotation);
     M.r[3] = _mm_add_ps(M.r[3], VRotationOrigin);
     M.r[3] = _mm_add_ps(M.r[3], VTranslation);
-	return M;
+    return M;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2186,7 +2182,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveLH
     XMASSERT(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT TwoNearZ = NearZ + NearZ;
     FLOAT fRange = FarZ / (FarZ - NearZ);
     // Note: This is recorded on the stack
@@ -2270,7 +2266,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveRH
     XMASSERT(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT TwoNearZ = NearZ + NearZ;
     FLOAT fRange = FarZ / (NearZ-FarZ);
     // Note: This is recorded on the stack
@@ -2310,7 +2306,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveRH
 XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 (
     FLOAT FovAngleY, 
-    FLOAT AspectRatio, 
+    FLOAT AspectHByW, 
     FLOAT NearZ, 
     FLOAT FarZ
 )
@@ -2324,13 +2320,13 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     Height = CosFov / SinFov;
-    Width = Height / AspectRatio;
+    Width = Height / AspectHByW;
 
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
@@ -2341,9 +2337,9 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT    SinFov;
     FLOAT    CosFov;
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
@@ -2351,7 +2347,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     // Note: This is recorded on the stack
     FLOAT Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectRatio,
+        Height / AspectHByW,
         Height,
         fRange,
         -fRange * NearZ
@@ -2363,7 +2359,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
     M.r[0] = vTemp;
-    // 0,Height / AspectRatio,0,0
+    // 0,Height / AspectHByW,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
@@ -2386,7 +2382,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
 (
     FLOAT FovAngleY, 
-    FLOAT AspectRatio, 
+    FLOAT AspectHByW, 
     FLOAT NearZ, 
     FLOAT FarZ
 )
@@ -2400,13 +2396,13 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     Height = CosFov / SinFov;
-    Width = Height / AspectRatio;
+    Width = Height / AspectHByW;
 
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
@@ -2417,9 +2413,9 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT    SinFov;
     FLOAT    CosFov;
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
@@ -2427,7 +2423,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     // Note: This is recorded on the stack
     FLOAT Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectRatio,
+        Height / AspectHByW,
         Height,
         fRange,
         fRange * NearZ
@@ -2439,7 +2435,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
     M.r[0] = vTemp;
-    // 0,Height / AspectRatio,0,0
+    // 0,Height / AspectHByW,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
@@ -2498,7 +2494,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterLH
     XMASSERT(!XMScalarNearEqual(ViewRight, ViewLeft, 0.00001f));
     XMASSERT(!XMScalarNearEqual(ViewTop, ViewBottom, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT TwoNearZ = NearZ+NearZ;
     FLOAT ReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     FLOAT ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
@@ -2576,7 +2572,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterRH
     XMASSERT(!XMScalarNearEqual(ViewTop, ViewBottom, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT TwoNearZ = NearZ+NearZ;
     FLOAT ReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     FLOAT ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
@@ -2643,7 +2639,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicLH
     XMASSERT(!XMScalarNearEqual(ViewWidth, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT fRange = 1.0f / (FarZ-NearZ);
     // Note: This is recorded on the stack
     XMVECTOR rMem = {
@@ -2706,7 +2702,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicRH
     XMASSERT(!XMScalarNearEqual(ViewWidth, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(ViewHeight, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT fRange = 1.0f / (NearZ-FarZ);
     // Note: This is recorded on the stack
     XMVECTOR rMem = {
@@ -2776,7 +2772,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicOffCenterLH
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT fReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     FLOAT fReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     FLOAT fRange = 1.0f / (FarZ-NearZ);
@@ -2854,7 +2850,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicOffCenterRH
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMMATRIX M;
+    XMMATRIX M;
     FLOAT fReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     FLOAT fReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     FLOAT fRange = 1.0f / (NearZ-FarZ);
@@ -2895,6 +2891,7 @@ XMFINLINE XMMATRIX XMMatrixOrthographicOffCenterRH
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
+
 
 #ifdef __cplusplus
 

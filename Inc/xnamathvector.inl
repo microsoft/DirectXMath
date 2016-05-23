@@ -1,15 +1,11 @@
-/*++
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Module Name:
-
-    xnamathvector.inl
-
-Abstract:
-
-	XNA math library for Windows and Xbox 360: Vector functions
---*/
+/************************************************************************
+*                                                                       *
+* xnamathvector.inl -- SIMD C++ Math library for Windows and Xbox 360   *
+*                      Vector functions                                 *
+*                                                                       *
+* Copyright (c) Microsoft Corp. All rights reserved.                    *
+*                                                                       *
+************************************************************************/
 
 #if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
@@ -1318,7 +1314,7 @@ XMFINLINE XMVECTOR XMVectorSelectControl
     __m128i vTemp = _mm_set_epi32(VectorIndex3,VectorIndex2,VectorIndex1,VectorIndex0);
     // Any non-zero entries become 0xFFFFFFFF else 0
     vTemp = _mm_cmpgt_epi32(vTemp,g_XMZero);
-	return reinterpret_cast<__m128 *>(&vTemp)[0];
+    return reinterpret_cast<__m128 *>(&vTemp)[0];
 #else
     XMVECTOR    ControlVector;
     CONST UINT  ControlElement[] =
@@ -1363,7 +1359,7 @@ XMFINLINE XMVECTOR XMVectorSelect
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR vTemp1 = _mm_andnot_ps(Control,V1);
+    XMVECTOR vTemp1 = _mm_andnot_ps(Control,V1);
     XMVECTOR vTemp2 = _mm_and_ps(V2,Control);
     return _mm_or_ps(vTemp1,vTemp2);
 #else // _XM_VMX128_INTRINSICS_
@@ -1390,7 +1386,7 @@ XMFINLINE XMVECTOR XMVectorMergeXY
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_unpacklo_ps( V1, V2 );
+    return _mm_unpacklo_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1415,7 +1411,7 @@ XMFINLINE XMVECTOR XMVectorMergeZW
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_unpackhi_ps( V1, V2 );
+    return _mm_unpackhi_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1444,7 +1440,7 @@ XMFINLINE XMVECTOR XMVectorEqual
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_cmpeq_ps( V1, V2 );
+    return _mm_cmpeq_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1530,7 +1526,7 @@ XMFINLINE XMVECTOR XMVectorEqualInt
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	__m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_cmpeq_epi32( reinterpret_cast<const __m128i *>(&V1)[0],reinterpret_cast<const __m128i *>(&V2)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -1649,7 +1645,7 @@ XMFINLINE XMVECTOR XMVectorNotEqual
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_cmpneq_ps( V1, V2 );
+    return _mm_cmpneq_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1696,7 +1692,7 @@ XMFINLINE XMVECTOR XMVectorGreater
     return Control;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_cmpgt_ps( V1, V2 );
+    return _mm_cmpgt_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2053,7 +2049,7 @@ XMFINLINE XMVECTOR XMVectorMin
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_min_ps( V1, V2 );
+    return _mm_min_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2076,7 +2072,7 @@ XMFINLINE XMVECTOR XMVectorMax
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_max_ps( V1, V2 );
+    return _mm_max_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2192,10 +2188,22 @@ XMFINLINE XMVECTOR XMVectorFloor
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
+    // To handle NAN, INF and numbers greater than 8388608, use masking
+    // Get the abs value
+    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
+    vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
+    // Convert to int and back to float for rounding
     XMVECTOR vResult = _mm_sub_ps(V,g_XMOneHalfMinusEpsilon);
     __m128i vInt = _mm_cvtps_epi32(vResult);
+    // Convert back to floats
     vResult = _mm_cvtepi32_ps(vInt);
-	return vResult;
+    // All numbers less than 8388608 will use the round to int
+    vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
+    // All others, use the ORIGINAL value
+    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
+    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2217,10 +2225,22 @@ XMFINLINE XMVECTOR XMVectorCeiling
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
+    // To handle NAN, INF and numbers greater than 8388608, use masking
+    // Get the abs value
+    __m128i vTest = _mm_and_si128(reinterpret_cast<const __m128i *>(&V)[0],g_XMAbsMask);
+    // Test for greater than 8388608 (All floats with NO fractionals, NAN and INF
+    vTest = _mm_cmplt_epi32(vTest,g_XMNoFraction);
+    // Convert to int and back to float for rounding
     XMVECTOR vResult = _mm_add_ps(V,g_XMOneHalfMinusEpsilon);
     __m128i vInt = _mm_cvtps_epi32(vResult);
+    // Convert back to floats
     vResult = _mm_cvtepi32_ps(vInt);
-	return vResult;
+    // All numbers less than 8388608 will use the round to int
+    vResult = _mm_and_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
+    // All others, use the ORIGINAL value
+    vTest = _mm_andnot_si128(vTest,reinterpret_cast<const __m128i *>(&V)[0]);
+    vResult = _mm_or_ps(vResult,reinterpret_cast<const XMVECTOR *>(&vTest)[0]);
+    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2246,11 +2266,11 @@ XMFINLINE XMVECTOR XMVectorClamp
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR vResult;
-	XMASSERT(XMVector4LessOrEqual(Min, Max));
-	vResult = _mm_max_ps(Min,V);
-	vResult = _mm_min_ps(vResult,Max);
-	return vResult;
+    XMVECTOR vResult;
+    XMASSERT(XMVector4LessOrEqual(Min, Max));
+    vResult = _mm_max_ps(Min,V);
+    vResult = _mm_min_ps(vResult,Max);
+    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2403,7 +2423,7 @@ XMFINLINE XMVECTOR XMVectorXorInt
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	__m128i V = _mm_xor_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
+    __m128i V = _mm_xor_si128( reinterpret_cast<const __m128i *>(&V1)[0], reinterpret_cast<const __m128i *>(&V2)[0] );
     return reinterpret_cast<__m128 *>(&V)[0];
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -2432,11 +2452,11 @@ XMFINLINE XMVECTOR XMVectorNegate
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR Z;
+    XMVECTOR Z;
 
-	Z = _mm_setzero_ps();
+    Z = _mm_setzero_ps();
 
-	return _mm_sub_ps( Z, V );
+    return _mm_sub_ps( Z, V );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2461,7 +2481,7 @@ XMFINLINE XMVECTOR XMVectorAdd
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_add_ps( V1, V2 );
+    return _mm_add_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2535,7 +2555,7 @@ XMFINLINE XMVECTOR XMVectorSubtract
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_sub_ps( V1, V2 );
+    return _mm_sub_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2606,7 +2626,7 @@ XMFINLINE XMVECTOR XMVectorMultiply
     };
     return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_mul_ps( V1, V2 );
+    return _mm_mul_ps( V1, V2 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2630,8 +2650,8 @@ XMFINLINE XMVECTOR XMVectorMultiplyAdd
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR vResult = _mm_mul_ps( V1, V2 );
-	return _mm_add_ps(vResult, V3 );
+    XMVECTOR vResult = _mm_mul_ps( V1, V2 );
+    return _mm_add_ps(vResult, V3 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2677,8 +2697,8 @@ XMFINLINE XMVECTOR XMVectorNegativeMultiplySubtract
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR R = _mm_mul_ps( V1, V2 );
-	return _mm_sub_ps( V3, R );
+    XMVECTOR R = _mm_mul_ps( V1, V2 );
+    return _mm_sub_ps( V3, R );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2739,7 +2759,7 @@ XMFINLINE XMVECTOR XMVectorReciprocalEst
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_rcp_ps(V);
+    return _mm_rcp_ps(V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2785,7 +2805,7 @@ XMFINLINE XMVECTOR XMVectorSqrtEst
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_sqrt_ps(V);
+    return _mm_sqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2820,7 +2840,7 @@ XMFINLINE XMVECTOR XMVectorSqrt
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_sqrt_ps(V);
+    return _mm_sqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2872,7 +2892,7 @@ XMFINLINE XMVECTOR XMVectorReciprocalSqrtEst
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	return _mm_rsqrt_ps(V);
+    return _mm_rsqrt_ps(V);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3143,9 +3163,9 @@ XMFINLINE XMVECTOR XMVectorAbs
     return vResult;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR vResult = _mm_setzero_ps();
-	vResult = _mm_sub_ps(vResult,V);
-	vResult = _mm_max_ps(vResult,V);
+    XMVECTOR vResult = _mm_setzero_ps();
+    vResult = _mm_sub_ps(vResult,V);
+    vResult = _mm_max_ps(vResult,V);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -4030,9 +4050,9 @@ XMINLINE XMVECTOR XMVectorASin
     // asin(V) = V * (C0 + C1 * V + C2 * V^2 + C3 * V^3 + C4 * V^4 + C5 * V^5) + (1 - V) * rsq(1 - V) * 
     //           V * (C6 + C7 * V + C8 * V^2 + C9 * V^3 + C10 * V^4 + C11 * V^5)
     // Get abs(V)
-	XMVECTOR vAbsV = _mm_setzero_ps();
-	vAbsV = _mm_sub_ps(vAbsV,V);
-	vAbsV = _mm_max_ps(vAbsV,V);
+    XMVECTOR vAbsV = _mm_setzero_ps();
+    vAbsV = _mm_sub_ps(vAbsV,V);
+    vAbsV = _mm_max_ps(vAbsV,V);
 
     XMVECTOR R0 = vAbsV;
     XMVECTOR vConstants = _mm_load_ps1(&g_XMASinCoefficients0.f[3]);
@@ -4170,9 +4190,9 @@ XMINLINE XMVECTOR XMVectorACos
     // Uses only 6 registers for good code on x86 targets
     // acos(V) = PI / 2 - asin(V)
     // Get abs(V)
-	XMVECTOR vAbsV = _mm_setzero_ps();
-	vAbsV = _mm_sub_ps(vAbsV,V);
-	vAbsV = _mm_max_ps(vAbsV,V);
+    XMVECTOR vAbsV = _mm_setzero_ps();
+    vAbsV = _mm_sub_ps(vAbsV,V);
+    vAbsV = _mm_max_ps(vAbsV,V);
     // Perform the series in precision groups to
     // retain precision across 20 bits. (3 bits of imprecision due to operations)
     XMVECTOR R0 = vAbsV;
@@ -4990,9 +5010,9 @@ XMFINLINE XMVECTOR XMVectorASinEst
 
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get abs(V)
-	XMVECTOR vAbsV = _mm_setzero_ps();
-	vAbsV = _mm_sub_ps(vAbsV,V);
-	vAbsV = _mm_max_ps(vAbsV,V);
+    XMVECTOR vAbsV = _mm_setzero_ps();
+    vAbsV = _mm_sub_ps(vAbsV,V);
+    vAbsV = _mm_max_ps(vAbsV,V);
 
     XMVECTOR D = _mm_load_ps1(&g_XMASinEstConstants.f[0]);
     D = _mm_sub_ps(D,vAbsV);
@@ -5071,9 +5091,9 @@ XMFINLINE XMVECTOR XMVectorACosEst
 #elif defined(_XM_SSE_INTRINSICS_)
     // acos(V) = PI / 2 - asin(V)
     // Get abs(V)
-	XMVECTOR vAbsV = _mm_setzero_ps();
-	vAbsV = _mm_sub_ps(vAbsV,V);
-	vAbsV = _mm_max_ps(vAbsV,V);
+    XMVECTOR vAbsV = _mm_setzero_ps();
+    vAbsV = _mm_sub_ps(vAbsV,V);
+    vAbsV = _mm_max_ps(vAbsV,V);
     // Calc D
     XMVECTOR D = _mm_load_ps1(&g_XMASinEstConstants.f[0]);
     D = _mm_sub_ps(D,vAbsV);
@@ -5141,9 +5161,9 @@ XMFINLINE XMVECTOR XMVectorATanEst
 
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get abs(V)
-	XMVECTOR vAbsV = _mm_setzero_ps();
-	vAbsV = _mm_sub_ps(vAbsV,V);
-	vAbsV = _mm_max_ps(vAbsV,V);
+    XMVECTOR vAbsV = _mm_setzero_ps();
+    vAbsV = _mm_sub_ps(vAbsV,V);
+    vAbsV = _mm_max_ps(vAbsV,V);
 
     XMVECTOR vResult = _mm_load_ps1(&g_XMATanEstCoefficients.f[3]);
     vResult = _mm_mul_ps(vResult,vAbsV);
@@ -5304,16 +5324,16 @@ XMFINLINE XMVECTOR XMVectorLerp
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR L, S;
-	XMVECTOR Result;
+    XMVECTOR L, S;
+    XMVECTOR Result;
 
-	L = _mm_sub_ps( V1, V0 );
+    L = _mm_sub_ps( V1, V0 );
 
-	S = _mm_set_ps1( t );
+    S = _mm_set_ps1( t );
 
-	Result = _mm_mul_ps( L, S );
+    Result = _mm_mul_ps( L, S );
 
-	return _mm_add_ps( Result, V0 );
+    return _mm_add_ps( Result, V0 );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -5339,14 +5359,14 @@ XMFINLINE XMVECTOR XMVectorLerpV
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR Length;
-	XMVECTOR Result;
+    XMVECTOR Length;
+    XMVECTOR Result;
 
-	Length = _mm_sub_ps( V1, V0 );
+    Length = _mm_sub_ps( V1, V0 );
 
-	Result = _mm_mul_ps( Length, T );
+    Result = _mm_mul_ps( Length, T );
 
-	return _mm_add_ps( Result, V0 );
+    return _mm_add_ps( Result, V0 );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -5660,14 +5680,14 @@ XMFINLINE XMVECTOR XMVectorBaryCentric
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
-	XMVECTOR SF = _mm_set_ps1(f);
-	XMVECTOR R2 = _mm_sub_ps(Position2,Position0);
-	XMVECTOR SG = _mm_set_ps1(g);
-	R1 = _mm_mul_ps(R1,SF);
-	R2 = _mm_mul_ps(R2,SG);
-	R1 = _mm_add_ps(R1,Position0);
-	R1 = _mm_add_ps(R1,R2);
+    XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
+    XMVECTOR SF = _mm_set_ps1(f);
+    XMVECTOR R2 = _mm_sub_ps(Position2,Position0);
+    XMVECTOR SG = _mm_set_ps1(g);
+    R1 = _mm_mul_ps(R1,SF);
+    R2 = _mm_mul_ps(R2,SG);
+    R1 = _mm_add_ps(R1,Position0);
+    R1 = _mm_add_ps(R1,R2);
     return R1;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
@@ -5700,12 +5720,12 @@ XMFINLINE XMVECTOR XMVectorBaryCentricV
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
-	XMVECTOR R2 = _mm_sub_ps(Position2,Position0);
-	R1 = _mm_mul_ps(R1,F);
-	R2 = _mm_mul_ps(R2,G);
-	R1 = _mm_add_ps(R1,Position0);
-	R1 = _mm_add_ps(R1,R2);
+    XMVECTOR R1 = _mm_sub_ps(Position1,Position0);
+    XMVECTOR R2 = _mm_sub_ps(Position2,Position0);
+    R1 = _mm_mul_ps(R1,F);
+    R2 = _mm_mul_ps(R2,G);
+    R1 = _mm_add_ps(R1,Position0);
+    R1 = _mm_add_ps(R1,R2);
     return R1;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -5835,7 +5855,7 @@ XMFINLINE UINT XMVector2EqualIntR
     {
         CR = XM_CRMASK_CR6FALSE;
     }
-	return CR;
+    return CR;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6230,7 +6250,7 @@ XMFINLINE XMVECTOR XMVector2Cross
     vResult = _mm_sub_ss(vResult,vTemp);
     // Splat the cross product
     vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,0,0,0));
-	return vResult;
+    return vResult;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6399,7 +6419,7 @@ XMFINLINE XMVECTOR XMVector2NormalizeEst
     vLengthSq = _mm_rsqrt_ss(vLengthSq);
     vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     vLengthSq = _mm_mul_ps(vLengthSq,V);
-	return vLengthSq;
+    return vLengthSq;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -6434,7 +6454,7 @@ XMFINLINE XMVECTOR XMVector2Normalize
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
     XMVECTOR vTemp = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(1,1,1,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -6449,7 +6469,7 @@ XMFINLINE XMVECTOR XMVector2Normalize
     // Any that are infinity, set to zero
     vResult = _mm_and_ps(vResult,vZeroMask);
     // Select qnan or result based on infinite length
-	XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
     XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
     vResult = _mm_or_ps(vTemp1,vTemp2);
     return vResult;
@@ -6753,8 +6773,8 @@ XMFINLINE XMVECTOR XMVector2AngleBetweenNormalsEst
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XMVector2Dot(N1,N2);
     // Clamp to -1.0f to 1.0f
-	vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-	vResult = _mm_min_ps(vResult,g_XMOne);;
+    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);;
     vResult = XMVectorACosEst(vResult);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -6786,8 +6806,8 @@ XMFINLINE XMVECTOR XMVector2AngleBetweenNormals
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XMVector2Dot(N1,N2);
     // Clamp to -1.0f to 1.0f
-	vResult = _mm_max_ps(vResult,g_XMNegativeOne);
-	vResult = _mm_min_ps(vResult,g_XMOne);;
+    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);;
     vResult = XMVectorACos(vResult);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -7066,8 +7086,8 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
     return pOutputStream;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pOutputStream);
-	XMASSERT(pInputStream);
+    XMASSERT(pOutputStream);
+    XMASSERT(pInputStream);
     UINT i;
     const BYTE* pInputVector = (const BYTE*)pInputStream;
     BYTE* pOutputVector = (BYTE*)pOutputStream;
@@ -7102,7 +7122,7 @@ XMINLINE XMFLOAT4* XMVector2TransformStreamNC
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS) || defined(_XM_SSE_INTRINSICS_)
-	return XMVector2TransformStream( pOutputStream, OutputStride, pInputStream, InputStride, VectorCount, M );
+    return XMVector2TransformStream( pOutputStream, OutputStride, pInputStream, InputStride, VectorCount, M );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7822,7 +7842,7 @@ XMFINLINE XMVECTOR XMVector3Dot
     // Result.vector4_f32[0] = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-	return _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    return _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -7903,7 +7923,7 @@ XMFINLINE XMVECTOR XMVector3ReciprocalLengthEst
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vLengthSq = _mm_rsqrt_ps(vLengthSq);
     return vLengthSq;
@@ -7939,7 +7959,7 @@ XMFINLINE XMVECTOR XMVector3ReciprocalLength
     // Result.x = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-	vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vDot = _mm_sqrt_ps(vDot);
     // Get the reciprocal
@@ -7977,7 +7997,7 @@ XMFINLINE XMVECTOR XMVector3LengthEst
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the length
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -8013,7 +8033,7 @@ XMFINLINE XMVECTOR XMVector3Length
     // x+z+y,??,??,??
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     // Splat the length squared
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Get the length
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -8049,7 +8069,7 @@ XMFINLINE XMVECTOR XMVector3NormalizeEst
     // Result.x = (x+y)+z
     vDot = _mm_add_ss(vDot,vTemp);
     // Splat x
-	vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
+    vDot = _mm_shuffle_ps(vDot,vDot,_MM_SHUFFLE(0,0,0,0));
     // Get the reciprocal
     vDot = _mm_rsqrt_ps(vDot);
     // Perform the normalization
@@ -8091,7 +8111,7 @@ XMFINLINE XMVECTOR XMVector3Normalize
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
     vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(1,1,1,1));
     vLengthSq = _mm_add_ss(vLengthSq,vTemp);
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(0,0,0,0));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -8106,7 +8126,7 @@ XMFINLINE XMVECTOR XMVector3Normalize
     // Any that are infinity, set to zero
     vResult = _mm_and_ps(vResult,vZeroMask);
     // Select qnan or result based on infinite length
-	XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
     XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
     vResult = _mm_or_ps(vTemp1,vTemp2);
     return vResult;
@@ -8652,8 +8672,8 @@ XMFINLINE VOID XMVector3ComponentsFromNormal
     *pPerpendicular = XMVectorSubtract(V, Parallel);
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pParallel);
-	XMASSERT(pPerpendicular);
+    XMASSERT(pParallel);
+    XMASSERT(pPerpendicular);
     XMVECTOR Scale = XMVector3Dot(V, Normal);
     XMVECTOR Parallel = _mm_mul_ps(Normal,Scale);
     *pParallel = Parallel;
@@ -8859,7 +8879,7 @@ XMINLINE XMFLOAT4* XMVector3TransformStreamNC
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS) || defined(_XM_SSE_INTRINSICS_)
-	return XMVector3TransformStream( pOutputStream, OutputStride, pInputStream, InputStride, VectorCount, M );
+    return XMVector3TransformStream( pOutputStream, OutputStride, pInputStream, InputStride, VectorCount, M );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -8988,11 +9008,11 @@ XMINLINE XMFLOAT3* XMVector3TransformCoordStream
 
         X = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(3,3,3,3));
         vResult = _mm_div_ps(vResult,X);
-    	_mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
         vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-    	_mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
         vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-	    _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
         pInputVector += InputStride; 
         pOutputVector += OutputStride;
     }
@@ -9107,11 +9127,11 @@ XMINLINE XMFLOAT3* XMVector3TransformNormalStream
         vResult = _mm_add_ps(vResult,Y);
         X = _mm_mul_ps(X,M.r[0]);
         vResult = _mm_add_ps(vResult,X);
-    	_mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->x,vResult);
         vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-    	_mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->y,vResult);
         vResult = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(0,3,2,1));
-	    _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
+        _mm_store_ss(&reinterpret_cast<XMFLOAT3 *>(pOutputVector)->z,vResult);
         pInputVector += InputStride; 
         pOutputVector += OutputStride;
     }
@@ -9258,7 +9278,7 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
     return pOutputStream;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pOutputStream);
+    XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
     XMMATRIX Transform;
     XMVECTOR V;
@@ -9569,7 +9589,7 @@ XMFINLINE UINT XMVector4EqualR
     {
         CR = XM_CRMASK_CR6FALSE;
     }
-	return CR;
+    return CR;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -9630,7 +9650,7 @@ XMFINLINE UINT XMVector4EqualIntR
     {
         CR = XM_CRMASK_CR6FALSE;
     }
-	return CR;
+    return CR;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -9748,7 +9768,7 @@ XMFINLINE UINT XMVector4GreaterR
 
 #elif defined(_XM_SSE_INTRINSICS_)
     UINT CR = 0;
-	XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
+    XMVECTOR vTemp = _mm_cmpgt_ps(V1,V2);
     int iTest = _mm_movemask_ps(vTemp);
     if (iTest==0xf) {
         CR = XM_CRMASK_CR6TRUE;
@@ -9808,8 +9828,8 @@ XMFINLINE UINT XMVector4GreaterOrEqualR
 
 #elif defined(_XM_SSE_INTRINSICS_)
     UINT CR = 0;
-	XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
-	int iTest = _mm_movemask_ps(vTemp);
+    XMVECTOR vTemp = _mm_cmpge_ps(V1,V2);
+    int iTest = _mm_movemask_ps(vTemp);
     if (iTest==0x0f)
     {
         CR = XM_CRMASK_CR6TRUE;
@@ -10108,7 +10128,7 @@ XMFINLINE XMVECTOR XMVector4ReciprocalLengthEst
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     vLengthSq = _mm_rsqrt_ps(vLengthSq);
     return vLengthSq;
@@ -10146,7 +10166,7 @@ XMFINLINE XMVECTOR XMVector4ReciprocalLength
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     // Accurate!
@@ -10186,7 +10206,7 @@ XMFINLINE XMVECTOR XMVector4LengthEst
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -10224,7 +10244,7 @@ XMFINLINE XMVECTOR XMVector4Length
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     vLengthSq = _mm_sqrt_ps(vLengthSq);
     return vLengthSq;
@@ -10262,7 +10282,7 @@ XMFINLINE XMVECTOR XMVector4NormalizeEst
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Get the reciprocal
     XMVECTOR vResult = _mm_rsqrt_ps(vLengthSq);
     // Reciprocal mul to perform the normalization
@@ -10311,7 +10331,7 @@ XMFINLINE XMVECTOR XMVector4Normalize
     // ??,??,x+z+y+w,??
     vLengthSq = _mm_add_ps(vLengthSq,vTemp);
     // Splat the length
-	vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
+    vLengthSq = _mm_shuffle_ps(vLengthSq,vLengthSq,_MM_SHUFFLE(2,2,2,2));
     // Prepare for the division
     XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
     // Create zero with a single instruction
@@ -10326,7 +10346,7 @@ XMFINLINE XMVECTOR XMVector4Normalize
     // Any that are infinity, set to zero
     vResult = _mm_and_ps(vResult,vZeroMask);
     // Select qnan or result based on infinite length
-	XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
     XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
     vResult = _mm_or_ps(vTemp1,vTemp2);
     return vResult;
@@ -11090,6 +11110,60 @@ XMFINLINE XMFLOAT2A& XMFLOAT2A::operator=
 
 /****************************************************************************
  *
+ * XMINT2 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMINT2::_XMINT2
+(
+    CONST INT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMINT2& _XMINT2::operator=
+(
+    CONST _XMINT2& Int2
+)
+{
+    x = Int2.x;
+    y = Int2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUINT2 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMUINT2::_XMUINT2
+(
+    CONST UINT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMUINT2& _XMUINT2::operator=
+(
+    CONST _XMUINT2& UInt2
+)
+{
+    x = UInt2.x;
+    y = UInt2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
  * XMHALF2 operators
  *
  ****************************************************************************/
@@ -11342,6 +11416,206 @@ XMFINLINE _XMUSHORT2& _XMUSHORT2::operator=
 
 /****************************************************************************
  *
+ * XMBYTEN2 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTEN2::_XMBYTEN2
+(
+    CONST CHAR* pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTEN2::_XMBYTEN2
+(
+    FLOAT _x,
+    FLOAT _y
+)
+{
+    XMStoreByteN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTEN2::_XMBYTEN2
+(
+    CONST FLOAT* pArray
+)
+{
+    XMStoreByteN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTEN2& _XMBYTEN2::operator=
+(
+    CONST _XMBYTEN2& ByteN2
+)
+{
+    x = ByteN2.x;
+    y = ByteN2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMBYTE2 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTE2::_XMBYTE2
+(
+    CONST CHAR* pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTE2::_XMBYTE2
+(
+    FLOAT _x,
+    FLOAT _y
+)
+{
+    XMStoreByte2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTE2::_XMBYTE2
+(
+    CONST FLOAT* pArray
+)
+{
+    XMStoreByte2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMBYTE2& _XMBYTE2::operator=
+(
+    CONST _XMBYTE2& Byte2
+)
+{
+    x = Byte2.x;
+    y = Byte2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUBYTEN2 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTEN2::_XMUBYTEN2
+(
+    CONST BYTE* pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTEN2::_XMUBYTEN2
+(
+    FLOAT _x,
+    FLOAT _y
+)
+{
+    XMStoreUByteN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTEN2::_XMUBYTEN2
+(
+    CONST FLOAT* pArray
+)
+{
+    XMStoreUByteN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTEN2& _XMUBYTEN2::operator=
+(
+    CONST _XMUBYTEN2& UByteN2
+)
+{
+    x = UByteN2.x;
+    y = UByteN2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUBYTE2 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTE2::_XMUBYTE2
+(
+    CONST BYTE* pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTE2::_XMUBYTE2
+(
+    FLOAT _x,
+    FLOAT _y
+)
+{
+    XMStoreUByte2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTE2::_XMUBYTE2
+(
+    CONST FLOAT* pArray
+)
+{
+    XMStoreUByte2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE _XMUBYTE2& _XMUBYTE2::operator=
+(
+    CONST _XMUBYTE2& UByte2
+)
+{
+    x = UByte2.x;
+    y = UByte2.y;
+    return *this;
+}
+
+/****************************************************************************
+ *
  * XMFLOAT3 operators
  *
  ****************************************************************************/
@@ -11381,6 +11655,64 @@ XMFINLINE XMFLOAT3A& XMFLOAT3A::operator=
     x = Float3.x;
     y = Float3.y;
     z = Float3.z;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMINT3 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMINT3::_XMINT3
+(
+    CONST INT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMINT3& _XMINT3::operator=
+(
+    CONST _XMINT3& Int3
+)
+{
+    x = Int3.x;
+    y = Int3.y;
+    z = Int3.z;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUINT3 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMUINT3::_XMUINT3
+(
+    CONST UINT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMUINT3& _XMUINT3::operator=
+(
+    CONST _XMUINT3& UInt3
+)
+{
+    x = UInt3.x;
+    y = UInt3.y;
+    z = UInt3.z;
     return *this;
 }
 
@@ -11964,6 +12296,68 @@ XMFINLINE XMFLOAT4A& XMFLOAT4A::operator=
     y = Float4.y;
     z = Float4.z;
     w = Float4.w;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMINT4 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMINT4::_XMINT4
+(
+    CONST INT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+    w = pArray[3];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMINT4& _XMINT4::operator=
+(
+    CONST _XMINT4& Int4
+)
+{
+    x = Int4.x;
+    y = Int4.y;
+    z = Int4.z;
+    w = Int4.w;
+    return *this;
+}
+
+/****************************************************************************
+ *
+ * XMUINT4 operators
+ *
+ ****************************************************************************/
+
+XMFINLINE _XMUINT4::_XMUINT4
+(
+    CONST UINT *pArray
+)
+{
+    x = pArray[0];
+    y = pArray[1];
+    z = pArray[2];
+    w = pArray[3];
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMUINT4& _XMUINT4::operator=
+(
+    CONST _XMUINT4& UInt4
+)
+{
+    x = UInt4.x;
+    y = UInt4.y;
+    z = UInt4.z;
+    w = UInt4.w;
     return *this;
 }
 

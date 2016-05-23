@@ -1,15 +1,10 @@
-/*++
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Module Name:
-
-    xnamath.h
-
-Abstract:
-
-	XNA math library for Windows and Xbox 360
---*/
+/************************************************************************
+*                                                                       *
+* XNAMath.h -- SIMD C++ Math library for Windows and Xbox 360           *
+*                                                                       *
+* Copyright (c) Microsoft Corp. All rights reserved.                    *
+*                                                                       *
+************************************************************************/
 
 #if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
@@ -22,7 +17,7 @@ Abstract:
 #error XNAMATH and XBOXMATH are incompatible in the same compilation module. Use one or the other.
 #endif
 
-#define XNAMATH_VERSION 203
+#define XNAMATH_VERSION 204
 
 #if !defined(_XM_X64_) && !defined(_XM_X86_)
 #if defined(_M_AMD64) || defined(_AMD64_)
@@ -32,13 +27,14 @@ Abstract:
 #endif
 #endif
 
+
 #if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
 #if defined(_XM_X64_) || defined(_XM_X86_)
 #define _XM_LITTLEENDIAN_
 #elif defined(_XBOX_VER)
 #define _XM_BIGENDIAN_
 #else
-#error xnamath.h only supports x86, x64, or XBox 360 targets
+#error xnamath.h does not support this target
 #endif
 #endif
 
@@ -52,8 +48,8 @@ Abstract:
 #error xnamath.h requires VMX128 compiler support for XBOX 360
 #endif // !__VMX128_SUPPORTED && !_XM_NO_INTRINSICS_
 #define _XM_VMX128_INTRINSICS_
-#else
-#error xnamath.h only supports x86, x64, or XBox 360 targets
+#elif !defined(_XM_NO_INTRINSICS_)
+#error xnamath.h does not support this target
 #endif
 
 
@@ -63,7 +59,7 @@ Abstract:
 #include <emmintrin.h>
 #endif
 #elif defined(_XM_VMX128_INTRINSICS_)
-#error This version of xnamath.h is for Windows use only
+#error This version of xnamath.h does not support Xbox 360
 #endif
 
 #if defined(_XM_SSE_INTRINSICS_)
@@ -75,7 +71,9 @@ Abstract:
 #pragma warning(pop)
 #endif
 
+
 #include <sal.h>
+
 
 #if !defined(XMINLINE)
 #if !defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
@@ -146,6 +144,7 @@ Abstract:
 #define XM_CRMASK_CR6FALSE  0x00000020
 #define XM_CRMASK_CR6BOUNDS XM_CRMASK_CR6FALSE
 
+
 #define XM_CACHE_LINE_SIZE  64
 
 /****************************************************************************
@@ -182,11 +181,12 @@ XMFINLINE FLOAT XMConvertToDegrees(FLOAT fRadians) { return fRadians * (180.0f /
 #pragma warning(push)
 #pragma warning(disable:4201 4365 4324)
 
-#if !defined (_XM_X86_) && !defined(_XM_X64_)
+#ifdef _XM_BIGENDIAN_
 #pragma bitfield_order(push)
 #pragma bitfield_order(lsb_to_msb)
-#endif // !_XM_X86_ && !_XM_X64_
+#endif
 
+//------------------------------------------------------------------------------
 #if defined(_XM_NO_INTRINSICS_) && !defined(_XBOX_VER)
 // The __vector4 structure is an intrinsic on Xbox but must be separately defined
 // for x86/x64
@@ -211,12 +211,14 @@ typedef struct __vector4
 } __vector4;
 #endif // _XM_NO_INTRINSICS_
 
+//------------------------------------------------------------------------------
 #if (defined (_XM_X86_) || defined(_XM_X64_)) && defined(_XM_NO_INTRINSICS_)
 typedef UINT __vector4i[4];
 #else
 typedef __declspec(align(16)) UINT __vector4i[4];
 #endif
 
+//------------------------------------------------------------------------------
 // Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte 
 // boundary and mapped to hardware vector registers
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -225,6 +227,27 @@ typedef __m128 XMVECTOR;
 typedef __vector4 XMVECTOR;
 #endif
 
+// Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86 and Xbox 360, but not for other targets
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+typedef const XMVECTOR FXMVECTOR;
+#elif defined(_XM_X86_) && !defined(_XM_NO_INTRINSICS_)
+typedef const XMVECTOR FXMVECTOR;
+#elif defined(__cplusplus)
+typedef const XMVECTOR& FXMVECTOR;
+#else
+typedef const XMVECTOR FXMVECTOR;
+#endif
+
+// Fix-up for (4th+) XMVECTOR parameters to pass in-register for Xbox 360 and by reference otherwise
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+typedef const XMVECTOR CXMVECTOR;
+#elif defined(__cplusplus)
+typedef const XMVECTOR& CXMVECTOR;
+#else
+typedef const XMVECTOR CXMVECTOR;
+#endif
+
+//------------------------------------------------------------------------------
 // Conversion types for constants
 typedef _DECLSPEC_ALIGN_16_ struct XMVECTORF32 {
     union {
@@ -234,6 +257,7 @@ typedef _DECLSPEC_ALIGN_16_ struct XMVECTORF32 {
 
 #if defined(__cplusplus)
     inline operator XMVECTOR() const { return v; }
+    inline operator const float*() const { return f; }
 #if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
     inline operator __m128i() const { return reinterpret_cast<const __m128i *>(&v)[0]; }
     inline operator __m128d() const { return reinterpret_cast<const __m128d *>(&v)[0]; }
@@ -283,26 +307,7 @@ typedef _DECLSPEC_ALIGN_16_ struct XMVECTORU32 {
 #endif // __cplusplus
 } XMVECTORU32;
 
-// Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86 and Xbox 360, but not for other targets
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-typedef const XMVECTOR FXMVECTOR;
-#elif defined(_XM_X86_) && !defined(_XM_NO_INTRINSICS_)
-typedef const XMVECTOR FXMVECTOR;
-#elif defined(__cplusplus)
-typedef const XMVECTOR& FXMVECTOR;
-#else
-typedef const XMVECTOR FXMVECTOR;
-#endif
-
-// Fix-up for (4th+) XMVECTOR parameters to pass in-register for Xbox 360 and by reference otherwise
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-typedef const XMVECTOR CXMVECTOR;
-#elif defined(__cplusplus)
-typedef const XMVECTOR& CXMVECTOR;
-#else
-typedef const XMVECTOR CXMVECTOR;
-#endif
-
+//------------------------------------------------------------------------------
 // Vector operators
 #if defined(__cplusplus) && !defined(XM_NO_OPERATOR_OVERLOADS)
 
@@ -326,6 +331,7 @@ XMVECTOR    operator/ (FXMVECTOR V, FLOAT S);
 
 #endif // __cplusplus && !XM_NO_OPERATOR_OVERLOADS
 
+//------------------------------------------------------------------------------
 // Matrix type: Sixteen 32 bit floating point components aligned on a
 // 16 byte boundary and mapped to four hardware vector registers
 #if (defined(_XM_X86_) || defined(_XM_X64_)) && defined(_XM_NO_INTRINSICS_)
@@ -355,7 +361,7 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
               FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
               FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
               FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
-    _XMMATRIX(CONST FLOAT *pArray);
+    explicit _XMMATRIX(_In_count_c_(16) CONST FLOAT *pArray);
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -372,7 +378,7 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
 } XMMATRIX;
 
 // Fix-up for XMMATRIX parameters to pass in-register on Xbox 360, by reference otherwise
-#if defined(_XM_VMX128_INTRINSICS_)
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMMATRIX CXMMATRIX;
 #elif defined(__cplusplus)
 typedef const XMMATRIX& CXMMATRIX;
@@ -380,11 +386,12 @@ typedef const XMMATRIX& CXMMATRIX;
 typedef const XMMATRIX CXMMATRIX;
 #endif
 
+//------------------------------------------------------------------------------
 // 16 bit floating point number consisting of a sign bit, a 5 bit biased 
 // exponent, and a 10 bit mantissa
-//typedef WORD HALF;
 typedef USHORT HALF;
 
+//------------------------------------------------------------------------------
 // 2D Vector; 32 bit floating point components
 typedef struct _XMFLOAT2
 {
@@ -395,7 +402,7 @@ typedef struct _XMFLOAT2
 
     _XMFLOAT2() {};
     _XMFLOAT2(FLOAT _x, FLOAT _y) : x(_x), y(_y) {};
-    _XMFLOAT2(CONST FLOAT *pArray);
+    _XMFLOAT2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMFLOAT2& operator= (CONST _XMFLOAT2& Float2);
 
@@ -409,7 +416,7 @@ __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
 {
     XMFLOAT2A() : XMFLOAT2() {};
     XMFLOAT2A(FLOAT _x, FLOAT _y) : XMFLOAT2(_x, _y) {};
-    XMFLOAT2A(CONST FLOAT *pArray) : XMFLOAT2(pArray) {};
+    XMFLOAT2A(_In_count_c_(2) CONST FLOAT *pArray) : XMFLOAT2(pArray) {};
 
     XMFLOAT2A& operator= (CONST XMFLOAT2A& Float2);
 };
@@ -417,6 +424,44 @@ __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
 typedef __declspec(align(16)) XMFLOAT2 XMFLOAT2A;
 #endif // __cplusplus
 
+//------------------------------------------------------------------------------
+// 2D Vector; 32 bit signed integer components
+typedef struct _XMINT2
+{
+    INT x;
+    INT y;
+
+#ifdef __cplusplus
+
+    _XMINT2() {};
+    _XMINT2(INT _x, INT _y) : x(_x), y(_y) {};
+    explicit _XMINT2(_In_count_c_(2) CONST INT *pArray);
+
+    _XMINT2& operator= (CONST _XMINT2& Int2);
+
+#endif // __cplusplus
+
+} XMINT2;
+
+// 2D Vector; 32 bit unsigned integer components
+typedef struct _XMUINT2
+{
+    UINT x;
+    UINT y;
+
+#ifdef __cplusplus
+
+    _XMUINT2() {};
+    _XMUINT2(UINT _x, UINT _y) : x(_x), y(_y) {};
+    explicit _XMUINT2(_In_count_c_(2) CONST UINT *pArray);
+
+    _XMUINT2& operator= (CONST _XMUINT2& UInt2);
+
+#endif // __cplusplus
+
+} XMUINT2;
+
+//------------------------------------------------------------------------------
 // 2D Vector; 16 bit floating point components
 typedef struct _XMHALF2
 {
@@ -427,9 +472,9 @@ typedef struct _XMHALF2
 
     _XMHALF2() {};
     _XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {};
-    _XMHALF2(CONST HALF *pArray);
+    explicit _XMHALF2(_In_count_c_(2) CONST HALF *pArray);
     _XMHALF2(FLOAT _x, FLOAT _y);
-    _XMHALF2(CONST FLOAT *pArray);
+    explicit _XMHALF2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMHALF2& operator= (CONST _XMHALF2& Half2);
 
@@ -437,6 +482,7 @@ typedef struct _XMHALF2
 
 } XMHALF2;
 
+//------------------------------------------------------------------------------
 // 2D Vector; 16 bit signed normalized integer components
 typedef struct _XMSHORTN2
 {
@@ -447,9 +493,9 @@ typedef struct _XMSHORTN2
 
     _XMSHORTN2() {};
     _XMSHORTN2(SHORT _x, SHORT _y) : x(_x), y(_y) {};
-    _XMSHORTN2(CONST SHORT *pArray);
+    explicit _XMSHORTN2(_In_count_c_(2) CONST SHORT *pArray);
     _XMSHORTN2(FLOAT _x, FLOAT _y);
-    _XMSHORTN2(CONST FLOAT *pArray);
+    explicit _XMSHORTN2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMSHORTN2& operator= (CONST _XMSHORTN2& ShortN2);
 
@@ -467,9 +513,9 @@ typedef struct _XMSHORT2
 
     _XMSHORT2() {};
     _XMSHORT2(SHORT _x, SHORT _y) : x(_x), y(_y) {};
-    _XMSHORT2(CONST SHORT *pArray);
+    explicit _XMSHORT2(_In_count_c_(2) CONST SHORT *pArray);
     _XMSHORT2(FLOAT _x, FLOAT _y);
-    _XMSHORT2(CONST FLOAT *pArray);
+    explicit _XMSHORT2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMSHORT2& operator= (CONST _XMSHORT2& Short2);
 
@@ -487,9 +533,9 @@ typedef struct _XMUSHORTN2
 
     _XMUSHORTN2() {};
     _XMUSHORTN2(USHORT _x, USHORT _y) : x(_x), y(_y) {};
-    _XMUSHORTN2(CONST USHORT *pArray);
+    explicit _XMUSHORTN2(_In_count_c_(2) CONST USHORT *pArray);
     _XMUSHORTN2(FLOAT _x, FLOAT _y);
-    _XMUSHORTN2(CONST FLOAT *pArray);
+    explicit _XMUSHORTN2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMUSHORTN2& operator= (CONST _XMUSHORTN2& UShortN2);
 
@@ -507,9 +553,9 @@ typedef struct _XMUSHORT2
 
     _XMUSHORT2() {};
     _XMUSHORT2(USHORT _x, USHORT _y) : x(_x), y(_y) {};
-    _XMUSHORT2(CONST USHORT *pArray);
+    explicit _XMUSHORT2(_In_count_c_(2) CONST USHORT *pArray);
     _XMUSHORT2(FLOAT _x, FLOAT _y);
-    _XMUSHORT2(CONST FLOAT *pArray);
+    explicit _XMUSHORT2(_In_count_c_(2) CONST FLOAT *pArray);
 
     _XMUSHORT2& operator= (CONST _XMUSHORT2& UShort2);
 
@@ -517,6 +563,89 @@ typedef struct _XMUSHORT2
 
 } XMUSHORT2;
 
+//------------------------------------------------------------------------------
+// 2D Vector; 8 bit signed normalized integer components
+typedef struct _XMBYTEN2
+{
+    CHAR x;
+    CHAR y;
+
+#ifdef __cplusplus
+
+    _XMBYTEN2() {};
+    _XMBYTEN2(CHAR _x, CHAR _y) : x(_x), y(_y) {};
+    explicit _XMBYTEN2(_In_count_c_(2) CONST CHAR *pArray);
+    _XMBYTEN2(FLOAT _x, FLOAT _y);
+    explicit _XMBYTEN2(_In_count_c_(2) CONST FLOAT *pArray);
+
+    _XMBYTEN2& operator= (CONST _XMBYTEN2& ByteN2);
+
+#endif // __cplusplus
+
+} XMBYTEN2;
+
+// 2D Vector; 8 bit signed integer components
+typedef struct _XMBYTE2
+{
+    CHAR x;
+    CHAR y;
+
+#ifdef __cplusplus
+
+    _XMBYTE2() {};
+    _XMBYTE2(CHAR _x, CHAR _y) : x(_x), y(_y) {};
+    explicit _XMBYTE2(_In_count_c_(2) CONST CHAR *pArray);
+    _XMBYTE2(FLOAT _x, FLOAT _y);
+    explicit _XMBYTE2(_In_count_c_(2) CONST FLOAT *pArray);
+
+    _XMBYTE2& operator= (CONST _XMBYTE2& Byte2);
+
+#endif // __cplusplus
+
+} XMBYTE2;
+
+// 2D Vector; 8 bit unsigned normalized integer components
+typedef struct _XMUBYTEN2
+{
+    BYTE x;
+    BYTE y;
+
+#ifdef __cplusplus
+
+    _XMUBYTEN2() {};
+    _XMUBYTEN2(BYTE _x, BYTE _y) : x(_x), y(_y) {};
+    explicit _XMUBYTEN2(_In_count_c_(2) CONST BYTE *pArray);
+    _XMUBYTEN2(FLOAT _x, FLOAT _y);
+    explicit _XMUBYTEN2(_In_count_c_(2) CONST FLOAT *pArray);
+
+    _XMUBYTEN2& operator= (CONST _XMUBYTEN2& UByteN2);
+
+#endif // __cplusplus
+
+} XMUBYTEN2;
+
+
+// 2D Vector; 8 bit unsigned integer components
+typedef struct _XMUBYTE2
+{
+    BYTE x;
+    BYTE y;
+
+#ifdef __cplusplus
+
+    _XMUBYTE2() {};
+    _XMUBYTE2(BYTE _x, BYTE _y) : x(_x), y(_y) {};
+    explicit _XMUBYTE2(_In_count_c_(2) CONST BYTE *pArray);
+    _XMUBYTE2(FLOAT _x, FLOAT _y);
+    explicit _XMUBYTE2(_In_count_c_(2) CONST FLOAT *pArray);
+
+    _XMUBYTE2& operator= (CONST _XMUBYTE2& UByte2);
+
+#endif // __cplusplus
+
+} XMUBYTE2;
+
+//------------------------------------------------------------------------------
 // 3D Vector; 32 bit floating point components
 typedef struct _XMFLOAT3
 {
@@ -528,7 +657,7 @@ typedef struct _XMFLOAT3
 
     _XMFLOAT3() {};
     _XMFLOAT3(FLOAT _x, FLOAT _y, FLOAT _z) : x(_x), y(_y), z(_z) {};
-    _XMFLOAT3(CONST FLOAT *pArray);
+    _XMFLOAT3(_In_count_c_(3) CONST FLOAT *pArray);
 
     _XMFLOAT3& operator= (CONST _XMFLOAT3& Float3);
 
@@ -542,7 +671,7 @@ __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
 {
     XMFLOAT3A() : XMFLOAT3() {};
     XMFLOAT3A(FLOAT _x, FLOAT _y, FLOAT _z) : XMFLOAT3(_x, _y, _z) {};
-    XMFLOAT3A(CONST FLOAT *pArray) : XMFLOAT3(pArray) {};
+    XMFLOAT3A(_In_count_c_(3) CONST FLOAT *pArray) : XMFLOAT3(pArray) {};
 
     XMFLOAT3A& operator= (CONST XMFLOAT3A& Float3);
 };
@@ -550,6 +679,46 @@ __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
 typedef __declspec(align(16)) XMFLOAT3 XMFLOAT3A; 
 #endif // __cplusplus
 
+//------------------------------------------------------------------------------
+// 3D Vector; 32 bit signed integer components
+typedef struct _XMINT3
+{
+    INT x;
+    INT y;
+    INT z;
+
+#ifdef __cplusplus
+
+    _XMINT3() {};
+    _XMINT3(INT _x, INT _y, INT _z) : x(_x), y(_y), z(_z) {};
+    explicit _XMINT3(_In_count_c_(3) CONST INT *pArray);
+
+    _XMINT3& operator= (CONST _XMINT3& Int3);
+
+#endif // __cplusplus
+
+} XMINT3;
+
+// 3D Vector; 32 bit unsigned integer components
+typedef struct _XMUINT3
+{
+    UINT x;
+    UINT y;
+    UINT z;
+
+#ifdef __cplusplus
+
+    _XMUINT3() {};
+    _XMUINT3(UINT _x, UINT _y, UINT _z) : x(_x), y(_y), z(_z) {};
+    explicit _XMUINT3(_In_count_c_(3) CONST UINT *pArray);
+
+    _XMUINT3& operator= (CONST _XMUINT3& UInt3);
+
+#endif // __cplusplus
+
+} XMUINT3;
+
+//------------------------------------------------------------------------------
 // 3D Vector; 11-11-10 bit normalized components packed into a 32 bit integer
 // The normalized 3D Vector is packed into 32 bits as follows: a 10 bit signed, 
 // normalized integer for the z component and 11 bit signed, normalized 
@@ -572,9 +741,9 @@ typedef struct _XMHENDN3
 #ifdef __cplusplus
 
     _XMHENDN3() {};
-    _XMHENDN3(UINT Packed) : v(Packed) {};
+    explicit _XMHENDN3(UINT Packed) : v(Packed) {};
     _XMHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMHENDN3(CONST FLOAT *pArray);
+    explicit _XMHENDN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -607,9 +776,9 @@ typedef struct _XMHEND3
 #ifdef __cplusplus
 
     _XMHEND3() {};
-    _XMHEND3(UINT Packed) : v(Packed) {};
+    explicit _XMHEND3(UINT Packed) : v(Packed) {};
     _XMHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMHEND3(CONST FLOAT *pArray);
+    explicit _XMHEND3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -642,9 +811,9 @@ typedef struct _XMUHENDN3
 #ifdef __cplusplus
 
     _XMUHENDN3() {};
-    _XMUHENDN3(UINT Packed) : v(Packed) {};
+    explicit _XMUHENDN3(UINT Packed) : v(Packed) {};
     _XMUHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMUHENDN3(CONST FLOAT *pArray);
+    explicit _XMUHENDN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -677,9 +846,9 @@ typedef struct _XMUHEND3
 #ifdef __cplusplus
 
     _XMUHEND3() {};
-    _XMUHEND3(UINT Packed) : v(Packed) {};
+    explicit _XMUHEND3(UINT Packed) : v(Packed) {};
     _XMUHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMUHEND3(CONST FLOAT *pArray);
+    explicit _XMUHEND3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -712,9 +881,9 @@ typedef struct _XMDHENN3
 #ifdef __cplusplus
 
     _XMDHENN3() {};
-    _XMDHENN3(UINT Packed) : v(Packed) {};
+    explicit _XMDHENN3(UINT Packed) : v(Packed) {};
     _XMDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMDHENN3(CONST FLOAT *pArray);
+    explicit _XMDHENN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -747,9 +916,9 @@ typedef struct _XMDHEN3
 #ifdef __cplusplus
 
     _XMDHEN3() {};
-    _XMDHEN3(UINT Packed) : v(Packed) {};
+    explicit _XMDHEN3(UINT Packed) : v(Packed) {};
     _XMDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMDHEN3(CONST FLOAT *pArray);
+    explicit _XMDHEN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -782,9 +951,9 @@ typedef struct _XMUDHENN3
 #ifdef __cplusplus
 
     _XMUDHENN3() {};
-    _XMUDHENN3(UINT Packed) : v(Packed) {};
+    explicit _XMUDHENN3(UINT Packed) : v(Packed) {};
     _XMUDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMUDHENN3(CONST FLOAT *pArray);
+    explicit _XMUDHENN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -817,9 +986,9 @@ typedef struct _XMUDHEN3
 #ifdef __cplusplus
 
     _XMUDHEN3() {};
-    _XMUDHEN3(UINT Packed) : v(Packed) {};
+    explicit _XMUDHEN3(UINT Packed) : v(Packed) {};
     _XMUDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMUDHEN3(CONST FLOAT *pArray);
+    explicit _XMUDHEN3(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -830,6 +999,7 @@ typedef struct _XMUDHEN3
 
 } XMUDHEN3;
 
+//------------------------------------------------------------------------------
 // 3D vector: 5/6/5 unsigned integer components
 typedef struct _XMU565
 {
@@ -847,11 +1017,11 @@ typedef struct _XMU565
 #ifdef __cplusplus
 
     _XMU565() {};
-    _XMU565(USHORT Packed) : v(Packed) {};
+    explicit _XMU565(USHORT Packed) : v(Packed) {};
     _XMU565(CHAR _x, CHAR _y, CHAR _z) : x(_x), y(_y), z(_z) {};
-    _XMU565(CONST CHAR *pArray);
+    explicit _XMU565(_In_count_c_(3) CONST CHAR *pArray);
     _XMU565(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMU565(CONST FLOAT *pArray);
+    explicit _XMU565(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator USHORT () { return v; }
 
@@ -862,6 +1032,7 @@ typedef struct _XMU565
 
 } XMU565;
 
+//------------------------------------------------------------------------------
 // 3D vector: 11/11/10 floating-point components
 // The 3D vector is packed into 32 bits as follows: a 5-bit biased exponent
 // and 6-bit mantissa for x component, a 5-bit biased exponent and
@@ -889,9 +1060,9 @@ typedef struct _XMFLOAT3PK
 #ifdef __cplusplus
 
     _XMFLOAT3PK() {};
-    _XMFLOAT3PK(UINT Packed) : v(Packed) {};
+    explicit _XMFLOAT3PK(UINT Packed) : v(Packed) {};
     _XMFLOAT3PK(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMFLOAT3PK(CONST FLOAT *pArray);
+    explicit _XMFLOAT3PK(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -902,6 +1073,7 @@ typedef struct _XMFLOAT3PK
 
 } XMFLOAT3PK;
 
+//------------------------------------------------------------------------------
 // 3D vector: 9/9/9 floating-point components with shared 5-bit exponent
 // The 3D vector is packed into 32 bits as follows: a 5-bit biased exponent
 // with 9-bit mantissa for the x, y, and z component. The shared exponent
@@ -926,9 +1098,9 @@ typedef struct _XMFLOAT3SE
 #ifdef __cplusplus
 
     _XMFLOAT3SE() {};
-    _XMFLOAT3SE(UINT Packed) : v(Packed) {};
+    explicit _XMFLOAT3SE(UINT Packed) : v(Packed) {};
     _XMFLOAT3SE(FLOAT _x, FLOAT _y, FLOAT _z);
-    _XMFLOAT3SE(CONST FLOAT *pArray);
+    explicit _XMFLOAT3SE(_In_count_c_(3) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -939,6 +1111,7 @@ typedef struct _XMFLOAT3SE
 
 } XMFLOAT3SE;
 
+//------------------------------------------------------------------------------
 // 4D Vector; 32 bit floating point components
 typedef struct _XMFLOAT4
 {
@@ -951,7 +1124,7 @@ typedef struct _XMFLOAT4
 
     _XMFLOAT4() {};
     _XMFLOAT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMFLOAT4(CONST FLOAT *pArray);
+    _XMFLOAT4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMFLOAT4& operator= (CONST _XMFLOAT4& Float4);
 
@@ -965,7 +1138,7 @@ __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
 {
     XMFLOAT4A() : XMFLOAT4() {};
     XMFLOAT4A(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w) : XMFLOAT4(_x, _y, _z, _w) {};
-    XMFLOAT4A(CONST FLOAT *pArray) : XMFLOAT4(pArray) {};
+    XMFLOAT4A(_In_count_c_(4) CONST FLOAT *pArray) : XMFLOAT4(pArray) {};
 
     XMFLOAT4A& operator= (CONST XMFLOAT4A& Float4);   
 };
@@ -973,6 +1146,48 @@ __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
 typedef __declspec(align(16)) XMFLOAT4 XMFLOAT4A;
 #endif // __cplusplus
 
+//------------------------------------------------------------------------------
+// 4D Vector; 32 bit signed integer components
+typedef struct _XMINT4
+{
+    INT x;
+    INT y;
+    INT z;
+    INT w;
+
+#ifdef __cplusplus
+
+    _XMINT4() {};
+    _XMINT4(INT _x, INT _y, INT _z, INT _w) : x(_x), y(_y), z(_z), w(_w) {};
+    explicit _XMINT4(_In_count_c_(4) CONST INT *pArray);
+
+    _XMINT4& operator= (CONST _XMINT4& Int4);
+
+#endif // __cplusplus
+
+} XMINT4;
+
+// 4D Vector; 32 bit unsigned integer components
+typedef struct _XMUINT4
+{
+    UINT x;
+    UINT y;
+    UINT z;
+    UINT w;
+
+#ifdef __cplusplus
+
+    _XMUINT4() {};
+    _XMUINT4(UINT _x, UINT _y, UINT _z, UINT _w) : x(_x), y(_y), z(_z), w(_w) {};
+    explicit _XMUINT4(_In_count_c_(4) CONST UINT *pArray);
+
+    _XMUINT4& operator= (CONST _XMUINT4& UInt4);
+
+#endif // __cplusplus
+
+} XMUINT4;
+
+//------------------------------------------------------------------------------
 // 4D Vector; 16 bit floating point components
 typedef struct _XMHALF4
 {
@@ -985,9 +1200,9 @@ typedef struct _XMHALF4
 
     _XMHALF4() {};
     _XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMHALF4(CONST HALF *pArray);
+    explicit _XMHALF4(_In_count_c_(4) CONST HALF *pArray);
     _XMHALF4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMHALF4(CONST FLOAT *pArray);
+    explicit _XMHALF4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMHALF4& operator= (CONST _XMHALF4& Half4);
 
@@ -995,6 +1210,7 @@ typedef struct _XMHALF4
 
 } XMHALF4;
 
+//------------------------------------------------------------------------------
 // 4D Vector; 16 bit signed normalized integer components
 typedef struct _XMSHORTN4
 {
@@ -1007,9 +1223,9 @@ typedef struct _XMSHORTN4
 
     _XMSHORTN4() {};
     _XMSHORTN4(SHORT _x, SHORT _y, SHORT _z, SHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMSHORTN4(CONST SHORT *pArray);
+    explicit _XMSHORTN4(_In_count_c_(4) CONST SHORT *pArray);
     _XMSHORTN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMSHORTN4(CONST FLOAT *pArray);
+    explicit _XMSHORTN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMSHORTN4& operator= (CONST _XMSHORTN4& ShortN4);
 
@@ -1029,9 +1245,9 @@ typedef struct _XMSHORT4
 
     _XMSHORT4() {};
     _XMSHORT4(SHORT _x, SHORT _y, SHORT _z, SHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMSHORT4(CONST SHORT *pArray);
+    explicit _XMSHORT4(_In_count_c_(4) CONST SHORT *pArray);
     _XMSHORT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMSHORT4(CONST FLOAT *pArray);
+    explicit _XMSHORT4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMSHORT4& operator= (CONST _XMSHORT4& Short4);
 
@@ -1051,9 +1267,9 @@ typedef struct _XMUSHORTN4
 
     _XMUSHORTN4() {};
     _XMUSHORTN4(USHORT _x, USHORT _y, USHORT _z, USHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMUSHORTN4(CONST USHORT *pArray);
+    explicit _XMUSHORTN4(_In_count_c_(4) CONST USHORT *pArray);
     _XMUSHORTN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUSHORTN4(CONST FLOAT *pArray);
+    explicit _XMUSHORTN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUSHORTN4& operator= (CONST _XMUSHORTN4& UShortN4);
 
@@ -1073,9 +1289,9 @@ typedef struct _XMUSHORT4
 
     _XMUSHORT4() {};
     _XMUSHORT4(USHORT _x, USHORT _y, USHORT _z, USHORT _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMUSHORT4(CONST USHORT *pArray);
+    explicit _XMUSHORT4(_In_count_c_(4) CONST USHORT *pArray);
     _XMUSHORT4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUSHORT4(CONST FLOAT *pArray);
+    explicit _XMUSHORT4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUSHORT4& operator= (CONST _XMUSHORT4& UShort4);
 
@@ -1083,6 +1299,7 @@ typedef struct _XMUSHORT4
 
 } XMUSHORT4;
 
+//------------------------------------------------------------------------------
 // 4D Vector; 10-10-10-2 bit normalized components packed into a 32 bit integer
 // The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned, 
 // normalized integer for the w component and 10 bit signed, normalized 
@@ -1106,9 +1323,9 @@ typedef struct _XMXDECN4
 #ifdef __cplusplus
 
     _XMXDECN4() {};
-    _XMXDECN4(UINT Packed) : v(Packed) {};
+    explicit _XMXDECN4(UINT Packed) : v(Packed) {};
     _XMXDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMXDECN4(CONST FLOAT *pArray);
+    explicit _XMXDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1142,9 +1359,9 @@ typedef struct _XMXDEC4
 #ifdef __cplusplus
 
     _XMXDEC4() {};
-    _XMXDEC4(UINT Packed) : v(Packed) {};
+    explicit _XMXDEC4(UINT Packed) : v(Packed) {};
     _XMXDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMXDEC4(CONST FLOAT *pArray);
+    explicit _XMXDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1178,9 +1395,9 @@ typedef struct _XMDECN4
 #ifdef __cplusplus
 
     _XMDECN4() {};
-    _XMDECN4(UINT Packed) : v(Packed) {};
+    explicit _XMDECN4(UINT Packed) : v(Packed) {};
     _XMDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMDECN4(CONST FLOAT *pArray);
+    explicit _XMDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1214,9 +1431,9 @@ typedef struct _XMDEC4
 #ifdef __cplusplus
 
     _XMDEC4() {};
-    _XMDEC4(UINT Packed) : v(Packed) {};
+    explicit _XMDEC4(UINT Packed) : v(Packed) {};
     _XMDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMDEC4(CONST FLOAT *pArray);
+    explicit _XMDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1250,9 +1467,9 @@ typedef struct _XMUDECN4
 #ifdef __cplusplus
 
     _XMUDECN4() {};
-    _XMUDECN4(UINT Packed) : v(Packed) {};
+    explicit _XMUDECN4(UINT Packed) : v(Packed) {};
     _XMUDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUDECN4(CONST FLOAT *pArray);
+    explicit _XMUDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1286,9 +1503,9 @@ typedef struct _XMUDEC4
 #ifdef __cplusplus
 
     _XMUDEC4() {};
-    _XMUDEC4(UINT Packed) : v(Packed) {};
+    explicit _XMUDEC4(UINT Packed) : v(Packed) {};
     _XMUDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUDEC4(CONST FLOAT *pArray);
+    explicit _XMUDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return v; }
 
@@ -1299,6 +1516,7 @@ typedef struct _XMUDEC4
 
 } XMUDEC4;
 
+//------------------------------------------------------------------------------
 // 4D Vector; 20-20-20-4 bit normalized components packed into a 64 bit integer
 // The normalized 4D Vector is packed into 64 bits as follows: a 4 bit unsigned, 
 // normalized integer for the w component and 20 bit signed, normalized 
@@ -1322,9 +1540,9 @@ typedef struct _XMXICON4
 #ifdef __cplusplus
 
     _XMXICON4() {};
-    _XMXICON4(UINT64 Packed) : v(Packed) {};
+    explicit _XMXICON4(UINT64 Packed) : v(Packed) {};
     _XMXICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMXICON4(CONST FLOAT *pArray);
+    explicit _XMXICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1358,9 +1576,9 @@ typedef struct _XMXICO4
 #ifdef __cplusplus
 
     _XMXICO4() {};
-    _XMXICO4(UINT64 Packed) : v(Packed) {};
+    explicit _XMXICO4(UINT64 Packed) : v(Packed) {};
     _XMXICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMXICO4(CONST FLOAT *pArray);
+    explicit _XMXICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1394,9 +1612,9 @@ typedef struct _XMICON4
 #ifdef __cplusplus
 
     _XMICON4() {};
-    _XMICON4(UINT64 Packed) : v(Packed) {};
+    explicit _XMICON4(UINT64 Packed) : v(Packed) {};
     _XMICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMICON4(CONST FLOAT *pArray);
+    explicit _XMICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1430,9 +1648,9 @@ typedef struct _XMICO4
 #ifdef __cplusplus
 
     _XMICO4() {};
-    _XMICO4(UINT64 Packed) : v(Packed) {};
+    explicit _XMICO4(UINT64 Packed) : v(Packed) {};
     _XMICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMICO4(CONST FLOAT *pArray);
+    explicit _XMICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1466,9 +1684,9 @@ typedef struct _XMUICON4
 #ifdef __cplusplus
 
     _XMUICON4() {};
-    _XMUICON4(UINT64 Packed) : v(Packed) {};
+    explicit _XMUICON4(UINT64 Packed) : v(Packed) {};
     _XMUICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUICON4(CONST FLOAT *pArray);
+    explicit _XMUICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1502,9 +1720,9 @@ typedef struct _XMUICO4
 #ifdef __cplusplus
 
     _XMUICO4() {};
-    _XMUICO4(UINT64 Packed) : v(Packed) {};
+    explicit _XMUICO4(UINT64 Packed) : v(Packed) {};
     _XMUICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUICO4(CONST FLOAT *pArray);
+    explicit _XMUICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT64 () { return v; }
 
@@ -1515,6 +1733,7 @@ typedef struct _XMUICO4
 
 } XMUICO4;
 
+//------------------------------------------------------------------------------
 // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
 // a 32 bit integer.  The normalized color is packed into 32 bits using 8 bit
 // unsigned, normalized integers for the alpha, red, green, and blue components.
@@ -1540,7 +1759,7 @@ typedef struct _XMCOLOR
     _XMCOLOR() {};
     _XMCOLOR(UINT Color) : c(Color) {};
     _XMCOLOR(FLOAT _r, FLOAT _g, FLOAT _b, FLOAT _a);
-    _XMCOLOR(CONST FLOAT *pArray);
+    explicit _XMCOLOR(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator UINT () { return c; }
 
@@ -1551,6 +1770,7 @@ typedef struct _XMCOLOR
 
 } XMCOLOR;
 
+//------------------------------------------------------------------------------
 // 4D Vector; 8 bit signed normalized integer components
 typedef struct _XMBYTEN4
 {
@@ -1570,10 +1790,10 @@ typedef struct _XMBYTEN4
 
     _XMBYTEN4() {};
     _XMBYTEN4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMBYTEN4(UINT Packed) : v(Packed) {};
-    _XMBYTEN4(CONST CHAR *pArray);
+    explicit _XMBYTEN4(UINT Packed) : v(Packed) {};
+    explicit _XMBYTEN4(_In_count_c_(4) CONST CHAR *pArray);
     _XMBYTEN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMBYTEN4(CONST FLOAT *pArray);
+    explicit _XMBYTEN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMBYTEN4& operator= (CONST _XMBYTEN4& ByteN4);
 
@@ -1600,10 +1820,10 @@ typedef struct _XMBYTE4
 
     _XMBYTE4() {};
     _XMBYTE4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMBYTE4(UINT Packed) : v(Packed) {};
-    _XMBYTE4(CONST CHAR *pArray);
+    explicit _XMBYTE4(UINT Packed) : v(Packed) {};
+    explicit _XMBYTE4(_In_count_c_(4) CONST CHAR *pArray);
     _XMBYTE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMBYTE4(CONST FLOAT *pArray);
+    explicit _XMBYTE4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMBYTE4& operator= (CONST _XMBYTE4& Byte4);
 
@@ -1630,10 +1850,10 @@ typedef struct _XMUBYTEN4
 
     _XMUBYTEN4() {};
     _XMUBYTEN4(BYTE _x, BYTE _y, BYTE _z, BYTE _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMUBYTEN4(UINT Packed) : v(Packed) {};
-    _XMUBYTEN4(CONST BYTE *pArray);
+    explicit _XMUBYTEN4(UINT Packed) : v(Packed) {};
+    explicit _XMUBYTEN4(_In_count_c_(4) CONST BYTE *pArray);
     _XMUBYTEN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUBYTEN4(CONST FLOAT *pArray);
+    explicit _XMUBYTEN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUBYTEN4& operator= (CONST _XMUBYTEN4& UByteN4);
 
@@ -1660,10 +1880,10 @@ typedef struct _XMUBYTE4
 
     _XMUBYTE4() {};
     _XMUBYTE4(BYTE _x, BYTE _y, BYTE _z, BYTE _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMUBYTE4(UINT Packed) : v(Packed) {};
-    _XMUBYTE4(CONST BYTE *pArray);
+    explicit _XMUBYTE4(UINT Packed) : v(Packed) {};
+    explicit _XMUBYTE4(_In_count_c_(4) CONST BYTE *pArray);
     _XMUBYTE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUBYTE4(CONST FLOAT *pArray);
+    explicit _XMUBYTE4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUBYTE4& operator= (CONST _XMUBYTE4& UByte4);
 
@@ -1671,6 +1891,7 @@ typedef struct _XMUBYTE4
 
 } XMUBYTE4;
 
+//------------------------------------------------------------------------------
 // 4D vector; 4 bit unsigned integer components
 typedef struct _XMUNIBBLE4
 {
@@ -1689,11 +1910,11 @@ typedef struct _XMUNIBBLE4
 #ifdef __cplusplus
 
     _XMUNIBBLE4() {};
-    _XMUNIBBLE4(USHORT Packed) : v(Packed) {};
+    explicit _XMUNIBBLE4(USHORT Packed) : v(Packed) {};
     _XMUNIBBLE4(CHAR _x, CHAR _y, CHAR _z, CHAR _w) : x(_x), y(_y), z(_z), w(_w) {};
-    _XMUNIBBLE4(CONST CHAR *pArray);
+    explicit _XMUNIBBLE4(_In_count_c_(4) CONST CHAR *pArray);
     _XMUNIBBLE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
-    _XMUNIBBLE4(CONST FLOAT *pArray);
+    explicit _XMUNIBBLE4(_In_count_c_(4) CONST FLOAT *pArray);
 
     operator USHORT () { return v; }
 
@@ -1704,6 +1925,7 @@ typedef struct _XMUNIBBLE4
 
 } XMUNIBBLE4;
 
+//------------------------------------------------------------------------------
 // 4D vector: 5/5/5/1 unsigned integer components
 typedef struct _XMU555
 {
@@ -1722,11 +1944,11 @@ typedef struct _XMU555
 #ifdef __cplusplus
 
     _XMU555() {};
-    _XMU555(USHORT Packed) : v(Packed) {};
+    explicit _XMU555(USHORT Packed) : v(Packed) {};
     _XMU555(CHAR _x, CHAR _y, CHAR _z, BOOL _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {};
-    _XMU555(CONST CHAR *pArray, BOOL _w);
+    _XMU555(_In_count_c_(3) CONST CHAR *pArray, BOOL _w);
     _XMU555(FLOAT _x, FLOAT _y, FLOAT _z, BOOL _w);
-    _XMU555(CONST FLOAT *pArray, BOOL _w);
+    _XMU555(_In_count_c_(3) CONST FLOAT *pArray, BOOL _w);
 
     operator USHORT () { return v; }
 
@@ -1737,6 +1959,7 @@ typedef struct _XMU555
 
 } XMU555;
 
+//------------------------------------------------------------------------------
 // 3x3 Matrix: 32 bit floating point components
 typedef struct _XMFLOAT3X3
 {
@@ -1757,7 +1980,7 @@ typedef struct _XMFLOAT3X3
     _XMFLOAT3X3(FLOAT m00, FLOAT m01, FLOAT m02,
                 FLOAT m10, FLOAT m11, FLOAT m12,
                 FLOAT m20, FLOAT m21, FLOAT m22);
-    _XMFLOAT3X3(CONST FLOAT *pArray);
+    explicit _XMFLOAT3X3(_In_count_c_(9) CONST FLOAT *pArray);
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -1768,6 +1991,7 @@ typedef struct _XMFLOAT3X3
 
 } XMFLOAT3X3;
 
+//------------------------------------------------------------------------------
 // 4x3 Matrix: 32 bit floating point components
 typedef struct _XMFLOAT4X3
 {
@@ -1790,7 +2014,7 @@ typedef struct _XMFLOAT4X3
                 FLOAT m10, FLOAT m11, FLOAT m12,
                 FLOAT m20, FLOAT m21, FLOAT m22,
                 FLOAT m30, FLOAT m31, FLOAT m32);
-    _XMFLOAT4X3(CONST FLOAT *pArray);
+    explicit _XMFLOAT4X3(_In_count_c_(12) CONST FLOAT *pArray);
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -1811,7 +2035,7 @@ __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
                 FLOAT m20, FLOAT m21, FLOAT m22,
                 FLOAT m30, FLOAT m31, FLOAT m32) :
         XMFLOAT4X3(m00,m01,m02,m10,m11,m12,m20,m21,m22,m30,m31,m32) {};
-    XMFLOAT4X3A(CONST FLOAT *pArray) : XMFLOAT4X3(pArray) {}
+    explicit XMFLOAT4X3A(_In_count_c_(12) CONST FLOAT *pArray) : XMFLOAT4X3(pArray) {}
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -1822,6 +2046,7 @@ __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
 typedef __declspec(align(16)) XMFLOAT4X3 XMFLOAT4X3A;
 #endif // __cplusplus
 
+//------------------------------------------------------------------------------
 // 4x4 Matrix: 32 bit floating point components
 typedef struct _XMFLOAT4X4
 {
@@ -1844,7 +2069,7 @@ typedef struct _XMFLOAT4X4
                 FLOAT m10, FLOAT m11, FLOAT m12, FLOAT m13,
                 FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
                 FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
-    _XMFLOAT4X4(CONST FLOAT *pArray);
+    explicit _XMFLOAT4X4(_In_count_c_(16) CONST FLOAT *pArray);
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -1865,7 +2090,7 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
                 FLOAT m20, FLOAT m21, FLOAT m22, FLOAT m23,
                 FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33)
         : XMFLOAT4X4(m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,m23,m30,m31,m32,m33) {};
-    XMFLOAT4X4A(CONST FLOAT *pArray) : XMFLOAT4X4(pArray) {}
+    explicit XMFLOAT4X4A(_In_count_c_(16) CONST FLOAT *pArray) : XMFLOAT4X4(pArray) {}
 
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
@@ -1876,12 +2101,12 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
 typedef __declspec(align(16)) XMFLOAT4X4 XMFLOAT4X4A;
 #endif // __cplusplus
 
-#if !defined(_XM_X86_) && !defined(_XM_X64_)
+
+#ifdef _XM_BIGENDIAN_
 #pragma bitfield_order(pop)
-#endif // !_XM_X86_ && !_XM_X64_
+#endif
 
 #pragma warning(pop)
-
 
 /****************************************************************************
  *
@@ -1928,16 +2153,24 @@ XMVECTOR        XMLoadInt2(_In_count_c_(2) CONST UINT* pSource);
 XMVECTOR        XMLoadInt2A(_In_count_c_(2) CONST UINT* PSource);
 XMVECTOR        XMLoadFloat2(_In_ CONST XMFLOAT2* pSource);
 XMVECTOR        XMLoadFloat2A(_In_ CONST XMFLOAT2A* pSource);
+XMVECTOR        XMLoadSInt2(_In_ CONST XMINT2* pSource);
+XMVECTOR        XMLoadUInt2(_In_ CONST XMUINT2* pSource);
 XMVECTOR        XMLoadHalf2(_In_ CONST XMHALF2* pSource);
 XMVECTOR        XMLoadShortN2(_In_ CONST XMSHORTN2* pSource);
 XMVECTOR        XMLoadShort2(_In_ CONST XMSHORT2* pSource);
 XMVECTOR        XMLoadUShortN2(_In_ CONST XMUSHORTN2* pSource);
 XMVECTOR        XMLoadUShort2(_In_ CONST XMUSHORT2* pSource);
+XMVECTOR        XMLoadByteN2(_In_ CONST XMBYTEN2* pSource);
+XMVECTOR        XMLoadByte2(_In_ CONST XMBYTE2* pSource);
+XMVECTOR        XMLoadUByteN2(_In_ CONST XMUBYTEN2* pSource);
+XMVECTOR        XMLoadUByte2(_In_ CONST XMUBYTE2* pSource);
 
 XMVECTOR        XMLoadInt3(_In_count_c_(3) CONST UINT* pSource);
 XMVECTOR        XMLoadInt3A(_In_count_c_(3) CONST UINT* pSource);
 XMVECTOR        XMLoadFloat3(_In_ CONST XMFLOAT3* pSource);
 XMVECTOR        XMLoadFloat3A(_In_ CONST XMFLOAT3A* pSource);
+XMVECTOR        XMLoadSInt3(_In_ CONST XMINT3* pSource);
+XMVECTOR        XMLoadUInt3(_In_ CONST XMUINT3* pSource);
 XMVECTOR        XMLoadHenDN3(_In_ CONST XMHENDN3* pSource);
 XMVECTOR        XMLoadHenD3(_In_ CONST XMHEND3* pSource);
 XMVECTOR        XMLoadUHenDN3(_In_ CONST XMUHENDN3* pSource);
@@ -1954,6 +2187,8 @@ XMVECTOR        XMLoadInt4(_In_count_c_(4) CONST UINT* pSource);
 XMVECTOR        XMLoadInt4A(_In_count_c_(4) CONST UINT* pSource);
 XMVECTOR        XMLoadFloat4(_In_ CONST XMFLOAT4* pSource);
 XMVECTOR        XMLoadFloat4A(_In_ CONST XMFLOAT4A* pSource);
+XMVECTOR        XMLoadSInt4(_In_ CONST XMINT4* pSource);
+XMVECTOR        XMLoadUInt4(_In_ CONST XMUINT4* pSource);
 XMVECTOR        XMLoadHalf4(_In_ CONST XMHALF4* pSource);
 XMVECTOR        XMLoadShortN4(_In_ CONST XMSHORTN4* pSource);
 XMVECTOR        XMLoadShort4(_In_ CONST XMSHORT4* pSource);
@@ -1998,16 +2233,24 @@ VOID            XMStoreInt2(_Out_cap_c_(2) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreInt2A(_Out_cap_c_(2) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat2(_Out_ XMFLOAT2* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat2A(_Out_ XMFLOAT2A* pDestination, FXMVECTOR V);
+VOID            XMStoreSInt2(_Out_ XMINT2* pDestination, FXMVECTOR V);
+VOID            XMStoreUInt2(_Out_ XMUINT2* pDestination, FXMVECTOR V);
 VOID            XMStoreHalf2(_Out_ XMHALF2* pDestination, FXMVECTOR V);
 VOID            XMStoreShortN2(_Out_ XMSHORTN2* pDestination, FXMVECTOR V);
 VOID            XMStoreShort2(_Out_ XMSHORT2* pDestination, FXMVECTOR V);
 VOID            XMStoreUShortN2(_Out_ XMUSHORTN2* pDestination, FXMVECTOR V);
 VOID            XMStoreUShort2(_Out_ XMUSHORT2* pDestination, FXMVECTOR V);
+VOID            XMStoreByteN2(_Out_ XMBYTEN2* pDestination, FXMVECTOR V);
+VOID            XMStoreByte2(_Out_ XMBYTE2* pDestination, FXMVECTOR V);
+VOID            XMStoreUByteN2(_Out_ XMUBYTEN2* pDestination, FXMVECTOR V);
+VOID            XMStoreUByte2(_Out_ XMUBYTE2* pDestination, FXMVECTOR V);
 
 VOID            XMStoreInt3(_Out_cap_c_(3) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreInt3A(_Out_cap_c_(3) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat3(_Out_ XMFLOAT3* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat3A(_Out_ XMFLOAT3A* pDestination, FXMVECTOR V);
+VOID            XMStoreSInt3(_Out_ XMINT3* pDestination, FXMVECTOR V);
+VOID            XMStoreUInt3(_Out_ XMUINT3* pDestination, FXMVECTOR V);
 VOID            XMStoreHenDN3(_Out_ XMHENDN3* pDestination, FXMVECTOR V);
 VOID            XMStoreHenD3(_Out_ XMHEND3* pDestination, FXMVECTOR V);
 VOID            XMStoreUHenDN3(_Out_ XMUHENDN3* pDestination, FXMVECTOR V);
@@ -2022,10 +2265,12 @@ VOID            XMStoreFloat3SE(_Out_ XMFLOAT3SE* pDestination, FXMVECTOR V);
 
 VOID            XMStoreInt4(_Out_cap_c_(4) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreInt4A(_Out_cap_c_(4) UINT* pDestination, FXMVECTOR V);
-VOID            XMStoreInt4NC(_Out_ UINT* pDestination, FXMVECTOR V);
+VOID            XMStoreInt4NC(_Out_cap_c_(4) UINT* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat4(_Out_ XMFLOAT4* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat4A(_Out_ XMFLOAT4A* pDestination, FXMVECTOR V);
 VOID            XMStoreFloat4NC(_Out_ XMFLOAT4* pDestination, FXMVECTOR V);
+VOID            XMStoreSInt4(_Out_ XMINT4* pDestination, FXMVECTOR V);
+VOID            XMStoreUInt4(_Out_ XMUINT4* pDestination, FXMVECTOR V);
 VOID            XMStoreHalf4(_Out_ XMHALF4* pDestination, FXMVECTOR V);
 VOID            XMStoreShortN4(_Out_ XMSHORTN4* pDestination, FXMVECTOR V);
 VOID            XMStoreShort4(_Out_ XMSHORT4* pDestination, FXMVECTOR V);
@@ -2497,6 +2742,7 @@ XMMATRIX        XMMatrixOrthographicRH(FLOAT ViewWidth, FLOAT ViewHeight, FLOAT 
 XMMATRIX        XMMatrixOrthographicOffCenterLH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ);
 XMMATRIX        XMMatrixOrthographicOffCenterRH(FLOAT ViewLeft, FLOAT ViewRight, FLOAT ViewBottom, FLOAT ViewTop, FLOAT NearZ, FLOAT FarZ);
 
+
 /****************************************************************************
  *
  * Quaternion operations
@@ -2754,6 +3000,11 @@ XMGLOBALCONST XMVECTORF32 g_XMMulDec4           = {1.0f,1.0f/1024.0f,1.0f/(1024.
 XMGLOBALCONST XMVECTORI32 g_XMMaskByte4         = {0xFF,0xFF00,0xFF0000,0xFF000000};
 XMGLOBALCONST XMVECTORI32 g_XMXorByte4          = {0x80,0x8000,0x800000,0x00000000};
 XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0f*65536.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMFixUnsigned       = {32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMMaxInt            = {65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f};
+XMGLOBALCONST XMVECTORF32 g_XMMaxUInt           = {65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f};
+XMGLOBALCONST XMVECTORF32 g_XMUnsignedFix       = {32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f};
+
 
 /****************************************************************************
  *
@@ -2774,6 +3025,7 @@ XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0
 #define logf(x)     ((float)log((double)(x)))
 
 #endif // !defined(__cplusplus) && !defined(_XBOX) && defined(_XM_ISVS2005_)
+
 
 //------------------------------------------------------------------------------
 

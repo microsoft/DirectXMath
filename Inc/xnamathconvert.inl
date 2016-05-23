@@ -1,15 +1,11 @@
-/*++
-
-Copyright (c) Microsoft Corporation. All rights reserved.
-
-Module Name:
-
-    xnamathconvert.inl
-
-Abstract:
-
-	XNA math library for Windows and Xbox 360: Conversion, loading, and storing functions.
---*/
+/************************************************************************
+*                                                                       *
+* xnamathconvert.inl -- SIMD C++ Math library for Windows and Xbox 360  *
+*                       Conversion, loading, and storing functions      *
+*                                                                       *
+* Copyright (c) Microsoft Corp. All rights reserved.                    *
+*                                                                       *
+************************************************************************/
 
 #if defined(_MSC_VER) && (_MSC_VER > 1000)
 #pragma once
@@ -290,11 +286,10 @@ XMINLINE XMVECTOR XMConvertVectorFloatToInt
     return Result;
 #else // _XM_SSE_INTRINSICS_
     XMASSERT(MulExponent<32);
-    static const XMVECTORF32 MaxInt = {65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f,65536.0f*32768.0f-128.0f};
     XMVECTOR vResult = _mm_set_ps1((FLOAT)(1U << MulExponent));
     vResult = _mm_mul_ps(vResult,VFloat);
     // In case of positive overflow, detect it
-    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,MaxInt);
+    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,g_XMMaxInt);
     // Float to int conversion
     __m128i vResulti = _mm_cvttps_epi32(vResult);
     // If there was positive overflow, set to 0x7FFFFFFF
@@ -326,7 +321,6 @@ XMINLINE XMVECTOR XMConvertVectorUIntToFloat
     return Result;
 #else // _XM_SSE_INTRINSICS_
     XMASSERT(DivExponent<32);
-    static const XMVECTORF32 FixUnsigned = {32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f};
     // For the values that are higher than 0x7FFFFFFF, a fixup is needed
     // Determine which ones need the fix.
     XMVECTOR vMask = _mm_and_ps(VUInt,g_XMNegativeZero);
@@ -337,7 +331,7 @@ XMINLINE XMVECTOR XMConvertVectorUIntToFloat
     // Convert 0x80000000 -> 0xFFFFFFFF
     __m128i iMask = _mm_srai_epi32(reinterpret_cast<const __m128i *>(&vMask)[0],31);
     // For only the ones that are too big, add the fixup
-    vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&iMask)[0],FixUnsigned);
+    vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&iMask)[0],g_XMFixUnsigned);
     vResult = _mm_add_ps(vResult,vMask);
     // Convert DivExponent into 1.0f/(1<<DivExponent)
     UINT uScale = 0x3F800000U - (DivExponent << 23);
@@ -379,15 +373,13 @@ XMINLINE XMVECTOR XMConvertVectorFloatToUInt
     return Result;
 #else // _XM_SSE_INTRINSICS_
     XMASSERT(MulExponent<32);
-    static const XMVECTORF32 MaxUInt = {65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f,65536.0f*65536.0f-256.0f};
-    static const XMVECTORF32 UnsignedFix = {32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f,32768.0f*65536.0f};
     XMVECTOR vResult = _mm_set_ps1(static_cast<float>(1U << MulExponent));
     vResult = _mm_mul_ps(vResult,VFloat);
     // Clamp to >=0
     vResult = _mm_max_ps(vResult,g_XMZero);
     // Any numbers that are too big, set to 0xFFFFFFFFU
-    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,MaxUInt);
-    XMVECTOR vValue = UnsignedFix;
+    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,g_XMMaxUInt);
+    XMVECTOR vValue = g_XMUnsignedFix;
     // Too large for a signed integer?
     XMVECTOR vMask = _mm_cmpge_ps(vResult,vValue);
     // Zero for number's lower than 0x80000000, 32768.0f*65536.0f otherwise
@@ -484,6 +476,70 @@ XMFINLINE XMVECTOR XMLoadInt2
     __m128 x = _mm_load_ss( (const float*)pSource );
     __m128 y = _mm_load_ss( (const float*)(pSource+1) );
     return _mm_unpacklo_ps( x, y );
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadSInt2
+(
+    CONST XMINT2* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    return V;
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+
+    __m128 x = _mm_load_ss( (const float*)&pSource->x );
+    __m128 y = _mm_load_ss( (const float*)&pSource->y );
+    __m128 V = _mm_unpacklo_ps( x, y );
+    return _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&V)[0]);
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadUInt2
+(
+    CONST XMUINT2* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    return V;
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+
+    __m128 x = _mm_load_ss( (const float*)&pSource->x );
+    __m128 y = _mm_load_ss( (const float*)&pSource->y );
+    __m128 V = _mm_unpacklo_ps( x, y );
+    // For the values that are higher than 0x7FFFFFFF, a fixup is needed
+    // Determine which ones need the fix.
+    XMVECTOR vMask = _mm_and_ps(V,g_XMNegativeZero);
+    // Force all values positive
+    XMVECTOR vResult = _mm_xor_ps(V,vMask);
+    // Convert to floats
+    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    // Convert 0x80000000 -> 0xFFFFFFFF
+    __m128i iMask = _mm_srai_epi32(reinterpret_cast<const __m128i *>(&vMask)[0],31);
+    // For only the ones that are too big, add the fixup
+    vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&iMask)[0],g_XMFixUnsigned);
+    vResult = _mm_add_ps(vResult,vMask);
+    return vResult;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -613,12 +669,10 @@ XMFINLINE XMVECTOR XMLoadShortN2
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
     {
     XMVECTOR vResult = {
-        (FLOAT)pSource->x * (1.0f/32767.0f),
-        (FLOAT)pSource->y * (1.0f/32767.0f),
+        (pSource->x == -32768) ? -1.f : ((FLOAT)pSource->x * (1.0f/32767.0f)),
+        (pSource->y == -32768) ? -1.f : ((FLOAT)pSource->y * (1.0f/32767.0f)),
         0.0f,
         0.0f
     };
@@ -627,8 +681,6 @@ XMFINLINE XMVECTOR XMLoadShortN2
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
     // Splat the two shorts in all four entries (WORD alignment okay,
     // DWORD alignment preferred)
     __m128 vTemp = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->x));
@@ -640,8 +692,10 @@ XMFINLINE XMVECTOR XMLoadShortN2
     vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
     // x - 0x8000 to undo the signed order.
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16);
-    // Convert 0-32767 to 0.0f-1.0f
-    return _mm_mul_ps(vTemp,g_XMNormalizeX16Y16);
+    // Convert -1.0f - 1.0f
+    vTemp = _mm_mul_ps(vTemp,g_XMNormalizeX16Y16);
+    // Clamp result (for case of -32768)
+    return _mm_max_ps( vTemp, g_XMNegativeOne );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -658,8 +712,6 @@ XMFINLINE XMVECTOR XMLoadShort2
     XMVECTOR V;
 
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
 
     V.vector4_f32[0] = (FLOAT)pSource->x;
     V.vector4_f32[1] = (FLOAT)pSource->y;
@@ -668,8 +720,6 @@ XMFINLINE XMVECTOR XMLoadShort2
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
     // Splat the two shorts in all four entries (WORD alignment okay,
     // DWORD alignment preferred)
     __m128 vTemp = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->x));
@@ -768,6 +818,82 @@ XMFINLINE XMVECTOR XMLoadUShort2
 
 //------------------------------------------------------------------------------
 
+XMFINLINE XMVECTOR XMLoadByteN2
+(
+    CONST XMBYTEN2* pSource
+)
+{
+    XMASSERT(pSource);
+    {
+    XMVECTOR vResult = {
+        (pSource->x == -128) ? -1.f : ((FLOAT)pSource->x * (1.0f/127.0f)),
+        (pSource->y == -128) ? -1.f : ((FLOAT)pSource->y * (1.0f/127.0f)),
+        0.0f,
+        0.0f
+    };
+    return vResult;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadByte2
+(
+    CONST XMBYTE2* pSource
+)
+{
+    XMASSERT(pSource);
+    {
+    XMVECTOR vResult = {
+        (FLOAT)pSource->x,
+        (FLOAT)pSource->y,
+        0.0f,
+        0.0f
+    };
+    return vResult;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadUByteN2
+(
+    CONST XMUBYTEN2* pSource
+)
+{
+    XMASSERT(pSource);
+    {
+    XMVECTOR vResult = {
+        (FLOAT)pSource->x * (1.0f/255.0f),
+        (FLOAT)pSource->y * (1.0f/255.0f),
+        0.0f,
+        0.0f
+    };
+    return vResult;
+    }
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadUByte2
+(
+    CONST XMUBYTE2* pSource
+)
+{
+    XMASSERT(pSource);
+    {
+    XMVECTOR vResult = {
+        (FLOAT)pSource->x,
+        (FLOAT)pSource->y,
+        0.0f,
+        0.0f
+    };
+    return vResult;
+    }
+}
+
+//------------------------------------------------------------------------------
+
 XMFINLINE XMVECTOR XMLoadInt3
 (
     CONST UINT* pSource
@@ -798,6 +924,96 @@ XMFINLINE XMVECTOR XMLoadInt3
     __m128 xy = _mm_unpacklo_ps( x, y );
     return _mm_movelh_ps( xy, z );
 #endif // !_XM_ISVS2005_
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadSInt3
+(
+    CONST XMINT3* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+#ifdef _XBOX
+    V = XMLoadInt3( (const UINT*)pSource );
+    return XMConvertVectorIntToFloat( V, 0 );
+#else
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    V.vector4_f32[2] = (float)pSource->z;
+    return V;
+#endif
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+
+#ifdef _XM_ISVS2005_
+    __m128i V = _mm_set_epi32( 0, pSource->z, pSource->y, pSource->x );
+    return _mm_cvtepi32_ps(V);
+#else
+    __m128 x = _mm_load_ss( (const float*)&pSource->x );
+    __m128 y = _mm_load_ss( (const float*)&pSource->y );
+    __m128 z = _mm_load_ss( (const float*)&pSource->z );
+    __m128 xy = _mm_unpacklo_ps( x, y );
+    __m128 V = _mm_movelh_ps( xy, z );
+    return _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&V)[0]);
+#endif // !_XM_ISVS2005_
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadUInt3
+(
+    CONST XMUINT3* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    V.vector4_f32[2] = (float)pSource->z;
+    return V;
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+
+#ifdef _XM_ISVS2005_
+    __m128i V = _mm_set_epi32( 0, pSource->z, pSource->y, pSource->x );
+    // For the values that are higher than 0x7FFFFFFF, a fixup is needed
+    // Determine which ones need the fix.
+    XMVECTOR vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&V)[0],g_XMNegativeZero);
+    // Force all values positive
+    XMVECTOR vResult = _mm_xor_ps(reinterpret_cast<const __m128 *>(&V)[0],vMask);
+#else
+    __m128 x = _mm_load_ss( (const float*)&pSource->x );
+    __m128 y = _mm_load_ss( (const float*)&pSource->y );
+    __m128 z = _mm_load_ss( (const float*)&pSource->z );
+    __m128 xy = _mm_unpacklo_ps( x, y );
+    __m128 V = _mm_movelh_ps( xy, z );
+    // For the values that are higher than 0x7FFFFFFF, a fixup is needed
+    // Determine which ones need the fix.
+    XMVECTOR vMask = _mm_and_ps(V,g_XMNegativeZero);
+    // Force all values positive
+    XMVECTOR vResult = _mm_xor_ps(V,vMask);
+#endif // !_XM_ISVS2005_
+    // Convert to floats
+    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    // Convert 0x80000000 -> 0xFFFFFFFF
+    __m128i iMask = _mm_srai_epi32(reinterpret_cast<const __m128i *>(&vMask)[0],31);
+    // For only the ones that are too big, add the fixup
+    vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&iMask)[0],g_XMFixUnsigned);
+    vResult = _mm_add_ps(vResult,vMask);
+    return vResult; 
+
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1566,6 +1782,73 @@ XMFINLINE XMVECTOR XMLoadInt4
 
 //------------------------------------------------------------------------------
 
+XMFINLINE XMVECTOR XMLoadSInt4
+(
+    CONST XMINT4* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+#ifdef _XBOX
+    V = XMLoadInt4( (const UINT*)pSource );
+    return XMConvertVectorIntToFloat( V, 0 );
+#else
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    V.vector4_f32[2] = (float)pSource->z;
+    V.vector4_f32[3] = (float)pSource->w;
+    return V;
+#endif
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+    __m128i V = _mm_loadu_si128( (const __m128i*)pSource );
+    return _mm_cvtepi32_ps(V);
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE XMVECTOR XMLoadUInt4
+(
+    CONST XMUINT4* pSource
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR V;
+    XMASSERT(pSource);
+
+    V.vector4_f32[0] = (float)pSource->x;
+    V.vector4_f32[1] = (float)pSource->y;
+    V.vector4_f32[2] = (float)pSource->z;
+    V.vector4_f32[3] = (float)pSource->w;
+    return V;
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pSource);
+    __m128i V = _mm_loadu_si128( (const __m128i*)pSource );
+    // For the values that are higher than 0x7FFFFFFF, a fixup is needed
+    // Determine which ones need the fix.
+    XMVECTOR vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&V)[0],g_XMNegativeZero);
+    // Force all values positive
+    XMVECTOR vResult = _mm_xor_ps(reinterpret_cast<const __m128 *>(&V)[0],vMask);
+    // Convert to floats
+    vResult = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vResult)[0]);
+    // Convert 0x80000000 -> 0xFFFFFFFF
+    __m128i iMask = _mm_srai_epi32(reinterpret_cast<const __m128i *>(&vMask)[0],31);
+    // For only the ones that are too big, add the fixup
+    vMask = _mm_and_ps(reinterpret_cast<const __m128 *>(&iMask)[0],g_XMFixUnsigned);
+    vResult = _mm_add_ps(vResult,vMask);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
 XMFINLINE XMVECTOR XMLoadInt4A
 (
     CONST UINT* pSource
@@ -1672,7 +1955,7 @@ XMFINLINE XMVECTOR XMLoadHalf4
     return vResult;
     }
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     XMVECTOR vResult = {
         XMConvertHalfToFloat(pSource->x),
         XMConvertHalfToFloat(pSource->y),
@@ -1693,25 +1976,17 @@ XMFINLINE XMVECTOR XMLoadShortN4
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
-    XMASSERT(pSource->z != -32768);
-    XMASSERT(pSource->w != -32768);
     {
     XMVECTOR vResult = {
-        (FLOAT)pSource->x * (1.0f/32767.0f),
-        (FLOAT)pSource->y * (1.0f/32767.0f),
-        (FLOAT)pSource->z * (1.0f/32767.0f),
-        (FLOAT)pSource->w * (1.0f/32767.0f)
+        (pSource->x == -32768) ? -1.f : ((FLOAT)pSource->x * (1.0f/32767.0f)),
+        (pSource->y == -32768) ? -1.f : ((FLOAT)pSource->y * (1.0f/32767.0f)),
+        (pSource->z == -32768) ? -1.f : ((FLOAT)pSource->z * (1.0f/32767.0f)),
+        (pSource->w == -32768) ? -1.f : ((FLOAT)pSource->w * (1.0f/32767.0f))
     };
     return vResult;
     }
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
-    XMASSERT(pSource->z != -32768);
-    XMASSERT(pSource->w != -32768);
+    XMASSERT(pSource);
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
@@ -1722,11 +1997,12 @@ XMFINLINE XMVECTOR XMLoadShortN4
     vTemp = _mm_cvtepi32_ps(reinterpret_cast<const __m128i *>(&vTemp)[0]);
     // x and z - 0x8000 to complete the conversion
     vTemp = _mm_add_ps(vTemp,g_XMFixX16Y16Z16W16);
-    // Convert -32767-32767 to -1.0f-1.0f
+    // Convert to -1.0f - 1.0f
     vTemp = _mm_mul_ps(vTemp,g_XMNormalizeX16Y16Z16W16);
     // Very important! The entries are x,z,y,w, flip it to x,y,z,w
     vTemp = _mm_shuffle_ps(vTemp,vTemp,_MM_SHUFFLE(3,1,2,0));
-    return vTemp;
+    // Clamp result (for case of -32768)
+    return _mm_max_ps( vTemp, g_XMNegativeOne );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1743,10 +2019,6 @@ XMFINLINE XMVECTOR XMLoadShort4
     XMVECTOR V;
 
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
-    XMASSERT(pSource->z != -32768);
-    XMASSERT(pSource->w != -32768);
 
     V.vector4_f32[0] = (FLOAT)pSource->x;
     V.vector4_f32[1] = (FLOAT)pSource->y;
@@ -1757,10 +2029,6 @@ XMFINLINE XMVECTOR XMLoadShort4
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -32768);
-    XMASSERT(pSource->y != -32768);
-    XMASSERT(pSource->z != -32768);
-    XMASSERT(pSource->w != -32768);
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
@@ -1800,10 +2068,10 @@ XMFINLINE XMVECTOR XMLoadUShortN4
     return V;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     static const XMVECTORF32 FixupY16W16 = {1.0f/65535.0f,1.0f/65535.0f,1.0f/(65535.0f*65536.0f),1.0f/(65535.0f*65536.0f)};
     static const XMVECTORF32 FixaddY16W16  = {0,0,32768.0f*65536.0f,32768.0f*65536.0f};
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
@@ -1845,7 +2113,7 @@ XMFINLINE XMVECTOR XMLoadUShort4
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pSource);
     static const XMVECTORF32 FixaddY16W16  = {0,0,32768.0f,32768.0f};
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double *>(&pSource->x));
     // Shift x&0ffff,z&0xffff,y&0xffff0000,w&0xffff0000
@@ -1897,7 +2165,7 @@ XMFINLINE XMVECTOR XMLoadXIcoN4
     XMASSERT(((pSource->v >> 20) & 0xFFFFFull) != 0x80000ull);
     XMASSERT(((pSource->v >> 40) & 0xFFFFFull) != 0x80000ull);
     static const XMVECTORF32 LoadXIcoN4Mul = {1.0f/524287.0f,1.0f/(524287.0f*4096.0f),1.0f/524287.0f,1.0f/(15.0f*4096.0f*65536.0f)};
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Grab the 64 bit structure
     __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
     // By shifting down 8 bits, y and z are in seperate 32 bit elements
@@ -2202,7 +2470,7 @@ XMFINLINE XMVECTOR XMLoadXDecN4
     return V;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries
     __m128 vTemp = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
     // Shift R&0xFF0000, G&0xFF00, B&0xFF, A&0xFF000000
@@ -2489,7 +2757,7 @@ XMFINLINE XMVECTOR XMLoadUByteN4
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadUByteN4Mul = {1.0f/255.0f,1.0f/(255.0f*256.0f),1.0f/(255.0f*65536.0f),1.0f/(255.0f*65536.0f*256.0f)};
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries (x,z,y,w)
     XMVECTOR vTemp = _mm_load1_ps(reinterpret_cast<const float *>(&pSource->x));
     // Mask x&0ff,y&0xff00,z&0xff0000,w&0xff000000
@@ -2529,7 +2797,7 @@ XMFINLINE XMVECTOR XMLoadUByte4
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadUByte4Mul = {1.0f,1.0f/256.0f,1.0f/65536.0f,1.0f/(65536.0f*256.0f)};
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries (x,z,y,w)
     XMVECTOR vTemp = _mm_load1_ps(reinterpret_cast<const float *>(&pSource->x));
     // Mask x&0ff,y&0xff00,z&0xff0000,w&0xff000000
@@ -2559,25 +2827,17 @@ XMFINLINE XMVECTOR XMLoadByteN4
     XMVECTOR V;
 
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -128);
-    XMASSERT(pSource->y != -128);
-    XMASSERT(pSource->z != -128);
-    XMASSERT(pSource->w != -128);
 
-    V.vector4_f32[0] = (FLOAT)pSource->x / 127.0f;
-    V.vector4_f32[1] = (FLOAT)pSource->y / 127.0f;
-    V.vector4_f32[2] = (FLOAT)pSource->z / 127.0f;
-    V.vector4_f32[3] = (FLOAT)pSource->w / 127.0f;
+    V.vector4_f32[0] = (pSource->x == -128) ? -1.f : ((FLOAT)pSource->x / 127.0f);
+    V.vector4_f32[1] = (pSource->y == -128) ? -1.f : ((FLOAT)pSource->y / 127.0f);
+    V.vector4_f32[2] = (pSource->z == -128) ? -1.f : ((FLOAT)pSource->z / 127.0f);
+    V.vector4_f32[3] = (pSource->w == -128) ? -1.f : ((FLOAT)pSource->w / 127.0f);
 
     return V;
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadByteN4Mul = {1.0f/127.0f,1.0f/(127.0f*256.0f),1.0f/(127.0f*65536.0f),1.0f/(127.0f*65536.0f*256.0f)};
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -128);
-    XMASSERT(pSource->y != -128);
-    XMASSERT(pSource->z != -128);
-    XMASSERT(pSource->w != -128);
     // Splat the color in all four entries (x,z,y,w)
     XMVECTOR vTemp = _mm_load1_ps(reinterpret_cast<const float *>(&pSource->x));
     // Mask x&0ff,y&0xff00,z&0xff0000,w&0xff000000
@@ -2590,7 +2850,8 @@ XMFINLINE XMVECTOR XMLoadByteN4
     vTemp = _mm_add_ps(vTemp,g_XMAddByte4);
     // Fix y, z and w because they are too large
     vTemp = _mm_mul_ps(vTemp,LoadByteN4Mul);
-    return vTemp;
+    // Clamp result (for case of -128)
+    return _mm_max_ps( vTemp, g_XMNegativeOne );
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2607,10 +2868,6 @@ XMFINLINE XMVECTOR XMLoadByte4
     XMVECTOR V;
 
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -128);
-    XMASSERT(pSource->y != -128);
-    XMASSERT(pSource->z != -128);
-    XMASSERT(pSource->w != -128);
 
     V.vector4_f32[0] = (FLOAT)pSource->x;
     V.vector4_f32[1] = (FLOAT)pSource->y;
@@ -2622,10 +2879,6 @@ XMFINLINE XMVECTOR XMLoadByte4
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadByte4Mul = {1.0f,1.0f/256.0f,1.0f/65536.0f,1.0f/(65536.0f*256.0f)};
     XMASSERT(pSource);
-    XMASSERT(pSource->x != -128);
-    XMASSERT(pSource->y != -128);
-    XMASSERT(pSource->z != -128);
-    XMASSERT(pSource->w != -128);
     // Splat the color in all four entries (x,z,y,w)
     XMVECTOR vTemp = _mm_load1_ps(reinterpret_cast<const float *>(&pSource->x));
     // Mask x&0ff,y&0xff00,z&0xff0000,w&0xff000000
@@ -2743,7 +2996,7 @@ XMFINLINE XMVECTOR XMLoadColor
     return vColor;
     }
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Splat the color in all four entries
     __m128i vInt = _mm_set1_epi32(pSource->c);
     // Shift R&0xFF0000, G&0xFF00, B&0xFF, A&0xFF000000
@@ -2796,29 +3049,29 @@ XMFINLINE XMMATRIX XMLoadFloat3x3
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMMATRIX M;
-	XMVECTOR V1, V2, V3, Z, T1, T2, T3, T4, T5;
+    XMMATRIX M;
+    XMVECTOR V1, V2, V3, Z, T1, T2, T3, T4, T5;
 
-	Z = _mm_setzero_ps();
+    Z = _mm_setzero_ps();
 
-	XMASSERT(pSource);
+    XMASSERT(pSource);
 
-	V1 = _mm_loadu_ps( &pSource->m[0][0] );
-	V2 = _mm_loadu_ps( &pSource->m[1][1] );
-	V3 = _mm_load_ss( &pSource->m[2][2] );
+    V1 = _mm_loadu_ps( &pSource->m[0][0] );
+    V2 = _mm_loadu_ps( &pSource->m[1][1] );
+    V3 = _mm_load_ss( &pSource->m[2][2] );
 
-	T1 = _mm_unpackhi_ps( V1, Z );
-	T2 = _mm_unpacklo_ps( V2, Z );
-	T3 = _mm_shuffle_ps( V3, T2, _MM_SHUFFLE( 0, 1, 0, 0 ) );
-	T4 = _mm_movehl_ps( T2, T3 );
-	T5 = _mm_movehl_ps( Z, T1 );  
+    T1 = _mm_unpackhi_ps( V1, Z );
+    T2 = _mm_unpacklo_ps( V2, Z );
+    T3 = _mm_shuffle_ps( V3, T2, _MM_SHUFFLE( 0, 1, 0, 0 ) );
+    T4 = _mm_movehl_ps( T2, T3 );
+    T5 = _mm_movehl_ps( Z, T1 );  
 
-	M.r[0] = _mm_movelh_ps( V1, T1 );
-	M.r[1] = _mm_add_ps( T4, T5 );
-	M.r[2] = _mm_shuffle_ps( V2, V3, _MM_SHUFFLE(1, 0, 3, 2) );
-	M.r[3] = g_XMIdentityR3;
+    M.r[0] = _mm_movelh_ps( V1, T1 );
+    M.r[1] = _mm_add_ps( T4, T5 );
+    M.r[2] = _mm_shuffle_ps( V2, V3, _MM_SHUFFLE(1, 0, 3, 2) );
+    M.r[3] = g_XMIdentityR3;
 
-	return M;
+    return M;
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -2928,7 +3181,7 @@ XMFINLINE XMMATRIX XMLoadFloat4x3A
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pSource);
+    XMASSERT(pSource);
     // Use aligned load instructions to 
     // load the 12 floats
     // vTemp1 = x1,y1,z1,x2
@@ -3046,16 +3299,16 @@ XMFINLINE XMMATRIX XMLoadFloat4x4A
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMMATRIX M;
+    XMMATRIX M;
 
-	XMASSERT(pSource);
+    XMASSERT(pSource);
 
-	M.r[0] = _mm_load_ps( &pSource->_11 );
-	M.r[1] = _mm_load_ps( &pSource->_21 );
-	M.r[2] = _mm_load_ps( &pSource->_31 );
-	M.r[3] = _mm_load_ps( &pSource->_41 );
+    M.r[0] = _mm_load_ps( &pSource->_11 );
+    M.r[1] = _mm_load_ps( &pSource->_21 );
+    M.r[2] = _mm_load_ps( &pSource->_31 );
+    M.r[3] = _mm_load_ps( &pSource->_41 );
 
-	return M;
+    return M;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3135,6 +3388,87 @@ XMFINLINE VOID XMStoreInt2
     XMVECTOR T = _mm_shuffle_ps( V, V, _MM_SHUFFLE( 1, 1, 1, 1 ) );
     _mm_store_ss( (float*)&pDestination[0], V );
     _mm_store_ss( (float*)&pDestination[1], T );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreSInt2
+(
+    XMINT2* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    pDestination->x = (INT)V.vector4_f32[0];
+    pDestination->y = (INT)V.vector4_f32[1];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    // In case of positive overflow, detect it
+    XMVECTOR vOverflow = _mm_cmpgt_ps(V,g_XMMaxInt);
+    // Float to int conversion
+    __m128i vResulti = _mm_cvttps_epi32(V);
+    // If there was positive overflow, set to 0x7FFFFFFF
+    XMVECTOR vResult = _mm_and_ps(vOverflow,g_XMAbsMask);
+    vOverflow = _mm_andnot_ps(vOverflow,reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    vOverflow = _mm_or_ps(vOverflow,vResult);
+    // Write two ints
+    XMVECTOR T = _mm_shuffle_ps( vOverflow, vOverflow, _MM_SHUFFLE( 1, 1, 1, 1 ) );
+    _mm_store_ss( (float*)&pDestination->x, vOverflow );
+    _mm_store_ss( (float*)&pDestination->y, T );
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreUInt2
+(
+    XMUINT2* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    pDestination->x = (UINT)V.vector4_f32[0];
+    pDestination->y = (UINT)V.vector4_f32[1];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    // Clamp to >=0
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    // Any numbers that are too big, set to 0xFFFFFFFFU
+    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,g_XMMaxUInt);
+    XMVECTOR vValue = g_XMUnsignedFix;
+    // Too large for a signed integer?
+    XMVECTOR vMask = _mm_cmpge_ps(vResult,vValue);
+    // Zero for number's lower than 0x80000000, 32768.0f*65536.0f otherwise
+    vValue = _mm_and_ps(vValue,vMask);
+    // Perform fixup only on numbers too large (Keeps low bit precision)
+    vResult = _mm_sub_ps(vResult,vValue);
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Convert from signed to unsigned pnly if greater than 0x80000000
+    vMask = _mm_and_ps(vMask,g_XMNegativeZero);
+    vResult = _mm_xor_ps(reinterpret_cast<const __m128 *>(&vResulti)[0],vMask);
+    // On those that are too large, set to 0xFFFFFFFF
+    vResult = _mm_or_ps(vResult,vOverflow);
+    // Write two uints
+    XMVECTOR T = _mm_shuffle_ps( vResult, vResult, _MM_SHUFFLE( 1, 1, 1, 1 ) );
+    _mm_store_ss( (float*)&pDestination->x, vResult );
+    _mm_store_ss( (float*)&pDestination->y, T );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -3266,11 +3600,11 @@ XMFINLINE VOID XMStoreShortN2
     pDestination->y = (SHORT)N.vector4_f32[1];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     static CONST XMVECTORF32 Scale = {32767.0f, 32767.0f, 32767.0f, 32767.0f};
 
-	XMVECTOR vResult = _mm_max_ps(V,g_XMNegativeOne);
-	vResult = _mm_min_ps(vResult,g_XMOne);
+    XMVECTOR vResult = _mm_max_ps(V,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);
     vResult = _mm_mul_ps(vResult,Scale);
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti = _mm_packs_epi32(vResulti,vResulti);
@@ -3332,7 +3666,7 @@ XMFINLINE VOID XMStoreUShortN2
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiplyAdd(N, Scale.v, g_XMOneHalf.v);
     N = XMVectorTruncate(N);
 
@@ -3395,6 +3729,101 @@ XMFINLINE VOID XMStoreUShort2
 
 //------------------------------------------------------------------------------
 
+XMFINLINE VOID XMStoreByteN2
+(
+    XMBYTEN2* pDestination, 
+    FXMVECTOR   V
+)
+{
+    XMVECTOR N;
+    XMFLOAT4A tmp;
+    static CONST XMVECTORF32  Scale = {127.0f, 127.0f, 127.0f, 127.0f};
+
+    XMASSERT(pDestination);
+
+    N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
+    N = XMVectorMultiply(N, Scale.v);
+    N = XMVectorRound(N);
+
+    XMStoreFloat4A( &tmp, N );
+
+    pDestination->x = (BYTE)tmp.x;
+    pDestination->y = (BYTE)tmp.y;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreByte2
+(
+    XMBYTE2* pDestination, 
+    FXMVECTOR  V
+)
+{
+    XMVECTOR               N;
+    XMFLOAT4A              tmp;
+    static CONST XMVECTOR  Min = {-127.0f, -127.0f, -127.0f, -127.0f};
+    static CONST XMVECTOR  Max = {127.0f, 127.0f, 127.0f, 127.0f};
+
+    XMASSERT(pDestination);
+
+    N = XMVectorClamp(V, Min, Max);
+    N = XMVectorRound(N);
+
+    XMStoreFloat4A( &tmp, N );
+
+    pDestination->x = (BYTE)tmp.x;
+    pDestination->y = (BYTE)tmp.y;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreUByteN2
+(
+    XMUBYTEN2* pDestination, 
+    FXMVECTOR    V
+)
+{
+    XMVECTOR               N;
+    XMFLOAT4A              tmp;
+    static CONST XMVECTORF32  Scale = {255.0f, 255.0f, 255.0f, 255.0f};
+
+    XMASSERT(pDestination);
+
+    N = XMVectorSaturate(V);
+    N = XMVectorMultiplyAdd(N, Scale.v, g_XMOneHalf.v);
+    N = XMVectorTruncate(N);
+
+    XMStoreFloat4A( &tmp, N );
+
+    pDestination->x = (BYTE)tmp.x;
+    pDestination->y = (BYTE)tmp.y;
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreUByte2
+(
+    XMUBYTE2* pDestination, 
+    FXMVECTOR   V
+)
+{
+    XMVECTOR               N;
+    static CONST XMVECTOR  Max = {255.0f, 255.0f, 255.0f, 255.0f};
+    XMFLOAT4A              tmp;
+
+    XMASSERT(pDestination);
+
+    N = XMVectorClamp(V, XMVectorZero(), Max);
+    N = XMVectorRound(N);
+
+    XMStoreFloat4A( &tmp, N );
+
+    pDestination->x = (BYTE)tmp.x;
+    pDestination->y = (BYTE)tmp.y;
+}
+
+//------------------------------------------------------------------------------
+
 XMFINLINE VOID XMStoreInt3
 (
     UINT*    pDestination, 
@@ -3420,6 +3849,97 @@ XMFINLINE VOID XMStoreInt3
     _mm_store_ss( (float*)pDestination, V );
     _mm_store_ss( (float*)&pDestination[1], T1 );
     _mm_store_ss( (float*)&pDestination[2], T2 );
+
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreSInt3
+(
+    XMINT3* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    pDestination->x = (INT)V.vector4_f32[0];
+    pDestination->y = (INT)V.vector4_f32[1];
+    pDestination->z = (INT)V.vector4_f32[2];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    // In case of positive overflow, detect it
+    XMVECTOR vOverflow = _mm_cmpgt_ps(V,g_XMMaxInt);
+    // Float to int conversion
+    __m128i vResulti = _mm_cvttps_epi32(V);
+    // If there was positive overflow, set to 0x7FFFFFFF
+    XMVECTOR vResult = _mm_and_ps(vOverflow,g_XMAbsMask);
+    vOverflow = _mm_andnot_ps(vOverflow,reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    vOverflow = _mm_or_ps(vOverflow,vResult);
+    // Write 3 uints
+    XMVECTOR T1 = _mm_shuffle_ps(vOverflow,vOverflow,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR T2 = _mm_shuffle_ps(vOverflow,vOverflow,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( (float*)&pDestination->x, vOverflow );
+    _mm_store_ss( (float*)&pDestination->y, T1 );
+    _mm_store_ss( (float*)&pDestination->z, T2 );
+
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreUInt3
+(
+    XMUINT3* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    pDestination->x = (UINT)V.vector4_f32[0];
+    pDestination->y = (UINT)V.vector4_f32[1];
+    pDestination->z = (UINT)V.vector4_f32[2];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+
+    XMASSERT(pDestination);
+    XMASSERT(((UINT_PTR)pDestination & 3) == 0);
+
+    // Clamp to >=0
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    // Any numbers that are too big, set to 0xFFFFFFFFU
+    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,g_XMMaxUInt);
+    XMVECTOR vValue = g_XMUnsignedFix;
+    // Too large for a signed integer?
+    XMVECTOR vMask = _mm_cmpge_ps(vResult,vValue);
+    // Zero for number's lower than 0x80000000, 32768.0f*65536.0f otherwise
+    vValue = _mm_and_ps(vValue,vMask);
+    // Perform fixup only on numbers too large (Keeps low bit precision)
+    vResult = _mm_sub_ps(vResult,vValue);
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Convert from signed to unsigned pnly if greater than 0x80000000
+    vMask = _mm_and_ps(vMask,g_XMNegativeZero);
+    vResult = _mm_xor_ps(reinterpret_cast<const __m128 *>(&vResulti)[0],vMask);
+    // On those that are too large, set to 0xFFFFFFFF
+    vResult = _mm_or_ps(vResult,vOverflow);
+    // Write 3 uints
+    XMVECTOR T1 = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR T2 = _mm_shuffle_ps(vResult,vResult,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( (float*)&pDestination->x, vResult );
+    _mm_store_ss( (float*)&pDestination->y, T1 );
+    _mm_store_ss( (float*)&pDestination->z, T2 );
 
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
@@ -3532,7 +4052,7 @@ XMFINLINE VOID XMStoreUHenDN3
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiply(N, Scale.v);
 
     pDestination->v = (((UINT)N.vector4_f32[2] & 0x3FF) << 22) |
@@ -3722,7 +4242,7 @@ XMFINLINE VOID XMStoreUDHenN3
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiply(N, Scale.v);
 
     pDestination->v = (((UINT)N.vector4_f32[2] & 0x7FF) << 21) |
@@ -4194,6 +4714,83 @@ XMFINLINE VOID XMStoreInt4A
 
 //------------------------------------------------------------------------------
 
+XMFINLINE VOID XMStoreSInt4
+(
+    XMINT4* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+
+    pDestination->x = (INT)V.vector4_f32[0];
+    pDestination->y = (INT)V.vector4_f32[1];
+    pDestination->z = (INT)V.vector4_f32[2];
+    pDestination->w = (INT)V.vector4_f32[3];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pDestination);
+    
+    // In case of positive overflow, detect it
+    XMVECTOR vOverflow = _mm_cmpgt_ps(V,g_XMMaxInt);
+    // Float to int conversion
+    __m128i vResulti = _mm_cvttps_epi32(V);
+    // If there was positive overflow, set to 0x7FFFFFFF
+    XMVECTOR vResult = _mm_and_ps(vOverflow,g_XMAbsMask);
+    vOverflow = _mm_andnot_ps(vOverflow,reinterpret_cast<const __m128 *>(&vResulti)[0]);
+    vOverflow = _mm_or_ps(vOverflow,vResult);
+    _mm_storeu_si128( (__m128i*)pDestination, reinterpret_cast<const __m128i *>(&vOverflow)[0] );
+
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
+XMFINLINE VOID XMStoreUInt4
+(
+    XMUINT4* pDestination,
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMASSERT(pDestination);
+
+    pDestination->x = (UINT)V.vector4_f32[0];
+    pDestination->y = (UINT)V.vector4_f32[1];
+    pDestination->z = (UINT)V.vector4_f32[2];
+    pDestination->w = (UINT)V.vector4_f32[3];
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMASSERT(pDestination);
+
+    // Clamp to >=0
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    // Any numbers that are too big, set to 0xFFFFFFFFU
+    XMVECTOR vOverflow = _mm_cmpgt_ps(vResult,g_XMMaxUInt);
+    XMVECTOR vValue = g_XMUnsignedFix;
+    // Too large for a signed integer?
+    XMVECTOR vMask = _mm_cmpge_ps(vResult,vValue);
+    // Zero for number's lower than 0x80000000, 32768.0f*65536.0f otherwise
+    vValue = _mm_and_ps(vValue,vMask);
+    // Perform fixup only on numbers too large (Keeps low bit precision)
+    vResult = _mm_sub_ps(vResult,vValue);
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Convert from signed to unsigned pnly if greater than 0x80000000
+    vMask = _mm_and_ps(vMask,g_XMNegativeZero);
+    vResult = _mm_xor_ps(reinterpret_cast<const __m128 *>(&vResulti)[0],vMask);
+    // On those that are too large, set to 0xFFFFFFFF
+    vResult = _mm_or_ps(vResult,vOverflow);
+    _mm_storeu_si128( (__m128i*)pDestination, reinterpret_cast<const __m128i *>(&vResult)[0] );
+
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+
 XMFINLINE VOID XMStoreInt4NC
 (
     UINT*    pDestination, 
@@ -4421,7 +5018,7 @@ XMFINLINE VOID XMStoreUShortN4
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiplyAdd(N, Scale.v, g_XMOneHalf.v);
     N = XMVectorTruncate(N);
 
@@ -4624,7 +5221,7 @@ XMFINLINE VOID XMStoreUIcoN4
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiplyAdd(N, Scale.v, g_XMOneHalf.v);
 
     pDestination->v = ((UINT64)N.vector4_f32[3] << 60) |
@@ -4976,7 +5573,7 @@ XMFINLINE VOID XMStoreUDecN4
 
     XMASSERT(pDestination);
 
-    N = XMVectorClamp(V, XMVectorZero(), g_XMOne.v);
+    N = XMVectorSaturate(V);
     N = XMVectorMultiply(N, Scale.v);
 
     pDestination->v = ((UINT)N.vector4_f32[3] << 30) |
@@ -5035,7 +5632,7 @@ XMFINLINE VOID XMStoreUDec4
                        (((UINT)N.vector4_f32[0] & 0x3FF));
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     static const XMVECTORF32 MaxUDec4 = { 1023.0f, 1023.0f, 1023.0f, 3.0f};
     static const XMVECTORF32 ScaleUDec4 = {1.0f,1024.0f/2.0f,1024.0f*1024.0f,1024.0f*1024.0f*1024.0f/2.0f};
     static const XMVECTORI32 MaskUDec4= {0x3FF,0x3FF<<(10-1),0x3FF<<20,0x3<<(30-1)};
@@ -5282,6 +5879,7 @@ XMFINLINE VOID XMStoreByteN4
 
     XMASSERT(pDestination);
 
+    N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
     N = XMVectorMultiply(V, Scale.v);
     N = XMVectorRound(N);
 
@@ -5291,7 +5889,7 @@ XMFINLINE VOID XMStoreByteN4
     pDestination->w = (CHAR)N.vector4_f32[3];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     static const XMVECTORF32 ScaleByteN4 = {127.0f,127.0f*256.0f,127.0f*256.0f*256.0f,127.0f*256.0f*256.0f*256.0f};
     static const XMVECTORI32 MaskByteN4 = {0xFF,0xFF<<8,0xFF<<16,0xFF<<24};
     // Clamp to bounds
@@ -5341,7 +5939,7 @@ XMFINLINE VOID XMStoreByte4
     pDestination->w = (CHAR)N.vector4_f32[3];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     static const XMVECTORF32 MinByte4 = {-127.0f,-127.0f,-127.0f,-127.0f};
     static const XMVECTORF32 MaxByte4 = { 127.0f, 127.0f, 127.0f, 127.0f};
     static const XMVECTORF32 ScaleByte4 = {1.0f,256.0f,256.0f*256.0f,256.0f*256.0f*256.0f};
@@ -5537,7 +6135,7 @@ XMFINLINE VOID XMStoreFloat3x3NC
     pDestination->m[2][2] = M.r[2].vector4_f32[2];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     XMVECTOR vTemp1 = M.r[0];
     XMVECTOR vTemp2 = M.r[1];
     XMVECTOR vTemp3 = M.r[2];
@@ -5598,7 +6196,7 @@ XMFINLINE VOID XMStoreFloat4x3A
     pDestination->m[3][2] = M.r[3].vector4_f32[2];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     XMASSERT(((UINT_PTR)pDestination & 0xF) == 0);
     // x1,y1,z1,w1
     XMVECTOR vTemp1 = M.r[0];
@@ -5655,7 +6253,7 @@ XMFINLINE VOID XMStoreFloat4x3NC
     pDestination->m[3][2] = M.r[3].vector4_f32[2];
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
     XMVECTOR vTemp1 = M.r[0];
     XMVECTOR vTemp2 = M.r[1];
     XMVECTOR vTemp3 = M.r[2];
@@ -5685,12 +6283,12 @@ XMFINLINE VOID XMStoreFloat4x4
     XMStoreFloat4x4NC(pDestination, M);
 
 #elif defined(_XM_SSE_INTRINSICS_)
-	XMASSERT(pDestination);
+    XMASSERT(pDestination);
 
-	_mm_storeu_ps( &pDestination->_11, M.r[0] );
-	_mm_storeu_ps( &pDestination->_21, M.r[1] );
-	_mm_storeu_ps( &pDestination->_31, M.r[2] );
-	_mm_storeu_ps( &pDestination->_41, M.r[3] );
+    _mm_storeu_ps( &pDestination->_11, M.r[0] );
+    _mm_storeu_ps( &pDestination->_21, M.r[1] );
+    _mm_storeu_ps( &pDestination->_31, M.r[2] );
+    _mm_storeu_ps( &pDestination->_41, M.r[3] );
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
