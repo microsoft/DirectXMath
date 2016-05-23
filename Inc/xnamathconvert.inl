@@ -115,16 +115,16 @@ XMFINLINE FLOAT XMConvertHalfToFloat
 XMINLINE FLOAT* XMConvertHalfToFloatStream
 (
     FLOAT*      pOutputStream, 
-    UINT        OutputStride, 
+    size_t      OutputStride, 
     CONST HALF* pInputStream, 
-    UINT        InputStride, 
-    UINT        HalfCount
+    size_t      InputStride, 
+    size_t      HalfCount
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
 
-    UINT  i;
-    BYTE* pHalf = (BYTE*)pInputStream;
+    size_t  i;
+    CONST BYTE* pHalf = (CONST BYTE*)pInputStream;
     BYTE* pFloat = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -132,7 +132,7 @@ XMINLINE FLOAT* XMConvertHalfToFloatStream
 
     for (i = 0; i < HalfCount; i++)
     {
-        *(FLOAT*)pFloat = XMConvertHalfToFloat(*(HALF*)pHalf);
+        *(FLOAT*)pFloat = XMConvertHalfToFloat(*(const HALF*)pHalf);
         pHalf += InputStride;
         pFloat += OutputStride; 
     }
@@ -190,15 +190,15 @@ XMFINLINE HALF XMConvertFloatToHalf
 XMINLINE HALF* XMConvertFloatToHalfStream
 (
     HALF*        pOutputStream, 
-    UINT         OutputStride, 
+    size_t       OutputStride, 
     CONST FLOAT* pInputStream, 
-    UINT         InputStride, 
-    UINT         FloatCount
+    size_t       InputStride, 
+    size_t       FloatCount
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
 
-    UINT  i;
+    size_t  i;
     BYTE* pFloat = (BYTE*)pInputStream;
     BYTE* pHalf = (BYTE*)pOutputStream;
 
@@ -939,7 +939,7 @@ XMFINLINE XMVECTOR XMLoadSInt3
     XMVECTOR V;
     XMASSERT(pSource);
 
-#ifdef _XBOX
+#ifdef _XBOX_VER
     V = XMLoadInt3( (const UINT*)pSource );
     return XMConvertVectorIntToFloat( V, 0 );
 #else
@@ -1637,7 +1637,7 @@ XMFINLINE XMVECTOR XMLoadFloat3PK
         Result[2] = ((Exponent + 112) << 23) | (Mantissa << 18);
     }
 
-    return XMLoadFloat3A( (XMFLOAT3A*)&Result );
+    return XMLoadFloat3A( (const XMFLOAT3A*)&Result );
 }
 
 //------------------------------------------------------------------------------
@@ -1746,7 +1746,7 @@ XMFINLINE XMVECTOR XMLoadFloat3SE
         Result[2] = ((Exponent + 112) << 23) | (Mantissa << 14);
     }
 
-    return XMLoadFloat3A( (XMFLOAT3A*)&Result );
+    return XMLoadFloat3A( (const XMFLOAT3A*)&Result );
 }
 
 //------------------------------------------------------------------------------
@@ -1791,7 +1791,7 @@ XMFINLINE XMVECTOR XMLoadSInt4
     XMVECTOR V;
     XMASSERT(pSource);
 
-#ifdef _XBOX
+#ifdef _XBOX_VER
     V = XMLoadInt4( (const UINT*)pSource );
     return XMConvertVectorIntToFloat( V, 0 );
 #else
@@ -3747,8 +3747,8 @@ XMFINLINE VOID XMStoreByteN2
 
     XMStoreFloat4A( &tmp, N );
 
-    pDestination->x = (BYTE)tmp.x;
-    pDestination->y = (BYTE)tmp.y;
+    pDestination->x = (CHAR)tmp.x;
+    pDestination->y = (CHAR)tmp.y;
 }
 
 //------------------------------------------------------------------------------
@@ -3771,8 +3771,8 @@ XMFINLINE VOID XMStoreByte2
 
     XMStoreFloat4A( &tmp, N );
 
-    pDestination->x = (BYTE)tmp.x;
-    pDestination->y = (BYTE)tmp.y;
+    pDestination->x = (CHAR)tmp.x;
+    pDestination->y = (CHAR)tmp.y;
 }
 
 //------------------------------------------------------------------------------

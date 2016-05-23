@@ -7046,11 +7046,11 @@ XMFINLINE XMVECTOR XMVector2Transform
 XMINLINE XMFLOAT4* XMVector2TransformStream
 (
     XMFLOAT4*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT2* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX        M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -7059,8 +7059,8 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
     XMVECTOR X;
     XMVECTOR Y;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -7068,7 +7068,7 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat2((XMFLOAT2*)pInputVector);
+        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
 //        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
@@ -7088,8 +7088,8 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
-    UINT i;
-    const BYTE* pInputVector = (const BYTE*)pInputStream;
+    size_t i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE* pOutputVector = (BYTE*)pOutputStream;
 
     for (i = 0; i < VectorCount; i++)
@@ -7114,11 +7114,11 @@ XMINLINE XMFLOAT4* XMVector2TransformStream
 XMINLINE XMFLOAT4* XMVector2TransformStreamNC
 (
     XMFLOAT4*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT2* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX     M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(XM_NO_MISALIGNED_VECTOR_ACCESS) || defined(_XM_SSE_INTRINSICS_)
@@ -7174,11 +7174,11 @@ XMFINLINE XMVECTOR XMVector2TransformCoord
 XMINLINE XMFLOAT2* XMVector2TransformCoordStream
 (
     XMFLOAT2*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT2* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX     M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -7188,8 +7188,8 @@ XMINLINE XMFLOAT2* XMVector2TransformCoordStream
     XMVECTOR Y;
     XMVECTOR InverseW;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -7197,7 +7197,7 @@ XMINLINE XMFLOAT2* XMVector2TransformCoordStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat2((XMFLOAT2*)pInputVector);
+        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
 //        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
@@ -7222,8 +7222,8 @@ XMINLINE XMFLOAT2* XMVector2TransformCoordStream
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
-    UINT i;
-    const BYTE *pInputVector = (BYTE*)pInputStream;
+    size_t i;
+    CONST BYTE *pInputVector = (CONST BYTE*)pInputStream;
     BYTE *pOutputVector = (BYTE*)pOutputStream;
 
     for (i = 0; i < VectorCount; i++)
@@ -7283,11 +7283,11 @@ XMFINLINE XMVECTOR XMVector2TransformNormal
 XMINLINE XMFLOAT2* XMVector2TransformNormalStream
 (
     XMFLOAT2*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT2* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX        M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -7296,8 +7296,8 @@ XMINLINE XMFLOAT2* XMVector2TransformNormalStream
     XMVECTOR X;
     XMVECTOR Y;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -7305,7 +7305,7 @@ XMINLINE XMFLOAT2* XMVector2TransformNormalStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat2((XMFLOAT2*)pInputVector);
+        V = XMLoadFloat2((const XMFLOAT2*)pInputVector);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
 //        Y = XMVectorReplicate(((XMFLOAT2*)pInputVector)->y);
@@ -7325,8 +7325,8 @@ XMINLINE XMFLOAT2* XMVector2TransformNormalStream
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
-    UINT i;
-    const BYTE*pInputVector = (const BYTE*)pInputStream;
+    size_t i;
+    CONST BYTE*pInputVector = (CONST BYTE*)pInputStream;
     BYTE *pOutputVector = (BYTE*)pOutputStream;
     for (i = 0; i < VectorCount; i++)
     {
@@ -8798,11 +8798,11 @@ XMFINLINE XMVECTOR XMVector3Transform
 XMINLINE XMFLOAT4* XMVector3TransformStream
 (
     XMFLOAT4*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX     M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -8812,8 +8812,8 @@ XMINLINE XMFLOAT4* XMVector3TransformStream
     XMVECTOR Y;
     XMVECTOR Z;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -8821,7 +8821,7 @@ XMINLINE XMFLOAT4* XMVector3TransformStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
         Z = XMVectorSplatZ(V);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
@@ -8841,8 +8841,8 @@ XMINLINE XMFLOAT4* XMVector3TransformStream
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
-    UINT     i;
-    const BYTE* pInputVector = (const BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     for (i = 0; i < VectorCount; i++)
@@ -8871,10 +8871,10 @@ XMINLINE XMFLOAT4* XMVector3TransformStream
 XMINLINE XMFLOAT4* XMVector3TransformStreamNC
 (
     XMFLOAT4*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
+    size_t          InputStride, 
+    size_t          VectorCount, 
     CXMMATRIX     M
 )
 {
@@ -8937,11 +8937,11 @@ XMFINLINE XMVECTOR XMVector3TransformCoord
 XMINLINE XMFLOAT3* XMVector3TransformCoordStream
 (
     XMFLOAT3*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX     M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -8952,8 +8952,8 @@ XMINLINE XMFLOAT3* XMVector3TransformCoordStream
     XMVECTOR Z;
     XMVECTOR InverseW;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -8961,7 +8961,7 @@ XMINLINE XMFLOAT3* XMVector3TransformCoordStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
         Z = XMVectorSplatZ(V);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
@@ -8990,8 +8990,8 @@ XMINLINE XMFLOAT3* XMVector3TransformCoordStream
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
 
-    UINT i;
-    const BYTE *pInputVector = (BYTE*)pInputStream;
+    size_t i;
+    CONST BYTE *pInputVector = (CONST BYTE*)pInputStream;
     BYTE *pOutputVector = (BYTE*)pOutputStream;
 
     for (i = 0; i < VectorCount; i++)
@@ -9066,11 +9066,11 @@ XMFINLINE XMVECTOR XMVector3TransformNormal
 XMINLINE XMFLOAT3* XMVector3TransformNormalStream
 (
     XMFLOAT3*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
-    CXMMATRIX     M
+    size_t          InputStride, 
+    size_t          VectorCount, 
+    CXMMATRIX       M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -9080,8 +9080,8 @@ XMINLINE XMFLOAT3* XMVector3TransformNormalStream
     XMVECTOR Y;
     XMVECTOR Z;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -9089,7 +9089,7 @@ XMINLINE XMFLOAT3* XMVector3TransformNormalStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
         Z = XMVectorSplatZ(V);
         Y = XMVectorSplatY(V);
         X = XMVectorSplatX(V);
@@ -9113,8 +9113,8 @@ XMINLINE XMFLOAT3* XMVector3TransformNormalStream
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
 
-    UINT i;
-    const BYTE *pInputVector = (BYTE*)pInputStream;
+    size_t i;
+    CONST BYTE *pInputVector = (CONST BYTE*)pInputStream;
     BYTE *pOutputVector = (BYTE*)pOutputStream;
 
     for (i = 0; i < VectorCount; i++)
@@ -9217,19 +9217,19 @@ XMINLINE XMVECTOR XMVector3Project
 XMINLINE XMFLOAT3* XMVector3ProjectStream
 (
     XMFLOAT3*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
+    size_t          InputStride, 
+    size_t          VectorCount, 
     FLOAT           ViewportX, 
     FLOAT           ViewportY, 
     FLOAT           ViewportWidth, 
     FLOAT           ViewportHeight, 
     FLOAT           ViewportMinZ, 
     FLOAT           ViewportMaxZ, 
-    CXMMATRIX     Projection, 
-    CXMMATRIX     View, 
-    CXMMATRIX     World
+    CXMMATRIX       Projection, 
+    CXMMATRIX       View, 
+    CXMMATRIX       World
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -9239,10 +9239,10 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
     XMVECTOR Scale;
     XMVECTOR Offset;
     XMVECTOR Result;
-    UINT     i;
+    size_t   i;
     FLOAT    HalfViewportWidth = ViewportWidth * 0.5f;
     FLOAT    HalfViewportHeight = ViewportHeight * 0.5f;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -9263,7 +9263,7 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
         Result = XMVector3TransformCoord(V, Transform);
 
@@ -9285,10 +9285,10 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
     XMVECTOR Scale;
     XMVECTOR Offset;
     XMVECTOR Result;
-    UINT     i;
+    size_t   i;
     FLOAT    HalfViewportWidth = ViewportWidth * 0.5f;
     FLOAT    HalfViewportHeight = ViewportHeight * 0.5f;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     Scale = XMVectorSet(HalfViewportWidth, 
@@ -9306,7 +9306,7 @@ XMINLINE XMFLOAT3* XMVector3ProjectStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
         Result = XMVector3TransformCoord(V, Transform);
 
@@ -9409,19 +9409,19 @@ XMFINLINE XMVECTOR XMVector3Unproject
 XMINLINE XMFLOAT3* XMVector3UnprojectStream
 (
     XMFLOAT3*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT3* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
+    size_t          InputStride, 
+    size_t          VectorCount, 
     FLOAT           ViewportX, 
     FLOAT           ViewportY, 
     FLOAT           ViewportWidth, 
     FLOAT           ViewportHeight, 
     FLOAT           ViewportMinZ, 
     FLOAT           ViewportMaxZ, 
-    CXMMATRIX     Projection, 
-    CXMMATRIX     View, 
-    CXMMATRIX     World)
+    CXMMATRIX       Projection, 
+    CXMMATRIX       View, 
+    CXMMATRIX       World)
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9431,8 +9431,8 @@ XMINLINE XMFLOAT3* XMVector3UnprojectStream
     XMVECTOR        V;
     XMVECTOR        Determinant;
     XMVECTOR        Result;
-    UINT            i;
-    BYTE*           pInputVector = (BYTE*)pInputStream;
+    size_t          i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*           pOutputVector = (BYTE*)pOutputStream;
     CONST XMVECTOR  D = XMVectorSet(-1.0f, 1.0f, 0.0f, 0.0f);
 
@@ -9457,7 +9457,7 @@ XMINLINE XMFLOAT3* XMVector3UnprojectStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
         Result = XMVectorMultiplyAdd(V, Scale, Offset);
 
@@ -9480,8 +9480,8 @@ XMINLINE XMFLOAT3* XMVector3UnprojectStream
     XMVECTOR        V;
     XMVECTOR        Determinant;
     XMVECTOR        Result;
-    UINT            i;
-    BYTE*           pInputVector = (BYTE*)pInputStream;
+    size_t          i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*           pOutputVector = (BYTE*)pOutputStream;
     CONST XMVECTORF32  D = {-1.0f, 1.0f, 0.0f, 0.0f};
 
@@ -9504,7 +9504,7 @@ XMINLINE XMFLOAT3* XMVector3UnprojectStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat3((XMFLOAT3*)pInputVector);
+        V = XMLoadFloat3((const XMFLOAT3*)pInputVector);
 
         Result = XMVectorMultiplyAdd(V, Scale, Offset);
 
@@ -10811,10 +10811,10 @@ XMFINLINE XMVECTOR XMVector4Transform
 XMINLINE XMFLOAT4* XMVector4TransformStream
 (
     XMFLOAT4*       pOutputStream, 
-    UINT            OutputStride, 
+    size_t          OutputStride, 
     CONST XMFLOAT4* pInputStream, 
-    UINT            InputStride, 
-    UINT            VectorCount, 
+    size_t          InputStride, 
+    size_t          VectorCount, 
     CXMMATRIX     M
 )
 {
@@ -10826,8 +10826,8 @@ XMINLINE XMFLOAT4* XMVector4TransformStream
     XMVECTOR Z;
     XMVECTOR W;
     XMVECTOR Result;
-    UINT     i;
-    BYTE*    pInputVector = (BYTE*)pInputStream;
+    size_t   i;
+    CONST BYTE* pInputVector = (CONST BYTE*)pInputStream;
     BYTE*    pOutputVector = (BYTE*)pOutputStream;
 
     XMASSERT(pOutputStream);
@@ -10835,7 +10835,7 @@ XMINLINE XMFLOAT4* XMVector4TransformStream
 
     for (i = 0; i < VectorCount; i++)
     {
-        V = XMLoadFloat4((XMFLOAT4*)pInputVector);
+        V = XMLoadFloat4((const XMFLOAT4*)pInputVector);
         W = XMVectorSplatW(V);
         Z = XMVectorSplatZ(V);
         Y = XMVectorSplatY(V);
@@ -10859,7 +10859,7 @@ XMINLINE XMFLOAT4* XMVector4TransformStream
     return pOutputStream;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    UINT i;
+    size_t i;
 
     XMASSERT(pOutputStream);
     XMASSERT(pInputStream);
@@ -11249,7 +11249,7 @@ XMFINLINE _XMSHORTN2::_XMSHORTN2
     CONST FLOAT* pArray
 )
 {
-    XMStoreShortN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreShortN2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11299,7 +11299,7 @@ XMFINLINE _XMSHORT2::_XMSHORT2
     CONST FLOAT* pArray
 )
 {
-    XMStoreShort2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreShort2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11349,7 +11349,7 @@ XMFINLINE _XMUSHORTN2::_XMUSHORTN2
     CONST FLOAT* pArray
 )
 {
-    XMStoreUShortN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreUShortN2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11399,7 +11399,7 @@ XMFINLINE _XMUSHORT2::_XMUSHORT2
     CONST FLOAT* pArray
 )
 {
-    XMStoreUShort2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreUShort2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11449,7 +11449,7 @@ XMFINLINE _XMBYTEN2::_XMBYTEN2
     CONST FLOAT* pArray
 )
 {
-    XMStoreByteN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreByteN2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11499,7 +11499,7 @@ XMFINLINE _XMBYTE2::_XMBYTE2
     CONST FLOAT* pArray
 )
 {
-    XMStoreByte2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreByte2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11549,7 +11549,7 @@ XMFINLINE _XMUBYTEN2::_XMUBYTEN2
     CONST FLOAT* pArray
 )
 {
-    XMStoreUByteN2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreUByteN2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11599,7 +11599,7 @@ XMFINLINE _XMUBYTE2::_XMUBYTE2
     CONST FLOAT* pArray
 )
 {
-    XMStoreUByte2(this, XMLoadFloat2((XMFLOAT2*)pArray));
+    XMStoreUByte2(this, XMLoadFloat2((const XMFLOAT2*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11741,7 +11741,7 @@ XMFINLINE _XMHENDN3::_XMHENDN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreHenDN3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11791,7 +11791,7 @@ XMFINLINE _XMHEND3::_XMHEND3
     CONST FLOAT* pArray
 )
 {
-    XMStoreHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreHenD3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11841,7 +11841,7 @@ XMFINLINE _XMUHENDN3::_XMUHENDN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreUHenDN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreUHenDN3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11891,7 +11891,7 @@ XMFINLINE _XMUHEND3::_XMUHEND3
     CONST FLOAT* pArray
 )
 {
-    XMStoreUHenD3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreUHenD3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11941,7 +11941,7 @@ XMFINLINE _XMDHENN3::_XMDHENN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreDHenN3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -11991,7 +11991,7 @@ XMFINLINE _XMDHEN3::_XMDHEN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreDHen3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12041,7 +12041,7 @@ XMFINLINE _XMUDHENN3::_XMUDHENN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreUDHenN3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreUDHenN3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12091,7 +12091,7 @@ XMFINLINE _XMUDHEN3::_XMUDHEN3
     CONST FLOAT* pArray
 )
 {
-    XMStoreUDHen3(this, XMLoadFloat3((XMFLOAT3*)pArray));
+    XMStoreUDHen3(this, XMLoadFloat3((const XMFLOAT3*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12147,7 +12147,7 @@ XMFINLINE _XMU565::_XMU565
     CONST FLOAT *pArray
 )
 {
-    XMStoreU565(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+    XMStoreU565(this, XMLoadFloat3((const XMFLOAT3*)pArray ));
 }
 
 XMFINLINE _XMU565& _XMU565::operator=
@@ -12189,7 +12189,7 @@ XMFINLINE _XMFLOAT3PK::_XMFLOAT3PK
     CONST FLOAT *pArray
 )
 {
-    XMStoreFloat3PK(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+    XMStoreFloat3PK(this, XMLoadFloat3((const XMFLOAT3*)pArray ));
 }
 
 XMFINLINE _XMFLOAT3PK& _XMFLOAT3PK::operator=
@@ -12231,7 +12231,7 @@ XMFINLINE _XMFLOAT3SE::_XMFLOAT3SE
     CONST FLOAT *pArray
 )
 {
-    XMStoreFloat3SE(this, XMLoadFloat3((XMFLOAT3*)pArray ));
+    XMStoreFloat3SE(this, XMLoadFloat3((const XMFLOAT3*)pArray ));
 }
 
 XMFINLINE _XMFLOAT3SE& _XMFLOAT3SE::operator=
@@ -12459,7 +12459,7 @@ XMFINLINE _XMSHORTN4::_XMSHORTN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreShortN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreShortN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12515,7 +12515,7 @@ XMFINLINE _XMSHORT4::_XMSHORT4
     CONST FLOAT* pArray
 )
 {
-    XMStoreShort4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreShort4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12571,7 +12571,7 @@ XMFINLINE _XMUSHORTN4::_XMUSHORTN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUShortN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUShortN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12627,7 +12627,7 @@ XMFINLINE _XMUSHORT4::_XMUSHORT4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUShort4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUShort4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12670,7 +12670,7 @@ XMFINLINE _XMXDECN4::_XMXDECN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreXDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreXDecN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12721,7 +12721,7 @@ XMFINLINE _XMXDEC4::_XMXDEC4
     CONST FLOAT* pArray
 )
 {
-    XMStoreXDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreXDec4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12772,7 +12772,7 @@ XMFINLINE _XMDECN4::_XMDECN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreDecN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12823,7 +12823,7 @@ XMFINLINE _XMDEC4::_XMDEC4
     CONST FLOAT* pArray
 )
 {
-    XMStoreDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreDec4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12874,7 +12874,7 @@ XMFINLINE _XMUDECN4::_XMUDECN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUDecN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUDecN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12925,7 +12925,7 @@ XMFINLINE _XMUDEC4::_XMUDEC4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUDec4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUDec4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -12976,7 +12976,7 @@ XMFINLINE _XMXICON4::_XMXICON4
     CONST FLOAT* pArray
 )
 {
-    XMStoreXIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreXIcoN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13027,7 +13027,7 @@ XMFINLINE _XMXICO4::_XMXICO4
     CONST FLOAT* pArray
 )
 {
-    XMStoreXIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreXIco4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13078,7 +13078,7 @@ XMFINLINE _XMICON4::_XMICON4
     CONST FLOAT* pArray
 )
 {
-    XMStoreIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreIcoN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13129,7 +13129,7 @@ XMFINLINE _XMICO4::_XMICO4
     CONST FLOAT* pArray
 )
 {
-    XMStoreIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreIco4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13180,7 +13180,7 @@ XMFINLINE _XMUICON4::_XMUICON4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUIcoN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUIcoN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13231,7 +13231,7 @@ XMFINLINE _XMUICO4::_XMUICO4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUIco4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUIco4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13282,7 +13282,7 @@ XMFINLINE _XMCOLOR::_XMCOLOR
     CONST FLOAT* pArray
 )
 {
-    XMStoreColor(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreColor(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13346,7 +13346,7 @@ XMFINLINE _XMBYTEN4::_XMBYTEN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreByteN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreByteN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13402,7 +13402,7 @@ XMFINLINE _XMBYTE4::_XMBYTE4
     CONST FLOAT* pArray
 )
 {
-    XMStoreByte4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreByte4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13458,7 +13458,7 @@ XMFINLINE _XMUBYTEN4::_XMUBYTEN4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUByteN4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUByteN4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13514,7 +13514,7 @@ XMFINLINE _XMUBYTE4::_XMUBYTE4
     CONST FLOAT* pArray
 )
 {
-    XMStoreUByte4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUByte4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13570,7 +13570,7 @@ XMFINLINE _XMUNIBBLE4::_XMUNIBBLE4
     CONST FLOAT *pArray
 )
 {
-    XMStoreUNibble4(this, XMLoadFloat4((XMFLOAT4*)pArray));
+    XMStoreUNibble4(this, XMLoadFloat4((const XMFLOAT4*)pArray));
 }
 
 //------------------------------------------------------------------------------
@@ -13636,7 +13636,7 @@ XMFINLINE _XMU555::_XMU555
     BOOL _w
 )
 {
-    XMVECTOR V = XMLoadFloat3((XMFLOAT3*)pArray);
+    XMVECTOR V = XMLoadFloat3((const XMFLOAT3*)pArray);
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f) ));
 }
 

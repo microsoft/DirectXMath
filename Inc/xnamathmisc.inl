@@ -79,7 +79,7 @@ XMFINLINE BOOL XMQuaternionIsIdentity
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp = _mm_cmpeq_ps(Q,g_XMIdentityR3);
-    return (_mm_movemask_ps(vTemp)==0x0f) ? true : false;
+    return (_mm_movemask_ps(vTemp)==0x0f);
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
@@ -1477,11 +1477,11 @@ XMFINLINE XMVECTOR XMPlaneTransform
 XMFINLINE XMFLOAT4* XMPlaneTransformStream
 (
     XMFLOAT4*       pOutputStream,
-    UINT            OutputStride,
+    size_t          OutputStride,
     CONST XMFLOAT4* pInputStream,
-    UINT            InputStride,
-    UINT            PlaneCount,
-    CXMMATRIX     M
+    size_t          InputStride,
+    size_t          PlaneCount,
+    CXMMATRIX       M
 )
 {
     return XMVector4TransformStream(pOutputStream,
@@ -1967,7 +1967,7 @@ XMFINLINE BOOL XMScalarNearEqual
 {
     FLOAT Delta = S1 - S2;
 #if defined(_XM_NO_INTRINSICS_)
-    UINT  AbsDelta = *(UINT*)&Delta & 0x7FFFFFFF;
+    UINT  AbsDelta = *(const UINT*)&Delta & 0x7FFFFFFF;
     return (*(FLOAT*)&AbsDelta <= Epsilon);
 #elif defined(_XM_SSE_INTRINSICS_)
     return (fabsf(Delta) <= Epsilon);
@@ -2168,7 +2168,7 @@ XMINLINE FLOAT XMScalarASin
     XMVECTOR AbsV, R0, R1, Result;
     XMVECTOR V3;
 
-    *(UINT*)&AbsValue = *(UINT*)&Value & 0x7FFFFFFF;
+    *(UINT*)&AbsValue = *(const UINT*)&Value & 0x7FFFFFFF;
 
     Value2 = Value * AbsValue;
     Value3 = Value * Value2;
@@ -2379,7 +2379,7 @@ XMFINLINE FLOAT XMScalarASinEst
     FLOAT AbsV, V2, D;
     CONST FLOAT OnePlusEps = 1.00000011921f;
 
-    *(UINT*)&AbsV = *(UINT*)&Value & 0x7FFFFFFF;
+    *(UINT*)&AbsV = *(const UINT*)&Value & 0x7FFFFFFF;
     V2 = Value * AbsV;
     D = OnePlusEps - AbsV;
 
@@ -2426,7 +2426,7 @@ XMFINLINE FLOAT XMScalarACosEst
 
     // return XM_PIDIV2 - XMScalarASin(Value);
 
-    *(UINT*)&AbsV = *(UINT*)&Value & 0x7FFFFFFF;
+    *(UINT*)&AbsV = *(const UINT*)&Value & 0x7FFFFFFF;
     V2 = Value * AbsV;
     D = OnePlusEps - AbsV;
 

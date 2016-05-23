@@ -17,7 +17,7 @@
 #error XNAMATH and XBOXMATH are incompatible in the same compilation module. Use one or the other.
 #endif
 
-#define XNAMATH_VERSION 204
+#define XNAMATH_VERSION 205
 
 #if !defined(_XM_X64_) && !defined(_XM_X86_)
 #if defined(_M_AMD64) || defined(_AMD64_)
@@ -340,6 +340,7 @@ typedef struct _XMMATRIX
 typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
 #endif
 {
+#if defined(_XM_NO_INTRINSICS_) || !defined(XM_STRICT_MATRIX)
     union
     {
         XMVECTOR r[4];
@@ -352,6 +353,9 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
         };
         FLOAT m[4][4];
     };
+#else
+    XMVECTOR r[4];
+#endif
 
 #ifdef __cplusplus
 
@@ -363,8 +367,10 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
               FLOAT m30, FLOAT m31, FLOAT m32, FLOAT m33);
     explicit _XMMATRIX(_In_count_c_(16) CONST FLOAT *pArray);
 
+#if defined(_XM_NO_INTRINSICS_) || !defined(XM_STRICT_MATRIX)
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
+#endif
 
     _XMMATRIX&  operator= (CONST _XMMATRIX& M);
 
@@ -745,7 +751,7 @@ typedef struct _XMHENDN3
     _XMHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMHENDN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMHENDN3& operator= (CONST _XMHENDN3& HenDN3);
     _XMHENDN3& operator= (CONST UINT Packed);
@@ -780,7 +786,7 @@ typedef struct _XMHEND3
     _XMHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMHEND3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMHEND3& operator= (CONST _XMHEND3& HenD3);
     _XMHEND3& operator= (CONST UINT Packed);
@@ -815,7 +821,7 @@ typedef struct _XMUHENDN3
     _XMUHENDN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMUHENDN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUHENDN3& operator= (CONST _XMUHENDN3& UHenDN3);
     _XMUHENDN3& operator= (CONST UINT Packed);
@@ -850,7 +856,7 @@ typedef struct _XMUHEND3
     _XMUHEND3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMUHEND3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUHEND3& operator= (CONST _XMUHEND3& UHenD3);
     _XMUHEND3& operator= (CONST UINT Packed);
@@ -885,7 +891,7 @@ typedef struct _XMDHENN3
     _XMDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMDHENN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMDHENN3& operator= (CONST _XMDHENN3& DHenN3);
     _XMDHENN3& operator= (CONST UINT Packed);
@@ -920,7 +926,7 @@ typedef struct _XMDHEN3
     _XMDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMDHEN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMDHEN3& operator= (CONST _XMDHEN3& DHen3);
     _XMDHEN3& operator= (CONST UINT Packed);
@@ -955,7 +961,7 @@ typedef struct _XMUDHENN3
     _XMUDHENN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMUDHENN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUDHENN3& operator= (CONST _XMUDHENN3& UDHenN3);
     _XMUDHENN3& operator= (CONST UINT Packed);
@@ -990,7 +996,7 @@ typedef struct _XMUDHEN3
     _XMUDHEN3(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMUDHEN3(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUDHEN3& operator= (CONST _XMUDHEN3& UDHen3);
     _XMUDHEN3& operator= (CONST UINT Packed);
@@ -1023,7 +1029,7 @@ typedef struct _XMU565
     _XMU565(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMU565(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator USHORT () { return v; }
+    operator USHORT () const { return v; }
 
     _XMU565& operator= (CONST _XMU565& U565);
     _XMU565& operator= (CONST USHORT Packed);
@@ -1064,7 +1070,7 @@ typedef struct _XMFLOAT3PK
     _XMFLOAT3PK(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMFLOAT3PK(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMFLOAT3PK& operator= (CONST _XMFLOAT3PK& float3pk);
     _XMFLOAT3PK& operator= (CONST UINT Packed);
@@ -1102,7 +1108,7 @@ typedef struct _XMFLOAT3SE
     _XMFLOAT3SE(FLOAT _x, FLOAT _y, FLOAT _z);
     explicit _XMFLOAT3SE(_In_count_c_(3) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMFLOAT3SE& operator= (CONST _XMFLOAT3SE& float3se);
     _XMFLOAT3SE& operator= (CONST UINT Packed);
@@ -1327,7 +1333,7 @@ typedef struct _XMXDECN4
     _XMXDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMXDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMXDECN4& operator= (CONST _XMXDECN4& XDecN4);
     _XMXDECN4& operator= (CONST UINT Packed);
@@ -1363,7 +1369,7 @@ typedef struct _XMXDEC4
     _XMXDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMXDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMXDEC4& operator= (CONST _XMXDEC4& XDec4);
     _XMXDEC4& operator= (CONST UINT Packed);
@@ -1399,7 +1405,7 @@ typedef struct _XMDECN4
     _XMDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMDECN4& operator= (CONST _XMDECN4& DecN4);
     _XMDECN4& operator= (CONST UINT Packed);
@@ -1435,7 +1441,7 @@ typedef struct _XMDEC4
     _XMDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMDEC4& operator= (CONST _XMDEC4& Dec4);
     _XMDEC4& operator= (CONST UINT Packed);
@@ -1471,7 +1477,7 @@ typedef struct _XMUDECN4
     _XMUDECN4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMUDECN4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUDECN4& operator= (CONST _XMUDECN4& UDecN4);
     _XMUDECN4& operator= (CONST UINT Packed);
@@ -1507,7 +1513,7 @@ typedef struct _XMUDEC4
     _XMUDEC4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMUDEC4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return v; }
+    operator UINT () const { return v; }
 
     _XMUDEC4& operator= (CONST _XMUDEC4& UDec4);
     _XMUDEC4& operator= (CONST UINT Packed);
@@ -1544,7 +1550,7 @@ typedef struct _XMXICON4
     _XMXICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMXICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMXICON4& operator= (CONST _XMXICON4& XIcoN4);
     _XMXICON4& operator= (CONST UINT64 Packed);
@@ -1580,7 +1586,7 @@ typedef struct _XMXICO4
     _XMXICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMXICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMXICO4& operator= (CONST _XMXICO4& XIco4);
     _XMXICO4& operator= (CONST UINT64 Packed);
@@ -1616,7 +1622,7 @@ typedef struct _XMICON4
     _XMICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMICON4& operator= (CONST _XMICON4& IcoN4);
     _XMICON4& operator= (CONST UINT64 Packed);
@@ -1652,7 +1658,7 @@ typedef struct _XMICO4
     _XMICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMICO4& operator= (CONST _XMICO4& Ico4);
     _XMICO4& operator= (CONST UINT64 Packed);
@@ -1688,7 +1694,7 @@ typedef struct _XMUICON4
     _XMUICON4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMUICON4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMUICON4& operator= (CONST _XMUICON4& UIcoN4);
     _XMUICON4& operator= (CONST UINT64 Packed);
@@ -1724,7 +1730,7 @@ typedef struct _XMUICO4
     _XMUICO4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMUICO4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT64 () { return v; }
+    operator UINT64 () const { return v; }
 
     _XMUICO4& operator= (CONST _XMUICO4& UIco4);
     _XMUICO4& operator= (CONST UINT64 Packed);
@@ -1761,7 +1767,7 @@ typedef struct _XMCOLOR
     _XMCOLOR(FLOAT _r, FLOAT _g, FLOAT _b, FLOAT _a);
     explicit _XMCOLOR(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator UINT () { return c; }
+    operator UINT () const { return c; }
 
     _XMCOLOR& operator= (CONST _XMCOLOR& Color);
     _XMCOLOR& operator= (CONST UINT Color);
@@ -1796,6 +1802,7 @@ typedef struct _XMBYTEN4
     explicit _XMBYTEN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMBYTEN4& operator= (CONST _XMBYTEN4& ByteN4);
+    _XMBYTEN4& operator= (UINT Packed) { v = Packed; return *this; }
 
 #endif // __cplusplus
 
@@ -1826,6 +1833,7 @@ typedef struct _XMBYTE4
     explicit _XMBYTE4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMBYTE4& operator= (CONST _XMBYTE4& Byte4);
+    _XMBYTE4& operator= (UINT Packed) { v = Packed; return *this; }
 
 #endif // __cplusplus
 
@@ -1856,6 +1864,7 @@ typedef struct _XMUBYTEN4
     explicit _XMUBYTEN4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUBYTEN4& operator= (CONST _XMUBYTEN4& UByteN4);
+    _XMUBYTEN4& operator= (UINT Packed) { v = Packed; return *this; }
 
 #endif // __cplusplus
 
@@ -1886,6 +1895,7 @@ typedef struct _XMUBYTE4
     explicit _XMUBYTE4(_In_count_c_(4) CONST FLOAT *pArray);
 
     _XMUBYTE4& operator= (CONST _XMUBYTE4& UByte4);
+    _XMUBYTE4& operator= (UINT Packed) { v = Packed; return *this; }
 
 #endif // __cplusplus
 
@@ -1916,7 +1926,7 @@ typedef struct _XMUNIBBLE4
     _XMUNIBBLE4(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
     explicit _XMUNIBBLE4(_In_count_c_(4) CONST FLOAT *pArray);
 
-    operator USHORT () { return v; }
+    operator USHORT () const { return v; }
 
     _XMUNIBBLE4& operator= (CONST _XMUNIBBLE4& UNibble4);
     _XMUNIBBLE4& operator= (CONST USHORT Packed);
@@ -1950,7 +1960,7 @@ typedef struct _XMU555
     _XMU555(FLOAT _x, FLOAT _y, FLOAT _z, BOOL _w);
     _XMU555(_In_count_c_(3) CONST FLOAT *pArray, BOOL _w);
 
-    operator USHORT () { return v; }
+    operator USHORT () const { return v; }
 
     _XMU555& operator= (CONST _XMU555& U555);
     _XMU555& operator= (CONST USHORT Packed);
@@ -2124,20 +2134,21 @@ XMVECTOR        XMConvertVectorFloatToUInt(FXMVECTOR VFloat, UINT MulExponent);
 
 FLOAT           XMConvertHalfToFloat(HALF Value);
 FLOAT*          XMConvertHalfToFloatStream(_Out_bytecap_x_(sizeof(FLOAT)+OutputStride*(HalfCount-1)) FLOAT* pOutputStream,
-                                           _In_ UINT OutputStride,
+                                           _In_ size_t OutputStride,
                                            _In_bytecount_x_(sizeof(HALF)+InputStride*(HalfCount-1)) CONST HALF* pInputStream,
-                                           _In_ UINT InputStride, _In_ UINT HalfCount);
+                                           _In_ size_t InputStride, _In_ size_t HalfCount);
 HALF            XMConvertFloatToHalf(FLOAT Value);
 HALF*           XMConvertFloatToHalfStream(_Out_bytecap_x_(sizeof(HALF)+OutputStride*(FloatCount-1)) HALF* pOutputStream,
-                                           _In_ UINT OutputStride,
+                                           _In_ size_t OutputStride,
                                            _In_bytecount_x_(sizeof(FLOAT)+InputStride*(FloatCount-1)) CONST FLOAT* pInputStream,
-                                           _In_ UINT InputStride, _In_ UINT FloatCount);
+                                           _In_ size_t InputStride, _In_ size_t FloatCount);
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_VMX128_INTRINSICS_)
-#else
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
 XMVECTOR XMVectorSetBinaryConstant(UINT C0, UINT C1, UINT C2, UINT C3);
 XMVECTOR XMVectorSplatConstant(INT IntConstant, UINT DivExponent);
 XMVECTOR XMVectorSplatConstantInt(INT IntConstant);
+
+// VMX128 versions defined below as macros
 #endif
 
 /****************************************************************************
@@ -2385,14 +2396,15 @@ XMVECTOR        XMVectorSelect(FXMVECTOR V1, FXMVECTOR V2, FXMVECTOR Control);
 XMVECTOR        XMVectorMergeXY(FXMVECTOR V1, FXMVECTOR V2);
 XMVECTOR        XMVectorMergeZW(FXMVECTOR V1, FXMVECTOR V2);
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_VMX128_INTRINSICS_)
-#else
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
 XMVECTOR XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2, UINT Elements);
 XMVECTOR XMVectorRotateLeft(FXMVECTOR V, UINT Elements);
 XMVECTOR XMVectorRotateRight(FXMVECTOR V, UINT Elements);
 XMVECTOR XMVectorSwizzle(FXMVECTOR V, UINT E0, UINT E1, UINT E2, UINT E3);
 XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, UINT VSLeftRotateElements,
                         UINT Select0, UINT Select1, UINT Select2, UINT Select3);
+
+// VMX128 versions defined below as macros
 #endif
 
 XMVECTOR        XMVectorEqual(FXMVECTOR V1, FXMVECTOR V2);
@@ -2533,23 +2545,23 @@ XMVECTOR        XMVector2LinePointDistance(FXMVECTOR LinePoint1, FXMVECTOR LineP
 XMVECTOR        XMVector2IntersectLine(FXMVECTOR Line1Point1, FXMVECTOR Line1Point2, FXMVECTOR Line2Point1, CXMVECTOR Line2Point2);
 XMVECTOR        XMVector2Transform(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT4*       XMVector2TransformStream(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
-                                         _In_ UINT OutputStride,
+                                         _In_ size_t OutputStride,
                                          _In_bytecount_x_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) CONST XMFLOAT2* pInputStream,
-                                         _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                         _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMFLOAT4*       XMVector2TransformStreamNC(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
-                                           _In_ UINT OutputStride,
+                                           _In_ size_t OutputStride,
                                            _In_bytecount_x_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) CONST XMFLOAT2* pInputStream,
-                                           _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                           _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMVECTOR        XMVector2TransformCoord(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT2*       XMVector2TransformCoordStream(_Out_bytecap_x_(sizeof(XMFLOAT2)+OutputStride*(VectorCount-1)) XMFLOAT2* pOutputStream,
-                                              _In_ UINT OutputStride,
+                                              _In_ size_t OutputStride,
                                               _In_bytecount_x_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) CONST XMFLOAT2* pInputStream,
-                                              _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                              _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMVECTOR        XMVector2TransformNormal(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT2*       XMVector2TransformNormalStream(_Out_bytecap_x_(sizeof(XMFLOAT2)+OutputStride*(VectorCount-1)) XMFLOAT2* pOutputStream,
-                                               _In_ UINT OutputStride,
+                                               _In_ size_t OutputStride,
                                                _In_bytecount_x_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) CONST XMFLOAT2* pInputStream,
-                                               _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                               _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 
 /****************************************************************************
  *
@@ -2601,37 +2613,37 @@ XMVECTOR        XMVector3Rotate(FXMVECTOR V, FXMVECTOR RotationQuaternion);
 XMVECTOR        XMVector3InverseRotate(FXMVECTOR V, FXMVECTOR RotationQuaternion);
 XMVECTOR        XMVector3Transform(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT4*       XMVector3TransformStream(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
-                                         _In_ UINT OutputStride,
+                                         _In_ size_t OutputStride,
                                          _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                         _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                         _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMFLOAT4*       XMVector3TransformStreamNC(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
-                                           _In_ UINT OutputStride,
+                                           _In_ size_t OutputStride,
                                            _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                           _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                           _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMVECTOR        XMVector3TransformCoord(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT3*       XMVector3TransformCoordStream(_Out_bytecap_x_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
-                                              _In_ UINT OutputStride,
+                                              _In_ size_t OutputStride,
                                               _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                              _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                              _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMVECTOR        XMVector3TransformNormal(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT3*       XMVector3TransformNormalStream(_Out_bytecap_x_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
-                                               _In_ UINT OutputStride,
+                                               _In_ size_t OutputStride,
                                                _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                               _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                               _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 XMVECTOR        XMVector3Project(FXMVECTOR V, FLOAT ViewportX, FLOAT ViewportY, FLOAT ViewportWidth, FLOAT ViewportHeight, FLOAT ViewportMinZ, FLOAT ViewportMaxZ, 
                     CXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 XMFLOAT3*       XMVector3ProjectStream(_Out_bytecap_x_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
-                                       _In_ UINT OutputStride,
+                                       _In_ size_t OutputStride,
                                        _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                       _In_ UINT InputStride, _In_ UINT VectorCount, 
+                                       _In_ size_t InputStride, _In_ size_t VectorCount, 
                     FLOAT ViewportX, FLOAT ViewportY, FLOAT ViewportWidth, FLOAT ViewportHeight, FLOAT ViewportMinZ, FLOAT ViewportMaxZ, 
                     CXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 XMVECTOR        XMVector3Unproject(FXMVECTOR V, FLOAT ViewportX, FLOAT ViewportY, FLOAT ViewportWidth, FLOAT ViewportHeight, FLOAT ViewportMinZ, FLOAT ViewportMaxZ, 
                     CXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 XMFLOAT3*       XMVector3UnprojectStream(_Out_bytecap_x_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
-                                         _In_ UINT OutputStride,
+                                         _In_ size_t OutputStride,
                                          _In_bytecount_x_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) CONST XMFLOAT3* pInputStream,
-                                         _In_ UINT InputStride, _In_ UINT VectorCount, 
+                                         _In_ size_t InputStride, _In_ size_t VectorCount, 
                     FLOAT ViewportX, FLOAT ViewportY, FLOAT ViewportWidth, FLOAT ViewportHeight, FLOAT ViewportMinZ, FLOAT ViewportMaxZ, 
                     CXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 
@@ -2680,9 +2692,9 @@ XMVECTOR        XMVector4AngleBetweenNormals(FXMVECTOR N1, FXMVECTOR N2);
 XMVECTOR        XMVector4AngleBetweenVectors(FXMVECTOR V1, FXMVECTOR V2);
 XMVECTOR        XMVector4Transform(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT4*       XMVector4TransformStream(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
-                                         _In_ UINT OutputStride,
+                                         _In_ size_t OutputStride,
                                          _In_bytecount_x_(sizeof(XMFLOAT4)+InputStride*(VectorCount-1)) CONST XMFLOAT4* pInputStream,
-                                         _In_ UINT InputStride, _In_ UINT VectorCount, CXMMATRIX M);
+                                         _In_ size_t InputStride, _In_ size_t VectorCount, CXMMATRIX M);
 
 /****************************************************************************
  *
@@ -2697,7 +2709,7 @@ BOOL            XMMatrixIsIdentity(CXMMATRIX M);
 XMMATRIX        XMMatrixMultiply(CXMMATRIX M1, CXMMATRIX M2);
 XMMATRIX        XMMatrixMultiplyTranspose(CXMMATRIX M1, CXMMATRIX M2);
 XMMATRIX        XMMatrixTranspose(CXMMATRIX M);
-XMMATRIX        XMMatrixInverse(_Out_ XMVECTOR* pDeterminant, CXMMATRIX M);
+XMMATRIX        XMMatrixInverse(_Out_opt_ XMVECTOR* pDeterminant, CXMMATRIX M);
 XMVECTOR        XMMatrixDeterminant(CXMMATRIX M);
 BOOL            XMMatrixDecompose(_Out_ XMVECTOR *outScale, _Out_ XMVECTOR *outRotQuat, _Out_ XMVECTOR *outTrans, CXMMATRIX M);
 
@@ -2806,9 +2818,9 @@ XMVECTOR        XMPlaneIntersectLine(FXMVECTOR P, FXMVECTOR LinePoint1, FXMVECTO
 VOID            XMPlaneIntersectPlane(_Out_ XMVECTOR* pLinePoint1, _Out_ XMVECTOR* pLinePoint2, FXMVECTOR P1, FXMVECTOR P2);
 XMVECTOR        XMPlaneTransform(FXMVECTOR P, CXMMATRIX M);
 XMFLOAT4*       XMPlaneTransformStream(_Out_bytecap_x_(sizeof(XMFLOAT4)+OutputStride*(PlaneCount-1)) XMFLOAT4* pOutputStream,
-                                       _In_ UINT OutputStride,
+                                       _In_ size_t OutputStride,
                                        _In_bytecount_x_(sizeof(XMFLOAT4)+InputStride*(PlaneCount-1)) CONST XMFLOAT4* pInputStream,
-                                       _In_ UINT InputStride, _In_ UINT PlaneCount, CXMMATRIX M);
+                                       _In_ size_t InputStride, _In_ size_t PlaneCount, CXMMATRIX M);
 
 XMVECTOR        XMPlaneFromPointNormal(FXMVECTOR Point, FXMVECTOR Normal);
 XMVECTOR        XMPlaneFromPoints(FXMVECTOR Point1, FXMVECTOR Point2, FXMVECTOR Point3);
@@ -2858,6 +2870,197 @@ FLOAT           XMScalarCosEst(FLOAT Value);
 VOID            XMScalarSinCosEst(_Out_ FLOAT* pSin, _Out_ FLOAT* pCos, FLOAT Value);
 FLOAT           XMScalarASinEst(FLOAT Value);
 FLOAT           XMScalarACosEst(FLOAT Value);
+
+/****************************************************************************
+ *
+ * Templates
+ *
+ ****************************************************************************/
+
+#if defined(__cplusplus)
+
+#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+
+// PermuteHelper internal template (SSE only)
+namespace XNAMathInternal
+{
+    // Slow path fallback for permutes that do not map to a single SSE shuffle opcode.
+    template<UINT Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
+    {
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2)
+        {
+            static const XMVECTORU32 selectMask =
+            {
+                WhichX ? 0xFFFFFFFF : 0,
+                WhichY ? 0xFFFFFFFF : 0,
+                WhichZ ? 0xFFFFFFFF : 0,
+                WhichW ? 0xFFFFFFFF : 0,
+            };
+
+            XMVECTOR shuffled1 = _mm_shuffle_ps(v1, v1, Shuffle);
+            XMVECTOR shuffled2 = _mm_shuffle_ps(v2, v2, Shuffle);
+
+            XMVECTOR masked1 = _mm_andnot_ps(selectMask, shuffled1);
+            XMVECTOR masked2 = _mm_and_ps(selectMask, shuffled2);
+
+            return _mm_or_ps(masked1, masked2);
+        }
+    };
+
+    // Fast path for permutes that only read from the first vector.
+    template<UINT Shuffle> struct PermuteHelper<Shuffle, false, false, false, false>
+    {
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2) { (v2); return _mm_shuffle_ps(v1, v1, Shuffle); }
+    };
+
+    // Fast path for permutes that only read from the second vector.
+    template<UINT Shuffle> struct PermuteHelper<Shuffle, true, true, true, true>
+    {
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2){ (v1); return _mm_shuffle_ps(v2, v2, Shuffle); }
+    };
+
+    // Fast path for permutes that read XY from the first vector, ZW from the second.
+    template<UINT Shuffle> struct PermuteHelper<Shuffle, false, false, true, true>
+    {
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2) { return _mm_shuffle_ps(v1, v2, Shuffle); }
+    };
+
+    // Fast path for permutes that read XY from the second vector, ZW from the first.
+    template<UINT Shuffle> struct PermuteHelper<Shuffle, true, true, false, false>
+    {
+        static XMVECTOR Permute(FXMVECTOR v1, FXMVECTOR v2) { return _mm_shuffle_ps(v2, v1, Shuffle); }
+    };
+};
+
+#endif // _XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
+
+// General permute template
+template<UINT PermuteX, UINT PermuteY, UINT PermuteZ, UINT PermuteW>
+    inline XMVECTOR XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2)
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+    static_assert(PermuteX <= 7, "PermuteX template parameter out of range");
+    static_assert(PermuteY <= 7, "PermuteY template parameter out of range");
+    static_assert(PermuteZ <= 7, "PermuteZ template parameter out of range");
+    static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
+#else
+    XMASSERT(PermuteX <= 7);
+    XMASSERT(PermuteY <= 7);
+    XMASSERT(PermuteZ <= 7);
+    XMASSERT(PermuteW <= 7);
+#endif
+
+#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    const UINT Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
+
+    const bool WhichX = PermuteX > 3;
+    const bool WhichY = PermuteY > 3;
+    const bool WhichZ = PermuteZ > 3;
+    const bool WhichW = PermuteW > 3;
+
+    return XNAMathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
+#else
+
+    XMVECTOR c = XMVectorPermuteControl( PermuteX, PermuteY, PermuteZ, PermuteW );
+    return XMVectorPermute( V1, V2, c );
+
+#endif
+}
+
+// Special-case permute templates
+template<> inline XMVECTOR XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
+template<> inline XMVECTOR XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
+
+//------------------------------------------------------------------------------
+
+// General swizzle template
+template<UINT SwizzleX, UINT SwizzleY, UINT SwizzleZ, UINT SwizzleW>
+    inline XMVECTOR XMVectorSwizzle(FXMVECTOR V)
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+    static_assert(SwizzleX <= 3, "SwizzleX template parameter out of range");
+    static_assert(SwizzleY <= 3, "SwizzleY template parameter out of range");
+    static_assert(SwizzleZ <= 3, "SwizzleZ template parameter out of range");
+    static_assert(SwizzleW <= 3, "SwizzleW template parameter out of range");
+#else
+    XMASSERT(SwizzleX <= 3);
+    XMASSERT(SwizzleY <= 3);
+    XMASSERT(SwizzleZ <= 3);
+    XMASSERT(SwizzleW <= 3);
+#endif
+
+#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    return _mm_shuffle_ps( V, V, _MM_SHUFFLE( SwizzleW, SwizzleZ, SwizzleY, SwizzleX ) );
+#elif defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    return __vpermwi(V, ((SwizzleX & 3) << 6) | ((SwizzleY & 3) << 4) | ((SwizzleZ & 3) << 2) | (SwizzleW & 3) );
+#else
+
+    return XMVectorSwizzle( V, SwizzleX, SwizzleY, SwizzleZ, SwizzleW );
+
+#endif
+}
+
+// Specialized swizzles
+template<> inline XMVECTOR XMVectorSwizzle<0,1,2,3>(FXMVECTOR V) { return V; }
+
+//------------------------------------------------------------------------------
+
+template<UINT Elements>
+    inline XMVECTOR XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2)
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+    static_assert( Elements < 4, "Elements template parameter out of range" );
+#else
+    XMASSERT( Elements < 4 );
+#endif
+
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+    return XMVectorPermute<Elements, (Elements + 1), (Elements + 2), (Elements + 3)>(V1, V2);
+#endif
+}
+
+template<UINT Elements>
+    inline XMVECTOR XMVectorRotateLeft(FXMVECTOR V)
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+    static_assert( Elements < 4, "Elements template parameter out of range" );
+#else
+    XMASSERT( Elements < 4 );
+#endif
+
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+    return XMVectorSwizzle<Elements & 3, (Elements + 1) & 3, (Elements + 2) & 3, (Elements + 3) & 3>(V);
+#endif
+}
+
+template<UINT Elements>
+    inline XMVECTOR XMVectorRotateRight(FXMVECTOR V)
+{
+#if defined(_MSC_VER) && (_MSC_VER >= 1600)
+    static_assert( Elements < 4, "Elements template parameter out of range" );
+#else
+    XMASSERT( Elements < 4 );
+#endif
+
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+    return XMVectorSwizzle<(4 - Elements) & 3, (5 - Elements) & 3, (6 - Elements) & 3, (7 - Elements) & 3>(V);
+#endif
+}
+
+template<UINT VSLeftRotateElements, UINT Select0, UINT Select1, UINT Select2, UINT Select3>
+    inline XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS)
+{
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#else
+    XMVECTOR Control = XMVectorSelectControl(Select0&1, Select1&1, Select2&1, Select3&1);
+    return XMVectorSelect( VD, XMVectorRotateLeft<VSLeftRotateElements>(VS), Control );
+#endif
+}
+
+#endif // __cplusplus
 
 /****************************************************************************
  *
@@ -3013,7 +3216,10 @@ XMGLOBALCONST XMVECTORF32 g_XMUnsignedFix       = {32768.0f*65536.0f,32768.0f*65
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable:4214 4204 4365 4616 6001)
+#pragma warning(disable:4068 4214 4204 4365 4616 6001)
+
+#pragma prefast(push)
+#pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
 
 #if !defined(__cplusplus) && !defined(_XBOX) && defined(_XM_ISVS2005_)
 
@@ -3029,7 +3235,8 @@ XMGLOBALCONST XMVECTORF32 g_XMUnsignedFix       = {32768.0f*65536.0f,32768.0f*65
 
 //------------------------------------------------------------------------------
 
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_VMX128_INTRINSICS_)
+#else
 
 XMFINLINE XMVECTOR XMVectorSetBinaryConstant(UINT C0, UINT C1, UINT C2, UINT C3)
 {
@@ -3174,8 +3381,7 @@ XMFINLINE XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, UINT VSLeftRotateE
     return XMVectorSelect( VD, XMVectorRotateLeft(VS, VSLeftRotateElements), Control );
 }
 
-// Implemented for VMX128 intrinsics as #defines aboves
-#endif _XM_NO_INTRINSICS_ || _XM_SSE_INTRINSICS_
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -3184,6 +3390,7 @@ XMFINLINE XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, UINT VSLeftRotateE
 #include "xnamathmatrix.inl"
 #include "xnamathmisc.inl"
 
+#pragma prefast(pop)
 #pragma warning(pop)
 
 #endif // __XNAMATH_H__

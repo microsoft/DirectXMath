@@ -438,8 +438,6 @@ XMINLINE XMMATRIX XMMatrixInverse
     static CONST XMVECTORU32 Permute0Z0Y1Z0X = {XM_PERMUTE_0Z, XM_PERMUTE_0Y, XM_PERMUTE_1Z, XM_PERMUTE_0X};
     static CONST XMVECTORU32 Permute1W0X0W1Z = {XM_PERMUTE_1W, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_1Z};
 
-    XMASSERT(pDeterminant);
-
     MT = XMMatrixTranspose(M);
 
     V0[0] = XMVectorPermute(MT.r[2], MT.r[2], SwizzleXXYY.v);
@@ -517,7 +515,8 @@ XMINLINE XMMATRIX XMMatrixInverse
 
     Determinant = XMVector4Dot(R.r[0], MT.r[0]);
 
-    *pDeterminant = Determinant;
+    if (pDeterminant)
+        *pDeterminant = Determinant;
 
     Reciprocal = XMVectorReciprocal(Determinant);
 
@@ -529,7 +528,6 @@ XMINLINE XMMATRIX XMMatrixInverse
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMASSERT(pDeterminant);
     XMMATRIX MT = XMMatrixTranspose(M);
     XMVECTOR V00 = _mm_shuffle_ps(MT.r[2], MT.r[2],_MM_SHUFFLE(1,1,0,0));
     XMVECTOR V10 = _mm_shuffle_ps(MT.r[3], MT.r[3],_MM_SHUFFLE(3,2,3,2));
@@ -635,7 +633,8 @@ XMINLINE XMMATRIX XMMatrixInverse
     C6 = _mm_shuffle_ps(C6,C6,_MM_SHUFFLE(3,1,2,0));
     // Get the determinate
     XMVECTOR vTemp = XMVector4Dot(C0,MT.r[0]);
-    *pDeterminant = vTemp;
+    if (pDeterminant)
+        *pDeterminant = vTemp;
     vTemp = _mm_div_ps(g_XMOne,vTemp);
     XMMATRIX mResult;
     mResult.r[0] = _mm_mul_ps(C0,vTemp);
@@ -747,6 +746,9 @@ XMINLINE XMVECTOR XMMatrixDeterminant
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+#undef XMRANKDECOMPOSE
+#undef XM_DECOMP_EPSILON
+
 #define XMRANKDECOMPOSE(a, b, c, x, y, z)      \
     if((x) < (y))                   \
     {                               \
@@ -799,7 +801,13 @@ XMINLINE XMVECTOR XMMatrixDeterminant
                                     
 #define XM_DECOMP_EPSILON 0.0001f
 
-XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVECTOR *outTrans, CXMMATRIX M )
+XMINLINE BOOL XMMatrixDecompose
+(
+    XMVECTOR *outScale,
+    XMVECTOR *outRotQuat,
+    XMVECTOR *outTrans,
+    CXMMATRIX M
+)
 {
     FLOAT fDet;
     FLOAT *pfScales;
@@ -811,6 +819,10 @@ XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVEC
         &g_XMIdentityR1.v,
         &g_XMIdentityR2.v
     };
+
+    XMASSERT( outScale != NULL );
+    XMASSERT( outRotQuat != NULL );
+    XMASSERT( outTrans != NULL );
 
     // Get the translation
     outTrans[0] = M.r[3];
@@ -829,6 +841,7 @@ XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVEC
     XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0])); 
     XMVectorGetXPtr(&pfScales[1],XMVector3Length(ppvBasis[1][0])); 
     XMVectorGetXPtr(&pfScales[2],XMVector3Length(ppvBasis[2][0])); 
+    pfScales[3] = 0.f;
 
     XMRANKDECOMPOSE(a, b, c, pfScales[0], pfScales[1], pfScales[2])
 
@@ -878,7 +891,7 @@ XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVEC
 
     if(XM_DECOMP_EPSILON < fDet)
     {
-//		Non-SRT matrix encountered
+        // Non-SRT matrix encountered
         return FALSE;
     }
 
@@ -886,6 +899,9 @@ XMINLINE BOOL XMMatrixDecompose( XMVECTOR *outScale, XMVECTOR *outRotQuat, XMVEC
     outRotQuat[0] = XMQuaternionRotationMatrix(matTemp);
     return TRUE;
 }
+
+#undef XMRANKDECOMPOSE
+#undef XM_DECOMP_EPSILON
 
 //------------------------------------------------------------------------------
 // Transformation operations
@@ -2470,6 +2486,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterLH
     FLOAT    TwoNearZ;
     FLOAT    ReciprocalWidth;
     FLOAT    ReciprocalHeight;
+    FLOAT    fRange;
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(ViewRight, ViewLeft, 0.00001f));
@@ -2479,15 +2496,27 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterLH
     TwoNearZ = NearZ + NearZ;
     ReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
+    fRange = FarZ / (FarZ-NearZ);
 
-    M.r[0] = XMVectorSet(TwoNearZ * ReciprocalWidth, 0.0f, 0.0f, 0.0f);
-    M.r[1] = XMVectorSet(0.0f, TwoNearZ * ReciprocalHeight, 0.0f, 0.0f);
-    M.r[2] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
-                         -(ViewTop + ViewBottom) * ReciprocalHeight,
-                         FarZ / (FarZ - NearZ),
-                         1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, -M.r[2].vector4_f32[2] * NearZ, 0.0f);
+    M.m[0][0] = TwoNearZ * ReciprocalWidth;
+    M.m[0][1] = 0.0f;
+    M.m[0][2] = 0.0f;
+    M.m[0][3] = 0.0f;
 
+    M.m[1][0] = 0.0f;
+    M.m[1][1] = TwoNearZ * ReciprocalHeight;
+    M.m[1][2] = 0.0f;
+    M.m[1][3] = 0.0f;
+
+    M.m[2][0] = -(ViewLeft + ViewRight) * ReciprocalWidth;
+    M.m[2][1] = -(ViewTop + ViewBottom) * ReciprocalHeight;
+    M.m[2][2] = fRange;
+    M.m[2][3] = 1.0f;
+
+    M.m[3][0] = 0.0f;
+    M.m[3][1] = 0.0f;
+    M.m[3][2] = -fRange * NearZ;
+    M.m[3][3] = 0.0f;
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2518,10 +2547,10 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterLH
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
     // 0,0,fRange,1.0f
-    M.m[2][0] = -(ViewLeft + ViewRight) * ReciprocalWidth;
-    M.m[2][1] = -(ViewTop + ViewBottom) * ReciprocalHeight;
-    M.m[2][2] = fRange;
-    M.m[2][3] = 1.0f;
+    M.r[2] = XMVectorSet( -(ViewLeft + ViewRight) * ReciprocalWidth,
+                          -(ViewTop + ViewBottom) * ReciprocalHeight,
+                          fRange,
+                          1.0f );
     // 0,0,-fRange * NearZ,0.0f
     vValues = _mm_and_ps(vValues,g_XMMaskZ);
     M.r[3] = vValues;
@@ -2547,6 +2576,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterRH
     FLOAT    TwoNearZ;
     FLOAT    ReciprocalWidth;
     FLOAT    ReciprocalHeight;
+    FLOAT    fRange;
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(ViewRight, ViewLeft, 0.00001f));
@@ -2556,15 +2586,27 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterRH
     TwoNearZ = NearZ + NearZ;
     ReciprocalWidth = 1.0f / (ViewRight - ViewLeft);
     ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
+    fRange = FarZ / (NearZ-FarZ);
 
-    M.r[0] = XMVectorSet(TwoNearZ * ReciprocalWidth, 0.0f, 0.0f, 0.0f);
-    M.r[1] = XMVectorSet(0.0f, TwoNearZ * ReciprocalHeight, 0.0f, 0.0f);
-    M.r[2] = XMVectorSet((ViewLeft + ViewRight) * ReciprocalWidth, 
-                         (ViewTop + ViewBottom) * ReciprocalHeight,
-                         FarZ / (NearZ - FarZ),
-                         -1.0f);
-    M.r[3] = XMVectorSet(0.0f, 0.0f, M.r[2].vector4_f32[2] * NearZ, 0.0f);
+    M.m[0][0] = TwoNearZ * ReciprocalWidth;
+    M.m[0][1] = 0.0f;
+    M.m[0][2] = 0.0f;
+    M.m[0][3] = 0.0f;
 
+    M.m[1][0] = 0.0f;
+    M.m[1][1] = TwoNearZ * ReciprocalHeight;
+    M.m[1][2] = 0.0f;
+    M.m[1][3] = 0.0f;
+
+    M.m[2][0] = (ViewLeft + ViewRight) * ReciprocalWidth;
+    M.m[2][1] = (ViewTop + ViewBottom) * ReciprocalHeight;
+    M.m[2][2] = fRange;
+    M.m[2][3] = -1.0f;
+
+    M.m[3][0] = 0.0f;
+    M.m[3][1] = 0.0f;
+    M.m[3][2] = fRange * NearZ;
+    M.m[3][3] = 0.0f;
     return M;
 
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -2596,10 +2638,10 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveOffCenterRH
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
     // 0,0,fRange,1.0f
-    M.m[2][0] = (ViewLeft + ViewRight) * ReciprocalWidth;
-    M.m[2][1] = (ViewTop + ViewBottom) * ReciprocalHeight;
-    M.m[2][2] = fRange;
-    M.m[2][3] = -1.0f;
+    M.r[2] = XMVectorSet((ViewLeft + ViewRight) * ReciprocalWidth, 
+                         (ViewTop + ViewBottom) * ReciprocalHeight,
+                         fRange,
+                         -1.0f);
     // 0,0,-fRange * NearZ,0.0f
     vValues = _mm_and_ps(vValues,g_XMMaskZ);
     M.r[3] = vValues;
@@ -2940,10 +2982,10 @@ XMFINLINE _XMMATRIX::_XMMATRIX
     CONST FLOAT* pArray
 )
 {
-    r[0] = XMLoadFloat4((XMFLOAT4*)pArray);
-    r[1] = XMLoadFloat4((XMFLOAT4*)(pArray + 4));
-    r[2] = XMLoadFloat4((XMFLOAT4*)(pArray + 8));
-    r[3] = XMLoadFloat4((XMFLOAT4*)(pArray + 12));
+    r[0] = XMLoadFloat4((const XMFLOAT4*)pArray);
+    r[1] = XMLoadFloat4((const XMFLOAT4*)(pArray + 4));
+    r[2] = XMLoadFloat4((const XMFLOAT4*)(pArray + 8));
+    r[3] = XMLoadFloat4((const XMFLOAT4*)(pArray + 12));
 }
 
 //------------------------------------------------------------------------------
@@ -3120,9 +3162,9 @@ XMFINLINE _XMFLOAT4X3& _XMFLOAT4X3::operator=
     CONST _XMFLOAT4X3& Float4x3
 )
 {
-    XMVECTOR V1 = XMLoadFloat4((XMFLOAT4*)&Float4x3._11);
-    XMVECTOR V2 = XMLoadFloat4((XMFLOAT4*)&Float4x3._22);
-    XMVECTOR V3 = XMLoadFloat4((XMFLOAT4*)&Float4x3._33);
+    XMVECTOR V1 = XMLoadFloat4((const XMFLOAT4*)&Float4x3._11);
+    XMVECTOR V2 = XMLoadFloat4((const XMFLOAT4*)&Float4x3._22);
+    XMVECTOR V3 = XMLoadFloat4((const XMFLOAT4*)&Float4x3._33);
 
     XMStoreFloat4((XMFLOAT4*)&_11, V1);
     XMStoreFloat4((XMFLOAT4*)&_22, V2);
@@ -3138,9 +3180,9 @@ XMFINLINE XMFLOAT4X3A& XMFLOAT4X3A::operator=
     CONST XMFLOAT4X3A& Float4x3
 )
 {
-    XMVECTOR V1 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._11);
-    XMVECTOR V2 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._22);
-    XMVECTOR V3 = XMLoadFloat4A((XMFLOAT4A*)&Float4x3._33);
+    XMVECTOR V1 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x3._11);
+    XMVECTOR V2 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x3._22);
+    XMVECTOR V3 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x3._33);
 
     XMStoreFloat4A((XMFLOAT4A*)&_11, V1);
     XMStoreFloat4A((XMFLOAT4A*)&_22, V2);
@@ -3212,10 +3254,10 @@ XMFINLINE _XMFLOAT4X4& _XMFLOAT4X4::operator=
     CONST _XMFLOAT4X4& Float4x4
 )
 {
-    XMVECTOR V1 = XMLoadFloat4((XMFLOAT4*)&Float4x4._11);
-    XMVECTOR V2 = XMLoadFloat4((XMFLOAT4*)&Float4x4._21);
-    XMVECTOR V3 = XMLoadFloat4((XMFLOAT4*)&Float4x4._31);
-    XMVECTOR V4 = XMLoadFloat4((XMFLOAT4*)&Float4x4._41);
+    XMVECTOR V1 = XMLoadFloat4((const XMFLOAT4*)&Float4x4._11);
+    XMVECTOR V2 = XMLoadFloat4((const XMFLOAT4*)&Float4x4._21);
+    XMVECTOR V3 = XMLoadFloat4((const XMFLOAT4*)&Float4x4._31);
+    XMVECTOR V4 = XMLoadFloat4((const XMFLOAT4*)&Float4x4._41);
 
     XMStoreFloat4((XMFLOAT4*)&_11, V1);
     XMStoreFloat4((XMFLOAT4*)&_21, V2);
@@ -3232,10 +3274,10 @@ XMFINLINE XMFLOAT4X4A& XMFLOAT4X4A::operator=
     CONST XMFLOAT4X4A& Float4x4
 )
 {
-    XMVECTOR V1 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._11);
-    XMVECTOR V2 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._21);
-    XMVECTOR V3 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._31);
-    XMVECTOR V4 = XMLoadFloat4A((XMFLOAT4A*)&Float4x4._41);
+    XMVECTOR V1 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x4._11);
+    XMVECTOR V2 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x4._21);
+    XMVECTOR V3 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x4._31);
+    XMVECTOR V4 = XMLoadFloat4A((const XMFLOAT4A*)&Float4x4._41);
 
     XMStoreFloat4A((XMFLOAT4A*)&_11, V1);
     XMStoreFloat4A((XMFLOAT4A*)&_21, V2);
