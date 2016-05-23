@@ -1442,14 +1442,14 @@ BOOL IntersectTriangleTriangle( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, CXMVEC
     BDist = XMVectorSelect( BDist, XMVector3Dot( N1, B2 - A0 ), SelectZ );
 
     // Ensure robustness with co-planar triangles by zeroing small distances.
-    static UINT BDistIsZeroCR;
+    UINT BDistIsZeroCR;
     XMVECTOR BDistIsZero = XMVectorGreaterR( &BDistIsZeroCR, Epsilon, XMVectorAbs( BDist ) );
     BDist = XMVectorSelect( BDist, Zero, BDistIsZero );
 
-    static UINT BDistIsLessCR;
+    UINT BDistIsLessCR;
     XMVECTOR BDistIsLess = XMVectorGreaterR( &BDistIsLessCR, Zero, BDist );
 
-    static UINT BDistIsGreaterCR;
+    UINT BDistIsGreaterCR;
     XMVECTOR BDistIsGreater = XMVectorGreaterR( &BDistIsGreaterCR, BDist, Zero );
 
     // If all the points are on the same side we don't intersect.
@@ -1468,14 +1468,14 @@ BOOL IntersectTriangleTriangle( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, CXMVEC
     ADist = XMVectorSelect( ADist, XMVector3Dot( N2, A2 - B0 ), SelectZ );
 
     // Ensure robustness with co-planar triangles by zeroing small distances.
-    static UINT ADistIsZeroCR;
+    UINT ADistIsZeroCR;
     XMVECTOR ADistIsZero = XMVectorGreaterR( &ADistIsZeroCR, Epsilon, XMVectorAbs( BDist ) );
     ADist = XMVectorSelect( ADist, Zero, ADistIsZero );
 
-    static UINT ADistIsLessCR;
+    UINT ADistIsLessCR;
     XMVECTOR ADistIsLess = XMVectorGreaterR( &ADistIsLessCR, Zero, ADist );
 
-    static UINT ADistIsGreaterCR;
+    UINT ADistIsGreaterCR;
     XMVECTOR ADistIsGreater = XMVectorGreaterR( &ADistIsGreaterCR, ADist, Zero );
 
     // If all the points are on the same side we don't intersect.
