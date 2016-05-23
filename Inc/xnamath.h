@@ -22,13 +22,23 @@ Abstract:
 #error XNAMATH and XBOXMATH are incompatible in the same compilation module. Use one or the other.
 #endif
 
-#define XNAMATH_VERSION 201
+#define XNAMATH_VERSION 202
 
 #if !defined(_XM_X64_) && !defined(_XM_X86_)
 #if defined(_M_AMD64) || defined(_AMD64_)
 #define _XM_X64_
 #elif defined(_M_IX86) || defined(_X86_)
 #define _XM_X86_
+#endif
+#endif
+
+#if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
+#if defined(_XM_X64_) || defined(_XM_X86_)
+#define _XM_LITTLEENDIAN_
+#elif defined(_XBOX_VER)
+#define _XM_BIGENDIAN_
+#else
+#error xnamath.h only supports x86, x64, or XBox 360 targets
 #endif
 #endif
 
@@ -174,7 +184,7 @@ XMFINLINE FLOAT XMConvertToDegrees(FLOAT fRadians) { return fRadians * (180.0f /
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable:4201)
+#pragma warning(disable:4201 4365)
 
 #if !defined (_XM_X86_) && !defined(_XM_X64_)
 #pragma bitfield_order(push)
@@ -278,9 +288,9 @@ typedef _DECLSPEC_ALIGN_16_ struct XMVECTORU32 {
 } XMVECTORU32;
 
 // Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86 and Xbox 360, but not for other targets
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINISCS_)
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR FXMVECTOR;
-#elif defined(_XM_X86_) && !defined(_XM_NO_INTRINISCS_)
+#elif defined(_XM_X86_) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR FXMVECTOR;
 #elif defined(__cplusplus)
 typedef const XMVECTOR& FXMVECTOR;
@@ -289,7 +299,7 @@ typedef const XMVECTOR FXMVECTOR;
 #endif
 
 // Fix-up for (4th+) XMVECTOR parameters to pass in-register for Xbox 360 and by reference otherwise
-#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINISCS_)
+#if defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR CXMVECTOR;
 #elif defined(__cplusplus)
 typedef const XMVECTOR& CXMVECTOR;
@@ -354,11 +364,11 @@ typedef _DECLSPEC_ALIGN_16_ struct _XMMATRIX
     FLOAT       operator() (UINT Row, UINT Column) CONST { return m[Row][Column]; }
     FLOAT&      operator() (UINT Row, UINT Column) { return m[Row][Column]; }
 
-    _XMMATRIX&  operator= (CONST _XMMATRIX&);
+    _XMMATRIX&  operator= (CONST _XMMATRIX& M);
 
 #ifndef XM_NO_OPERATOR_OVERLOADS
-    _XMMATRIX&  operator*= (CONST _XMMATRIX&);
-    _XMMATRIX   operator* (CONST _XMMATRIX&) CONST;
+    _XMMATRIX&  operator*= (CONST _XMMATRIX& M);
+    _XMMATRIX   operator* (CONST _XMMATRIX& M) CONST;
 #endif // !XM_NO_OPERATOR_OVERLOADS
 
 #endif // __cplusplus
@@ -1500,7 +1510,7 @@ typedef struct _XMCOLOR
 
     _XMCOLOR() {};
     _XMCOLOR(UINT Color) : c(Color) {};
-    _XMCOLOR(FLOAT _x, FLOAT _y, FLOAT _z, FLOAT _w);
+    _XMCOLOR(FLOAT _r, FLOAT _g, FLOAT _b, FLOAT _a);
     _XMCOLOR(CONST FLOAT *pArray);
 
     operator UINT () { return c; }
@@ -2582,9 +2592,6 @@ XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR0       = {-1.0f,0.0f, 0.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR1       = {0.0f,-1.0f, 0.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR2       = {0.0f, 0.0f,-1.0f, 0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMNegIdentityR3       = {0.0f, 0.0f, 0.0f,-1.0f};
-
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
-
 XMGLOBALCONST XMVECTORI32 g_XMNegativeZero      = {0x80000000, 0x80000000, 0x80000000, 0x80000000};
 XMGLOBALCONST XMVECTORI32 g_XMNegate3           = {0x80000000, 0x80000000, 0x80000000, 0x00000000};
 XMGLOBALCONST XMVECTORI32 g_XMMask3             = {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000};
@@ -2638,8 +2645,6 @@ XMGLOBALCONST XMVECTORF32 g_XMNegateW           = { 1.0f, 1.0f, 1.0f,-1.0f};
 XMGLOBALCONST XMVECTORI32 g_XMSelect0101        = {XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_1};
 XMGLOBALCONST XMVECTORI32 g_XMSelect1010        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0};
 XMGLOBALCONST XMVECTORI32 g_XMOneHalfMinusEpsilon = { 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD, 0x3EFFFFFD};
-
-#ifdef _XM_NO_INTRINSICS_
 XMGLOBALCONST XMVECTORI32 g_XMSelect1000        = {XM_SELECT_1, XM_SELECT_0, XM_SELECT_0, XM_SELECT_0};
 XMGLOBALCONST XMVECTORI32 g_XMSelect1100        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0};
 XMGLOBALCONST XMVECTORI32 g_XMSelect1110        = {XM_SELECT_1, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0};
@@ -2650,9 +2655,6 @@ XMGLOBALCONST XMVECTORI32 g_XMSwizzleYZXW       = {XM_PERMUTE_0Y, XM_PERMUTE_0Z,
 XMGLOBALCONST XMVECTORI32 g_XMSwizzleZXYW       = {XM_PERMUTE_0Z, XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_0W};
 XMGLOBALCONST XMVECTORI32 g_XMPermute0X0Y1X1Y   = {XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y};
 XMGLOBALCONST XMVECTORI32 g_XMPermute0Z0W1Z1W   = {XM_PERMUTE_0Z, XM_PERMUTE_0W, XM_PERMUTE_1Z, XM_PERMUTE_1W};
-#endif // !_XM_NO_INTRINSICS_
-
-#ifdef _XM_SSE_INTRINSICS_
 XMGLOBALCONST XMVECTORF32 g_XMFixupY16          = {1.0f,1.0f/65536.0f,0.0f,0.0f};
 XMGLOBALCONST XMVECTORF32 g_XMFixupY16W16       = {1.0f,1.0f,1.0f/65536.0f,1.0f/65536.0f};
 XMGLOBALCONST XMVECTORI32 g_XMFlipY             = {0,0x80000000,0,0};
@@ -2685,9 +2687,6 @@ XMGLOBALCONST XMVECTORF32 g_XMMulDec4           = {1.0f,1.0f/1024.0f,1.0f/(1024.
 XMGLOBALCONST XMVECTORI32 g_XMMaskByte4         = {0xFF,0xFF00,0xFF0000,0xFF000000};
 XMGLOBALCONST XMVECTORI32 g_XMXorByte4          = {0x80,0x8000,0x800000,0x00000000};
 XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0f*65536.0f,0};
-#endif
-
-#endif // _XM_NO_INTRINSICS_
 
 /****************************************************************************
  *
@@ -2696,7 +2695,7 @@ XMGLOBALCONST XMVECTORF32 g_XMAddByte4          = {-128.0f,-128.0f*256.0f,-128.0
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable:4214 4204 4616 6001)
+#pragma warning(disable:4214 4204 4365 4616 6001)
 
 #if !defined(__cplusplus) && !defined(_XBOX) && defined(_XM_ISVS2005_)
 
@@ -2861,10 +2860,10 @@ XMFINLINE XMVECTOR XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, UINT VSLeftRotateE
 
 //------------------------------------------------------------------------------
 
-#include <xnamathconvert.inl>
-#include <xnamathvector.inl>
-#include <xnamathmatrix.inl>
-#include <xnamathmisc.inl>
+#include "xnamathconvert.inl"
+#include "xnamathvector.inl"
+#include "xnamathmatrix.inl"
+#include "xnamathmisc.inl"
 
 #pragma warning(pop)
 

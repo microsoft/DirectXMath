@@ -2310,7 +2310,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveRH
 XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 (
     FLOAT FovAngleY, 
-    FLOAT AspectHByW, 
+    FLOAT AspectRatio, 
     FLOAT NearZ, 
     FLOAT FarZ
 )
@@ -2324,13 +2324,13 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     Height = CosFov / SinFov;
-    Width = Height / AspectHByW;
+    Width = Height / AspectRatio;
 
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
@@ -2341,7 +2341,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 	XMMATRIX M;
     FLOAT    SinFov;
@@ -2351,7 +2351,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     // Note: This is recorded on the stack
     FLOAT Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectHByW,
+        Height / AspectRatio,
         Height,
         fRange,
         -fRange * NearZ
@@ -2363,7 +2363,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
     M.r[0] = vTemp;
-    // 0,Height / AspectHByW,0,0
+    // 0,Height / AspectRatio,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
@@ -2386,7 +2386,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovLH
 XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
 (
     FLOAT FovAngleY, 
-    FLOAT AspectHByW, 
+    FLOAT AspectRatio, 
     FLOAT NearZ, 
     FLOAT FarZ
 )
@@ -2400,13 +2400,13 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     XMMATRIX M;
 
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     Height = CosFov / SinFov;
-    Width = Height / AspectHByW;
+    Width = Height / AspectRatio;
 
     M.r[0] = XMVectorSet(Width, 0.0f, 0.0f, 0.0f);
     M.r[1] = XMVectorSet(0.0f, Height, 0.0f, 0.0f);
@@ -2417,7 +2417,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
 
 #elif defined(_XM_SSE_INTRINSICS_)
     XMASSERT(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    XMASSERT(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    XMASSERT(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     XMASSERT(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 	XMMATRIX M;
     FLOAT    SinFov;
@@ -2427,7 +2427,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     // Note: This is recorded on the stack
     FLOAT Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectHByW,
+        Height / AspectRatio,
         Height,
         fRange,
         fRange * NearZ
@@ -2439,7 +2439,7 @@ XMFINLINE XMMATRIX XMMatrixPerspectiveFovRH
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
     M.r[0] = vTemp;
-    // 0,Height / AspectHByW,0,0
+    // 0,Height / AspectRatio,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;

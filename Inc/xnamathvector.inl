@@ -1256,7 +1256,7 @@ XMFINLINE XMVECTOR XMVectorPermute
         ++pControl;
         VectorIndex = (uIndex>>4)&1;
         uIndex &= 0x0F;
-#if defined(_XM_X86_) || defined(_XM_X64_)
+#if defined(_XM_LITTLEENDIAN_)
         uIndex ^= 3; // Swap byte ordering on little endian machines
 #endif
         pWork[0] = aByte[VectorIndex][uIndex];
@@ -4415,22 +4415,22 @@ XMINLINE XMVECTOR XMVectorATan2
     // Return the inverse tangent of Y / X in the range of -Pi to Pi with the following exceptions:
 
     //     Y == 0 and X is Negative         -> Pi with the sign of Y
-    //     Y == 0 and X is Positive         -> 0 with the sign of Y
+    //     y == 0 and x is positive         -> 0 with the sign of y
     //     Y != 0 and X == 0                -> Pi / 2 with the sign of Y
-    //     X == -Infinity and Finite Y > 0  -> Pi with the sign of Y
-    //     X == +Infinity and Finite Y > 0  -> 0 with the sign of Y
+    //     Y != 0 and X is Negative         -> atan(y/x) + (PI with the sign of Y)
+    //     X == -Infinity and Finite Y      -> Pi with the sign of Y
+    //     X == +Infinity and Finite Y      -> 0 with the sign of Y
     //     Y == Infinity and X is Finite    -> Pi / 2 with the sign of Y
     //     Y == Infinity and X == -Infinity -> 3Pi / 4 with the sign of Y
     //     Y == Infinity and X == +Infinity -> Pi / 4 with the sign of Y
-    //     TODO: Return Y / X if the result underflows
 
     XMVECTOR Reciprocal;
     XMVECTOR V;
     XMVECTOR YSign;
     XMVECTOR Pi, PiOverTwo, PiOverFour, ThreePiOverFour;
-    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity, FiniteYGreaterZero;
+    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity;
     XMVECTOR ATanResultValid;
-    XMVECTOR R0, R1, R2, R3, R4, R5, R6, R7;
+    XMVECTOR R0, R1, R2, R3, R4, R5;
     XMVECTOR Zero;
     XMVECTOR Result;
     static CONST XMVECTOR ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
@@ -4449,8 +4449,6 @@ XMINLINE XMVECTOR XMVectorATan2
     XIsPositive = XMVectorEqualInt(XIsPositive, Zero);
     YEqualsInfinity = XMVectorIsInfinite(Y);
     XEqualsInfinity = XMVectorIsInfinite(X);
-    FiniteYGreaterZero = XMVectorGreater(Y, Zero);
-    FiniteYGreaterZero = XMVectorSelect(FiniteYGreaterZero, Zero, YEqualsInfinity);
 
     YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
     Pi = XMVectorOrInt(Pi, YSign);
@@ -4463,25 +4461,25 @@ XMINLINE XMVECTOR XMVectorATan2
     R3 = XMVectorSelect(R2, R1, YEqualsZero);
     R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
     R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
-    R6 = XMVectorSelect(R3, R5, YEqualsInfinity);
-    R7 = XMVectorSelect(R6, R1, FiniteYGreaterZero);
-    Result = XMVectorSelect(R6, R7, XEqualsInfinity);
+    Result = XMVectorSelect(R3, R5, YEqualsInfinity);
     ATanResultValid = XMVectorEqualInt(Result, ATanResultValid);
 
     Reciprocal = XMVectorReciprocal(X);
     V = XMVectorMultiply(Y, Reciprocal);
     R0 = XMVectorATan(V);
 
-    Result = XMVectorSelect(Result, R0, ATanResultValid);
+    R1 = XMVectorSelect( Pi, Zero, XIsPositive );
+    R2 = XMVectorAdd(R0, R1);
+
+    Result = XMVectorSelect(Result, R2, ATanResultValid);
 
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static CONST XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
+
     // Mask if Y>0 && Y!=INF
-    XMVECTOR FiniteYGreaterZero = _mm_cmpgt_ps(Y,g_XMZero);
     XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
-    FiniteYGreaterZero = _mm_andnot_ps(YEqualsInfinity,FiniteYGreaterZero);
     // Get the sign of (Y&0x80000000)
     XMVECTOR YSign = _mm_and_ps(Y, g_XMNegativeZero);
     // Get the sign bits of X
@@ -4489,10 +4487,10 @@ XMINLINE XMVECTOR XMVectorATan2
     // Change them to masks
     XIsPositive = XMVectorEqualInt(XIsPositive,g_XMZero);
     // Get Pi
-    XMVECTOR R1 = _mm_load_ps1(&ATan2Constants.f[0]);
+    XMVECTOR Pi = _mm_load_ps1(&ATan2Constants.f[0]);
     // Copy the sign of Y
-    R1 = _mm_or_ps(R1,YSign);
-    R1 = XMVectorSelect(R1,YSign,XIsPositive);
+    Pi = _mm_or_ps(Pi,YSign);
+    XMVECTOR R1 = XMVectorSelect(Pi,YSign,XIsPositive);
     // Mask for X==0
     XMVECTOR vConstants = _mm_cmpeq_ps(X,g_XMZero);
     // Get Pi/2 with with sign of Y
@@ -4513,7 +4511,7 @@ XMINLINE XMVECTOR XMVectorATan2
     vConstants = XMVectorSelect(PiOverTwo,vConstants,XEqualsInfinity);
 
     XMVECTOR vResult = XMVectorSelect(R2,vConstants,YEqualsInfinity);
-    vConstants = XMVectorSelect(vResult,R1,FiniteYGreaterZero);
+    vConstants = XMVectorSelect(R1,vResult,YEqualsInfinity);
     // At this point, any entry that's zero will get the result
     // from XMVectorATan(), otherwise, return the failsafe value
     vResult = XMVectorSelect(vResult,vConstants,XEqualsInfinity);
@@ -4523,6 +4521,10 @@ XMINLINE XMVECTOR XMVectorATan2
     vConstants = _mm_div_ps(Y,X);
     vConstants = XMVectorATan(vConstants);
     // Discard entries that have been declared void
+
+    XMVECTOR R3 = XMVectorSelect( Pi, g_XMZero, XIsPositive );
+    vConstants = _mm_add_ps( vConstants, R3 );
+
     vResult = XMVectorSelect(vResult,vConstants,ATanResultValid);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -5139,9 +5141,9 @@ XMFINLINE XMVECTOR XMVectorATan2Est
     XMVECTOR V;
     XMVECTOR YSign;
     XMVECTOR Pi, PiOverTwo, PiOverFour, ThreePiOverFour;
-    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity, FiniteYGreaterZero;
+    XMVECTOR YEqualsZero, XEqualsZero, XIsPositive, YEqualsInfinity, XEqualsInfinity;
     XMVECTOR ATanResultValid;
-    XMVECTOR R0, R1, R2, R3, R4, R5, R6, R7;
+    XMVECTOR R0, R1, R2, R3, R4, R5;
     XMVECTOR Zero;
     XMVECTOR Result;
     static CONST XMVECTOR ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
@@ -5160,8 +5162,6 @@ XMFINLINE XMVECTOR XMVectorATan2Est
     XIsPositive = XMVectorEqualInt(XIsPositive, Zero);
     YEqualsInfinity = XMVectorIsInfinite(Y);
     XEqualsInfinity = XMVectorIsInfinite(X);
-    FiniteYGreaterZero = XMVectorGreater(Y, Zero);
-    FiniteYGreaterZero = XMVectorSelect(FiniteYGreaterZero, Zero, YEqualsInfinity);
 
     YSign = XMVectorAndInt(Y, g_XMNegativeZero.v);
     Pi = XMVectorOrInt(Pi, YSign);
@@ -5174,25 +5174,25 @@ XMFINLINE XMVECTOR XMVectorATan2Est
     R3 = XMVectorSelect(R2, R1, YEqualsZero);
     R4 = XMVectorSelect(ThreePiOverFour, PiOverFour, XIsPositive);
     R5 = XMVectorSelect(PiOverTwo, R4, XEqualsInfinity);
-    R6 = XMVectorSelect(R3, R5, YEqualsInfinity);
-    R7 = XMVectorSelect(R6, R1, FiniteYGreaterZero);
-    Result = XMVectorSelect(R6, R7, XEqualsInfinity);
+    Result = XMVectorSelect(R3, R5, YEqualsInfinity);
     ATanResultValid = XMVectorEqualInt(Result, ATanResultValid);
 
     Reciprocal = XMVectorReciprocalEst(X);
     V = XMVectorMultiply(Y, Reciprocal);
     R0 = XMVectorATanEst(V);
 
-    Result = XMVectorSelect(Result, R0, ATanResultValid);
+    R1 = XMVectorSelect( Pi, Zero, XIsPositive );
+    R2 = XMVectorAdd(R0, R1);
+
+    Result = XMVectorSelect(Result, R2, ATanResultValid);
 
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
     static CONST XMVECTORF32 ATan2Constants = {XM_PI, XM_PIDIV2, XM_PIDIV4, XM_PI * 3.0f / 4.0f};
+
     // Mask if Y>0 && Y!=INF
-    XMVECTOR FiniteYGreaterZero = _mm_cmpgt_ps(Y,g_XMZero);
     XMVECTOR YEqualsInfinity = XMVectorIsInfinite(Y);
-    FiniteYGreaterZero = _mm_andnot_ps(YEqualsInfinity,FiniteYGreaterZero);
     // Get the sign of (Y&0x80000000)
     XMVECTOR YSign = _mm_and_ps(Y, g_XMNegativeZero);
     // Get the sign bits of X
@@ -5200,10 +5200,10 @@ XMFINLINE XMVECTOR XMVectorATan2Est
     // Change them to masks
     XIsPositive = XMVectorEqualInt(XIsPositive,g_XMZero);
     // Get Pi
-    XMVECTOR R1 = _mm_load_ps1(&ATan2Constants.f[0]);
+    XMVECTOR Pi = _mm_load_ps1(&ATan2Constants.f[0]);
     // Copy the sign of Y
-    R1 = _mm_or_ps(R1,YSign);
-    R1 = XMVectorSelect(R1,YSign,XIsPositive);
+    Pi = _mm_or_ps(Pi,YSign);
+    XMVECTOR R1 = XMVectorSelect(Pi,YSign,XIsPositive);
     // Mask for X==0
     XMVECTOR vConstants = _mm_cmpeq_ps(X,g_XMZero);
     // Get Pi/2 with with sign of Y
@@ -5224,16 +5224,21 @@ XMFINLINE XMVECTOR XMVectorATan2Est
     vConstants = XMVectorSelect(PiOverTwo,vConstants,XEqualsInfinity);
 
     XMVECTOR vResult = XMVectorSelect(R2,vConstants,YEqualsInfinity);
-    vConstants = XMVectorSelect(vResult,R1,FiniteYGreaterZero);
+    vConstants = XMVectorSelect(R1,vResult,YEqualsInfinity);
     // At this point, any entry that's zero will get the result
     // from XMVectorATan(), otherwise, return the failsafe value
     vResult = XMVectorSelect(vResult,vConstants,XEqualsInfinity);
     // Any entries not 0xFFFFFFFF, are considered precalculated
     XMVECTOR ATanResultValid = XMVectorEqualInt(vResult,g_XMNegOneMask);
     // Let's do the ATan2 function
-    vConstants = _mm_div_ps(Y,X);
+    XMVECTOR Reciprocal = _mm_rcp_ps(X);
+    vConstants = _mm_mul_ps(Y, Reciprocal);
     vConstants = XMVectorATanEst(vConstants);
     // Discard entries that have been declared void
+
+    XMVECTOR R3 = XMVectorSelect( Pi, g_XMZero, XIsPositive );
+    vConstants = _mm_add_ps( vConstants, R3 );
+
     vResult = XMVectorSelect(vResult,vConstants,ATanResultValid);
     return vResult;
 #else // _XM_VMX128_INTRINSICS_
@@ -12777,13 +12782,13 @@ XMFINLINE _XMUICO4& _XMUICO4::operator=
 
 XMFINLINE _XMCOLOR::_XMCOLOR
 (
-    FLOAT _x,
-    FLOAT _y,
-    FLOAT _z,
-    FLOAT _w
+    FLOAT _r,
+    FLOAT _g,
+    FLOAT _b,
+    FLOAT _a
 )
 {
-    XMStoreColor(this, XMVectorSet(_x, _y, _z, _w));
+    XMStoreColor(this, XMVectorSet(_r, _g, _b, _a));
 }
 
 //------------------------------------------------------------------------------

@@ -693,7 +693,7 @@ XMFINLINE XMVECTOR XMQuaternionBaryCentric
 
     s = f + g;
 
-    if (s < 0.00001f && s > -0.00001f)
+    if ((s < 0.00001f) && (s > -0.00001f))
     {
         Result = Q0;
     }
@@ -932,28 +932,26 @@ XMINLINE XMVECTOR XMQuaternionRotationMatrix
     CXMMATRIX M
 )
 {
-#if defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_)
 
     XMVECTOR Q0, Q1, Q2;
     XMVECTOR M00, M11, M22;
     XMVECTOR CQ0, CQ1, C;
     XMVECTOR CX, CY, CZ, CW;
     XMVECTOR SQ1, Scale;
-    XMVECTOR Rsq, Sqrt, VEqualsInfinity, VEqualsZero, Select;
+    XMVECTOR Rsq, Sqrt, VEqualsNaN;
     XMVECTOR A, B, P;
     XMVECTOR PermuteSplat, PermuteSplatT;
     XMVECTOR SignB, SignBT;
     XMVECTOR PermuteControl, PermuteControlT;
-    XMVECTOR Zero;
     XMVECTOR Result;
-    static CONST XMVECTOR  OneQuarter = {0.25f, 0.25f, 0.25f, 0.25f};
-    static CONST XMVECTOR  SignPNNP = {1.0f, -1.0f, -1.0f, 1.0f};
-    static CONST XMVECTOR  SignNPNP = {-1.0f, 1.0f, -1.0f, 1.0f};
-    static CONST XMVECTOR  SignNNPP = {-1.0f, -1.0f, 1.0f, 1.0f};
-    static CONST XMVECTOR  SignPNPP = {1.0f, -1.0f, 1.0f, 1.0f};
-    static CONST XMVECTOR  SignPPNP = {1.0f, 1.0f, -1.0f, 1.0f};
-    static CONST XMVECTOR  SignNPPP = {-1.0f, 1.0f, 1.0f, 1.0f};
-    static CONST XMVECTOR  SignNNNX = {-1.0f, -1.0f, -1.0f, 2.0e-126f};
+    static CONST XMVECTORF32 OneQuarter = {0.25f, 0.25f, 0.25f, 0.25f};
+    static CONST XMVECTORF32 SignPNNP = {1.0f, -1.0f, -1.0f, 1.0f};
+    static CONST XMVECTORF32 SignNPNP = {-1.0f, 1.0f, -1.0f, 1.0f};
+    static CONST XMVECTORF32 SignNNPP = {-1.0f, -1.0f, 1.0f, 1.0f};
+    static CONST XMVECTORF32 SignPNPP = {1.0f, -1.0f, 1.0f, 1.0f};
+    static CONST XMVECTORF32 SignPPNP = {1.0f, 1.0f, -1.0f, 1.0f};
+    static CONST XMVECTORF32 SignNPPP = {-1.0f, 1.0f, 1.0f, 1.0f};
     static CONST XMVECTORU32 Permute0X0X0Y0W = {XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_0W};
     static CONST XMVECTORU32 Permute0Y0Z0Z1W = {XM_PERMUTE_0Y, XM_PERMUTE_0Z, XM_PERMUTE_0Z, XM_PERMUTE_1W};
     static CONST XMVECTORU32 SplatX = {XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X};
@@ -972,26 +970,23 @@ XMINLINE XMVECTOR XMQuaternionRotationMatrix
     M11 = XMVectorSplatY(M.r[1]);
     M22 = XMVectorSplatZ(M.r[2]);
 
-    Q0 = XMVectorMultiply(SignPNNP, M00);
-    Q0 = XMVectorMultiplyAdd(SignNPNP, M11, Q0);
-    Q0 = XMVectorMultiplyAdd(SignNNPP, M22, Q0);
+    Q0 = XMVectorMultiply(SignPNNP.v, M00);
+    Q0 = XMVectorMultiplyAdd(SignNPNP.v, M11, Q0);
+    Q0 = XMVectorMultiplyAdd(SignNNPP.v, M22, Q0);
 
     Q1 = XMVectorAdd(Q0, g_XMOne.v);
 
     Rsq = XMVectorReciprocalSqrt(Q1);
-    Zero = XMVectorZero();
-    VEqualsInfinity = XMVectorEqualInt(Q1, g_XMInfinity.v);
-    VEqualsZero = XMVectorEqual(Q1, Zero);
+    VEqualsNaN = XMVectorIsNaN(Rsq);
     Sqrt = XMVectorMultiply(Q1, Rsq);
-    Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
-    Q1 = XMVectorSelect(Q1, Sqrt, Select);
+    Q1 = XMVectorSelect(Sqrt, Q1, VEqualsNaN);
 
     Q1 = XMVectorMultiply(Q1, g_XMOneHalf.v);
 
     SQ1 = XMVectorMultiply(Rsq, g_XMOneHalf.v);
 
     CQ0 = XMVectorPermute(Q0, Q0, Permute0X0X0Y0W.v);
-    CQ1 = XMVectorPermute(Q0, SignNNNX, Permute0Y0Z0Z1W.v);
+    CQ1 = XMVectorPermute(Q0, g_XMEpsilon.v, Permute0Y0Z0Z1W.v);
     C = XMVectorGreaterOrEqual(CQ0, CQ1);
 
     CX = XMVectorSplatX(C);
@@ -1000,15 +995,15 @@ XMINLINE XMVECTOR XMQuaternionRotationMatrix
     CW = XMVectorSplatW(C);
 
     PermuteSplat = XMVectorSelect(SplatZ.v, SplatY.v, CZ);
-    SignB = XMVectorSelect(SignNPPP, SignPPNP, CZ);
+    SignB = XMVectorSelect(SignNPPP.v, SignPPNP.v, CZ);
     PermuteControl = XMVectorSelect(Permute2.v, Permute1.v, CZ);
 
     PermuteSplat = XMVectorSelect(PermuteSplat, SplatZ.v, CX);
-    SignB = XMVectorSelect(SignB, SignNPPP, CX);
+    SignB = XMVectorSelect(SignB, SignNPPP.v, CX);
     PermuteControl = XMVectorSelect(PermuteControl, Permute2.v, CX);
 
     PermuteSplatT = XMVectorSelect(PermuteSplat,SplatX.v, CY);
-    SignBT = XMVectorSelect(SignB, SignPNPP, CY);
+    SignBT = XMVectorSelect(SignB, SignPNPP.v, CY);
     PermuteControlT = XMVectorSelect(PermuteControl,Permute0.v, CY);
 
     PermuteSplat = XMVectorSelect(PermuteSplat, PermuteSplatT, CX);
@@ -1016,7 +1011,7 @@ XMINLINE XMVECTOR XMQuaternionRotationMatrix
     PermuteControl = XMVectorSelect(PermuteControl, PermuteControlT, CX);
 
     PermuteSplat = XMVectorSelect(PermuteSplat,SplatW.v, CW);
-    SignB = XMVectorSelect(SignB, SignNNNX, CW);
+    SignB = XMVectorSelect(SignB, g_XMNegativeOne.v, CW);
     PermuteControl = XMVectorSelect(PermuteControl,Permute3.v, CW);
 
     Scale = XMVectorPermute(SQ1, SQ1, PermuteSplat);
@@ -1032,104 +1027,6 @@ XMINLINE XMVECTOR XMQuaternionRotationMatrix
 
     return Result;
 
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR Q0, Q1, Q2;
-    XMVECTOR M00, M11, M22;
-    XMVECTOR CQ0, CQ1, C;
-    XMVECTOR CX, CY, CZ, CW;
-    XMVECTOR SQ1, Scale;
-    XMVECTOR Rsq, Sqrt, VEqualsInfinity, VEqualsZero, Select;
-    XMVECTOR A, B, P;
-    XMVECTOR PermuteSplat, PermuteSplatT;
-    XMVECTOR SignB, SignBT;
-    XMVECTOR PermuteControl, PermuteControlT;
-    XMVECTOR Zero;
-    XMVECTOR Result;
-    static CONST XMVECTORF32  OneQuarter = {0.25f, 0.25f, 0.25f, 0.25f};
-    static CONST XMVECTORF32  SignPNNP = {1.0f, -1.0f, -1.0f, 1.0f};
-    static CONST XMVECTORF32  SignNPNP = {-1.0f, 1.0f, -1.0f, 1.0f};
-    static CONST XMVECTORF32  SignNNPP = {-1.0f, -1.0f, 1.0f, 1.0f};
-    static CONST XMVECTORF32  SignPNPP = {1.0f, -1.0f, 1.0f, 1.0f};
-    static CONST XMVECTORF32  SignPPNP = {1.0f, 1.0f, -1.0f, 1.0f};
-    static CONST XMVECTORF32  SignNPPP = {-1.0f, 1.0f, 1.0f, 1.0f};
-    static CONST XMVECTORF32  SignNNNX = {-1.0f, -1.0f, -1.0f, 2.0e-126f};
-    static CONST XMVECTORI32 Permute0X0X0Y0W = {XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_0W};
-    static CONST XMVECTORI32 Permute0Y0Z0Z1W = {XM_PERMUTE_0Y, XM_PERMUTE_0Z, XM_PERMUTE_0Z, XM_PERMUTE_1W};
-    static CONST XMVECTORI32 SplatX = {XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X, XM_PERMUTE_0X};
-    static CONST XMVECTORI32 SplatY = {XM_PERMUTE_0Y, XM_PERMUTE_0Y, XM_PERMUTE_0Y, XM_PERMUTE_0Y};
-    static CONST XMVECTORI32 SplatZ = {XM_PERMUTE_0Z, XM_PERMUTE_0Z, XM_PERMUTE_0Z, XM_PERMUTE_0Z};
-    static CONST XMVECTORI32 SplatW = {XM_PERMUTE_0W, XM_PERMUTE_0W, XM_PERMUTE_0W, XM_PERMUTE_0W};
-    static CONST XMVECTORI32 PermuteC = {XM_PERMUTE_0X, XM_PERMUTE_0Z, XM_PERMUTE_1X, XM_PERMUTE_1Y};
-    static CONST XMVECTORI32 PermuteA = {XM_PERMUTE_0Y, XM_PERMUTE_1Y, XM_PERMUTE_1Z, XM_PERMUTE_0W};
-    static CONST XMVECTORI32 PermuteB = {XM_PERMUTE_1X, XM_PERMUTE_1W, XM_PERMUTE_0Z, XM_PERMUTE_0W};
-    static CONST XMVECTORI32 Permute0 = {XM_PERMUTE_0X, XM_PERMUTE_1X, XM_PERMUTE_1Z, XM_PERMUTE_1Y};
-    static CONST XMVECTORI32 Permute1 = {XM_PERMUTE_1X, XM_PERMUTE_0Y, XM_PERMUTE_1Y, XM_PERMUTE_1Z};
-    static CONST XMVECTORI32 Permute2 = {XM_PERMUTE_1Z, XM_PERMUTE_1Y, XM_PERMUTE_0Z, XM_PERMUTE_1X};
-    static CONST XMVECTORI32 Permute3 = {XM_PERMUTE_1Y, XM_PERMUTE_1Z, XM_PERMUTE_1X, XM_PERMUTE_0W};
-
-    M00 = XMVectorSplatX(M.r[0]);
-    M11 = XMVectorSplatY(M.r[1]);
-    M22 = XMVectorSplatZ(M.r[2]);
-
-    Q0 = XMVectorMultiply(SignPNNP, M00);
-    Q0 = XMVectorMultiplyAdd(SignNPNP, M11, Q0);
-    Q0 = XMVectorMultiplyAdd(SignNNPP, M22, Q0);
-
-    Q1 = XMVectorAdd(Q0, g_XMOne);
-
-    Rsq = XMVectorReciprocalSqrt(Q1);
-    Zero = XMVectorZero();
-    VEqualsInfinity = XMVectorEqualInt(Q1, g_XMInfinity);
-    VEqualsZero = XMVectorEqual(Q1, Zero);
-    Sqrt = XMVectorMultiply(Q1, Rsq);
-    Select = XMVectorEqualInt(VEqualsInfinity, VEqualsZero);
-    Q1 = XMVectorSelect(Q1, Sqrt, Select);
-
-    Q1 = XMVectorMultiply(Q1, g_XMOneHalf);
-
-    SQ1 = XMVectorMultiply(Rsq, g_XMOneHalf);
-
-    CQ0 = XMVectorPermute(Q0, Q0, Permute0X0X0Y0W);
-    CQ1 = XMVectorPermute(Q0, SignNNNX, Permute0Y0Z0Z1W);
-    C = XMVectorGreaterOrEqual(CQ0, CQ1);
-
-    CX = XMVectorSplatX(C);
-    CY = XMVectorSplatY(C);
-    CZ = XMVectorSplatZ(C);
-    CW = XMVectorSplatW(C);
-
-    PermuteSplat = XMVectorSelect(SplatZ, SplatY, CZ);
-    SignB = XMVectorSelect(SignNPPP, SignPPNP, CZ);
-    PermuteControl = XMVectorSelect(Permute2, Permute1, CZ);
-
-    PermuteSplat = XMVectorSelect(PermuteSplat, SplatZ, CX);
-    SignB = XMVectorSelect(SignB, SignNPPP, CX);
-    PermuteControl = XMVectorSelect(PermuteControl, Permute2, CX);
-
-    PermuteSplatT = XMVectorSelect(PermuteSplat,SplatX, CY);
-    SignBT = XMVectorSelect(SignB, SignPNPP, CY);
-    PermuteControlT = XMVectorSelect(PermuteControl,Permute0, CY);
-
-    PermuteSplat = XMVectorSelect(PermuteSplat, PermuteSplatT, CX);
-    SignB = XMVectorSelect(SignB, SignBT, CX);
-    PermuteControl = XMVectorSelect(PermuteControl, PermuteControlT, CX);
-
-    PermuteSplat = XMVectorSelect(PermuteSplat,SplatW, CW);
-    SignB = XMVectorSelect(SignB, SignNNNX, CW);
-    PermuteControl = XMVectorSelect(PermuteControl,Permute3, CW);
-
-    Scale = XMVectorPermute(SQ1, SQ1, PermuteSplat);
-
-    P = XMVectorPermute(M.r[1], M.r[2],PermuteC);  // {M10, M12, M20, M21}
-    A = XMVectorPermute(M.r[0], P, PermuteA);       // {M01, M12, M20, M03}
-    B = XMVectorPermute(M.r[0], P, PermuteB);       // {M10, M21, M02, M03}
-
-    Q2 = XMVectorMultiplyAdd(SignB, B, A);
-    Q2 = XMVectorMultiply(Q2, Scale);
-
-    Result = XMVectorPermute(Q1, Q2, PermuteControl);
-
-    return Result;
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
