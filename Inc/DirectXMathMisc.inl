@@ -1985,6 +1985,42 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToXYZ( FXMVECTOR srgb )
     return XMVectorSelect( srgb, clr, g_XMSelect1110 );
 }
 
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMColorRGBToSRGB( FXMVECTOR rgb )
+{
+    static const XMVECTORF32 Cutoff = { 0.0031308f, 0.0031308f, 0.0031308f, 1.f };
+    static const XMVECTORF32 Linear = { 12.92f, 12.92f, 12.92f, 1.f };
+    static const XMVECTORF32 Scale = { 1.055f, 1.055f, 1.055f, 1.f };
+    static const XMVECTORF32 Bias = { 0.055f, 0.055f, 0.055f, 0.f };
+    static const XMVECTORF32 InvGamma = { 1.0f/2.4f, 1.0f/2.4f, 1.0f/2.4f, 1.f };
+
+    XMVECTOR V = XMVectorSaturate(rgb);
+    XMVECTOR V0 = XMVectorMultiply( V, Linear );
+    XMVECTOR V1 = Scale * XMVectorPow( V, InvGamma ) - Bias;
+    XMVECTOR select = XMVectorLess( V, Cutoff );
+    V = XMVectorSelect( V1, V0, select );
+    return XMVectorSelect( rgb, V, g_XMSelect1110 );
+}
+
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
+{
+    static const XMVECTORF32 Cutoff = { 0.04045f, 0.04045f, 0.04045f, 1.f };
+    static const XMVECTORF32 ILinear = { 1.f/12.92f, 1.f/12.92f, 1.f/12.92f, 1.f };
+    static const XMVECTORF32 Scale = { 1.f/1.055f, 1.f/1.055f, 1.f/1.055f, 1.f };
+    static const XMVECTORF32 Bias = { 0.055f, 0.055f, 0.055f, 0.f };
+    static const XMVECTORF32 Gamma = { 2.4f, 2.4f, 2.4f, 1.f };
+
+    XMVECTOR V = XMVectorSaturate(srgb);
+    XMVECTOR V0 = XMVectorMultiply( V, ILinear );
+    XMVECTOR V1 = XMVectorPow( (V + Bias) * Scale, Gamma );
+    XMVECTOR select = XMVectorGreater( V, Cutoff );
+    V = XMVectorSelect( V0, V1, select );
+    return XMVectorSelect( srgb, V, g_XMSelect1110 );
+}
+
 /****************************************************************************
  *
  * Miscellaneous

@@ -2323,7 +2323,6 @@ inline XMVECTOR XM_CALLCONV XMVectorMax
 
 //------------------------------------------------------------------------------
 
-#if defined(_XM_NO_INTRINSICS_)
 namespace Internal
 {
     inline float round_to_nearest( float x )
@@ -2345,7 +2344,8 @@ namespace Internal
         return i + 1.f;
     }
 };
-#else
+
+#if !defined(_XM_NO_INTRINSICS_)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif

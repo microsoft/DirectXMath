@@ -605,104 +605,16 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadFloat3SE
 {
     assert(pSource);
 
-    __declspec(align(16)) uint32_t Result[4];
-    uint32_t Mantissa;
-    uint32_t Exponent, ExpBits;
+    union { float f; int32_t i; } fi;
+    fi.i = 0x33800000 + (pSource->e << 23);
+    float Scale = fi.f;
 
-    if ( pSource->e == 0x1f ) // INF or NAN
-    {
-        Result[0] = 0x7f800000 | (pSource->xm << 14);
-        Result[1] = 0x7f800000 | (pSource->ym << 14);
-        Result[2] = 0x7f800000 | (pSource->zm << 14);
-    }
-    else if ( pSource->e != 0 ) // The values are all normalized
-    {
-        Exponent = pSource->e;
-
-        ExpBits = (Exponent + 112) << 23;
-
-        Mantissa = pSource->xm;
-        Result[0] = ExpBits | (Mantissa << 14);
-
-        Mantissa = pSource->ym;
-        Result[1] = ExpBits | (Mantissa << 14);
-
-        Mantissa = pSource->zm;
-        Result[2] = ExpBits | (Mantissa << 14);
-    }
-    else
-    {
-        // X Channel
-        Mantissa = pSource->xm;
-
-        if (Mantissa != 0) // The value is denormalized
-        {
-            // Normalize the value in the resulting float
-            Exponent = 1;
-
-            do
-            {
-                Exponent--;
-                Mantissa <<= 1;
-            } while ((Mantissa & 0x200) == 0);
-
-            Mantissa &= 0x1FF;
-        }
-        else // The value is zero
-        {
-            Exponent = (uint32_t)-112;
-        }
-
-        Result[0] = ((Exponent + 112) << 23) | (Mantissa << 14);
-
-        // Y Channel
-        Mantissa = pSource->ym;
-
-        if (Mantissa != 0) // The value is denormalized
-        {
-            // Normalize the value in the resulting float
-            Exponent = 1;
-
-            do
-            {
-                Exponent--;
-                Mantissa <<= 1;
-            } while ((Mantissa & 0x200) == 0);
-
-            Mantissa &= 0x1FF;
-        }
-        else // The value is zero
-        {
-            Exponent = (uint32_t)-112;
-        }
-
-        Result[1] = ((Exponent + 112) << 23) | (Mantissa << 14);
-
-        // Z Channel
-        Mantissa = pSource->zm;
-
-        if (Mantissa != 0) // The value is denormalized
-        {
-            // Normalize the value in the resulting float
-            Exponent = 1;
-
-            do
-            {
-                Exponent--;
-                Mantissa <<= 1;
-            } while ((Mantissa & 0x200) == 0);
-
-            Mantissa &= 0x1FF;
-        }
-        else // The value is zero
-        {
-            Exponent = (uint32_t)-112;
-        }
-
-        Result[2] = ((Exponent + 112) << 23) | (Mantissa << 14);
-    }
-
-    return XMLoadFloat3A( reinterpret_cast<const XMFLOAT3A*>(&Result) );
+    XMVECTORF32 v = {
+        Scale * float( pSource->xm ),
+        Scale * float( pSource->ym ),
+        Scale * float( pSource->zm ),
+        1.0f };
+    return v;
 }
 
 //------------------------------------------------------------------------------
@@ -1011,6 +923,31 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUDecN4
 #elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
 #endif // _XM_VMX128_INTRINSICS_
 }
+
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUDecN4_XR
+(
+    const XMUDECN4* pSource
+)
+{
+    assert(pSource);
+
+    int32_t ElementX = pSource->v & 0x3FF;
+    int32_t ElementY = (pSource->v >> 10) & 0x3FF;
+    int32_t ElementZ = (pSource->v >> 20) & 0x3FF;
+
+    XMVECTORF32 vResult = {
+        (float)(ElementX - 0x180) / 510.0f,
+        (float)(ElementY - 0x180) / 510.0f,
+        (float)(ElementZ - 0x180) / 510.0f,
+        (float)(pSource->v >> 30) / 3.0f
+    };
+
+    return vResult.v;
+}
+
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1814,77 +1751,33 @@ inline void XM_CALLCONV PackedVector::XMStoreFloat3SE
 {
     assert(pDestination);
 
-    __declspec(align(16)) uint32_t IValue[4];
-    XMStoreFloat3A( reinterpret_cast<XMFLOAT3A*>(&IValue), V );
+    XMFLOAT3A tmp;
+    XMStoreFloat3A( &tmp, V );
 
-    uint32_t Exp[3];
-    uint32_t Frac[3];
+    static const float maxf9 = float(0x1FF << 7);
+    static const float minf9 = float(1.f / (1 << 16));
 
-    // X, Y, Z Channels (5-bit exponent, 9-bit mantissa)
-    for(uint32_t j=0; j < 3; ++j)
-    {
-        uint32_t Sign = IValue[j] & 0x80000000;
-        uint32_t I = IValue[j] & 0x7FFFFFFF;
+    float x = (tmp.x >= 0.f) ? ( (tmp.x > maxf9) ? maxf9 : tmp.x ) : 0.f;
+    float y = (tmp.y >= 0.f) ? ( (tmp.y > maxf9) ? maxf9 : tmp.y ) : 0.f;
+    float z = (tmp.z >= 0.f) ? ( (tmp.z > maxf9) ? maxf9 : tmp.z ) : 0.f;
 
-        if ((I & 0x7F800000) == 0x7F800000)
-        {
-            // INF or NAN
-            Exp[j] = 0x1f;
-            if (( I & 0x7FFFFF ) != 0)
-            {
-                Frac[j] = ((I>>14)|(I>>5)|(I))&0x1ff;
-            }
-            else if ( Sign )
-            {
-                // -INF is clamped to 0 since 3SE is positive only
-                Exp[j] = Frac[j] = 0;
-            }
-        }
-        else if ( Sign )
-        {
-            // 3SE is positive only, so clamp to zero
-            Exp[j] = Frac[j] = 0;
-        }
-        else if (I > 0x477FC000U)
-        {
-            // The number is too large, set to max
-            Exp[j] = 0x1e;
-            Frac[j] = 0x1ff;
-        }
-        else
-        {
-            if (I < 0x38800000U)
-            {
-                // The number is too small to be represented as a normalized float9
-                // Convert it to a denormalized value.
-                uint32_t Shift = 113U - (I >> 23U);
-                I = (0x800000U | (I & 0x7FFFFFU)) >> Shift;
-            }
-            else
-            {
-                // Rebias the exponent to represent the value as a normalized float9
-                I += 0xC8000000U;
-            }
-     
-            uint32_t T = ((I + 0x1FFFU + ((I >> 14U) & 1U)) >> 14U)&0x3fffU;
+    const float max_xy = (x > y) ? x : y;
+    const float max_xyz = (max_xy > z) ? max_xy : z;
 
-            Exp[j] = (T & 0x3E00) >> 9;
-            Frac[j] = T & 0x1ff;
-        }
-    }
+    const float maxColor = (max_xyz > minf9) ? max_xyz : minf9;
 
-    // Adjust to a shared exponent
-    uint32_t T = XMMax( Exp[0], XMMax( Exp[1], Exp[2] ) );
+    union { float f; int32_t i; } fi;
+    fi.f = maxColor;
+    fi.i &= 0xFF800000; // cut off fraction
 
-    Frac[0] = Frac[0] >> (T - Exp[0]);
-    Frac[1] = Frac[1] >> (T - Exp[1]);
-    Frac[2] = Frac[2] >> (T - Exp[2]);
+    pDestination->e = (fi.i - 0x37800000) >> 23;
 
-    // Store packed into memory
-    pDestination->xm = Frac[0];
-    pDestination->ym = Frac[1];
-    pDestination->zm = Frac[2];
-    pDestination->e = T;
+    fi.i = 0x83000000 - fi.i;
+    float ScaleR = fi.f;
+
+    pDestination->xm = static_cast<uint32_t>( Internal::round_to_nearest(x * ScaleR) );
+    pDestination->ym = static_cast<uint32_t>( Internal::round_to_nearest(y * ScaleR) );
+    pDestination->zm = static_cast<uint32_t>( Internal::round_to_nearest(z * ScaleR) );
 }
 
 //------------------------------------------------------------------------------
@@ -2258,6 +2151,32 @@ inline void XM_CALLCONV PackedVector::XMStoreUDecN4
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XM_CALLCONV PackedVector::XMStoreUDecN4_XR
+(
+    XMUDECN4* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+
+    static const XMVECTORF32  Scale = { 510.0f, 510.0f, 510.0f, 3.0f };
+    static const XMVECTORF32  Bias  = { 384.0f, 384.0f, 384.0f, 0.0f };
+    static const XMVECTORF32  C     = { 1023.f, 1023.f, 1023.f, 3.f };
+
+    XMVECTOR N = XMVectorMultiplyAdd( V, Scale, Bias );
+    N = XMVectorClamp( N, g_XMZero, C );
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint32_t)tmp.w << 30)
+                      | (((uint32_t)tmp.z & 0x3FF) << 20)
+                      | (((uint32_t)tmp.y & 0x3FF) << 10)
+                      | (((uint32_t)tmp.x & 0x3FF));
 }
 
 //------------------------------------------------------------------------------

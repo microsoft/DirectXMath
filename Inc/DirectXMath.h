@@ -17,7 +17,7 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 305
+#define DIRECTX_MATH_VERSION 306
 
 #if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
 #if defined(_M_X64) || defined(_M_IX86) || defined(_M_ARM)
@@ -28,6 +28,7 @@
 #error DirectX Math does not support this target
 #endif
 #endif // !_XM_BIGENDIAN_ && !_XM_LITTLEENDIAN_
+
 
 #if defined(_MSC_VER) && !defined(_M_ARM) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
 #if ((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418)
@@ -279,8 +280,8 @@ typedef const XMVECTOR FXMVECTOR;
 typedef const XMVECTOR& FXMVECTOR;
 #endif
 
-// Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, Xbox 360, and vector call; by reference otherwise
-#if ( defined(_M_ARM) || defined(_XM_VMX128_INTRINSICS_) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+// Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, Xbox 360, and x64 vector call; by reference otherwise
+#if ( defined(_M_ARM) || defined(_XM_VMX128_INTRINSICS_) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR GXMVECTOR;
 #else
 typedef const XMVECTOR& GXMVECTOR;
@@ -1391,6 +1392,10 @@ XMVECTOR    XM_CALLCONV     XMColorXYZToRGB( FXMVECTOR xyz );
 
 XMVECTOR    XM_CALLCONV     XMColorXYZToSRGB( FXMVECTOR xyz );
 XMVECTOR    XM_CALLCONV     XMColorSRGBToXYZ( FXMVECTOR srgb );
+
+XMVECTOR    XM_CALLCONV     XMColorRGBToSRGB( FXMVECTOR rgb );
+XMVECTOR    XM_CALLCONV     XMColorSRGBToRGB( FXMVECTOR srgb );
+
 
 /****************************************************************************
  *

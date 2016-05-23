@@ -921,6 +921,7 @@ XMVECTOR    XM_CALLCONV     XMLoadXDec4(_In_ const XMXDEC4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadDecN4(_In_ const XMDECN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadDec4(_In_ const XMDEC4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUDecN4(_In_ const XMUDECN4* pSource);
+XMVECTOR    XM_CALLCONV     XMLoadUDecN4_XR(_In_ const XMUDECN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUDec4(_In_ const XMUDEC4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadByteN4(_In_ const XMBYTEN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadByte4(_In_ const XMBYTE4* pSource);
@@ -962,6 +963,7 @@ void    XM_CALLCONV     XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR
 void    XM_CALLCONV     XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUDecN4(_Out_ XMUDECN4* pDestination, _In_ FXMVECTOR V);
+void    XM_CALLCONV     XMStoreUDecN4_XR(_Out_ XMUDECN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUDec4(_Out_ XMUDEC4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreByteN4(_Out_ XMBYTEN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreByte4(_Out_ XMBYTE4* pDestination, _In_ FXMVECTOR V);
