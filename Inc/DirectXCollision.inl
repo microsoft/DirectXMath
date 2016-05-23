@@ -129,7 +129,7 @@ inline XMVECTOR PointOnLineSegmentNearestPoint( _In_ FXMVECTOR S1, _In_ FXMVECTO
 // Test if the point (P) on the plane of the triangle is inside the triangle 
 // (V0, V1, V2).
 //-----------------------------------------------------------------------------
-inline XMVECTOR PointOnPlaneInsideTriangle( _In_ FXMVECTOR P, _In_ FXMVECTOR V0, _In_ FXMVECTOR V1, _In_ GXMVECTOR V2 )
+inline XMVECTOR XM_CALLCONV PointOnPlaneInsideTriangle( _In_ FXMVECTOR P, _In_ FXMVECTOR V0, _In_ FXMVECTOR V1, _In_ GXMVECTOR V2 )
 {
     // Compute the triangle normal.
     XMVECTOR N = XMVector3Cross( V2 - V0, V1 - V0 );
@@ -379,8 +379,8 @@ inline bool CalculateEigenVectorsFromCovarianceMatrix( _In_ float Cxx, _In_ floa
 }
 
 //-----------------------------------------------------------------------------
-inline void FastIntersectTrianglePlane( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2, GXMVECTOR Plane,
-                                        XMVECTOR& Outside, XMVECTOR& Inside )
+inline void XM_CALLCONV FastIntersectTrianglePlane( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2, GXMVECTOR Plane,
+                                                    XMVECTOR& Outside, XMVECTOR& Inside )
 {
     // Plane0
     XMVECTOR Dist0 = XMVector4Dot( V0, Plane );
@@ -437,8 +437,8 @@ inline void FastIntersectAxisAlignedBoxPlane( _In_ FXMVECTOR Center, _In_ FXMVEC
 }
 
 //-----------------------------------------------------------------------------
-inline void FastIntersectOrientedBoxPlane( _In_ FXMVECTOR Center, _In_ FXMVECTOR Extents, _In_ FXMVECTOR Axis0, _In_ GXMVECTOR Axis1,
-                                           _In_ CXMVECTOR Axis2, _In_ CXMVECTOR Plane, _Out_ XMVECTOR& Outside, _Out_ XMVECTOR& Inside )
+inline void XM_CALLCONV FastIntersectOrientedBoxPlane( _In_ FXMVECTOR Center, _In_ FXMVECTOR Extents, _In_ FXMVECTOR Axis0, _In_ GXMVECTOR Axis1,
+                                                       _In_ HXMVECTOR Axis2, _In_ HXMVECTOR Plane, _Out_ XMVECTOR& Outside, _Out_ XMVECTOR& Inside )
 {
     // Compute the distance to the center of the box.
     XMVECTOR Dist = XMVector4Dot( Center, Plane );
@@ -461,9 +461,9 @@ inline void FastIntersectOrientedBoxPlane( _In_ FXMVECTOR Center, _In_ FXMVECTOR
 }
 
 //-----------------------------------------------------------------------------
-inline void FastIntersectFrustumPlane( _In_ FXMVECTOR Point0, _In_ FXMVECTOR Point1, _In_ FXMVECTOR Point2, _In_ GXMVECTOR Point3,
-                                       _In_ CXMVECTOR Point4, _In_ CXMVECTOR Point5, _In_ CXMVECTOR Point6, _In_ CXMVECTOR Point7,
-                                       _In_ CXMVECTOR Plane, _Out_ XMVECTOR& Outside, _Out_ XMVECTOR& Inside )
+inline void XM_CALLCONV FastIntersectFrustumPlane( _In_ FXMVECTOR Point0, _In_ FXMVECTOR Point1, _In_ FXMVECTOR Point2, _In_ GXMVECTOR Point3,
+                                                   _In_ HXMVECTOR Point4, _In_ HXMVECTOR Point5, _In_ CXMVECTOR Point6, _In_ CXMVECTOR Point7,
+                                                   _In_ CXMVECTOR Plane, _Out_ XMVECTOR& Outside, _Out_ XMVECTOR& Inside )
 {
     // Find the min/max projection of the frustum onto the plane normal.
     XMVECTOR Min, Max, Dist;
@@ -520,7 +520,7 @@ inline void FastIntersectFrustumPlane( _In_ FXMVECTOR Point0, _In_ FXMVECTOR Poi
 // Transform a sphere by an angle preserving transform.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingSphere::Transform( BoundingSphere& Out, CXMMATRIX M ) const
+inline void XM_CALLCONV BoundingSphere::Transform( BoundingSphere& Out, FXMMATRIX M ) const
 {
     // Load the center of the sphere.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -543,7 +543,7 @@ inline void BoundingSphere::Transform( BoundingSphere& Out, CXMMATRIX M ) const
 }
 
 _Use_decl_annotations_
-inline void BoundingSphere::Transform( BoundingSphere& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
+inline void XM_CALLCONV BoundingSphere::Transform( BoundingSphere& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
 {
     // Load the center of the sphere.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -563,7 +563,7 @@ inline void BoundingSphere::Transform( BoundingSphere& Out, float Scale, FXMVECT
 // Point in sphere test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingSphere::Contains( FXMVECTOR Point ) const
+inline ContainmentType XM_CALLCONV BoundingSphere::Contains( FXMVECTOR Point ) const
 {
     XMVECTOR vCenter = XMLoadFloat3( &Center );
     XMVECTOR vRadius = XMVectorReplicatePtr( &Radius );
@@ -579,7 +579,7 @@ inline ContainmentType BoundingSphere::Contains( FXMVECTOR Point ) const
 // Triangle in sphere test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingSphere::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline ContainmentType XM_CALLCONV BoundingSphere::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     if ( !Intersects(V0,V1,V2) )
         return DISJOINT;
@@ -791,7 +791,7 @@ inline bool BoundingSphere::Intersects( const BoundingFrustum& fr ) const
 // Triangle vs sphere test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     // Load the sphere.    
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -850,7 +850,7 @@ inline bool BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2
 // Sphere-plane intersection
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline PlaneIntersectionType BoundingSphere::Intersects( FXMVECTOR Plane ) const
+inline PlaneIntersectionType XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR Plane ) const
 {
     assert( DirectX::Internal::XMPlaneIsUnit( Plane ) );
 
@@ -881,7 +881,7 @@ inline PlaneIntersectionType BoundingSphere::Intersects( FXMVECTOR Plane ) const
 // Compute the intersection of a ray (Origin, Direction) with a sphere.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingSphere::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
+inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
 {
     assert( DirectX::Internal::XMVector3IsUnit( Direction ) );
 
@@ -935,8 +935,8 @@ inline bool BoundingSphere::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, f
 // Test a sphere vs 6 planes (typically forming a frustum).
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingSphere::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
-                                                    GXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 ) const
+inline ContainmentType XM_CALLCONV BoundingSphere::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
+                                                                GXMVECTOR Plane3, HXMVECTOR Plane4, HXMVECTOR Plane5 ) const
 {
     // Load the sphere.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -1185,7 +1185,7 @@ inline void BoundingSphere::CreateFromFrustum( BoundingSphere& Out, const Boundi
 // Transform an axis aligned box by an angle preserving transform.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingBox::Transform( BoundingBox& Out, CXMMATRIX M ) const
+inline void XM_CALLCONV BoundingBox::Transform( BoundingBox& Out, FXMMATRIX M ) const
 {
     // Load center and extents.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -1213,7 +1213,7 @@ inline void BoundingBox::Transform( BoundingBox& Out, CXMMATRIX M ) const
 }
 
 _Use_decl_annotations_
-inline void BoundingBox::Transform( BoundingBox& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
+inline void XM_CALLCONV BoundingBox::Transform( BoundingBox& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
 {
     assert( DirectX::Internal::XMQuaternionIsUnit( Rotation ) );
 
@@ -1269,7 +1269,7 @@ inline void BoundingBox::GetCorners( XMFLOAT3* Corners ) const
 // Point in axis-aligned box test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingBox::Contains( FXMVECTOR Point ) const
+inline ContainmentType XM_CALLCONV BoundingBox::Contains( FXMVECTOR Point ) const
 {
     XMVECTOR vCenter = XMLoadFloat3( &Center );
     XMVECTOR vExtents = XMLoadFloat3( &Extents );
@@ -1282,7 +1282,7 @@ inline ContainmentType BoundingBox::Contains( FXMVECTOR Point ) const
 // Triangle in axis-aligned box test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingBox::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline ContainmentType XM_CALLCONV BoundingBox::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     if ( !Intersects(V0,V1,V2) )
         return DISJOINT;
@@ -1531,7 +1531,7 @@ inline bool BoundingBox::Intersects( const BoundingFrustum& fr ) const
 // Triangle vs. axis aligned box test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline bool XM_CALLCONV BoundingBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     XMVECTOR Zero = XMVectorZero();
 
@@ -1697,7 +1697,7 @@ inline bool BoundingBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) 
 
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline PlaneIntersectionType BoundingBox::Intersects( FXMVECTOR Plane ) const
+inline PlaneIntersectionType XM_CALLCONV BoundingBox::Intersects( FXMVECTOR Plane ) const
 {
     assert( DirectX::Internal::XMPlaneIsUnit( Plane ) );
 
@@ -1729,7 +1729,7 @@ inline PlaneIntersectionType BoundingBox::Intersects( FXMVECTOR Plane ) const
 // box using the slabs method.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingBox::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
+inline bool XM_CALLCONV BoundingBox::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
 {
     assert( DirectX::Internal::XMVector3IsUnit( Direction ) );
 
@@ -1791,8 +1791,8 @@ inline bool BoundingBox::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, floa
 // Test an axis alinged box vs 6 planes (typically forming a frustum).
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingBox::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
-                                                 GXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 ) const
+inline ContainmentType XM_CALLCONV BoundingBox::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
+                                                             GXMVECTOR Plane3, HXMVECTOR Plane4, HXMVECTOR Plane5 ) const
 {
     // Load the box.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -1890,7 +1890,7 @@ inline void BoundingBox::CreateFromSphere( BoundingBox& Out, const BoundingSpher
 // Create axis-aligned box from min/max points
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingBox::CreateFromPoints( BoundingBox& Out, FXMVECTOR pt1, FXMVECTOR pt2 )
+inline void XM_CALLCONV BoundingBox::CreateFromPoints( BoundingBox& Out, FXMVECTOR pt1, FXMVECTOR pt2 )
 {
     XMVECTOR Min = XMVectorMin( pt1, pt2 );
     XMVECTOR Max = XMVectorMax( pt1, pt2 );
@@ -1939,7 +1939,7 @@ inline void BoundingBox::CreateFromPoints( BoundingBox& Out, size_t Count, const
 // Transform an oriented box by an angle preserving transform.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingOrientedBox::Transform( BoundingOrientedBox& Out, CXMMATRIX M ) const
+inline void XM_CALLCONV BoundingOrientedBox::Transform( BoundingOrientedBox& Out, FXMMATRIX M ) const
 {
     // Load the box.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -1976,7 +1976,7 @@ inline void BoundingOrientedBox::Transform( BoundingOrientedBox& Out, CXMMATRIX 
 }
 
 _Use_decl_annotations_
-inline void BoundingOrientedBox::Transform( BoundingOrientedBox& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
+inline void XM_CALLCONV BoundingOrientedBox::Transform( BoundingOrientedBox& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
 {
     assert( DirectX::Internal::XMQuaternionIsUnit( Rotation ) );
 
@@ -2031,7 +2031,7 @@ inline void BoundingOrientedBox::GetCorners( XMFLOAT3* Corners ) const
 // Point in oriented box test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingOrientedBox::Contains( FXMVECTOR Point ) const
+inline ContainmentType XM_CALLCONV BoundingOrientedBox::Contains( FXMVECTOR Point ) const
 {
     XMVECTOR vCenter = XMLoadFloat3( &Center );
     XMVECTOR vExtents = XMLoadFloat3( &Extents );
@@ -2048,7 +2048,7 @@ inline ContainmentType BoundingOrientedBox::Contains( FXMVECTOR Point ) const
 // Triangle in oriented bounding box
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingOrientedBox::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline ContainmentType XM_CALLCONV BoundingOrientedBox::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     // Load the box center & orientation.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -2483,7 +2483,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingFrustum& fr ) const
 // Triangle vs. oriented box test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingOrientedBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline bool XM_CALLCONV BoundingOrientedBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     // Load the box center & orientation.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -2505,7 +2505,7 @@ inline bool BoundingOrientedBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECT
 
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline PlaneIntersectionType BoundingOrientedBox::Intersects( FXMVECTOR Plane ) const
+inline PlaneIntersectionType XM_CALLCONV BoundingOrientedBox::Intersects( FXMVECTOR Plane ) const
 {
     assert( DirectX::Internal::XMPlaneIsUnit( Plane ) );
 
@@ -2543,7 +2543,7 @@ inline PlaneIntersectionType BoundingOrientedBox::Intersects( FXMVECTOR Plane ) 
 // using the slabs method.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingOrientedBox::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
+inline bool XM_CALLCONV BoundingOrientedBox::Intersects( FXMVECTOR Origin, FXMVECTOR Direction, float& Dist ) const
 {
     assert( DirectX::Internal::XMVector3IsUnit( Direction ) );
 
@@ -2624,8 +2624,8 @@ inline bool BoundingOrientedBox::Intersects( FXMVECTOR Origin, FXMVECTOR Directi
 // Test an oriented box vs 6 planes (typically forming a frustum).
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingOrientedBox::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
-                                                         GXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 ) const
+inline ContainmentType XM_CALLCONV BoundingOrientedBox::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
+                                                                     GXMVECTOR Plane3, HXMVECTOR Plane4, HXMVECTOR Plane5 ) const
 {
     // Load the box.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -2817,7 +2817,7 @@ inline void BoundingOrientedBox::CreateFromPoints( BoundingOrientedBox& Out, siz
 // Transform a frustum by an angle preserving transform.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingFrustum::Transform( BoundingFrustum& Out, CXMMATRIX M ) const
+inline void XM_CALLCONV BoundingFrustum::Transform( BoundingFrustum& Out, FXMMATRIX M ) const
 {
     // Load the frustum.
     XMVECTOR vOrigin = XMLoadFloat3( &Origin );
@@ -2860,7 +2860,7 @@ inline void BoundingFrustum::Transform( BoundingFrustum& Out, CXMMATRIX M ) cons
 }
 
 _Use_decl_annotations_
-inline void BoundingFrustum::Transform( BoundingFrustum& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
+inline void XM_CALLCONV BoundingFrustum::Transform( BoundingFrustum& Out, float Scale, FXMVECTOR Rotation, FXMVECTOR Translation ) const
 {
     assert( DirectX::Internal::XMQuaternionIsUnit( Rotation ) );
 
@@ -2943,7 +2943,7 @@ inline void BoundingFrustum::GetCorners( XMFLOAT3* Corners ) const
 // Point in frustum test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingFrustum::Contains( FXMVECTOR Point ) const
+inline ContainmentType XM_CALLCONV BoundingFrustum::Contains( FXMVECTOR Point ) const
 {
     // Build frustum planes.
     XMVECTOR Planes[6];
@@ -2984,7 +2984,7 @@ inline ContainmentType BoundingFrustum::Contains( FXMVECTOR Point ) const
 // Triangle vs frustum test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingFrustum::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline ContainmentType XM_CALLCONV BoundingFrustum::Contains( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin = XMLoadFloat3( &Origin );
@@ -3778,7 +3778,7 @@ inline bool BoundingFrustum::Intersects( const BoundingFrustum& fr ) const
 // Triangle vs frustum test.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingFrustum::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
+inline bool XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
     // Build the frustum planes (NOTE: D is negated from the usual).
     XMVECTOR Planes[6];
@@ -3928,7 +3928,7 @@ inline bool BoundingFrustum::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V
 
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline PlaneIntersectionType BoundingFrustum::Intersects( FXMVECTOR Plane ) const
+inline PlaneIntersectionType XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR Plane ) const
 {
     assert( DirectX::Internal::XMPlaneIsUnit( Plane ) );
 
@@ -3985,7 +3985,7 @@ inline PlaneIntersectionType BoundingFrustum::Intersects( FXMVECTOR Plane ) cons
 // Ray vs. frustum test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool BoundingFrustum::Intersects( FXMVECTOR rayOrigin, FXMVECTOR Direction, float& Dist ) const
+inline bool XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR rayOrigin, FXMVECTOR Direction, float& Dist ) const
 {
     // If ray starts inside the frustum, return a distance of 0 for the hit
     if ( Contains(rayOrigin) == CONTAINS )
@@ -4085,8 +4085,8 @@ inline bool BoundingFrustum::Intersects( FXMVECTOR rayOrigin, FXMVECTOR Directio
 // Test a frustum vs 6 planes (typically forming another frustum).
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType BoundingFrustum::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
-                                                     GXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 ) const
+inline ContainmentType XM_CALLCONV BoundingFrustum::ContainedBy( FXMVECTOR Plane0, FXMVECTOR Plane1, FXMVECTOR Plane2,
+                                                                 GXMVECTOR Plane3, HXMVECTOR Plane4, HXMVECTOR Plane5 ) const
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin = XMLoadFloat3( &Origin );
@@ -4245,7 +4245,7 @@ inline void BoundingFrustum::GetPlanes( XMVECTOR* NearPlane, XMVECTOR* FarPlane,
 // constructed frustum to be incorrect.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void BoundingFrustum::CreateFromMatrix( BoundingFrustum& Out, CXMMATRIX Projection )
+inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix( BoundingFrustum& Out, FXMMATRIX Projection )
 {
     // Corners of the projection frustum in homogenous space.
     static XMVECTORF32 HomogenousPoints[6] =
@@ -4313,7 +4313,7 @@ namespace TriangleTests
 // pp 21-28, 1997.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool Intersects( FXMVECTOR Origin, FXMVECTOR Direction, FXMVECTOR V0, GXMVECTOR V1, CXMVECTOR V2, float& Dist )
+inline bool XM_CALLCONV Intersects( FXMVECTOR Origin, FXMVECTOR Direction, FXMVECTOR V0, GXMVECTOR V1, HXMVECTOR V2, float& Dist )
 {
     assert( DirectX::Internal::XMVector3IsUnit( Direction ) );
 
@@ -4424,7 +4424,7 @@ inline bool Intersects( FXMVECTOR Origin, FXMVECTOR Direction, FXMVECTOR V0, GXM
 // actaully result in a seperation.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline bool Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GXMVECTOR B0, CXMVECTOR B1, CXMVECTOR B2 )
+inline bool XM_CALLCONV Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GXMVECTOR B0, HXMVECTOR B1, HXMVECTOR B2 )
 {
     static const XMVECTORI32 SelectY =
     {
@@ -4725,7 +4725,7 @@ inline bool Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GXMVECTOR B0, 
 // Ray-triangle test
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline PlaneIntersectionType Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2, GXMVECTOR Plane )
+inline PlaneIntersectionType XM_CALLCONV Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2, GXMVECTOR Plane )
 {
     XMVECTOR One = XMVectorSplatOne();
 
@@ -4756,9 +4756,9 @@ inline PlaneIntersectionType Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V
 // Test a triangle vs 6 planes (typically forming a frustum).
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline ContainmentType ContainedBy( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2,
-                                    GXMVECTOR Plane0, CXMVECTOR Plane1, CXMVECTOR Plane2,
-                                    CXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 )
+inline ContainmentType XM_CALLCONV ContainedBy( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2,
+                                                GXMVECTOR Plane0, HXMVECTOR Plane1, HXMVECTOR Plane2,
+                                                CXMVECTOR Plane3, CXMVECTOR Plane4, CXMVECTOR Plane5 )
 {
     XMVECTOR One = XMVectorSplatOne();
 

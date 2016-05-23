@@ -26,9 +26,9 @@
 //------------------------------------------------------------------------------
 
 // Return true if any entry in the matrix is NaN
-inline bool XMMatrixIsNaN
+inline bool XM_CALLCONV XMMatrixIsNaN
 (
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -91,9 +91,9 @@ inline bool XMMatrixIsNaN
 //------------------------------------------------------------------------------
 
 // Return true if any entry in the matrix is +/-INF
-inline bool XMMatrixIsInfinite
+inline bool XM_CALLCONV XMMatrixIsInfinite
 (
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -155,9 +155,9 @@ inline bool XMMatrixIsInfinite
 //------------------------------------------------------------------------------
 
 // Return true if the XMMatrix is equal to identity
-inline bool XMMatrixIsIdentity
+inline bool XM_CALLCONV XMMatrixIsIdentity
 (
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -220,9 +220,9 @@ inline bool XMMatrixIsIdentity
 
 //------------------------------------------------------------------------------
 // Perform a 4x4 matrix multiply by a 4x4 matrix
-inline XMMATRIX XMMatrixMultiply
+inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 (
-    CXMMATRIX M1, 
+    FXMMATRIX M1, 
     CXMMATRIX M2
 )
 {
@@ -266,52 +266,35 @@ inline XMMATRIX XMMatrixMultiply
     return mResult;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMMATRIX mResult;
-    __n64 VL = vget_low_f32( M1.r[0] );
-    __n64 VH = vget_high_f32( M1.r[0] );
-    // Splat the component X,Y,Z then W
-    XMVECTOR vX = vdupq_lane_f32(VL, 0);
-    XMVECTOR vY = vdupq_lane_f32(VL, 1);
-    XMVECTOR vZ = vdupq_lane_f32(VH, 0);
-    XMVECTOR vW = vdupq_lane_f32(VH, 1);
+    float32x2_t VL = vget_low_f32( M1.r[0] );
+    float32x2_t VH = vget_high_f32( M1.r[0] );
     // Perform the operation on the first row
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
+    XMVECTOR vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    XMVECTOR vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    XMVECTOR vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    XMVECTOR vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
     mResult.r[0] = vaddq_f32( vZ, vW );
     // Repeat for the other 3 rows
     VL = vget_low_f32( M1.r[1] );
     VH = vget_high_f32( M1.r[1] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
     mResult.r[1] = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[2] );
     VH = vget_high_f32( M1.r[2] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
     mResult.r[2] = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[3] );
     VH = vget_high_f32( M1.r[3] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
     mResult.r[3] = vaddq_f32( vZ, vW );
     return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -380,9 +363,9 @@ inline XMMATRIX XMMatrixMultiply
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixMultiplyTranspose
+inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
 (
-    CXMMATRIX M1, 
+    FXMMATRIX M1, 
     CXMMATRIX M2
 )
 {
@@ -425,54 +408,37 @@ inline XMMATRIX XMMatrixMultiplyTranspose
     mResult.m[3][3] = (M1.m[3][0]*x)+(M1.m[3][1]*y)+(M1.m[3][2]*z)+(M1.m[3][3]*w);
     return mResult;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    __n64 VL = vget_low_f32( M1.r[0] );
-    __n64 VH = vget_high_f32( M1.r[0] );
-    // Splat the component X,Y,Z then W
-    XMVECTOR vX = vdupq_lane_f32(VL, 0);
-    XMVECTOR vY = vdupq_lane_f32(VL, 1);
-    XMVECTOR vZ = vdupq_lane_f32(VH, 0);
-    XMVECTOR vW = vdupq_lane_f32(VH, 1);
+    float32x2_t VL = vget_low_f32( M1.r[0] );
+    float32x2_t VH = vget_high_f32( M1.r[0] );
     // Perform the operation on the first row
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
-    __n128 r0 = vaddq_f32( vZ, vW );
+    XMVECTOR vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    XMVECTOR vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    XMVECTOR vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    XMVECTOR vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    float32x4_t r0 = vaddq_f32( vZ, vW );
     // Repeat for the other 3 rows
     VL = vget_low_f32( M1.r[1] );
     VH = vget_high_f32( M1.r[1] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
-    __n128 r1 = vaddq_f32( vZ, vW );
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    float32x4_t r1 = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[2] );
     VH = vget_high_f32( M1.r[2] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
-    __n128 r2 = vaddq_f32( vZ, vW );
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    float32x4_t r2 = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[3] );
     VH = vget_high_f32( M1.r[3] );
-    vX = vdupq_lane_f32(VL, 0);
-    vY = vdupq_lane_f32(VL, 1);
-    vZ = vdupq_lane_f32(VH, 0);
-    vW = vdupq_lane_f32(VH, 1);
-    vX = vmulq_f32(vX,M2.r[0]);
-    vY = vmulq_f32(vY,M2.r[1]);
-    vZ = vmlaq_f32(vX,vZ,M2.r[2]);
-    vW = vmlaq_f32(vY,vW,M2.r[3]);
-    __n128 r3 = vaddq_f32( vZ, vW );
-
+    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
+    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
+    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
+    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    float32x4_t r3 = vaddq_f32( vZ, vW );
+ 
     // Transpose result
     float32x4x2_t P0 = vzipq_f32( r0, r2 );
     float32x4x2_t P1 = vzipq_f32( r1, r3 );
@@ -570,9 +536,9 @@ inline XMMATRIX XMMatrixMultiplyTranspose
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixTranspose
+inline XMMATRIX XM_CALLCONV XMMatrixTranspose
 (
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
@@ -637,10 +603,10 @@ inline XMMATRIX XMMatrixTranspose
 //------------------------------------------------------------------------------
 // Return the inverse and the determinant of a 4x4 matrix
 _Use_decl_annotations_
-inline XMMATRIX XMMatrixInverse
+inline XMMATRIX XM_CALLCONV XMMatrixInverse
 (
     XMVECTOR* pDeterminant, 
-    CXMMATRIX  M
+    FXMMATRIX  M
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
@@ -857,9 +823,9 @@ inline XMMATRIX XMMatrixInverse
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XMMatrixDeterminant
+inline XMVECTOR XM_CALLCONV XMMatrixDeterminant
 (
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
@@ -956,12 +922,12 @@ inline XMVECTOR XMMatrixDeterminant
 #define XM3_DECOMP_EPSILON 0.0001f
 
 _Use_decl_annotations_
-inline bool XMMatrixDecompose
+inline bool XM_CALLCONV XMMatrixDecompose
 (
     XMVECTOR *outScale,
     XMVECTOR *outRotQuat,
     XMVECTOR *outTrans,
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
     static const XMVECTOR *pvCanonicalBasis[3] = {
@@ -1062,7 +1028,7 @@ inline bool XMMatrixDecompose
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixIdentity()
+inline XMMATRIX XM_CALLCONV XMMatrixIdentity()
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
@@ -1079,7 +1045,7 @@ inline XMMATRIX XMMatrixIdentity()
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixSet
+inline XMMATRIX XM_CALLCONV XMMatrixSet
 (
     float m00, float m01, float m02, float m03,
     float m10, float m11, float m12, float m13,
@@ -1104,7 +1070,7 @@ inline XMMATRIX XMMatrixSet
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixTranslation
+inline XMMATRIX XM_CALLCONV XMMatrixTranslation
 (
     float OffsetX, 
     float OffsetY, 
@@ -1149,7 +1115,7 @@ inline XMMATRIX XMMatrixTranslation
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixTranslationFromVector
+inline XMMATRIX XM_CALLCONV XMMatrixTranslationFromVector
 (
     FXMVECTOR Offset
 )
@@ -1191,7 +1157,7 @@ inline XMMATRIX XMMatrixTranslationFromVector
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixScaling
+inline XMMATRIX XM_CALLCONV XMMatrixScaling
 (
     float ScaleX, 
     float ScaleY, 
@@ -1243,7 +1209,7 @@ inline XMMATRIX XMMatrixScaling
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixScalingFromVector
+inline XMMATRIX XM_CALLCONV XMMatrixScalingFromVector
 (
     FXMVECTOR Scale
 )
@@ -1292,7 +1258,7 @@ inline XMMATRIX XMMatrixScalingFromVector
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationX
+inline XMMATRIX XM_CALLCONV XMMatrixRotationX
 (
     float Angle
 )
@@ -1369,7 +1335,7 @@ inline XMMATRIX XMMatrixRotationX
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationY
+inline XMMATRIX XM_CALLCONV XMMatrixRotationY
 (
     float Angle
 )
@@ -1446,7 +1412,7 @@ inline XMMATRIX XMMatrixRotationY
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationZ
+inline XMMATRIX XM_CALLCONV XMMatrixRotationZ
 (
     float Angle
 )
@@ -1523,7 +1489,7 @@ inline XMMATRIX XMMatrixRotationZ
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationRollPitchYaw
+inline XMMATRIX XM_CALLCONV XMMatrixRotationRollPitchYaw
 (
     float Pitch, 
     float Yaw, 
@@ -1536,7 +1502,7 @@ inline XMMATRIX XMMatrixRotationRollPitchYaw
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationRollPitchYawFromVector
+inline XMMATRIX XM_CALLCONV XMMatrixRotationRollPitchYawFromVector
 (
     FXMVECTOR Angles // <Pitch, Yaw, Roll, undefined>
 )
@@ -1547,7 +1513,7 @@ inline XMMATRIX XMMatrixRotationRollPitchYawFromVector
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationNormal
+inline XMMATRIX XM_CALLCONV XMMatrixRotationNormal
 (
     FXMVECTOR NormalAxis, 
     float     Angle
@@ -1638,7 +1604,7 @@ inline XMMATRIX XMMatrixRotationNormal
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationAxis
+inline XMMATRIX XM_CALLCONV XMMatrixRotationAxis
 (
     FXMVECTOR Axis, 
     float     Angle
@@ -1658,7 +1624,7 @@ inline XMMATRIX XMMatrixRotationAxis
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixRotationQuaternion
+inline XMMATRIX XM_CALLCONV XMMatrixRotationQuaternion
 (
     FXMVECTOR Quaternion
 )
@@ -1745,7 +1711,7 @@ inline XMMATRIX XMMatrixRotationQuaternion
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixTransformation2D
+inline XMMATRIX XM_CALLCONV XMMatrixTransformation2D
 (
     FXMVECTOR ScalingOrigin, 
     float     ScalingOrientation, 
@@ -1784,14 +1750,14 @@ inline XMMATRIX XMMatrixTransformation2D
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixTransformation
+inline XMMATRIX XM_CALLCONV XMMatrixTransformation
 (
     FXMVECTOR ScalingOrigin, 
     FXMVECTOR ScalingOrientationQuaternion, 
     FXMVECTOR Scaling, 
     GXMVECTOR RotationOrigin, 
-    CXMVECTOR RotationQuaternion, 
-    CXMVECTOR Translation
+    HXMVECTOR RotationQuaternion, 
+    HXMVECTOR Translation
 )
 {
     // M = Inverse(MScalingOrigin) * Transpose(MScalingOrientation) * MScaling * MScalingOrientation *
@@ -1822,7 +1788,7 @@ inline XMMATRIX XMMatrixTransformation
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixAffineTransformation2D
+inline XMMATRIX XM_CALLCONV XMMatrixAffineTransformation2D
 (
     FXMVECTOR Scaling, 
     FXMVECTOR RotationOrigin, 
@@ -1849,7 +1815,7 @@ inline XMMATRIX XMMatrixAffineTransformation2D
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixAffineTransformation
+inline XMMATRIX XM_CALLCONV XMMatrixAffineTransformation
 (
     FXMVECTOR Scaling, 
     FXMVECTOR RotationOrigin, 
@@ -1875,7 +1841,7 @@ inline XMMATRIX XMMatrixAffineTransformation
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixReflect
+inline XMMATRIX XM_CALLCONV XMMatrixReflect
 (
     FXMVECTOR ReflectionPlane
 )
@@ -1908,7 +1874,7 @@ inline XMMATRIX XMMatrixReflect
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixShadow
+inline XMMATRIX XM_CALLCONV XMMatrixShadow
 (
     FXMVECTOR ShadowPlane, 
     FXMVECTOR LightPosition
@@ -1943,7 +1909,7 @@ inline XMMATRIX XMMatrixShadow
 // View and projection initialization operations
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixLookAtLH
+inline XMMATRIX XM_CALLCONV XMMatrixLookAtLH
 (
     FXMVECTOR EyePosition, 
     FXMVECTOR FocusPosition, 
@@ -1956,7 +1922,7 @@ inline XMMATRIX XMMatrixLookAtLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixLookAtRH
+inline XMMATRIX XM_CALLCONV XMMatrixLookAtRH
 (
     FXMVECTOR EyePosition, 
     FXMVECTOR FocusPosition, 
@@ -1969,7 +1935,7 @@ inline XMMATRIX XMMatrixLookAtRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixLookToLH
+inline XMMATRIX XM_CALLCONV XMMatrixLookToLH
 (
     FXMVECTOR EyePosition, 
     FXMVECTOR EyeDirection, 
@@ -2012,7 +1978,7 @@ inline XMMATRIX XMMatrixLookToLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixLookToRH
+inline XMMATRIX XM_CALLCONV XMMatrixLookToRH
 (
     FXMVECTOR EyePosition, 
     FXMVECTOR EyeDirection, 
@@ -2025,7 +1991,7 @@ inline XMMATRIX XMMatrixLookToRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveLH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
 (
     float ViewWidth, 
     float ViewHeight, 
@@ -2113,7 +2079,7 @@ inline XMMATRIX XMMatrixPerspectiveLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveRH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
 (
     float ViewWidth, 
     float ViewHeight, 
@@ -2201,7 +2167,7 @@ inline XMMATRIX XMMatrixPerspectiveRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveFovLH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 (
     float FovAngleY, 
     float AspectHByW, 
@@ -2303,7 +2269,7 @@ inline XMMATRIX XMMatrixPerspectiveFovLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveFovRH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
 (
     float FovAngleY, 
     float AspectHByW, 
@@ -2403,7 +2369,7 @@ inline XMMATRIX XMMatrixPerspectiveFovRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveOffCenterLH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
 (
     float ViewLeft, 
     float ViewRight, 
@@ -2501,7 +2467,7 @@ inline XMMATRIX XMMatrixPerspectiveOffCenterLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixPerspectiveOffCenterRH
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
 (
     float ViewLeft, 
     float ViewRight, 
@@ -2599,7 +2565,7 @@ inline XMMATRIX XMMatrixPerspectiveOffCenterRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixOrthographicLH
+inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH
 (
     float ViewWidth, 
     float ViewHeight, 
@@ -2684,7 +2650,7 @@ inline XMMATRIX XMMatrixOrthographicLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixOrthographicRH
+inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH
 (
     float ViewWidth, 
     float ViewHeight, 
@@ -2769,7 +2735,7 @@ inline XMMATRIX XMMatrixOrthographicRH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixOrthographicOffCenterLH
+inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
 (
     float ViewLeft, 
     float ViewRight, 
@@ -2870,7 +2836,7 @@ inline XMMATRIX XMMatrixOrthographicOffCenterLH
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMatrixOrthographicOffCenterRH
+inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
 (
     float ViewLeft, 
     float ViewRight, 
@@ -3020,7 +2986,7 @@ inline XMMATRIX XMMATRIX::operator- () const
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX& XMMATRIX::operator+= (CXMMATRIX M)
+inline XMMATRIX& XM_CALLCONV XMMATRIX::operator+= (FXMMATRIX M)
 {
     r[0] = XMVectorAdd( r[0], M.r[0] );
     r[1] = XMVectorAdd( r[1], M.r[1] );
@@ -3031,7 +2997,7 @@ inline XMMATRIX& XMMATRIX::operator+= (CXMMATRIX M)
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX& XMMATRIX::operator-= (CXMMATRIX M)
+inline XMMATRIX& XM_CALLCONV XMMATRIX::operator-= (FXMMATRIX M)
 {
     r[0] = XMVectorSubtract( r[0], M.r[0] );
     r[1] = XMVectorSubtract( r[1], M.r[1] );
@@ -3042,7 +3008,7 @@ inline XMMATRIX& XMMATRIX::operator-= (CXMMATRIX M)
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX& XMMATRIX::operator*=(CXMMATRIX M)
+inline XMMATRIX& XM_CALLCONV XMMATRIX::operator*=(FXMMATRIX M)
 {
     *this = XMMatrixMultiply( *this, M );
     return *this;
@@ -3063,18 +3029,41 @@ inline XMMATRIX& XMMATRIX::operator*= (float S)
 
 inline XMMATRIX& XMMATRIX::operator/= (float S)
 {
-    assert( S != 0.0f );
-    float t = 1.0f / S;
-    r[0] = XMVectorScale( r[0], t );
-    r[1] = XMVectorScale( r[1], t );
-    r[2] = XMVectorScale( r[2], t );
-    r[3] = XMVectorScale( r[3], t );
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR vS = XMVectorReplicate( S );
+    r[0] = XMVectorDivide( r[0], vS );
+    r[1] = XMVectorDivide( r[1], vS );
+    r[2] = XMVectorDivide( r[2], vS );
+    r[3] = XMVectorDivide( r[3], vS );
     return *this;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 2 iterations of Newton-Raphson refinement of reciprocal
+    float32x2_t vS = vdup_n_f32( S );
+    float32x2_t R0 = vrecpe_f32( vS );
+    float32x2_t S0 = vrecps_f32( R0, vS );
+    R0 = vmul_f32( S0, R0 );
+    S0 = vrecps_f32( R0, vS );
+    R0 = vmul_f32( S0, R0 );
+    float32x4_t Reciprocal = vcombine_u32(R0, R0);
+    r[0] = vmulq_f32( r[0], Reciprocal );
+    r[1] = vmulq_f32( r[1], Reciprocal );
+    r[2] = vmulq_f32( r[2], Reciprocal );
+    r[3] = vmulq_f32( r[3], Reciprocal );
+    return *this;
+#elif defined(_XM_SSE_INTRINSICS_)
+    __m128 vS = _mm_set_ps1( S );
+    r[0] = _mm_div_ps( r[0], vS );
+    r[1] = _mm_div_ps( r[1], vS );
+    r[2] = _mm_div_ps( r[2], vS );
+    r[3] = _mm_div_ps( r[3], vS );
+    return *this;
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMATRIX::operator+ (CXMMATRIX M) const
+inline XMMATRIX XM_CALLCONV XMMATRIX::operator+ (FXMMATRIX M) const
 {
     XMMATRIX R;
     R.r[0] = XMVectorAdd( r[0], M.r[0] );
@@ -3086,7 +3075,7 @@ inline XMMATRIX XMMATRIX::operator+ (CXMMATRIX M) const
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMATRIX::operator- (CXMMATRIX M) const
+inline XMMATRIX XM_CALLCONV XMMATRIX::operator- (FXMMATRIX M) const
 {
     XMMATRIX R;
     R.r[0] = XMVectorSubtract( r[0], M.r[0] );
@@ -3098,7 +3087,7 @@ inline XMMATRIX XMMATRIX::operator- (CXMMATRIX M) const
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX XMMATRIX::operator*(CXMMATRIX M) const
+inline XMMATRIX XM_CALLCONV XMMATRIX::operator*(FXMMATRIX M) const
 {
     return XMMatrixMultiply(*this, M);
 }
@@ -3119,22 +3108,47 @@ inline XMMATRIX XMMATRIX::operator* (float S) const
 
 inline XMMATRIX XMMATRIX::operator/ (float S) const
 {
-    assert( S != 0.0f );
+#if defined(_XM_NO_INTRINSICS_)
+    XMVECTOR vS = XMVectorReplicate( S );
     XMMATRIX R;
-    float t = 1.0f / S;
-    R.r[0] = XMVectorScale( r[0], t );
-    R.r[1] = XMVectorScale( r[1], t );
-    R.r[2] = XMVectorScale( r[2], t );
-    R.r[3] = XMVectorScale( r[3], t );
+    R.r[0] = XMVectorDivide( r[0], vS );
+    R.r[1] = XMVectorDivide( r[1], vS );
+    R.r[2] = XMVectorDivide( r[2], vS );
+    R.r[3] = XMVectorDivide( r[3], vS );
     return R;
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    // 2 iterations of Newton-Raphson refinement of reciprocal
+    float32x2_t vS = vdup_n_f32( S );
+    float32x2_t R0 = vrecpe_f32( vS );
+    float32x2_t S0 = vrecps_f32( R0, vS );
+    R0 = vmul_f32( S0, R0 );
+    S0 = vrecps_f32( R0, vS );
+    R0 = vmul_f32( S0, R0 );
+    float32x4_t Reciprocal = vcombine_u32(R0, R0);
+    XMMATRIX R;
+    R.r[0] = vmulq_f32( r[0], Reciprocal );
+    R.r[1] = vmulq_f32( r[1], Reciprocal );
+    R.r[2] = vmulq_f32( r[2], Reciprocal );
+    R.r[3] = vmulq_f32( r[3], Reciprocal );
+    return R;
+#elif defined(_XM_SSE_INTRINSICS_)
+    __m128 vS = _mm_set_ps1( S );
+    XMMATRIX R;
+    R.r[0] = _mm_div_ps( r[0], vS );
+    R.r[1] = _mm_div_ps( r[1], vS );
+    R.r[2] = _mm_div_ps( r[2], vS );
+    R.r[3] = _mm_div_ps( r[3], vS );
+    return R;
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
 
-inline XMMATRIX operator*
+inline XMMATRIX XM_CALLCONV operator*
 (
     float S,
-    CXMMATRIX M
+    FXMMATRIX M
 )
 {
     XMMATRIX R;
