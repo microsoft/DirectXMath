@@ -1949,7 +1949,12 @@ inline void BoundingOrientedBox::Transform( BoundingOrientedBox& Out, CXMMATRIX 
     assert( DirectX::Internal::XMQuaternionIsUnit( vOrientation ) );
 
     // Composite the box rotation and the transform rotation.
-    XMVECTOR Rotation = XMQuaternionRotationMatrix( M );
+    XMMATRIX nM;
+    nM.r[0] = XMVector3Normalize( M.r[0] );
+    nM.r[1] = XMVector3Normalize( M.r[1] );
+    nM.r[2] = XMVector3Normalize( M.r[2] );
+    nM.r[3] = g_XMIdentityR3;
+    XMVECTOR Rotation = XMQuaternionRotationMatrix( nM );
     vOrientation = XMQuaternionMultiply( vOrientation, Rotation );
 
     // Transform the center.
@@ -2820,8 +2825,13 @@ inline void BoundingFrustum::Transform( BoundingFrustum& Out, CXMMATRIX M ) cons
 
     assert( DirectX::Internal::XMQuaternionIsUnit( vOrientation ) );
 
-    // Composite the frustum rotation and the transform rotation.
-    XMVECTOR Rotation = XMQuaternionRotationMatrix( M );
+    // Composite the frustum rotation and the transform rotation
+    XMMATRIX nM;
+    nM.r[0] = XMVector3Normalize( M.r[0] );
+    nM.r[1] = XMVector3Normalize( M.r[1] );
+    nM.r[2] = XMVector3Normalize( M.r[2] );
+    nM.r[3] = g_XMIdentityR3;
+    XMVECTOR Rotation = XMQuaternionRotationMatrix( nM );
     vOrientation = XMQuaternionMultiply( vOrientation, Rotation );
 
     // Transform the center.

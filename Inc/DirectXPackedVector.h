@@ -864,6 +864,444 @@ struct XMU555
     XMU555& operator= (uint16_t Packed) { v = Packed; return *this; }
 };
 
+///begin_xbox360
+////////////////////////////////////////////////////////////////////////////////
+// PackedVector::Xbox
+////////////////////////////////////////////////////////////////////////////////
+
+namespace Xbox
+{
+
+//------------------------------------------------------------------------------
+// 3D Vector; 11-11-10 bit normalized components packed into a 32 bit integer
+// The normalized 3D Vector is packed into 32 bits as follows: a 10 bit signed, 
+// normalized integer for the z component and 11 bit signed, normalized 
+// integers for the x and y components.  The z component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z10Y11X11): [32] zzzzzzzz zzyyyyyy yyyyyxxx xxxxxxxx [0]
+struct XMHENDN3
+{
+    union
+    {
+        struct
+        {
+            int32_t x   : 11;    // -1023/1023 to 1023/1023
+            int32_t y   : 11;    // -1023/1023 to 1023/1023
+            int32_t z   : 10;    // -511/511 to 511/511
+        };
+        uint32_t v;
+    };
+
+    XMHENDN3() {}
+    explicit XMHENDN3(uint32_t Packed) : v(Packed) {}
+    XMHENDN3(float _x, float _y, float _z);
+    explicit XMHENDN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMHENDN3& operator= (const XMHENDN3& HenDN3) { v = HenDN3.v; return *this; }
+    XMHENDN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 11-11-10 bit components packed into a 32 bit integer
+// The 3D Vector is packed into 32 bits as follows: a 10 bit signed, 
+// integer for the z component and 11 bit signed integers for the 
+// x and y components.  The z component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z10Y11X11): [32] zzzzzzzz zzyyyyyy yyyyyxxx xxxxxxxx [0]
+struct XMHEND3
+{
+    union
+    {
+        struct
+        {
+            int32_t x   : 11;    // -1023 to 1023
+            int32_t y   : 11;    // -1023 to 1023
+            int32_t z   : 10;    // -511 to 511
+        };
+        uint32_t v;
+    };
+
+    XMHEND3() {}
+    explicit XMHEND3(uint32_t Packed) : v(Packed) {}
+    XMHEND3(float _x, float _y, float _z);
+    explicit XMHEND3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMHEND3& operator= (const XMHEND3& HenD3) { v = HenD3.v; return *this; }
+    XMHEND3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 11-11-10 bit normalized components packed into a 32 bit integer
+// The normalized 3D Vector is packed into 32 bits as follows: a 10 bit unsigned, 
+// normalized integer for the z component and 11 bit unsigned, normalized 
+// integers for the x and y components.  The z component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z10Y11X11): [32] zzzzzzzz zzyyyyyy yyyyyxxx xxxxxxxx [0]
+struct XMUHENDN3
+{
+    union
+    {
+        struct
+        {
+            uint32_t x  : 11;    // 0/2047 to 2047/2047
+            uint32_t y  : 11;    // 0/2047 to 2047/2047
+            uint32_t z  : 10;    // 0/1023 to 1023/1023
+        };
+        uint32_t v;
+    };
+
+    XMUHENDN3() {}
+    explicit XMUHENDN3(uint32_t Packed) : v(Packed) {}
+    XMUHENDN3(float _x, float _y, float _z);
+    explicit XMUHENDN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMUHENDN3& operator= (const XMUHENDN3& UHenDN3) { v = UHenDN3.v; return *this; }
+    XMUHENDN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 11-11-10 bit components packed into a 32 bit integer
+// The 3D Vector is packed into 32 bits as follows: a 10 bit unsigned
+// integer for the z component and 11 bit unsigned integers 
+// for the x and y components.  The z component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z10Y11X11): [32] zzzzzzzz zzyyyyyy yyyyyxxx xxxxxxxx [0]
+struct XMUHEND3
+{
+    union
+    {
+        struct
+        {
+            uint32_t x  : 11;    // 0 to 2047
+            uint32_t y  : 11;    // 0 to 2047
+            uint32_t z  : 10;    // 0 to 1023
+        };
+        uint32_t v;
+    };
+
+    XMUHEND3() {}
+    explicit XMUHEND3(uint32_t Packed) : v(Packed) {}
+    XMUHEND3(float _x, float _y, float _z);
+    explicit XMUHEND3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMUHEND3& operator= (const XMUHEND3& UHenD3) { v = UHenD3.v; return *this; }
+    XMUHEND3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 10-11-11 bit normalized components packed into a 32 bit integer
+// The normalized 3D Vector is packed into 32 bits as follows: a 10 bit signed, 
+// normalized integer for the x component and 11 bit signed, normalized 
+// integers for the y and z components.  The z component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z11Y11X10): [32] zzzzzzzz zzzyyyyy yyyyyyxx xxxxxxxx [0]
+struct XMDHENN3
+{
+    union
+    {
+        struct
+        {
+            int32_t x   : 10;    // -511/511 to 511/511
+            int32_t y   : 11;    // -1023/1023 to 1023/1023
+            int32_t z   : 11;    // -1023/1023 to 1023/1023
+        };
+        uint32_t v;
+    };
+
+    XMDHENN3() {};
+    explicit XMDHENN3(uint32_t Packed) : v(Packed) {};
+    XMDHENN3(float _x, float _y, float _z);
+    explicit XMDHENN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMDHENN3& operator= (const XMDHENN3& DHenN3) { v = DHenN3.v; return *this; }
+    XMDHENN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 10-11-11 bit components packed into a 32 bit integer
+// The 3D Vector is packed into 32 bits as follows: a 10 bit signed, 
+// integer for the x component and 11 bit signed integers for the 
+// y and z components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z11Y11X10): [32] zzzzzzzz zzzyyyyy yyyyyyxx xxxxxxxx [0]
+struct XMDHEN3
+{
+    union
+    {
+        struct
+        {
+            int32_t x   : 10;    // -511 to 511
+            int32_t y   : 11;    // -1023 to 1023
+            int32_t z   : 11;    // -1023 to 1023
+        };
+        uint32_t v;
+    };
+
+    XMDHEN3() {}
+    explicit XMDHEN3(uint32_t Packed) : v(Packed) {}
+    XMDHEN3(float _x, float _y, float _z);
+    explicit XMDHEN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMDHEN3& operator= (const XMDHEN3& DHen3) { v = DHen3.v; return *this; }
+    XMDHEN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 10-11-11 bit normalized components packed into a 32 bit integer
+// The normalized 3D Vector is packed into 32 bits as follows: a 10 bit unsigned, 
+// normalized integer for the x component and 11 bit unsigned, normalized 
+// integers for the y and z components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z11Y11X10): [32] zzzzzzzz zzzyyyyy yyyyyyxx xxxxxxxx [0]
+struct XMUDHENN3
+{
+    union
+    {
+        struct
+        {
+            uint32_t x  : 10;    // 0/1023 to 1023/1023
+            uint32_t y  : 11;    // 0/2047 to 2047/2047
+            uint32_t z  : 11;    // 0/2047 to 2047/2047
+        };
+        uint32_t v;
+    };
+
+    XMUDHENN3() {}
+    explicit XMUDHENN3(uint32_t Packed) : v(Packed) {}
+    XMUDHENN3(float _x, float _y, float _z);
+    explicit XMUDHENN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMUDHENN3& operator= (const XMUDHENN3& UDHenN3) { v = UDHenN3.v; return *this; }
+    XMUDHENN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+// 3D Vector; 10-11-11 bit components packed into a 32 bit integer
+// The 3D Vector is packed into 32 bits as follows: a 10 bit unsigned, 
+// integer for the x component and 11 bit unsigned integers 
+// for the y and z components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (Z11Y11X10): [32] zzzzzzzz zzzyyyyy yyyyyyxx xxxxxxxx [0]
+struct XMUDHEN3
+{
+    union
+    {
+        struct
+        {
+            uint32_t x  : 10;    // 0 to 1023
+            uint32_t y  : 11;    // 0 to 2047
+            uint32_t z  : 11;    // 0 to 2047
+        };
+        uint32_t v;
+    };
+
+    XMUDHEN3() {}
+    explicit XMUDHEN3(uint32_t Packed) : v(Packed) {}
+    XMUDHEN3(float _x, float _y, float _z);
+    explicit XMUDHEN3(_In_reads_(3) const float *pArray);
+
+    operator uint32_t () const { return v; }
+
+    XMUDHEN3& operator= (const XMUDHEN3& UDHen3) { v = UDHen3.v; return *this; }
+    XMUDHEN3& operator= (uint32_t Packed) { v = Packed; return *this; }
+};
+
+//------------------------------------------------------------------------------
+// 4D Vector; 20-20-20-4 bit normalized components packed into a 64 bit integer
+// The normalized 4D Vector is packed into 64 bits as follows: a 4 bit unsigned, 
+// normalized integer for the w component and 20 bit signed, normalized 
+// integers for the z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMXICON4
+{
+    union
+    {
+        struct
+        {
+            int64_t x           : 20;    // -524287/524287 to 524287/524287
+            int64_t y           : 20;    // -524287/524287 to 524287/524287
+            int64_t z           : 20;    // -524287/524287 to 524287/524287
+            uint64_t w          : 4;     //           0/15 to         15/15
+        };
+        uint64_t v;
+    };
+
+    XMXICON4() {}
+    explicit XMXICON4(uint64_t Packed) : v(Packed) {}
+    XMXICON4(float _x, float _y, float _z, float _w);
+    explicit XMXICON4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMXICON4& operator= (const XMXICON4& XIcoN4) { v = XIcoN4.v; return *this; }
+    XMXICON4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+// 4D Vector; 20-20-20-4 bit components packed into a 64 bit integer
+// The 4D Vector is packed into 64 bits as follows: a 4 bit unsigned
+// integer for the w component and 20 bit signed integers for the 
+// z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMXICO4
+{
+    union
+    {
+        struct
+        {
+            int64_t x           : 20;    // -524287 to 524287
+            int64_t y           : 20;    // -524287 to 524287
+            int64_t z           : 20;    // -524287 to 524287
+            uint64_t w          : 4;     //       0 to     15
+        };
+        uint64_t v;
+    };
+
+    XMXICO4() {}
+    explicit XMXICO4(uint64_t Packed) : v(Packed) {}
+    XMXICO4(float _x, float _y, float _z, float _w);
+    explicit XMXICO4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMXICO4& operator= (const XMXICO4& XIco4) { v = XIco4.v; return *this; }
+    XMXICO4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+// 4D Vector; 20-20-20-4 bit normalized components packed into a 64 bit integer
+// The normalized 4D Vector is packed into 64 bits as follows: a 4 bit signed, 
+// normalized integer for the w component and 20 bit signed, normalized 
+// integers for the z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMICON4
+{
+    union
+    {
+        struct
+        {
+            int64_t x   : 20;    // -524287/524287 to 524287/524287
+            int64_t y   : 20;    // -524287/524287 to 524287/524287
+            int64_t z   : 20;    // -524287/524287 to 524287/524287
+            int64_t w   : 4;     //           -7/7 to           7/7
+        };
+        uint64_t v;
+    };
+
+    XMICON4() {}
+    explicit XMICON4(uint64_t Packed) : v(Packed) {}
+    XMICON4(float _x, float _y, float _z, float _w);
+    explicit XMICON4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMICON4& operator= (const XMICON4& IcoN4) { v = IcoN4.v; return *this; }
+    XMICON4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+// 4D Vector; 20-20-20-4 bit components packed into a 64 bit integer
+// The 4D Vector is packed into 64 bits as follows: a 4 bit signed, 
+// integer for the w component and 20 bit signed integers for the 
+// z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMICO4
+{
+    union
+    {
+        struct
+        {
+            int64_t x   : 20;    // -524287 to 524287
+            int64_t y   : 20;    // -524287 to 524287
+            int64_t z   : 20;    // -524287 to 524287
+            int64_t w   : 4;     //      -7 to      7
+        };
+        uint64_t v;
+    };
+
+    XMICO4() {}
+    explicit XMICO4(uint64_t Packed) : v(Packed) {}
+    XMICO4(float _x, float _y, float _z, float _w);
+    explicit XMICO4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMICO4& operator= (const XMICO4& Ico4) { v = Ico4.v; return *this; }
+    XMICO4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+// 4D Vector; 20-20-20-4 bit normalized components packed into a 64 bit integer
+// The normalized 4D Vector is packed into 64 bits as follows: a 4 bit unsigned, 
+// normalized integer for the w component and 20 bit unsigned, normalized 
+// integers for the z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMUICON4
+{
+    union
+    {
+        struct
+        {
+            uint64_t x  : 20;    // 0/1048575 to 1048575/1048575
+            uint64_t y  : 20;    // 0/1048575 to 1048575/1048575
+            uint64_t z  : 20;    // 0/1048575 to 1048575/1048575
+            uint64_t w  : 4;     //      0/15 to           15/15
+        };
+        uint64_t v;
+    };
+
+    XMUICON4() {}
+    explicit XMUICON4(uint64_t Packed) : v(Packed) {}
+    XMUICON4(float _x, float _y, float _z, float _w);
+    explicit XMUICON4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMUICON4& operator= (const XMUICON4& UIcoN4) { v = UIcoN4.v; return *this; }
+    XMUICON4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+// 4D Vector; 20-20-20-4 bit components packed into a 64 bit integer
+// The 4D Vector is packed into 64 bits as follows: a 4 bit unsigned 
+// integer for the w component and 20 bit unsigned integers for the 
+// z, y, and x components.  The w component is stored in the 
+// most significant bits and the x component in the least significant bits
+// (W4Z20Y20X20): [64] wwwwzzzz zzzzzzzz zzzzzzzz yyyyyyyy yyyyyyyy yyyyxxxx xxxxxxxx xxxxxxxx [0]
+struct XMUICO4
+{
+    union
+    {
+        struct
+        {
+            uint64_t x  : 20;    // 0 to 1048575
+            uint64_t y  : 20;    // 0 to 1048575
+            uint64_t z  : 20;    // 0 to 1048575
+            uint64_t w  : 4;     // 0 to      15
+        };
+        uint64_t v;
+    };
+
+    XMUICO4() {}
+    explicit XMUICO4(uint64_t Packed) : v(Packed) {}
+    XMUICO4(float _x, float _y, float _z, float _w);
+    explicit XMUICO4(_In_reads_(4) const float *pArray);
+
+    operator uint64_t () const { return v; }
+
+    XMUICO4& operator= (const XMUICO4& UIco4) { v = UIco4.v; return *this; }
+    XMUICO4& operator= (uint64_t Packed) { v = Packed; return *this; }
+};
+
+}; // namespace Xbox
+///end_xbox360
 
 #pragma warning(pop)
 
@@ -929,6 +1367,28 @@ XMVECTOR        XMLoadUByte4(_In_ const XMUBYTE4* pSource);
 XMVECTOR        XMLoadUNibble4(_In_ const XMUNIBBLE4* pSource);
 XMVECTOR        XMLoadU555(_In_ const XMU555* pSource);
 
+///begin_xbox360
+namespace Xbox
+{
+
+XMVECTOR        XMLoadHenDN3(_In_ const XMHENDN3* pSource);
+XMVECTOR        XMLoadHenD3(_In_ const XMHEND3* pSource);
+XMVECTOR        XMLoadUHenDN3(_In_ const XMUHENDN3* pSource);
+XMVECTOR        XMLoadUHenD3(_In_ const XMUHEND3* pSource);
+XMVECTOR        XMLoadDHenN3(_In_ const XMDHENN3* pSource);
+XMVECTOR        XMLoadDHen3(_In_ const XMDHEN3* pSource);
+XMVECTOR        XMLoadUDHenN3(_In_ const XMUDHENN3* pSource);
+XMVECTOR        XMLoadUDHen3(_In_ const XMUDHEN3* pSource);
+
+XMVECTOR        XMLoadXIcoN4(_In_ const XMXICON4* pSource);
+XMVECTOR        XMLoadXIco4(_In_ const XMXICO4* pSource);
+XMVECTOR        XMLoadIcoN4(_In_ const XMICON4* pSource);
+XMVECTOR        XMLoadIco4(_In_ const XMICO4* pSource);
+XMVECTOR        XMLoadUIcoN4(_In_ const XMUICON4* pSource);
+XMVECTOR        XMLoadUIco4(_In_ const XMUICO4* pSource);
+
+}; // namespace Xbox
+///end_xbox360
 
 /****************************************************************************
  *
@@ -970,6 +1430,28 @@ void            XMStoreUByte4(_Out_ XMUBYTE4* pDestination, _In_ FXMVECTOR V);
 void            XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V);
 void            XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V);
 
+///begin_xbox360
+namespace Xbox
+{
+
+void            XMStoreHenDN3(_Out_ XMHENDN3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreHenD3(_Out_ XMHEND3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUHenDN3(_Out_ XMUHENDN3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUHenD3(_Out_ XMUHEND3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreDHenN3(_Out_ XMDHENN3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreDHen3(_Out_ XMDHEN3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUDHenN3(_Out_ XMUDHENN3* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUDHen3(_Out_ XMUDHEN3* pDestination, _In_ FXMVECTOR V);
+
+void            XMStoreXIcoN4(_Out_ XMXICON4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreXIco4(_Out_ XMXICO4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreIcoN4(_Out_ XMICON4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreIco4(_Out_ XMICO4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUIcoN4(_Out_ XMUICON4* pDestination, _In_ FXMVECTOR V);
+void            XMStoreUIco4(_Out_ XMUICO4* pDestination, _In_ FXMVECTOR V);
+
+}; // namespace Xbox
+///end_xbox360
 
 /****************************************************************************
  *

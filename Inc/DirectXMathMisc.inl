@@ -1999,7 +1999,7 @@ inline XMVECTOR XMColorSRGBToXYZ( FXMVECTOR srgb )
 inline bool XMVerifyCPUSupport()
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#if defined(_M_AMD64)
+#if defined(_M_X64)
     // The X64 processor model requires SSE2 support
     return true;
 #elif defined(PF_XMMI_INSTRUCTIONS_AVAILABLE)
@@ -2116,7 +2116,15 @@ inline bool XMScalarNearEqual
 )
 {
     float Delta = S1 - S2;
+///begin_xbox360
+#ifdef _XBOX_VER
+    return (__fabs(Delta) <= Epsilon);
+#else
+///end_xbox360
     return (fabsf(Delta) <= Epsilon);
+///begin_xbox360
+#endif
+///end_xbox360
 }
 
 //------------------------------------------------------------------------------
@@ -2129,6 +2137,20 @@ inline float XMScalarModAngle
     // Note: The modulo is performed with unsigned math only to work
     // around a precision error on numbers that are close to PI
 
+///begin_xbox360
+#ifdef _XBOX_VER
+    // Normalize the range from 0.0f to XM_2PI
+    Angle = Angle + XM_PI;
+    // Perform the modulo, unsigned
+    float fTemp = fabsf(Angle);
+    fTemp = fTemp - (XM_2PI * (float)__fcfid(__fctidz(fTemp/XM_2PI)));
+    // Restore the number to the range of -XM_PI to XM_PI-epsilon
+    fTemp = fTemp - XM_PI;
+    // If the modulo'd value was negative, restore negation
+    fTemp = __fself(Angle,fTemp,-fTemp);
+    return fTemp;
+#else
+///end_xbox360
     // Normalize the range from 0.0f to XM_2PI
     Angle = Angle + XM_PI;
     // Perform the modulo, unsigned
@@ -2141,6 +2163,9 @@ inline float XMScalarModAngle
         fTemp = -fTemp;
     }
     return fTemp;
+///begin_xbox360
+#endif
+///end_xbox360
 }
 
 //------------------------------------------------------------------------------

@@ -17,10 +17,10 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 303
+#define DIRECTX_MATH_VERSION 304
 
 #if !defined(_XM_BIGENDIAN_) && !defined(_XM_LITTLEENDIAN_)
-#if defined(_M_AMD64) || defined(_M_IX86) || defined(_M_ARM)
+#if defined(_M_X64) || defined(_M_IX86) || defined(_M_ARM)
 #define _XM_LITTLEENDIAN_
 #elif defined(_M_PPCBE)
 #define _XM_BIGENDIAN_
@@ -32,7 +32,7 @@
 
 
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_VMX128_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#if defined(_M_IX86) || defined(_M_AMD64)
+#if defined(_M_IX86) || defined(_M_X64)
 #define _XM_SSE_INTRINSICS_
 #elif defined(_M_PPCBE)
 #define _XM_VMX128_INTRINSICS_
@@ -204,7 +204,7 @@ struct __vector4
 #endif // _XM_NO_INTRINSICS_
 
 //------------------------------------------------------------------------------
-#if (defined (_M_IX86) || defined(_M_AMD64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
+#if (defined (_M_IX86) || defined(_M_X64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
 typedef uint32_t __vector4i[4];
 #else
 typedef __declspec(align(16)) uint32_t __vector4i[4];
@@ -338,7 +338,7 @@ typedef const XMMATRIX CXMMATRIX;
 typedef const XMMATRIX& CXMMATRIX;
 #endif
 
-#if (defined(_M_IX86) || defined(_M_AMD64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
+#if (defined(_M_IX86) || defined(_M_X64) || defined(_M_ARM)) && defined(_XM_NO_INTRINSICS_)
 struct XMMATRIX
 #else
 __declspec(align(16)) struct XMMATRIX
@@ -775,16 +775,31 @@ void            XMStoreUInt3(_Out_ XMUINT3* pDestination, _In_ FXMVECTOR V);
 
 void            XMStoreInt4(_Out_writes_(4) uint32_t* pDestination, _In_ FXMVECTOR V);
 void            XMStoreInt4A(_Out_writes_(4) uint32_t* pDestination, _In_ FXMVECTOR V);
+///begin_xbox360
+void            XMStoreInt4NC(_Out_writes_(4) uint32_t* pDestination, _In_ FXMVECTOR V);
+///end_xbox360
 void            XMStoreFloat4(_Out_ XMFLOAT4* pDestination, _In_ FXMVECTOR V);
 void            XMStoreFloat4A(_Out_ XMFLOAT4A* pDestination, _In_ FXMVECTOR V);
+///begin_xbox360
+void            XMStoreFloat4NC(_Out_ XMFLOAT4* pDestination, _In_ FXMVECTOR V);
+///end_xbox360
 void            XMStoreSInt4(_Out_ XMINT4* pDestination, _In_ FXMVECTOR V);
 void            XMStoreUInt4(_Out_ XMUINT4* pDestination, _In_ FXMVECTOR V);
 
 void            XMStoreFloat3x3(_Out_ XMFLOAT3X3* pDestination, _In_ CXMMATRIX M);
+///begin_xbox360
+void            XMStoreFloat3x3NC(_Out_ XMFLOAT3X3* pDestination, _In_ CXMMATRIX M);
+///end_xbox360
 void            XMStoreFloat4x3(_Out_ XMFLOAT4X3* pDestination, _In_ CXMMATRIX M);
 void            XMStoreFloat4x3A(_Out_ XMFLOAT4X3A* pDestination, _In_ CXMMATRIX M);
+///begin_xbox360
+void            XMStoreFloat4x3NC(_Out_ XMFLOAT4X3* pDestination, _In_ CXMMATRIX M);
+///end_xbox360
 void            XMStoreFloat4x4(_Out_ XMFLOAT4X4* pDestination, _In_ CXMMATRIX M);
 void            XMStoreFloat4x4A(_Out_ XMFLOAT4X4A* pDestination, _In_ CXMMATRIX M);
+///begin_xbox360
+void            XMStoreFloat4x4NC(_Out_ XMFLOAT4X4* pDestination, _In_ CXMMATRIX M);
+///end_xbox360
 
 /****************************************************************************
  *
@@ -933,8 +948,21 @@ XMVECTOR        XMVectorSqrtEst(FXMVECTOR V);
 XMVECTOR        XMVectorSqrt(FXMVECTOR V);
 XMVECTOR        XMVectorReciprocalSqrtEst(FXMVECTOR V);
 XMVECTOR        XMVectorReciprocalSqrt(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorExpEst(FXMVECTOR V);
+///end_xbox360
+XMVECTOR        XMVectorExp2(FXMVECTOR V);
+XMVECTOR        XMVectorExpE(FXMVECTOR V);
 XMVECTOR        XMVectorExp(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorLogEst(FXMVECTOR V);
+///end_xbox360
+XMVECTOR        XMVectorLog2(FXMVECTOR V);
+XMVECTOR        XMVectorLogE(FXMVECTOR V);
 XMVECTOR        XMVectorLog(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorPowEst(FXMVECTOR V1, FXMVECTOR V2);
+///end_xbox360
 XMVECTOR        XMVectorPow(FXMVECTOR V1, FXMVECTOR V2);
 XMVECTOR        XMVectorAbs(FXMVECTOR V);
 XMVECTOR        XMVectorMod(FXMVECTOR V1, FXMVECTOR V2);
@@ -948,8 +976,17 @@ void            XMVectorSinCosEst(_Out_ XMVECTOR* pSin, _Out_ XMVECTOR* pCos, _I
 XMVECTOR        XMVectorTan(FXMVECTOR V);
 XMVECTOR        XMVectorTanEst(FXMVECTOR V);
 XMVECTOR        XMVectorSinH(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorSinHEst(FXMVECTOR V);
+///end_xbox360
 XMVECTOR        XMVectorCosH(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorCosHEst(FXMVECTOR V);
+///end_xbox360
 XMVECTOR        XMVectorTanH(FXMVECTOR V);
+///begin_xbox360
+XMVECTOR        XMVectorTanHEst(FXMVECTOR V);
+///end_xbox360
 XMVECTOR        XMVectorASin(FXMVECTOR V);
 XMVECTOR        XMVectorASinEst(FXMVECTOR V);
 XMVECTOR        XMVectorACos(FXMVECTOR V);
@@ -987,6 +1024,9 @@ uint32_t        XMVector2GreaterOrEqualR(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector2Less(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector2LessOrEqual(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector2InBounds(FXMVECTOR V, FXMVECTOR Bounds);
+///begin_xbox360
+uint32_t        XMVector2InBoundsR(FXMVECTOR V, FXMVECTOR Bounds);
+///end_xbox360
 
 bool            XMVector2IsNaN(FXMVECTOR V);
 bool            XMVector2IsInfinite(FXMVECTOR V);
@@ -1016,6 +1056,12 @@ XMFLOAT4*       XMVector2TransformStream(_Out_writes_bytes_(sizeof(XMFLOAT4)+Out
                                          _In_ size_t OutputStride,
                                          _In_reads_bytes_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) const XMFLOAT2* pInputStream,
                                          _In_ size_t InputStride, _In_ size_t VectorCount, _In_ CXMMATRIX M);
+///begin_xbox360
+XMFLOAT4*       XMVector2TransformStreamNC(_Out_writes_bytes_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
+                                           _In_ size_t OutputStride,
+                                           _In_reads_bytes_(sizeof(XMFLOAT2)+InputStride*(VectorCount-1)) const XMFLOAT2* pInputStream,
+                                           _In_ size_t InputStride, _In_ size_t VectorCount, _In_ CXMMATRIX M);
+///end_xbox360
 XMVECTOR        XMVector2TransformCoord(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT2*       XMVector2TransformCoordStream(_Out_writes_bytes_(sizeof(XMFLOAT2)+OutputStride*(VectorCount-1)) XMFLOAT2* pOutputStream,
                                               _In_ size_t OutputStride,
@@ -1047,6 +1093,9 @@ uint32_t        XMVector3GreaterOrEqualR(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector3Less(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector3LessOrEqual(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector3InBounds(FXMVECTOR V, FXMVECTOR Bounds);
+///begin_xbox360
+uint32_t        XMVector3InBoundsR(FXMVECTOR V, FXMVECTOR Bounds);
+///end_xbox360
 
 bool            XMVector3IsNaN(FXMVECTOR V);
 bool            XMVector3IsInfinite(FXMVECTOR V);
@@ -1078,6 +1127,12 @@ XMFLOAT4*       XMVector3TransformStream(_Out_writes_bytes_(sizeof(XMFLOAT4)+Out
                                          _In_ size_t OutputStride,
                                          _In_reads_bytes_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) const XMFLOAT3* pInputStream,
                                          _In_ size_t InputStride, _In_ size_t VectorCount, _In_ CXMMATRIX M);
+///begin_xbox360
+XMFLOAT4*       XMVector3TransformStreamNC(_Out_writes_bytes_(sizeof(XMFLOAT4)+OutputStride*(VectorCount-1)) XMFLOAT4* pOutputStream,
+                                           _In_ size_t OutputStride,
+                                           _In_reads_bytes_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) const XMFLOAT3* pInputStream,
+                                           _In_ size_t InputStride, _In_ size_t VectorCount, _In_ CXMMATRIX M);
+///end_xbox360
 XMVECTOR        XMVector3TransformCoord(FXMVECTOR V, CXMMATRIX M);
 XMFLOAT3*       XMVector3TransformCoordStream(_Out_writes_bytes_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
                                               _In_ size_t OutputStride,
@@ -1125,6 +1180,9 @@ uint32_t        XMVector4GreaterOrEqualR(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector4Less(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector4LessOrEqual(FXMVECTOR V1, FXMVECTOR V2);
 bool            XMVector4InBounds(FXMVECTOR V, FXMVECTOR Bounds);
+///begin_xbox360
+uint32_t        XMVector4InBoundsR(FXMVECTOR V, FXMVECTOR Bounds);
+///end_xbox360
 
 bool            XMVector4IsNaN(FXMVECTOR V);
 bool            XMVector4IsInfinite(FXMVECTOR V);
@@ -1368,6 +1426,12 @@ template<class T> inline T XMMax(T a, T b) { return (a > b) ? a : b; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
+#if defined(_XM_NO_MOVNT_)
+#define XM_STREAM_PS( p, a ) _mm_store_ps( p, a )
+#else
+#define XM_STREAM_PS( p, a ) _mm_stream_ps( p, a )
+#endif
+
 #define XM_PERMUTE_PS( v, c ) _mm_shuffle_ps( v, v, c )
 
 // PermuteHelper internal template (SSE only)
@@ -1451,6 +1515,7 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
 // Special-case permute templates
 template<> inline XMVECTOR XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
 template<> inline XMVECTOR XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
+
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
@@ -1705,6 +1770,24 @@ XMGLOBALCONST XMVECTORI32 g_XMFlipW             = {0,0,0,0x80000000};
 XMGLOBALCONST XMVECTORI32 g_XMFlipYZ            = {0,0x80000000,0x80000000,0};
 XMGLOBALCONST XMVECTORI32 g_XMFlipZW            = {0,0,0x80000000,0x80000000};
 XMGLOBALCONST XMVECTORI32 g_XMFlipYW            = {0,0x80000000,0,0x80000000};
+///begin_xbox360
+XMGLOBALCONST XMVECTORI32 g_XMMaskHenD3         = {0x7FF,0x7ff<<11,0x3FF<<22,0};
+XMGLOBALCONST XMVECTORI32 g_XMMaskDHen3         = {0x3FF,0x7ff<<10,0x7FF<<21,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddUHenD3         = {0,0,32768.0f*65536.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddHenD3          = {-1024.0f,-1024.0f*2048.0f,0,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddDHen3          = {-512.0f,-1024.0f*1024.0f,0,0};
+XMGLOBALCONST XMVECTORF32 g_XMMulHenD3          = {1.0f,1.0f/2048.0f,1.0f/(2048.0f*2048.0f),0};
+XMGLOBALCONST XMVECTORF32 g_XMMulDHen3          = {1.0f,1.0f/1024.0f,1.0f/(1024.0f*2048.0f),0};
+XMGLOBALCONST XMVECTORI32 g_XMXorHenD3          = {0x400,0x400<<11,0,0};
+XMGLOBALCONST XMVECTORI32 g_XMXorDHen3          = {0x200,0x400<<10,0,0};
+XMGLOBALCONST XMVECTORI32 g_XMMaskIco4          = {0xFFFFF,0xFFFFF000,0xFFFFF,0xF0000000};
+XMGLOBALCONST XMVECTORI32 g_XMXorXIco4          = {0x80000,0,0x80000,0x80000000};
+XMGLOBALCONST XMVECTORI32 g_XMXorIco4           = {0x80000,0,0x80000,0};
+XMGLOBALCONST XMVECTORF32 g_XMAddXIco4          = {-8.0f*65536.0f,0,-8.0f*65536.0f,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMAddUIco4          = {0,32768.0f*65536.0f,0,32768.0f*65536.0f};
+XMGLOBALCONST XMVECTORF32 g_XMAddIco4           = {-8.0f*65536.0f,0,-8.0f*65536.0f,0};
+XMGLOBALCONST XMVECTORF32 g_XMMulIco4           = {1.0f,1.0f/4096.0f,1.0f,1.0f/(4096.0f*65536.0f)};
+///end_xbox360
 XMGLOBALCONST XMVECTORI32 g_XMMaskDec4          = {0x3FF,0x3FF<<10,0x3FF<<20,0x3<<30};
 XMGLOBALCONST XMVECTORI32 g_XMXorDec4           = {0x200,0x200<<10,0x200<<20,0};
 XMGLOBALCONST XMVECTORF32 g_XMAddUDec4          = {0,0,0,32768.0f*65536.0f};
@@ -1720,6 +1803,15 @@ XMGLOBALCONST XMVECTORF32 g_XMUnsignedFix       = {32768.0f*65536.0f,32768.0f*65
 XMGLOBALCONST XMVECTORF32 g_XMsrgbScale         = { 12.92f, 12.92f, 12.92f, 1.0f };
 XMGLOBALCONST XMVECTORF32 g_XMsrgbA             = { 0.055f, 0.055f, 0.055f, 0.0f };
 XMGLOBALCONST XMVECTORF32 g_XMsrgbA1            = { 1.055f, 1.055f, 1.055f, 1.0f };
+XMGLOBALCONST XMVECTORI32 g_XMExponentBias      = {127, 127, 127, 127};
+XMGLOBALCONST XMVECTORI32 g_XMSubnormalExponent = {-126, -126, -126, -126};
+XMGLOBALCONST XMVECTORI32 g_XMNumTrailing       = {23, 23, 23, 23};
+XMGLOBALCONST XMVECTORI32 g_XMMinNormal         = {0x00800000, 0x00800000, 0x00800000, 0x00800000};
+XMGLOBALCONST XMVECTORI32 g_XMNegInfinity       = {0xFF800000, 0xFF800000, 0xFF800000, 0xFF800000};
+XMGLOBALCONST XMVECTORI32 g_XMNegQNaN           = {0xFFC00000, 0xFFC00000, 0xFFC00000, 0xFFC00000};
+XMGLOBALCONST XMVECTORI32 g_XMBin128            = {0x43000000, 0x43000000, 0x43000000, 0x43000000};
+XMGLOBALCONST XMVECTORI32 g_XMBinNeg150         = {0xC3160000, 0xC3160000, 0xC3160000, 0xC3160000};
+XMGLOBALCONST XMVECTORI32 g_XM253               = {253, 253, 253, 253};
 
 /****************************************************************************
  *

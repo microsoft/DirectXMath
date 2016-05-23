@@ -336,8 +336,17 @@ inline XMVECTOR XMLoadFloat2
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR V;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&V.vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->x))[0];
+    ((uint32_t *)(&V.vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->y))[0];
+#else
+///end_xbox360
     V.vector4_f32[0] = pSource->x;
     V.vector4_f32[1] = pSource->y;
+///begin_xbox360
+#endif
+///end_xbox360
     V.vector4_f32[2] = 0.f;
     V.vector4_f32[3] = 0.f;
     return V;
@@ -519,9 +528,19 @@ inline XMVECTOR XMLoadFloat3
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR V;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&V.vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->x))[0];
+    ((uint32_t *)(&V.vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->y))[0];
+    ((uint32_t *)(&V.vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->z))[0];
+#else
+///end_xbox360
     V.vector4_f32[0] = pSource->x;
     V.vector4_f32[1] = pSource->y;
     V.vector4_f32[2] = pSource->z;
+///begin_xbox360
+#endif
+///end_xbox360
     V.vector4_f32[3] = 0.f;
     return V;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
@@ -578,11 +597,20 @@ inline XMVECTOR XMLoadSInt3
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR V;
+///begin_xbox360
+#ifdef _XBOX_VER
+    V = XMLoadInt3( reinterpret_cast<const uint32_t*>(pSource) );
+    return XMConvertVectorIntToFloat( V, 0 );
+#else
+///end_xbox360
     V.vector4_f32[0] = (float)pSource->x;
     V.vector4_f32[1] = (float)pSource->y;
     V.vector4_f32[2] = (float)pSource->z;
     V.vector4_f32[3] = 0.f;
     return V;
+///begin_xbox360
+#endif
+///end_xbox360
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     __n64 x = vld1_s32( reinterpret_cast<const int32_t*>(pSource) );
@@ -706,10 +734,21 @@ inline XMVECTOR XMLoadFloat4
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR V;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&V.vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->x))[0];
+    ((uint32_t *)(&V.vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->y))[0];
+    ((uint32_t *)(&V.vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->z))[0];
+    ((uint32_t *)(&V.vector4_f32[3]))[0] = ((const uint32_t *)(&pSource->w))[0];
+#else
+///end_xbox360
     V.vector4_f32[0] = pSource->x;
     V.vector4_f32[1] = pSource->y;
     V.vector4_f32[2] = pSource->z;
     V.vector4_f32[3] = pSource->w;
+///begin_xbox360
+#endif
+///end_xbox360
     return V;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vld1q_f32( reinterpret_cast<const float*>(pSource) );
@@ -754,11 +793,20 @@ inline XMVECTOR XMLoadSInt4
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR V;
+///begin_xbox360
+#ifdef _XBOX_VER
+    V = XMLoadInt4( reinterpret_cast<const uint32_t*>(pSource) );
+    return XMConvertVectorIntToFloat( V, 0 );
+#else
+///end_xbox360
     V.vector4_f32[0] = (float)pSource->x;
     V.vector4_f32[1] = (float)pSource->y;
     V.vector4_f32[2] = (float)pSource->z;
     V.vector4_f32[3] = (float)pSource->w;
     return V;
+///begin_xbox360
+#endif
+///end_xbox360
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     __n128 v = vld1q_s32( reinterpret_cast<const int32_t*>(pSource) );
@@ -818,6 +866,24 @@ inline XMMATRIX XMLoadFloat3x3
 #if defined(_XM_NO_INTRINSICS_)
 
     XMMATRIX M;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&M.r[0].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[0][0]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[0][1]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[0][2]))[0];
+    M.r[0].vector4_f32[3] = 0.0f;
+
+    ((uint32_t *)(&M.r[1].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[1][0]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[1][1]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[1][2]))[0];
+    M.r[1].vector4_f32[3] = 0.0f;
+
+    ((uint32_t *)(&M.r[2].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[2][0]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[2][1]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[2][2]))[0];
+    M.r[2].vector4_f32[3] = 0.0f;
+#else
+///end_xbox360
     M.r[0].vector4_f32[0] = pSource->m[0][0];
     M.r[0].vector4_f32[1] = pSource->m[0][1];
     M.r[0].vector4_f32[2] = pSource->m[0][2];
@@ -832,6 +898,9 @@ inline XMMATRIX XMLoadFloat3x3
     M.r[2].vector4_f32[1] = pSource->m[2][1];
     M.r[2].vector4_f32[2] = pSource->m[2][2];
     M.r[2].vector4_f32[3] = 0.0f;
+///begin_xbox360
+#endif
+///end_xbox360
     M.r[3].vector4_f32[0] = 0.0f;
     M.r[3].vector4_f32[1] = 0.0f;
     M.r[3].vector4_f32[2] = 0.0f;
@@ -884,6 +953,29 @@ inline XMMATRIX XMLoadFloat4x3
 #if defined(_XM_NO_INTRINSICS_)
 
     XMMATRIX M;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&M.r[0].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[0][0]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[0][1]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[0][2]))[0];
+    M.r[0].vector4_f32[3] = 0.0f;
+
+    ((uint32_t *)(&M.r[1].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[1][0]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[1][1]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[1][2]))[0];
+    M.r[1].vector4_f32[3] = 0.0f;
+
+    ((uint32_t *)(&M.r[2].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[2][0]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[2][1]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[2][2]))[0];
+    M.r[2].vector4_f32[3] = 0.0f;
+
+    ((uint32_t *)(&M.r[3].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[3][0]))[0];
+    ((uint32_t *)(&M.r[3].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[3][1]))[0];
+    ((uint32_t *)(&M.r[3].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[3][2]))[0];
+    M.r[3].vector4_f32[3] = 1.0f;
+#else
+///end_xbox360
     M.r[0].vector4_f32[0] = pSource->m[0][0];
     M.r[0].vector4_f32[1] = pSource->m[0][1];
     M.r[0].vector4_f32[2] = pSource->m[0][2];
@@ -903,6 +995,9 @@ inline XMMATRIX XMLoadFloat4x3
     M.r[3].vector4_f32[1] = pSource->m[3][1];
     M.r[3].vector4_f32[2] = pSource->m[3][2];
     M.r[3].vector4_f32[3] = 1.0f;
+///begin_xbox360
+#endif
+///end_xbox360
     return M;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
@@ -1047,6 +1142,29 @@ inline XMMATRIX XMLoadFloat4x4
 #if defined(_XM_NO_INTRINSICS_)
 
     XMMATRIX M;
+///begin_xbox360
+#ifdef _XBOX_VER
+    ((uint32_t *)(&M.r[0].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[0][0]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[0][1]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[0][2]))[0];
+    ((uint32_t *)(&M.r[0].vector4_f32[3]))[0] = ((const uint32_t *)(&pSource->m[0][3]))[0];
+
+    ((uint32_t *)(&M.r[1].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[1][0]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[1][1]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[1][2]))[0];
+    ((uint32_t *)(&M.r[1].vector4_f32[3]))[0] = ((const uint32_t *)(&pSource->m[1][3]))[0];
+
+    ((uint32_t *)(&M.r[2].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[2][0]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[2][1]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[2][2]))[0];
+    ((uint32_t *)(&M.r[2].vector4_f32[3]))[0] = ((const uint32_t *)(&pSource->m[2][3]))[0];
+
+    ((uint32_t *)(&M.r[3].vector4_f32[0]))[0] = ((const uint32_t *)(&pSource->m[3][0]))[0];
+    ((uint32_t *)(&M.r[3].vector4_f32[1]))[0] = ((const uint32_t *)(&pSource->m[3][1]))[0];
+    ((uint32_t *)(&M.r[3].vector4_f32[2]))[0] = ((const uint32_t *)(&pSource->m[3][2]))[0];
+    ((uint32_t *)(&M.r[3].vector4_f32[3]))[0] = ((const uint32_t *)(&pSource->m[3][3]))[0];
+#else
+///end_xbox360
     M.r[0].vector4_f32[0] = pSource->m[0][0];
     M.r[0].vector4_f32[1] = pSource->m[0][1];
     M.r[0].vector4_f32[2] = pSource->m[0][2];
@@ -1066,6 +1184,9 @@ inline XMMATRIX XMLoadFloat4x4
     M.r[3].vector4_f32[1] = pSource->m[3][1];
     M.r[3].vector4_f32[2] = pSource->m[3][2];
     M.r[3].vector4_f32[3] = pSource->m[3][3];
+///begin_xbox360
+#endif
+///end_xbox360
     return M;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
@@ -1578,6 +1699,22 @@ inline void XMStoreInt4A
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+///begin_xbox360
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XMStoreInt4NC
+(
+    uint32_t*    pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMStoreInt4(pDestination, V);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1624,6 +1761,22 @@ inline void XMStoreFloat4A
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+///begin_xbox360
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XMStoreFloat4NC
+(
+    XMFLOAT4* pDestination, 
+    FXMVECTOR  V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMStoreFloat4(pDestination, V);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1744,6 +1897,22 @@ inline void XMStoreFloat3x3
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+///begin_xbox360
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XMStoreFloat3x3NC
+(
+    XMFLOAT3X3* pDestination, 
+    CXMMATRIX M
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMStoreFloat3x3(pDestination, M);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1868,6 +2037,22 @@ inline void XMStoreFloat4x3A
 #endif // _XM_VMX128_INTRINSICS_
 }
 
+///begin_xbox360
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XMStoreFloat4x3NC
+(
+    XMFLOAT4X3* pDestination, 
+    CXMMATRIX M
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_) 
+    XMStoreFloat4x3(pDestination, M);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1959,4 +2144,22 @@ inline void XMStoreFloat4x4A
 #else // _XM_VMX128_INTRINSICS_
 #endif // _XM_VMX128_INTRINSICS_
 }
+
+///begin_xbox360
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XMStoreFloat4x4NC
+(
+    XMFLOAT4X4* pDestination, 
+    CXMMATRIX M
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_SSE_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMStoreFloat4x4(pDestination, M);
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
+
 

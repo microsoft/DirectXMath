@@ -31,8 +31,12 @@ inline float PackedVector::XMConvertHalfToFloat
 
     uint32_t Mantissa = (uint32_t)(Value & 0x03FF);
 
-    uint32_t Exponent;
-    if ((Value & 0x7C00) != 0)  // The value is normalized
+    uint32_t Exponent = (Value & 0x7C00);
+    if ( Exponent == 0x7C00 ) // INF/NAN
+    {
+        Exponent = (uint32_t)143;
+    }
+    else if (Exponent != 0)  // The value is normalized
     {
         Exponent = (uint32_t)((Value >> 10) & 0x1F);
     }
@@ -108,10 +112,17 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
     uint32_t Sign = (IValue & 0x80000000U) >> 16U;
     IValue = IValue & 0x7FFFFFFFU;      // Hack off the sign
 
-    if (IValue > 0x47FFEFFFU)
+    if (IValue > 0x477FE000U)
     {
         // The number is too large to be represented as a half.  Saturate to infinity.
-        Result = 0x7FFFU;
+        if (((IValue & 0x7F800000) == 0x7F800000) && ((IValue & 0x7FFFFF ) != 0))
+        {
+            Result = 0x7FFF; // NAN
+        }
+        else
+        {
+            Result = 0x7C00U; // INF
+        }
     }
     else
     {
@@ -1329,6 +1340,601 @@ inline XMVECTOR PackedVector::XMLoadU555
     return vResult.v;
 #endif // !_XM_SSE_INTRISICS_
 }
+
+///begin_xbox360
+////////////////////////////////////////////////////////////////////////////////
+// PackedVector::Xbox
+////////////////////////////////////////////////////////////////////////////////
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUHenDN3
+(
+    const XMUHENDN3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        float(pSource->v & 0x7FF) / 2047.0f,
+        float((pSource->v >> 11) & 0x7FF) / 2047.0f,
+        float((pSource->v >> 22) & 0x3FF) / 1023.0f,
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 UHenDN3Mul = {1.0f/2047.0f,1.0f/(2047.0f*2048.0f),1.0f/(1023.0f*2048.0f*2048.0f),0};
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskHenD3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMFlipZ);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddUHenD3);
+    // Normalize x,y and z to -1.0f-1.0f
+    vResult = _mm_mul_ps(vResult,UHenDN3Mul);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUHenD3
+(
+    const XMUHEND3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        float(pSource->v & 0x7FF),
+        float((pSource->v >> 11) & 0x7FF),
+        float((pSource->v >> 22) & 0x3FF),
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskHenD3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMFlipZ);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddUHenD3);
+    // Normalize x and y to -1024-1023.0f and z to -512-511.0f
+    vResult = _mm_mul_ps(vResult,g_XMMulHenD3);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadHenDN3
+(
+    const XMHENDN3* pSource
+)
+{
+    assert(pSource);
+
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtendXY[] = {0x00000000, 0xFFFFF800};
+    static const uint32_t SignExtendZ[] = {0x00000000, 0xFFFFFC00};
+
+    uint32_t ElementX = pSource->v & 0x7FF;
+    uint32_t ElementY = (pSource->v >> 11) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 22) & 0x3FF;
+
+    XMVECTORF32 vResult = {
+        (ElementX == 0x400) ? -1.f : ((float)(int16_t)(ElementX | SignExtendXY[ElementX >> 10]) / 1023.0f),
+        (ElementY == 0x400) ? -1.f : ((float)(int16_t)(ElementY | SignExtendXY[ElementY >> 10]) / 1023.0f),
+        (ElementZ == 0x200) ? -1.f : ((float)(int16_t)(ElementZ | SignExtendZ[ElementZ >> 9]) / 511.0f),
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 HenDN3Mul = {1.0f/1023.0f,1.0f/(1023.0f*2048.0f),1.0f/(511.0f*2048.0f*2048.0f),0};
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskHenD3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMXorHenD3);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddHenD3);
+    // Normalize x,y and z to -1.0f-1.0f
+    vResult = _mm_mul_ps(vResult,HenDN3Mul);
+    // Clamp result (for case of -1024/-512)
+    return _mm_max_ps( vResult, g_XMNegativeOne );
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadHenD3
+(
+    const XMHEND3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtendXY[] = {0x00000000, 0xFFFFF800};
+    static const uint32_t SignExtendZ[] = {0x00000000, 0xFFFFFC00};
+
+    uint32_t ElementX = pSource->v & 0x7FF;
+    uint32_t ElementY = (pSource->v >> 11) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 22) & 0x3FF;
+
+    XMVECTORF32 vResult = {
+        (float)(int16_t)(ElementX | SignExtendXY[ElementX >> 10]),
+        (float)(int16_t)(ElementY | SignExtendXY[ElementY >> 10]),
+        (float)(int16_t)(ElementZ | SignExtendZ[ElementZ >> 9]),
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskHenD3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMXorHenD3);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddHenD3);
+    // Normalize x and y to -1024-1023.0f and z to -512-511.0f
+    vResult = _mm_mul_ps(vResult,g_XMMulHenD3);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUDHenN3
+(
+    const XMUDHENN3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    uint32_t ElementX = pSource->v & 0x3FF;
+    uint32_t ElementY = (pSource->v >> 10) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 21) & 0x7FF;
+
+    XMVECTORF32 vResult = {
+        (float)ElementX / 1023.0f,
+        (float)ElementY / 2047.0f,
+        (float)ElementZ / 2047.0f,
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 UDHenN3Mul = {1.0f/1023.0f,1.0f/(2047.0f*1024.0f),1.0f/(2047.0f*1024.0f*2048.0f),0};
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskDHen3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMFlipZ);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddUHenD3);
+    // Normalize x,y and z to -1.0f-1.0f
+    vResult = _mm_mul_ps(vResult,UDHenN3Mul);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUDHen3
+(
+    const XMUDHEN3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    uint32_t ElementX = pSource->v & 0x3FF;
+    uint32_t ElementY = (pSource->v >> 10) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 21) & 0x7FF;
+
+    XMVECTORF32 vResult = {
+        (float)ElementX,
+        (float)ElementY,
+        (float)ElementZ,
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskDHen3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMFlipZ);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddUHenD3);
+    // Normalize x to 0-1023.0f and y and z to 0-2047.0f
+    vResult = _mm_mul_ps(vResult,g_XMMulDHen3);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadDHenN3
+(
+    const XMDHENN3* pSource
+)
+{
+    assert(pSource);
+
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtendX[] = {0x00000000, 0xFFFFFC00};
+    static const uint32_t SignExtendYZ[] = {0x00000000, 0xFFFFF800};
+
+    uint32_t ElementX = pSource->v & 0x3FF;
+    uint32_t ElementY = (pSource->v >> 10) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 21) & 0x7FF;
+
+    XMVECTORF32 vResult = {
+        (ElementX == 0x200) ? -1.f : ((float)(int16_t)(ElementX | SignExtendX[ElementX >> 9]) / 511.0f),
+        (ElementY == 0x400) ? -1.f : ((float)(int16_t)(ElementY | SignExtendYZ[ElementY >> 10]) / 1023.0f),
+        (ElementZ == 0x400) ? -1.f : ((float)(int16_t)(ElementZ | SignExtendYZ[ElementZ >> 10]) / 1023.0f),
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 DHenN3Mul = {1.0f/511.0f,1.0f/(1023.0f*1024.0f),1.0f/(1023.0f*1024.0f*2048.0f),0};
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskDHen3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMXorDHen3);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddDHen3);
+    // Normalize x,y and z to -1.0f-1.0f
+    vResult = _mm_mul_ps(vResult,DHenN3Mul);
+    // Clamp result (for case of -512/-1024)
+    return _mm_max_ps( vResult, g_XMNegativeOne );
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadDHen3
+(
+    const XMDHEN3* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtendX[] = {0x00000000, 0xFFFFFC00};
+    static const uint32_t SignExtendYZ[] = {0x00000000, 0xFFFFF800};
+
+    uint32_t ElementX = pSource->v & 0x3FF;
+    uint32_t ElementY = (pSource->v >> 10) & 0x7FF;
+    uint32_t ElementZ = (pSource->v >> 21) & 0x7FF;
+
+    XMVECTORF32 vResult = {
+        (float)(int16_t)(ElementX | SignExtendX[ElementX >> 9]),
+        (float)(int16_t)(ElementY | SignExtendYZ[ElementY >> 10]),
+        (float)(int16_t)(ElementZ | SignExtendYZ[ElementZ >> 10]),
+        0.f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Get the 32 bit value and splat it
+    XMVECTOR vResult = _mm_load_ps1(reinterpret_cast<const float *>(&pSource->v));
+    // Mask off x, y and z
+    vResult = _mm_and_ps(vResult,g_XMMaskDHen3);
+    // Convert x and y to unsigned
+    vResult = _mm_xor_ps(vResult,g_XMXorDHen3);
+    // Convert to float
+    vResult = _mm_cvtepi32_ps(_mm_castps_si128(vResult));
+    // Convert x and y back to signed
+    vResult = _mm_add_ps(vResult,g_XMAddDHen3);
+    // Normalize x to -210-511.0f and y and z to -1024-1023.0f
+    vResult = _mm_mul_ps(vResult,g_XMMulDHen3);
+    return vResult;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadXIcoN4
+(
+    const XMXICON4* pSource
+)
+{
+    assert(pSource);
+
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtend[] = {0x00000000, 0xFFF00000};
+
+    uint32_t ElementX = (uint32_t)(pSource->v & 0xFFFFF);
+    uint32_t ElementY = (uint32_t)((pSource->v >> 20) & 0xFFFFF);
+    uint32_t ElementZ = (uint32_t)((pSource->v >> 40) & 0xFFFFF);
+
+    XMVECTORF32 vResult = {
+        (ElementX == 0x80000) ? -1.f : ((float)(int32_t)(ElementX | SignExtend[ElementX >> 19]) / 524287.0f),
+        (ElementY == 0x80000) ? -1.f : ((float)(int32_t)(ElementY | SignExtend[ElementY >> 19]) / 524287.0f),
+        (ElementZ == 0x80000) ? -1.f : ((float)(int32_t)(ElementZ | SignExtend[ElementZ >> 19]) / 524287.0f),
+        (float)(pSource->v >> 60) / 15.0f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 LoadXIcoN4Mul = {1.0f/524287.0f,1.0f/(524287.0f*4096.0f),1.0f/524287.0f,1.0f/(15.0f*4096.0f*65536.0f)};
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMXorXIco4);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddXIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,LoadXIcoN4Mul);
+    // Clamp result (for case of -524288)
+    return _mm_max_ps( vTemp, g_XMNegativeOne );
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadXIco4
+(
+    const XMXICO4* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtend[] = {0x00000000, 0xFFF00000};
+
+    uint32_t ElementX = (uint32_t)(pSource->v & 0xFFFFF);
+    uint32_t ElementY = (uint32_t)((pSource->v >> 20) & 0xFFFFF);
+    uint32_t ElementZ = (uint32_t)((pSource->v >> 40) & 0xFFFFF);
+
+    XMVECTORF32 vResult = {
+        (float)(int32_t)(ElementX | SignExtend[ElementX >> 19]),
+        (float)(int32_t)(ElementY | SignExtend[ElementY >> 19]),
+        (float)(int32_t)(ElementZ | SignExtend[ElementZ >> 19]),
+        (float)(pSource->v >> 60)
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMXorXIco4);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddXIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,g_XMMulIco4);
+    return vTemp;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUIcoN4
+(
+    const XMUICON4* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        (float)(pSource->v & 0xFFFFF) / 1048575.0f,
+        (float)((pSource->v >> 20) & 0xFFFFF) / 1048575.0f,
+        (float)((pSource->v >> 40) & 0xFFFFF) / 1048575.0f,
+        (float)(pSource->v >> 60) / 15.0f
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 LoadUIcoN4Mul = {1.0f/1048575.0f,1.0f/(1048575.0f*4096.0f),1.0f/1048575.0f,1.0f/(15.0f*4096.0f*65536.0f)};
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMFlipYW);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddUIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,LoadUIcoN4Mul);
+    return vTemp;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadUIco4
+(
+    const XMUICO4* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    XMVECTORF32 vResult = {
+        (float)(pSource->v & 0xFFFFF),
+        (float)((pSource->v >> 20) & 0xFFFFF),
+        (float)((pSource->v >> 40) & 0xFFFFF),
+        (float)(pSource->v >> 60)
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMFlipYW);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddUIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,g_XMMulIco4);
+    return vTemp;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadIcoN4
+(
+    const XMICON4* pSource
+)
+{
+    assert(pSource);
+
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtend[] = {0x00000000, 0xFFF00000};
+    static const uint32_t SignExtendW[] = {0x00000000, 0xFFFFFFF0};
+
+    uint32_t ElementX = (uint32_t)(pSource->v & 0xFFFFF);
+    uint32_t ElementY = (uint32_t)((pSource->v >> 20) & 0xFFFFF);
+    uint32_t ElementZ = (uint32_t)((pSource->v >> 40) & 0xFFFFF);
+    uint32_t ElementW = (uint32_t)(pSource->v >> 60);
+
+    XMVECTORF32 vResult = {
+        (ElementX == 0x80000) ? -1.f : ((float)(int32_t)(ElementX | SignExtend[ElementX >> 19]) / 524287.0f),
+        (ElementY == 0x80000) ? -1.f : ((float)(int32_t)(ElementY | SignExtend[ElementY >> 19]) / 524287.0f),
+        (ElementZ == 0x80000) ? -1.f : ((float)(int32_t)(ElementZ | SignExtend[ElementZ >> 19]) / 524287.0f),
+        (ElementW == 0x80) ? -1.f : ((float)(int32_t)(ElementW | SignExtendW[ElementW >> 3]) / 7.0f)
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 LoadIcoN4Mul = {1.0f/524287.0f,1.0f/(524287.0f*4096.0f),1.0f/524287.0f,1.0f/(7.0f*4096.0f*65536.0f)};
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMXorIco4);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,LoadIcoN4Mul);
+    // Clamp result (for case of -524288/-8)
+    return _mm_max_ps( vTemp, g_XMNegativeOne );
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMVECTOR PackedVector::Xbox::XMLoadIco4
+(
+    const XMICO4* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+    static const uint32_t SignExtend[] = {0x00000000, 0xFFF00000};
+    static const uint32_t SignExtendW[] = {0x00000000, 0xFFFFFFF0};
+
+    uint32_t ElementX = (uint32_t)(pSource->v & 0xFFFFF);
+    uint32_t ElementY = (uint32_t)((pSource->v >> 20) & 0xFFFFF);
+    uint32_t ElementZ = (uint32_t)((pSource->v >> 40) & 0xFFFFF);
+    uint32_t ElementW = (uint32_t)(pSource->v >> 60);
+
+    XMVECTORF32 vResult = {
+        (float)(int32_t)(ElementX | SignExtend[ElementX >> 19]),
+        (float)(int32_t)(ElementY | SignExtend[ElementY >> 19]),
+        (float)(int32_t)(ElementZ | SignExtend[ElementZ >> 19]),
+        (float)(int32_t)(ElementW | SignExtendW[ElementW >> 3])
+    };
+    return vResult.v;
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Grab the 64 bit structure
+    __m128d vResultd = _mm_load_sd(reinterpret_cast<const double *>(&pSource->v));
+    // By shifting down 8 bits, y and z are in seperate 32 bit elements
+    __m128i vResulti = _mm_srli_si128(_mm_castpd_si128(vResultd),8/8);
+    // vResultd has x and w, vResulti has y and z, merge into one as x,w,y,z
+    XMVECTOR vTemp = _mm_shuffle_ps(_mm_castsi128_ps(vResultd),_mm_castsi128_ps(vResulti),_MM_SHUFFLE(1,0,1,0));
+    // Fix the entries to x,y,z,w
+    vTemp = XM_PERMUTE_PS(vTemp,_MM_SHUFFLE(1,3,2,0));
+    // Mask x,y,z and w
+    vTemp = _mm_and_ps(vTemp,g_XMMaskIco4);
+    // x and z are unsigned! Flip the bits to convert the order to signed
+    vTemp = _mm_xor_ps(vTemp,g_XMXorIco4);
+    // Convert to floating point numbers
+    vTemp = _mm_cvtepi32_ps(_mm_castps_si128(vTemp));
+    // x and z - 0x80 to complete the conversion
+    vTemp = _mm_add_ps(vTemp,g_XMAddIco4);
+    // Fix y and w because they are too large
+    vTemp = _mm_mul_ps(vTemp,g_XMMulIco4);
+    return vTemp;
+#elif defined(XM_NO_MISALIGNED_VECTOR_ACCESS)
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
 
 
 /****************************************************************************
@@ -2692,6 +3298,712 @@ inline void PackedVector::XMStoreU555
 #endif !_XM_SSE_INTRINSICS_
 }
 
+///begin_xbox360
+////////////////////////////////////////////////////////////////////////////////
+// PackedVector::Xbox
+////////////////////////////////////////////////////////////////////////////////
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUHenDN3
+(
+    XMUHENDN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Scale = {2047.0f, 2047.0f, 1023.0f, 0.0f};
+
+    XMVECTOR N = XMVectorSaturate(V);
+    N = XMVectorMultiply(N, Scale.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((uint32_t)tmp.z & 0x3FF) << 22) |
+                      (((uint32_t)tmp.y & 0x7FF) << 11) |
+                      (((uint32_t)tmp.x & 0x7FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 ScaleUHenDN3 = {2047.0f, 2047.0f*2048.0f,1023.0f*(2048.0f*2048.0f)/2.0f,1.0f};
+    static const XMVECTORI32 MaskUHenDN3 = {0x7FF,0x7FF<<11,0x3FF<<(22-1),0};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUHenDN3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUHenDN3);
+    // Do a horizontal or of 3 entries
+    __m128i vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(0,3,2,1));
+    // i = x|y
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    // Move Z to the x position
+    vResulti2 = _mm_shuffle_epi32(vResulti2,_MM_SHUFFLE(0,3,2,1));
+    // Add Z to itself to perform a single bit left shift
+    vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
+    // i = x|y|z
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUHenD3
+(
+    XMUHEND3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Max = {2047.0f, 2047.0f, 1023.0f, 0.0f};
+
+    XMVECTOR N = XMVectorClamp(V, XMVectorZero(), Max);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((uint32_t)tmp.z & 0x3FF) << 22) |
+                      (((uint32_t)tmp.y & 0x7FF) << 11) |
+                      (((uint32_t)tmp.x & 0x7FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 MaxUHenD3 = { 2047.0f, 2047.0f, 1023.0f, 1.0f};
+    static const XMVECTORF32 ScaleUHenD3 = {1.0f, 2048.0f,(2048.0f*2048.0f)/2.0f,1.0f};
+    static const XMVECTORI32 MaskUHenD3 = {0x7FF,0x7FF<<11,0x3FF<<(22-1),0};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    vResult = _mm_min_ps(vResult,MaxUHenD3);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUHenD3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUHenD3);
+    // Do a horizontal or of 3 entries
+    __m128i vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(0,3,2,1));
+    // i = x|y
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    // Move Z to the x position
+    vResulti2 = _mm_shuffle_epi32(vResulti2,_MM_SHUFFLE(0,3,2,1));
+    // Add Z to itself to perform a single bit left shift
+    vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
+    // i = x|y|z
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreHenDN3
+(
+    XMHENDN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Scale = {1023.0f, 1023.0f, 511.0f, 1.0f};
+
+    XMVECTOR N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
+    N = XMVectorMultiply(N, Scale.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((int32_t)tmp.z & 0x3FF) << 22) |
+                      (((int32_t)tmp.y & 0x7FF) << 11) |
+                      (((int32_t)tmp.x & 0x7FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 ScaleHenDN3 = {1023.0f, 1023.0f*2048.0f,511.0f*(2048.0f*2048.0f),1.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleHenDN3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,g_XMMaskHenD3);
+    // Do a horizontal or of all 4 entries
+    vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vResulti),_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreHenD3
+(
+    XMHEND3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Min = {-1023.0f, -1023.0f, -511.0f, -1.0f};
+    static const XMVECTORF32 Max = {1023.0f, 1023.0f, 511.0f, 1.0f};
+
+    XMVECTOR N = XMVectorClamp(V, Min, Max);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((int32_t)tmp.z & 0x3FF) << 22) |
+                      (((int32_t)tmp.y & 0x7FF) << 11) |
+                      (((int32_t)tmp.x & 0x7FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 MinHenD3 = {-1023.0f,-1023.0f,-511.0f,-1.0f};
+    static const XMVECTORF32 MaxHenD3 = { 1023.0f, 1023.0f, 511.0f, 1.0f};
+    static const XMVECTORF32 ScaleHenD3 = {1.0f, 2048.0f,(2048.0f*2048.0f),1.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,MinHenD3);
+    vResult = _mm_min_ps(vResult,MaxHenD3);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleHenD3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,g_XMMaskHenD3);
+    // Do a horizontal or of all 4 entries
+    vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vResulti),_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUDHenN3
+(
+    XMUDHENN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Scale = {1023.0f, 2047.0f, 2047.0f, 0.0f};
+
+    XMVECTOR N = XMVectorSaturate(V);
+    N = XMVectorMultiply(N, Scale.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((uint32_t)tmp.z & 0x7FF) << 21) |
+                      (((uint32_t)tmp.y & 0x7FF) << 10) |
+                      (((uint32_t)tmp.x & 0x3FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 ScaleUDHenN3 = {1023.0f,2047.0f*1024.0f,2047.0f*(1024.0f*2048.0f)/2.0f,1.0f};
+    static const XMVECTORI32 MaskUDHenN3 = {0x3FF,0x7FF<<10,0x7FF<<(21-1),0};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUDHenN3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUDHenN3);
+    // Do a horizontal or of 3 entries
+    __m128i vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(0,3,2,1));
+    // i = x|y
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    // Move Z to the x position
+    vResulti2 = _mm_shuffle_epi32(vResulti2,_MM_SHUFFLE(0,3,2,1));
+    // Add Z to itself to perform a single bit left shift
+    vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
+    // i = x|y|z
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUDHen3
+(
+    XMUDHEN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Max = {1023.0f, 2047.0f, 2047.0f, 0.0f};
+
+    XMVECTOR N = XMVectorClamp(V, XMVectorZero(), Max);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((uint32_t)tmp.z & 0x7FF) << 21) |
+                      (((uint32_t)tmp.y & 0x7FF) << 10) |
+                      (((uint32_t)tmp.x & 0x3FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 MaxUDHen3 = { 1023.0f, 2047.0f, 2047.0f, 1.0f};
+    static const XMVECTORF32 ScaleUDHen3 = {1.0f, 1024.0f,(1024.0f*2048.0f)/2.0f,1.0f};
+    static const XMVECTORI32 MaskUDHen3 = {0x3FF,0x7FF<<10,0x7FF<<(21-1),0};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMZero);
+    vResult = _mm_min_ps(vResult,MaxUDHen3);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUDHen3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUDHen3);
+    // Do a horizontal or of 3 entries
+    __m128i vResulti2 = _mm_shuffle_epi32(vResulti,_MM_SHUFFLE(0,3,2,1));
+    // i = x|y
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    // Move Z to the x position
+    vResulti2 = _mm_shuffle_epi32(vResulti2,_MM_SHUFFLE(0,3,2,1));
+    // Add Z to itself to perform a single bit left shift
+    vResulti2 = _mm_add_epi32(vResulti2,vResulti2);
+    // i = x|y|z
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreDHenN3
+(
+    XMDHENN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Scale = {511.0f, 1023.0f, 1023.0f, 1.0f};
+
+    XMVECTOR N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
+    N = XMVectorMultiply(N, Scale.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((int32_t)tmp.z & 0x7FF) << 21) |
+                      (((int32_t)tmp.y & 0x7FF) << 10) |
+                      (((int32_t)tmp.x & 0x3FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 ScaleDHenN3 = {511.0f, 1023.0f*1024.0f,1023.0f*(1024.0f*2048.0f),1.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleDHenN3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,g_XMMaskDHen3);
+    // Do a horizontal or of all 4 entries
+    vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vResulti),_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreDHen3
+(
+    XMDHEN3* pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Min = {-511.0f, -1023.0f, -1023.0f, -1.0f};
+    static const XMVECTORF32 Max = {511.0f, 1023.0f, 1023.0f, 1.0f};
+
+    XMVECTOR N = XMVectorClamp(V, Min, Max);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = (((int32_t)tmp.z & 0x7FF) << 21) |
+                      (((int32_t)tmp.y & 0x7FF) << 10) |
+                      (((int32_t)tmp.x & 0x3FF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    static const XMVECTORF32 MinDHen3 = {-511.0f,-1023.0f,-1023.0f,-1.0f};
+    static const XMVECTORF32 MaxDHen3 = { 511.0f, 1023.0f, 1023.0f, 1.0f};
+    static const XMVECTORF32 ScaleDHen3 = {1.0f, 1024.0f,(1024.0f*2048.0f),1.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = _mm_max_ps(V,MinDHen3);
+    vResult = _mm_min_ps(vResult,MaxDHen3);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleDHen3);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,g_XMMaskDHen3);
+    // Do a horizontal or of all 4 entries
+    vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vResulti),_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    vResult = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(0,3,2,1));
+    vResulti = _mm_or_si128(vResulti,_mm_castps_si128(vResult));
+    _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreXIcoN4
+(
+    XMXICON4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Min = {-1.0f, -1.0f, -1.0f, 0.0f};
+    static const XMVECTORF32  Scale = {524287.0f, 524287.0f, 524287.0f, 15.0f};
+
+    XMVECTOR N = XMVectorClamp(V, Min.v, g_XMOne.v);
+    N = XMVectorMultiply(N, Scale.v);
+    N = XMVectorRound(N);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint64_t)tmp.w << 60) |
+                       (((int64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((int64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((int64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 MinXIcoN4 = {-1.0f, 0.0f,-1.0f,-1.0f};
+    static const XMVECTORF32 ScaleXIcoN4 = {524287.0f,15.0f*4096.0f*65536.0f*0.5f,524287.0f*4096.0f,524287.0f};
+    static const XMVECTORI32 MaskXIcoN4 = {0xFFFFF,0xF<<((60-32)-1),0xFFFFF000,0xFFFFF};
+
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,MinXIcoN4);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleXIcoN4);
+    // Convert to integer (w is unsigned)
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off unused bits
+    vResulti = _mm_and_si128(vResulti,MaskXIcoN4);
+    // Isolate Y
+    __m128i vResulti2 = _mm_and_si128(vResulti,g_XMMaskY);
+    // Double Y (Really W) to fixup for unsigned conversion
+    vResulti = _mm_add_epi32(vResulti,vResulti2);
+    // Shift y and z to straddle the 32-bit boundary
+    vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreXIco4
+(
+    XMXICO4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Min = {-524287.0f, -524287.0f, -524287.0f, 0.0f};
+    static const XMVECTORF32 Max = {524287.0f, 524287.0f, 524287.0f, 15.0f};
+
+    XMVECTOR N = XMVectorClamp(V, Min.v, Max.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint64_t)tmp.w << 60) |
+                       (((int64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((int64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((int64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 MinXIco4 = {-524287.0f, 0.0f,-524287.0f,-524287.0f};
+    static const XMVECTORF32 MaxXIco4 = { 524287.0f,15.0f, 524287.0f, 524287.0f};
+    static const XMVECTORF32 ScaleXIco4 = {1.0f,4096.0f*65536.0f*0.5f,4096.0f,1.0f};
+    static const XMVECTORI32 MaskXIco4 = {0xFFFFF,0xF<<((60-1)-32),0xFFFFF000,0xFFFFF};
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,MinXIco4);
+    vResult = _mm_min_ps(vResult,MaxXIco4);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleXIco4);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskXIco4);
+    // Isolate Y
+    __m128i vResulti2 = _mm_and_si128(vResulti,g_XMMaskY);
+    // Double Y (Really W) to fixup for unsigned conversion
+    vResulti = _mm_add_epi32(vResulti,vResulti2);
+    // Shift y and z to straddle the 32-bit boundary
+    vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUIcoN4
+(
+    XMUICON4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Scale = {1048575.0f, 1048575.0f, 1048575.0f, 15.0f};
+
+    XMVECTOR N = XMVectorSaturate(V);
+    N = XMVectorMultiplyAdd(N, Scale.v, g_XMOneHalf.v);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint64_t)tmp.w << 60) |
+                       (((uint64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((uint64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((uint64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 ScaleUIcoN4 = {1048575.0f,15.0f*4096.0f*65536.0f,1048575.0f*4096.0f,1048575.0f};
+    static const XMVECTORI32 MaskUIcoN4 = {0xFFFFF,0xF<<(60-32),0xFFFFF000,0xFFFFF};
+    static const XMVECTORF32 AddUIcoN4 = {0.0f,-32768.0f*65536.0f,-32768.0f*65536.0f,0.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,g_XMZero);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUIcoN4);
+    // Adjust for unsigned entries
+    vResult = _mm_add_ps(vResult,AddUIcoN4);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Fix the signs on the unsigned entries
+    vResulti = _mm_xor_si128(vResulti,g_XMFlipYZ);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUIcoN4);
+    // Shift y and z to straddle the 32-bit boundary
+    __m128i vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreUIco4
+(
+    XMUICO4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Max = {1048575.0f, 1048575.0f, 1048575.0f, 15.0f};
+
+    XMVECTOR N = XMVectorClamp(V, XMVectorZero(), Max);
+    N = XMVectorRound(N);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint64_t)tmp.w << 60) |
+                       (((uint64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((uint64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((uint64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 MaxUIco4 = { 1048575.0f, 15.0f, 1048575.0f, 1048575.0f};
+    static const XMVECTORF32 ScaleUIco4 = {1.0f,4096.0f*65536.0f,4096.0f,1.0f};
+    static const XMVECTORI32 MaskUIco4 = {0xFFFFF,0xF<<(60-32),0xFFFFF000,0xFFFFF};
+    static const XMVECTORF32 AddUIco4 = {0.0f,-32768.0f*65536.0f,-32768.0f*65536.0f,0.0f};
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,g_XMZero);
+    vResult = _mm_min_ps(vResult,MaxUIco4);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleUIco4);
+    vResult = _mm_add_ps(vResult,AddUIco4);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    vResulti = _mm_xor_si128(vResulti,g_XMFlipYZ);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskUIco4);
+    // Shift y and z to straddle the 32-bit boundary
+    __m128i vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreIcoN4
+(
+    XMICON4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32  Scale = {524287.0f, 524287.0f, 524287.0f, 7.0f};
+
+    XMVECTOR N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
+    N = XMVectorMultiplyAdd(N, Scale.v, g_XMNegativeZero.v);
+    N = XMVectorRound(N);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((uint64_t)tmp.w << 60) |
+                       (((uint64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((uint64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((uint64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 ScaleIcoN4 = {524287.0f,7.0f*4096.0f*65536.0f,524287.0f*4096.0f,524287.0f};
+    static const XMVECTORI32 MaskIcoN4 = {0xFFFFF,0xF<<(60-32),0xFFFFF000,0xFFFFF};
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,g_XMNegativeOne);
+    vResult = _mm_min_ps(vResult,g_XMOne);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleIcoN4);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskIcoN4);
+    // Shift y and z to straddle the 32-bit boundary
+    __m128i vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void PackedVector::Xbox::XMStoreIco4
+(
+    XMICO4*  pDestination, 
+    FXMVECTOR V
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 Min = {-524287.0f, -524287.0f, -524287.0f, -7.0f};
+    static const XMVECTORF32 Max = {524287.0f, 524287.0f, 524287.0f, 7.0f};
+
+    XMVECTOR N = XMVectorClamp(V, Min, Max);
+    N = XMVectorRound(N);
+
+    XMFLOAT4A tmp;
+    XMStoreFloat4A(&tmp, N );
+
+    pDestination->v = ((int64_t)tmp.w << 60) |
+                       (((int64_t)tmp.z & 0xFFFFF) << 40) |
+                       (((int64_t)tmp.y & 0xFFFFF) << 20) |
+                       (((int64_t)tmp.x & 0xFFFFF));
+
+#elif defined(_XM_SSE_INTRINSICS_)
+    // Note: Masks are x,w,y and z
+    static const XMVECTORF32 MinIco4 = {-524287.0f,-7.0f,-524287.0f,-524287.0f};
+    static const XMVECTORF32 MaxIco4 = { 524287.0f, 7.0f, 524287.0f, 524287.0f};
+    static const XMVECTORF32 ScaleIco4 = {1.0f,4096.0f*65536.0f,4096.0f,1.0f};
+    static const XMVECTORI32 MaskIco4 = {0xFFFFF,0xF<<(60-32),0xFFFFF000,0xFFFFF};
+    // Clamp to bounds
+    XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,1,3,0));
+    vResult = _mm_max_ps(vResult,MinIco4);
+    vResult = _mm_min_ps(vResult,MaxIco4);
+    // Scale by multiplication
+    vResult = _mm_mul_ps(vResult,ScaleIco4);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
+    // Mask off any fraction
+    vResulti = _mm_and_si128(vResulti,MaskIco4);
+    // Shift y and z to straddle the 32-bit boundary
+    __m128i vResulti2 = _mm_srli_si128(vResulti,(64+12)/8);
+    // Shift it into place
+    vResulti2 = _mm_slli_si128(vResulti2,20/8);
+    // i = x|y<<20|z<<40|w<<60
+    vResulti = _mm_or_si128(vResulti,vResulti2);
+    _mm_store_sd(reinterpret_cast<double *>(&pDestination->v),_mm_castsi128_pd(vResulti));
+#else // _XM_VMX128_INTRINSICS_
+#endif // _XM_VMX128_INTRINSICS_
+}
+///end_xbox360
+
 
 /****************************************************************************
  *
@@ -3542,4 +4854,403 @@ inline PackedVector::XMU555::XMU555
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f) ));
 }
 
+///begin_xbox360
+/****************************************************************************
+ *
+ * XMHENDN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMHENDN3::XMHENDN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreHenDN3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMHENDN3::XMHENDN3
+(
+    const float* pArray
+)
+{
+    XMStoreHenDN3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMHEND3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMHEND3::XMHEND3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreHenD3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMHEND3::XMHEND3
+(
+    const float* pArray
+)
+{
+    XMStoreHenD3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUHENDN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUHENDN3::XMUHENDN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreUHenDN3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUHENDN3::XMUHENDN3
+(
+    const float* pArray
+)
+{
+    XMStoreUHenDN3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUHEND3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUHEND3::XMUHEND3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreUHenD3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUHEND3::XMUHEND3
+(
+    const float* pArray
+)
+{
+    XMStoreUHenD3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMDHENN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMDHENN3::XMDHENN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreDHenN3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMDHENN3::XMDHENN3
+(
+    const float* pArray
+)
+{
+    XMStoreDHenN3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMDHEN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMDHEN3::XMDHEN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreDHen3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMDHEN3::XMDHEN3
+(
+    const float* pArray
+)
+{
+    XMStoreDHen3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUDHENN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUDHENN3::XMUDHENN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreUDHenN3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUDHENN3::XMUDHENN3
+(
+    const float* pArray
+)
+{
+    XMStoreUDHenN3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUDHEN3 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUDHEN3::XMUDHEN3
+(
+    float _x,
+    float _y,
+    float _z
+)
+{
+    XMStoreUDHen3(this, XMVectorSet(_x, _y, _z, 0.0f));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUDHEN3::XMUDHEN3
+(
+    const float* pArray
+)
+{
+    XMStoreUDHen3(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMXICON4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMXICON4::XMXICON4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreXIcoN4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMXICON4::XMXICON4
+(
+    const float* pArray
+)
+{
+    XMStoreXIcoN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMXICO4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMXICO4::XMXICO4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreXIco4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMXICO4::XMXICO4
+(
+    const float* pArray
+)
+{
+    XMStoreXIco4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMICON4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMICON4::XMICON4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreIcoN4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMICON4::XMICON4
+(
+    const float* pArray
+)
+{
+    XMStoreIcoN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMICO4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMICO4::XMICO4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreIco4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMICO4::XMICO4
+(
+    const float* pArray
+)
+{
+    XMStoreIco4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUICON4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUICON4::XMUICON4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreUIcoN4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUICON4::XMUICON4
+(
+    const float* pArray
+)
+{
+    XMStoreUIcoN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+
+/****************************************************************************
+ *
+ * XMUICO4 operators
+ *
+ ****************************************************************************/
+
+//------------------------------------------------------------------------------
+
+inline PackedVector::Xbox::XMUICO4::XMUICO4
+(
+    float _x,
+    float _y,
+    float _z,
+    float _w
+)
+{
+    XMStoreUIco4(this, XMVectorSet(_x, _y, _z, _w));
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline PackedVector::Xbox::XMUICO4::XMUICO4
+(
+    const float* pArray
+)
+{
+    XMStoreUIco4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
+}
+///end_xbox360
 
