@@ -27,6 +27,11 @@ inline float PackedVector::XMConvertHalfToFloat
     HALF Value
 )
 {
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128i V1 = _mm_cvtsi32_si128( static_cast<uint32_t>(Value) );
+    __m128 V2 = _mm_cvtph_ps( V1 );
+    return _mm_cvtss_f32( V2 );
+#else
     uint32_t Mantissa = (uint32_t)(Value & 0x03FF);
 
     uint32_t Exponent = (Value & 0x7C00);
@@ -61,6 +66,7 @@ inline float PackedVector::XMConvertHalfToFloat
                       (Mantissa << 13);          // Mantissa
 
     return reinterpret_cast<float*>(&Result)[0];
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -86,6 +92,139 @@ inline float* PackedVector::XMConvertHalfToFloatStream
     assert(OutputStride >= sizeof(float));
     _Analysis_assume_(OutputStride >= sizeof(float));
 
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
+    uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    size_t i = 0;
+    size_t four = HalfCount >> 2;
+    if ( four > 0 )
+    {
+        if (InputStride == sizeof(HALF))
+        {
+            if (OutputStride == sizeof(float))
+            {
+                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                {
+                    // Packed input, aligned & packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
+                        pHalf += InputStride*4;
+
+                        __m128 FV = _mm_cvtph_ps( HV );
+
+                        XM_STREAM_PS( reinterpret_cast<float*>(pFloat), FV );
+                        pFloat += OutputStride*4; 
+                        i += 4;
+                    }
+                }
+                else
+                {
+                    // Packed input, packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
+                        pHalf += InputStride*4;
+
+                        __m128 FV = _mm_cvtph_ps( HV );
+
+                        _mm_storeu_ps( reinterpret_cast<float*>(pFloat), FV );
+                        pFloat += OutputStride*4; 
+                        i += 4;
+                    }
+                }
+            }
+            else
+            {
+                // Packed input, scattered output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
+                    pHalf += InputStride*4;
+
+                    __m128 FV = _mm_cvtph_ps( HV );
+
+                    _mm_store_ss( reinterpret_cast<float*>(pFloat), FV );
+                    pFloat += OutputStride; 
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 1 );
+                    pFloat += OutputStride; 
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 2 );
+                    pFloat += OutputStride; 
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 3 );
+                    pFloat += OutputStride; 
+                    i += 4;
+                }
+            }
+        }
+        else if (OutputStride == sizeof(float))
+        {
+            if ( ((uintptr_t)pFloat & 0xF) == 0)
+            {
+                // Scattered input, aligned & packed output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    uint16_t H1 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H2 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H3 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H4 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+
+                    __m128i HV = _mm_setzero_si128();
+                    HV = _mm_insert_epi16( HV, H1, 0 );
+                    HV = _mm_insert_epi16( HV, H2, 1 );
+                    HV = _mm_insert_epi16( HV, H3, 2 );
+                    HV = _mm_insert_epi16( HV, H4, 3 );
+                    __m128 FV = _mm_cvtph_ps( HV );
+
+                    XM_STREAM_PS( reinterpret_cast<float*>(pFloat ), FV );
+                    pFloat += OutputStride*4; 
+                    i += 4;
+                }
+            }
+            else
+            {
+                // Scattered input, packed output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    uint16_t H1 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H2 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H3 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+                    uint16_t H4 = *reinterpret_cast<const HALF*>(pHalf);
+                    pHalf += InputStride;
+
+                    __m128i HV = _mm_setzero_si128();
+                    HV = _mm_insert_epi16( HV, H1, 0 );
+                    HV = _mm_insert_epi16( HV, H2, 1 );
+                    HV = _mm_insert_epi16( HV, H3, 2 );
+                    HV = _mm_insert_epi16( HV, H4, 3 );
+                    __m128 FV = _mm_cvtph_ps( HV );
+
+                    _mm_storeu_ps( reinterpret_cast<float*>(pFloat ), FV );
+                    pFloat += OutputStride*4; 
+                    i += 4;
+                }
+            }
+        }
+    }
+
+    for (; i < HalfCount; ++i)
+    {
+        *reinterpret_cast<float*>(pFloat) = XMConvertHalfToFloat(reinterpret_cast<const HALF*>(pHalf)[0]);
+        pHalf += InputStride;
+        pFloat += OutputStride; 
+    }
+
+    XM_SFENCE();
+
+    return pOutputStream;
+#else
     const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -97,6 +236,7 @@ inline float* PackedVector::XMConvertHalfToFloatStream
     }
 
     return pOutputStream;
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -106,6 +246,11 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
     float Value
 )
 {
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128 V1 = _mm_set_ss( Value );
+    __m128i V2 = _mm_cvtps_ph( V1, 0 );
+    return static_cast<HALF>( _mm_cvtsi128_si32(V2) );
+#else
     uint32_t Result;
 
     uint32_t IValue = reinterpret_cast<uint32_t *>(&Value)[0];
@@ -142,6 +287,7 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
         Result = ((IValue + 0x0FFFU + ((IValue >> 13U) & 1U)) >> 13U)&0x7FFFU; 
     }
     return (HALF)(Result|Sign);
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -164,6 +310,134 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
     assert(OutputStride >= sizeof(HALF));
     _Analysis_assume_(OutputStride >= sizeof(HALF));
 
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
+    uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    size_t i = 0;
+    size_t four = FloatCount >> 2;
+    if (four > 0)
+    {
+        if (InputStride == sizeof(float))
+        {
+            if (OutputStride == sizeof(HALF))
+            {
+                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                {
+                    // Aligned and packed input, packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128 FV = _mm_load_ps( reinterpret_cast<const float*>(pFloat) );
+                        pFloat += InputStride*4;
+
+                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+
+                        _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
+                        pHalf += OutputStride*4;
+                        i += 4;
+                    }
+                }
+                else
+                {
+                    // Packed input, packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128 FV = _mm_loadu_ps( reinterpret_cast<const float*>(pFloat) );
+                        pFloat += InputStride*4;
+
+                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+
+                        _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
+                        pHalf += OutputStride*4;
+                        i += 4;
+                    }
+                }
+            }
+            else
+            {
+                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                {
+                    // Aligned & packed input, scattered output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128 FV = _mm_load_ps( reinterpret_cast<const float*>(pFloat) );
+                        pFloat += InputStride*4;
+
+                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 0 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 1 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 2 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 3 ) );
+                        pHalf += OutputStride;
+                        i += 4;
+                    }
+                }
+                else
+                {
+                    // Packed input, scattered output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m128 FV = _mm_loadu_ps( reinterpret_cast<const float*>(pFloat) );
+                        pFloat += InputStride*4;
+
+                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 0 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 1 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 2 ) );
+                        pHalf += OutputStride;
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 3 ) );
+                        pHalf += OutputStride;
+                        i += 4;
+                    }
+                }
+            }
+        }
+        else if (OutputStride == sizeof(HALF))
+        {
+            // Scattered input, packed output
+            for (size_t j = 0; j < four; ++j)
+            {
+                __m128 FV1 = _mm_load_ss( reinterpret_cast<const float*>(pFloat) );
+                pFloat += InputStride;
+
+                __m128 FV2 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                pFloat += InputStride;
+
+                __m128 FV3 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                pFloat += InputStride;
+
+                __m128 FV4 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                pFloat += InputStride;
+
+                __m128 FV = _mm_blend_ps( FV1, FV2, 0x2 );
+                __m128 FT = _mm_blend_ps( FV3, FV4, 0x8 );
+                FV = _mm_blend_ps( FV, FT, 0xC );
+
+                __m128i HV = _mm_cvtps_ph( FV, 0 );
+
+                _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
+                pHalf += OutputStride*4;
+                i += 4;
+            }
+        }
+    }
+
+    for (; i < FloatCount; ++i)
+    {
+        *reinterpret_cast<HALF*>(pHalf) = XMConvertFloatToHalf(reinterpret_cast<const float*>(pFloat)[0]);
+        pFloat += InputStride; 
+        pHalf += OutputStride;
+    }
+
+    return pOutputStream;
+#else
     const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -174,6 +448,7 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
         pHalf += OutputStride;
     }
     return pOutputStream;
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 #pragma prefast(pop)
@@ -236,6 +511,10 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf2
 )
 {
     assert(pSource);
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128 V = _mm_load_ss( reinterpret_cast<const float*>(pSource) );
+    return _mm_cvtph_ps( _mm_castps_si128( V ) );
+#else
     XMVECTORF32 vResult = {
         XMConvertHalfToFloat(pSource->x),
         XMConvertHalfToFloat(pSource->y),
@@ -243,6 +522,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf2
         0.0f
     };
     return vResult.v;
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -759,6 +1039,10 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf4
 )
 {
     assert(pSource);
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128i V = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pSource) );
+    return _mm_cvtph_ps( V );
+#else
     XMVECTORF32 vResult = {
         XMConvertHalfToFloat(pSource->x),
         XMConvertHalfToFloat(pSource->y),
@@ -766,6 +1050,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadHalf4
         XMConvertHalfToFloat(pSource->w)
     };
     return vResult.v;
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -1575,8 +1860,13 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf2
 )
 {
     assert(pDestination);
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128i V1 = _mm_cvtps_ph( V, 0 );
+    _mm_store_ss( reinterpret_cast<float*>(pDestination), _mm_castsi128_ps(V1) );
+#else
     pDestination->x = XMConvertFloatToHalf(XMVectorGetX(V));
     pDestination->y = XMConvertFloatToHalf(XMVectorGetY(V));
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------
@@ -2131,6 +2421,10 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf4
 )
 {
     assert(pDestination);
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    __m128i V1 = _mm_cvtps_ph( V, 0 );
+    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), V1 );
+#else
     XMFLOAT4A t;
     XMStoreFloat4A(&t, V );
 
@@ -2138,6 +2432,7 @@ inline void XM_CALLCONV PackedVector::XMStoreHalf4
     pDestination->y = XMConvertFloatToHalf(t.y);
     pDestination->z = XMConvertFloatToHalf(t.z);
     pDestination->w = XMConvertFloatToHalf(t.w);
+#endif // !_XM_F16C_INTRINSICS_
 }
 
 //------------------------------------------------------------------------------

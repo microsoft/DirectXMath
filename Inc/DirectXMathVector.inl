@@ -143,6 +143,8 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr
     return vResult;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vld1q_dup_f32( pValue );
+#elif defined(_XM_AVX_INTRINSICS_)
+    return _mm_broadcast_ss( pValue );
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_load_ps1( pValue );
 #endif
@@ -508,6 +510,8 @@ inline void XM_CALLCONV XMVectorGetYPtr(float *y, FXMVECTOR V)
     *y = V.vector4_f32[1];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(y,V,1);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    *((int*)y) = _mm_extract_ps( V, 1 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(y,vResult);
@@ -523,6 +527,8 @@ inline void XM_CALLCONV XMVectorGetZPtr(float *z, FXMVECTOR V)
     *z = V.vector4_f32[2];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(z,V,2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    *((int*)z) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(z,vResult);
@@ -538,6 +544,8 @@ inline void XM_CALLCONV XMVectorGetWPtr(float *w, FXMVECTOR V)
     *w = V.vector4_f32[3];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_f32(w,V,3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    *((int*)w) = _mm_extract_ps( V, 3 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(w,vResult);
@@ -582,6 +590,9 @@ inline uint32_t XM_CALLCONV XMVectorGetIntY(FXMVECTOR V)
     return V.vector4_u32[1];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 1);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    return static_cast<uint32_t>( _mm_extract_epi32( V1, 1 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(1,1,1,1));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -595,6 +606,9 @@ inline uint32_t XM_CALLCONV XMVectorGetIntZ(FXMVECTOR V)
     return V.vector4_u32[2];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    return static_cast<uint32_t>( _mm_extract_epi32( V1, 2 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(2,2,2,2));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -608,6 +622,9 @@ inline uint32_t XM_CALLCONV XMVectorGetIntW(FXMVECTOR V)
     return V.vector4_u32[3];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vgetq_lane_u32(V, 3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    return static_cast<uint32_t>( _mm_extract_epi32( V1, 3 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i vResulti = _mm_shuffle_epi32(_mm_castps_si128(V),_MM_SHUFFLE(3,3,3,3));
     return static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
@@ -657,6 +674,9 @@ inline void XM_CALLCONV XMVectorGetIntYPtr(uint32_t *y, FXMVECTOR V)
     *y = V.vector4_u32[1];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(y,*reinterpret_cast<const uint32x4_t*>(&V),1);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    *y = static_cast<uint32_t>( _mm_extract_epi32( V1, 1 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
     _mm_store_ss(reinterpret_cast<float *>(y),vResult);
@@ -672,6 +692,9 @@ inline void XM_CALLCONV XMVectorGetIntZPtr(uint32_t *z, FXMVECTOR V)
     *z = V.vector4_u32[2];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(z,*reinterpret_cast<const uint32x4_t*>(&V),2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    *z = static_cast<uint32_t>( _mm_extract_epi32( V1, 2 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
     _mm_store_ss(reinterpret_cast<float *>(z),vResult);
@@ -687,6 +710,9 @@ inline void XM_CALLCONV XMVectorGetIntWPtr(uint32_t *w, FXMVECTOR V)
     *w = V.vector4_u32[3];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     vst1q_lane_u32(w,*reinterpret_cast<const uint32x4_t*>(&V),3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i V1 = _mm_castps_si128( V );
+    *w = static_cast<uint32_t>( _mm_extract_epi32( V1, 3 ) );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,3,3,3));
     _mm_store_ss(reinterpret_cast<float *>(w),vResult);
@@ -749,6 +775,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_f32(y,V,1);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vResult = _mm_set_ss(y);
+    vResult = _mm_insert_ps( V, vResult, 0x10 );
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
@@ -773,6 +803,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_f32(z,V,2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vResult = _mm_set_ss(z);
+    vResult = _mm_insert_ps( V, vResult, 0x20 );
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
@@ -798,6 +832,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_f32(w,V,3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vResult = _mm_set_ss(w);
+    vResult = _mm_insert_ps( V, vResult, 0x30 );
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
@@ -998,6 +1036,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntY(FXMVECTOR V, uint32_t y)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_u32(y,V,1);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i vResult = _mm_castps_si128( V );
+    vResult = _mm_insert_epi32( vResult, static_cast<int>(y), 1 );
+    return _mm_castsi128_ps( vResult );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,2,0,1));
@@ -1023,6 +1065,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_u32(z,V,2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i vResult = _mm_castps_si128( V );
+    vResult = _mm_insert_epi32( vResult, static_cast<int>(z), 2 );
+    return _mm_castsi128_ps( vResult );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(3,0,1,2));
@@ -1048,6 +1094,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntW(FXMVECTOR V, uint32_t w)
     return U;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vsetq_lane_u32(w,V,3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128i vResult = _mm_castps_si128( V );
+    vResult = _mm_insert_epi32( vResult, static_cast<int>(w), 3 );
+    return _mm_castsi128_ps( vResult );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = XM_PERMUTE_PS(V,_MM_SHUFFLE(0,2,1,3));
@@ -1233,6 +1283,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle
     const uint8x8_t rH = vtbl2_u8( tbl, idx );
 
     return vcombine_f32( rL, rH );
+#elif defined(_XM_AVX_INTRINSICS_)
+    unsigned int elem[4] = { E0, E1, E2, E3 };
+    __m128i vControl = _mm_loadu_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
+    return _mm_permutevar_ps( V, vControl );
 #else
     const uint32_t *aPtr = (const uint32_t* )(&V);
 
@@ -1288,6 +1342,22 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
     const uint8x8_t rH = vtbl4_u8( tbl, idx );
 
     return vcombine_f32( rL, rH );
+#elif defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    static const XMVECTORU32 three = { 3, 3, 3, 3 };
+
+    _declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
+    
+    __m128i vSelect = _mm_cmpgt_epi32( vControl, three );
+    vControl = _mm_castps_si128( _mm_and_ps( _mm_castsi128_ps( vControl ), three ) );
+
+    __m128 shuffled1 = _mm_permutevar_ps( V1, vControl );
+    __m128 shuffled2 = _mm_permutevar_ps( V2, vControl );
+
+    __m128 masked1 = _mm_andnot_ps( _mm_castsi128_ps( vSelect ), shuffled1 );
+    __m128 masked2 = _mm_and_ps( _mm_castsi128_ps( vSelect ), shuffled2 );
+
+    return _mm_or_ps( masked1, masked2 );
 #else
  
     const uint32_t *aPtr[2];
@@ -2302,6 +2372,8 @@ inline XMVECTOR XM_CALLCONV XMVectorRound
     uint32x4_t mask = vcleq_f32( R2, g_XMNoFraction );
     XMVECTOR vResult = vbslq_f32( mask, R1, V );
     return vResult;
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_round_ps( V, _MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 sign = _mm_and_ps( V, g_XMNegativeZero );
     __m128 sMagic = _mm_or_ps( g_XMNoFraction, sign );
@@ -2361,6 +2433,8 @@ inline XMVECTOR XM_CALLCONV XMVectorTruncate
     // All numbers less than 8388608 will use the round to int
     // All others, use the ORIGINAL value
     return vbslq_f32( vTest, vResult, V );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_round_ps( V, _MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC );
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     // Get the abs value
@@ -2407,6 +2481,8 @@ inline XMVECTOR XM_CALLCONV XMVectorFloor
     // All numbers less than 8388608 will use the round to int
     // All others, use the ORIGINAL value
     return vbslq_f32( vTest, vResult, V );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_floor_ps( V );
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
@@ -2454,6 +2530,8 @@ inline XMVECTOR XM_CALLCONV XMVectorCeiling
     // All numbers less than 8388608 will use the round to int
     // All others, use the ORIGINAL value
     return vbslq_f32( vTest, vResult, V );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_ceil_ps( V );
 #elif defined(_XM_SSE_INTRINSICS_)
     // To handle NAN, INF and numbers greater than 8388608, use masking
     __m128i vTest = _mm_and_si128(_mm_castps_si128(V),g_XMAbsMask);
@@ -6649,6 +6727,8 @@ inline XMVECTOR XM_CALLCONV XMVector2Dot
     float32x2_t vTemp = vmul_f32( vget_low_f32(V1), vget_low_f32(V2) );
     vTemp = vpadd_f32( vTemp, vTemp );
     return vcombine_f32( vTemp, vTemp );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_dp_ps( V1, V2, 0x3f );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V1,V2);
@@ -6733,6 +6813,9 @@ inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLengthEst
     // Reciprocal sqrt (estimate)
     vTemp = vrsqrte_f32( vTemp );
     return vcombine_f32( vTemp, vTemp );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x3f );
+    return _mm_rsqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6774,6 +6857,10 @@ inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLength
     float32x2_t  R1 = vrsqrts_f32( P1, S1 );
     float32x2_t Result = vmul_f32( S1, R1 );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x3f );
+    XMVECTOR vLengthSq = _mm_sqrt_ps( vTemp );
+    return _mm_div_ps( g_XMOne, vLengthSq );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6814,6 +6901,9 @@ inline XMVECTOR XM_CALLCONV XMVector2LengthEst
     Result = vmul_f32( vTemp, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x3f );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6859,6 +6949,9 @@ inline XMVECTOR XM_CALLCONV XMVector2Length
     Result = vmul_f32( vTemp, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x3f );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6898,6 +6991,10 @@ inline XMVECTOR XM_CALLCONV XMVector2NormalizeEst
     // Normalize
     float32x2_t Result = vmul_f32( VL, vTemp );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x3f );
+    XMVECTOR vResult = _mm_rsqrt_ps( vTemp );
+    return _mm_mul_ps(vResult, V);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -6955,6 +7052,26 @@ inline XMVECTOR XM_CALLCONV XMVector2Normalize
     Result = vbsl_f32( VEqualsZero, vdup_n_f32(0), Result );
     Result = vbsl_f32( VEqualsInf, vget_low_f32(g_XMQNaN), Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vLengthSq = _mm_dp_ps( V, V, 0x3f );
+    // Prepare for the division
+    XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
+    // Create zero with a single instruction
+    XMVECTOR vZeroMask = _mm_setzero_ps();
+    // Test for a divide by zero (Must be FP to detect -0.0)
+    vZeroMask = _mm_cmpneq_ps(vZeroMask,vResult);
+    // Failsafe on zero (Or epsilon) length planes
+    // If the length is infinity, set the elements to zero
+    vLengthSq = _mm_cmpneq_ps(vLengthSq,g_XMInfinity);
+    // Reciprocal mul to perform the normalization
+    vResult = _mm_div_ps(V,vResult);
+    // Any that are infinity, set to zero
+    vResult = _mm_and_ps(vResult,vZeroMask);
+    // Select qnan or result based on infinite length
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
+    vResult = _mm_or_ps(vTemp1,vTemp2);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x and y only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -8902,6 +9019,8 @@ inline XMVECTOR XM_CALLCONV XMVector3Dot
     v2 = vdup_lane_f32( v2, 0 );
     v1 = vadd_f32( v1, v2 );
     return vcombine_f32( v1, v1 );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_dp_ps( V1, V2, 0x7f );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V1,V2);
@@ -9007,6 +9126,9 @@ inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLengthEst
     // Reciprocal sqrt (estimate)
     v2 = vrsqrte_f32( v1 );
     return vcombine_f32(v2, v2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x7f );
+    return _mm_rsqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -9059,6 +9181,10 @@ inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLength
     float32x2_t  R1 = vrsqrts_f32( P1, S1 );
     float32x2_t Result = vmul_f32( S1, R1 );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x7f );
+    XMVECTOR vLengthSq = _mm_sqrt_ps( vTemp );
+    return _mm_div_ps( g_XMOne, vLengthSq );
 #elif defined(_XM_SSE_INTRINSICS_)
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
@@ -9111,6 +9237,9 @@ inline XMVECTOR XM_CALLCONV XMVector3LengthEst
     Result = vmul_f32( v1, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x7f );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -9167,6 +9296,9 @@ inline XMVECTOR XM_CALLCONV XMVector3Length
     Result = vmul_f32( v1, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x7f );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -9214,6 +9346,10 @@ inline XMVECTOR XM_CALLCONV XMVector3NormalizeEst
     v2 = vrsqrte_f32( v1 );
     // Normalize
     return vmulq_f32( V, vcombine_f32(v2,v2) );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0x7f );
+    XMVECTOR vResult = _mm_rsqrt_ps( vTemp );
+    return _mm_mul_ps(vResult, V);
 #elif defined(_XM_SSE_INTRINSICS_)
      // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(V,V);
@@ -9282,6 +9418,26 @@ inline XMVECTOR XM_CALLCONV XMVector3Normalize
     XMVECTOR vResult = vmulq_f32( V, vcombine_f32(v2,v2) );
     vResult = vbslq_f32( vcombine_f32(VEqualsZero,VEqualsZero), vdupq_n_f32(0), vResult );
     return vbslq_f32( vcombine_f32(VEqualsInf,VEqualsInf), g_XMQNaN, vResult );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vLengthSq = _mm_dp_ps( V, V, 0x7f );
+    // Prepare for the division
+    XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
+    // Create zero with a single instruction
+    XMVECTOR vZeroMask = _mm_setzero_ps();
+    // Test for a divide by zero (Must be FP to detect -0.0)
+    vZeroMask = _mm_cmpneq_ps(vZeroMask,vResult);
+    // Failsafe on zero (Or epsilon) length planes
+    // If the length is infinity, set the elements to zero
+    vLengthSq = _mm_cmpneq_ps(vLengthSq,g_XMInfinity);
+    // Divide to perform the normalization
+    vResult = _mm_div_ps(V,vResult);
+    // Any that are infinity, set to zero
+    vResult = _mm_and_ps(vResult,vZeroMask);
+    // Select qnan or result based on infinite length
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
+    vResult = _mm_or_ps(vTemp1,vTemp2);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z only
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -12743,6 +12899,8 @@ inline XMVECTOR XM_CALLCONV XMVector4Dot
     v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
     return vcombine_f32( v1, v1 );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    return _mm_dp_ps( V1, V2, 0xff );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp2 = V2;
     XMVECTOR vTemp = _mm_mul_ps(V1,vTemp2);
@@ -12940,6 +13098,9 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLengthEst
     // Reciprocal sqrt (estimate)
     v2 = vrsqrte_f32( v1 );
     return vcombine_f32(v2, v2);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0xff );
+    return _mm_rsqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -12994,6 +13155,10 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLength
     float32x2_t  R1 = vrsqrts_f32( P1, S1 );
     float32x2_t Result = vmul_f32( S1, R1 );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0xff );
+    XMVECTOR vLengthSq = _mm_sqrt_ps( vTemp );
+    return _mm_div_ps( g_XMOne, vLengthSq );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -13048,6 +13213,9 @@ inline XMVECTOR XM_CALLCONV XMVector4LengthEst
     Result = vmul_f32( v1, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0xff );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -13106,6 +13274,9 @@ inline XMVECTOR XM_CALLCONV XMVector4Length
     Result = vmul_f32( v1, Result );
     Result = vbsl_f32( VEqualsZero, zero, Result );
     return vcombine_f32( Result, Result );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0xff );
+    return _mm_sqrt_ps( vTemp );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -13155,6 +13326,10 @@ inline XMVECTOR XM_CALLCONV XMVector4NormalizeEst
     v2 = vrsqrte_f32( v1 );
     // Normalize
     return vmulq_f32( V, vcombine_f32(v2,v2) );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( V, V, 0xff );
+    XMVECTOR vResult = _mm_rsqrt_ps( vTemp );
+    return _mm_mul_ps(vResult, V);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);
@@ -13225,6 +13400,26 @@ inline XMVECTOR XM_CALLCONV XMVector4Normalize
     XMVECTOR vResult = vmulq_f32( V, vcombine_f32(v2,v2) );
     vResult = vbslq_f32( vcombine_f32(VEqualsZero,VEqualsZero), vdupq_n_f32(0), vResult );
     return vbslq_f32( vcombine_f32(VEqualsInf,VEqualsInf), g_XMQNaN, vResult );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vLengthSq = _mm_dp_ps( V, V, 0xff );
+    // Prepare for the division
+    XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
+    // Create zero with a single instruction
+    XMVECTOR vZeroMask = _mm_setzero_ps();
+    // Test for a divide by zero (Must be FP to detect -0.0)
+    vZeroMask = _mm_cmpneq_ps(vZeroMask,vResult);
+    // Failsafe on zero (Or epsilon) length planes
+    // If the length is infinity, set the elements to zero
+    vLengthSq = _mm_cmpneq_ps(vLengthSq,g_XMInfinity);
+    // Divide to perform the normalization
+    vResult = _mm_div_ps(V,vResult);
+    // Any that are infinity, set to zero
+    vResult = _mm_and_ps(vResult,vZeroMask);
+    // Select qnan or result based on infinite length
+    XMVECTOR vTemp1 = _mm_andnot_ps(vLengthSq,g_XMQNaN);
+    XMVECTOR vTemp2 = _mm_and_ps(vResult,vLengthSq);
+    vResult = _mm_or_ps(vTemp1,vTemp2);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y,z and w
     XMVECTOR vLengthSq = _mm_mul_ps(V,V);

@@ -1092,6 +1092,10 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalizeEst
     XMVECTOR Result = XMVector3ReciprocalLengthEst(P);
     return XMVectorMultiply(P, Result);
 
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp = _mm_dp_ps( P, P, 0x7f );
+    XMVECTOR vResult = _mm_rsqrt_ps( vTemp );
+    return _mm_mul_ps(vResult, P);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product
     XMVECTOR vDot = _mm_mul_ps(P,P);
@@ -1138,6 +1142,18 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalize
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vLength = XMVector3ReciprocalLength(P);
     return XMVectorMultiply( P, vLength );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vLengthSq = _mm_dp_ps( P, P, 0x7f );
+    // Prepare for the division
+    XMVECTOR vResult = _mm_sqrt_ps(vLengthSq);
+    // Failsafe on zero (Or epsilon) length planes
+    // If the length is infinity, set the elements to zero
+    vLengthSq = _mm_cmpneq_ps(vLengthSq,g_XMInfinity);
+    // Reciprocal mul to perform the normalization
+    vResult = _mm_div_ps(P,vResult);
+    // Any that are infinity, set to zero
+    vResult = _mm_and_ps(vResult,vLengthSq);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Perform the dot product on x,y and z only
     XMVECTOR vLengthSq = _mm_mul_ps(P,P);
@@ -1967,6 +1983,35 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
 inline bool XMVerifyCPUSupport()
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_F16C_INTRINSICS_) || defined(_XM_AVX_INTRINSICS_)
+   int avxCPUInfo[4] = {-1};
+   __cpuid( avxCPUInfo, 0 );
+
+   if ( avxCPUInfo[0] < 1  )
+       return false;
+
+    __cpuid(avxCPUInfo, 1 );
+
+#ifdef _XM_F16C_INTRINSICS_
+    if ( (avxCPUInfo[2] & 0x38000000 ) != 0x38000000 )
+        return false; // No F16C/AVX/OSXSAVE support
+#else
+    if ( (avxCPUInfo[2] & 0x18000000 ) != 0x18000000 )
+        return false; // No AVX/OSXSAVE support
+#endif
+#endif
+#ifdef _XM_SSE4_INTRINSICS_
+   int CPUInfo[4] = {-1};
+   __cpuid( CPUInfo, 0 );
+
+   if ( CPUInfo[0] < 1  )
+       return false;
+
+    __cpuid(CPUInfo, 1 );
+
+    if ( (CPUInfo[2] & 0x80001) != 0x80001 )
+        return false; // Missing SSE3 or SSE 4.1 support
+#endif
 #if defined(_M_X64)
     // The X64 processor model requires SSE2 support
     return true;

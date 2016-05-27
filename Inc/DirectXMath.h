@@ -38,7 +38,30 @@
 #define XM_CTOR_DEFAULT =default;
 #endif
 
+#if !defined(_XM_F16C_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
+#define _XM_F16C_INTRINSICS_
+#endif
 
+#ifdef _XM_F16C_INTRINSICS_
+#if defined(_MSC_VER) && (_MSC_VER < 1700)
+#error DirectX Math use of F16C intrinsics requires Visual C++ 2012 or later.
+#endif
+#ifndef _XM_AVX_INTRINSICS_
+#define _XM_AVX_INTRINSICS_
+#endif
+#endif // _XM_F16C_INTRINSICS_
+
+#if !defined(_XM_AVX_INTRINSICS_) && defined(__AVX__) && !defined(_XM_NO_INTRINSICS_)
+#define _XM_AVX_INTRINSICS_
+#endif
+
+#if defined(_XM_AVX_INTRINSICS_) && !defined(_XM_SSE4_INTRINSICS_)
+#define _XM_SSE4_INTRINSICS_
+#endif
+
+#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_)
+#define _XM_SSE_INTRINSICS_
+#endif
 
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #if defined(_M_IX86) || defined(_M_X64)
@@ -77,7 +100,17 @@
 #endif
 #endif
 
+#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#pragma warning(push)
+#pragma warning(disable : 4987)
+#include <intrin.h>
+#pragma warning(pop)
+#include <smmintrin.h>
+#endif
 
+#if defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#include <immintrin.h>
+#endif
 
 #include <sal.h>
 #include <assert.h>
@@ -129,7 +162,11 @@
 #define XM_SFENCE() _mm_sfence()
 #endif
 
+#if defined(_XM_AVX_INTRINSICS_)
+#define XM_PERMUTE_PS( v, c ) _mm_permute_ps( v, c )
+#else
 #define XM_PERMUTE_PS( v, c ) _mm_shuffle_ps( v, v, c )
+#endif
 
 #endif // _XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
@@ -1506,6 +1543,22 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
 
+#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x1); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x2); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x3); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,6,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x4); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,1,6,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x5); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,5,6,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x6); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,5,6,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x7); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,2,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x8); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,1,2,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x9); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,5,2,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0xA); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,5,2,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0xB); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,6,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0xC); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,1,6,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0xD); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0xE); }
+#endif
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
@@ -1570,6 +1623,10 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
 // Specialized swizzles
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,2,3>(FXMVECTOR V) { return V; }
 
+#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,2,2>(FXMVECTOR V) { return _mm_moveldup_ps(V); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,1,3,3>(FXMVECTOR V) { return _mm_movehdup_ps(V); }
+#endif
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
