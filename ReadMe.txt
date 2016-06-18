@@ -4,13 +4,13 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-May 23, 2016
+June 2016
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
 
 
-This code is designed to build with Visual Studio 2012, 2013 or 2015. It is recommended that you
+This code is designed to build with Visual Studio 2013 or 2015. It is recommended that you
 make use of VS 2013 Update 5 or VS 2015 Update 2.
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
@@ -54,6 +54,14 @@ For the latest version of DirectXMath, bug reports, etc. please visit the projec
 ---------------
 RELEASE HISTORY
 ---------------
+
+June 2016 (3.09)
+    Includes support for additional optimizations when built with /arch:AVX or /arch:AVX2
+    Added use of constexpr for type constructors, XMConvertToRadians, and XMConvertToDegrees
+    Marked __vector4i, XMXDEC4, XMDECN4, XMDEC4, and associated Load & Store functions as deprecated.
+        These are vestiges of Xbox 360 support and will be removed in a future release
+    Renamed parameter in XMMatrixPerspectiveFov* to reduce user confusion when relying on IntelliSense
+    XMU565, XMUNIBBLE4 constructors take uint8_t instead of int8_t
 
 May 2016
     DirectXMath 3.08 released under the MIT license

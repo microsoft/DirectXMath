@@ -9,9 +9,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include "DirectXMath.h"
 
@@ -38,6 +36,8 @@ struct BoundingFrustum;
 
 #pragma warning(push)
 #pragma warning(disable:4324 4820)
+// C4324: alignment padding warnings
+// C4820: Off by default noise
 
 //-------------------------------------------------------------------------------------
 // Bounding sphere
@@ -49,8 +49,8 @@ struct BoundingSphere
 
     // Creators
     BoundingSphere() : Center(0,0,0), Radius( 1.f ) {}
-    BoundingSphere( _In_ const XMFLOAT3& center, _In_ float radius )
-        : Center(center), Radius(radius) { assert( radius >= 0.f ); };
+    XM_CONSTEXPR BoundingSphere( _In_ const XMFLOAT3& center, _In_ float radius )
+        : Center(center), Radius(radius) {}
     BoundingSphere( _In_ const BoundingSphere& sp )
         : Center(sp.Center), Radius(sp.Radius) {}
 
@@ -110,8 +110,8 @@ struct BoundingBox
 
     // Creators
     BoundingBox() : Center(0,0,0), Extents( 1.f, 1.f, 1.f ) {}
-    BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
-        : Center(center), Extents(extents) { assert(extents.x >= 0 && extents.y >= 0 && extents.z >= 0); }
+    XM_CONSTEXPR BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
+        : Center(center), Extents(extents) {}
     BoundingBox( _In_ const BoundingBox& box ) : Center(box.Center), Extents(box.Extents) {}
     
     // Methods
@@ -171,11 +171,8 @@ struct BoundingOrientedBox
 
     // Creators
     BoundingOrientedBox() : Center(0,0,0), Extents( 1.f, 1.f, 1.f ), Orientation(0,0,0, 1.f ) {}
-    BoundingOrientedBox( _In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation )
-        : Center(_Center), Extents(_Extents), Orientation(_Orientation)
-    {
-        assert(_Extents.x >= 0 && _Extents.y >= 0 && _Extents.z >= 0);
-    }
+    XM_CONSTEXPR BoundingOrientedBox( _In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation )
+        : Center(_Center), Extents(_Extents), Orientation(_Orientation) {}
     BoundingOrientedBox( _In_ const BoundingOrientedBox& box )
         : Center(box.Center), Extents(box.Extents), Orientation(box.Orientation) {}
 
@@ -239,12 +236,12 @@ struct BoundingFrustum
     // Creators
     BoundingFrustum() : Origin(0,0,0), Orientation(0,0,0, 1.f), RightSlope( 1.f ), LeftSlope( -1.f ),
                         TopSlope( 1.f ), BottomSlope( -1.f ), Near(0), Far( 1.f ) {}
-    BoundingFrustum( _In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
+    XM_CONSTEXPR BoundingFrustum( _In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
                      _In_ float _RightSlope, _In_ float _LeftSlope, _In_ float _TopSlope, _In_ float _BottomSlope,
                      _In_ float _Near, _In_ float _Far )
         : Origin(_Origin), Orientation(_Orientation),
           RightSlope(_RightSlope), LeftSlope(_LeftSlope), TopSlope(_TopSlope), BottomSlope(_BottomSlope),
-          Near(_Near), Far(_Far) { assert( _Near <= _Far ); }
+          Near(_Near), Far(_Far) {}
     BoundingFrustum( _In_ const BoundingFrustum& fr )
         : Origin(fr.Origin), Orientation(fr.Orientation), RightSlope(fr.RightSlope), LeftSlope(fr.LeftSlope),
           TopSlope(fr.TopSlope), BottomSlope(fr.BottomSlope), Near(fr.Near), Far(fr.Far) {}
@@ -325,7 +322,10 @@ namespace TriangleTests
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable : 4068 4616 6001)
+#pragma warning(disable : 4068 4365 4616 6001)
+// C4068/4616: ignore unknown pragmas
+// C4365: Off by default noise
+// C6001: False positives
 
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")

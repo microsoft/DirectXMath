@@ -9,10 +9,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
-
 
 /****************************************************************************
  *
@@ -1262,6 +1259,10 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDecN4
 }
 
 //------------------------------------------------------------------------------
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDec4
 (
@@ -1310,6 +1311,8 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadXDec4
     return vTemp;
 #endif
 }
+
+#pragma warning(pop)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1455,6 +1458,10 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUDec4
 }
 
 //------------------------------------------------------------------------------
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV PackedVector::XMLoadDecN4
 (
@@ -1553,6 +1560,8 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadDec4
     return vTemp;
 #endif
 }
+
+#pragma warning(pop)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -2676,6 +2685,10 @@ inline void XM_CALLCONV PackedVector::XMStoreXDecN4
 }
 
 //------------------------------------------------------------------------------
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
 _Use_decl_annotations_
 inline void XM_CALLCONV PackedVector::XMStoreXDec4
 (
@@ -2745,6 +2758,8 @@ inline void XM_CALLCONV PackedVector::XMStoreXDec4
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #endif
 }
+
+#pragma warning(pop)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -2961,6 +2976,10 @@ inline void XM_CALLCONV PackedVector::XMStoreUDec4
 }
 
 //------------------------------------------------------------------------------
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
 _Use_decl_annotations_
 inline void XM_CALLCONV PackedVector::XMStoreDecN4
 (
@@ -3083,6 +3102,8 @@ inline void XM_CALLCONV PackedVector::XMStoreDec4
     _mm_store_ss(reinterpret_cast<float *>(&pDestination->v),_mm_castsi128_ps(vResulti));
 #endif
 }
+
+#pragma warning(pop)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -3954,6 +3975,10 @@ inline PackedVector::XMXDECN4::XMXDECN4
  *
  ****************************************************************************/
 
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
 //------------------------------------------------------------------------------
 
 inline PackedVector::XMXDEC4::XMXDEC4
@@ -4034,6 +4059,8 @@ inline PackedVector::XMDEC4::XMDEC4
 {
     XMStoreDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
+
+#pragma warning(pop)
 
 /****************************************************************************
  *

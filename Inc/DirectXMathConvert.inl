@@ -9,9 +9,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 /****************************************************************************
  *
@@ -22,7 +20,8 @@
 //------------------------------------------------------------------------------
 
 #pragma warning(push)
-#pragma warning(disable:4701) // Prevent warnings about 'Result' potentially being used without having been initialized
+#pragma warning(disable:4701)
+// C4701: false positives
 
 inline XMVECTOR XM_CALLCONV XMConvertVectorIntToFloat
 (

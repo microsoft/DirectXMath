@@ -9,9 +9,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include "DirectXMath.h"
 
@@ -23,6 +21,9 @@ namespace PackedVector
 
 #pragma warning(push)
 #pragma warning(disable:4201 4365 4324)
+// C4201: nonstandard extension used
+// C4365: Off by default noise
+// C4324: alignment padding warnings
 
 //------------------------------------------------------------------------------
 // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
@@ -46,7 +47,7 @@ struct XMCOLOR
     };
 
     XMCOLOR() XM_CTOR_DEFAULT
-    XMCOLOR(uint32_t Color) : c(Color) {}
+    XM_CONSTEXPR XMCOLOR(uint32_t Color) : c(Color) {}
     XMCOLOR(float _r, float _g, float _b, float _a);
     explicit XMCOLOR(_In_reads_(4) const float *pArray);
 
@@ -76,8 +77,8 @@ struct XMHALF2
     };
 
     XMHALF2() XM_CTOR_DEFAULT
-    explicit XMHALF2(uint32_t Packed) : v(Packed) {}
-    XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMHALF2(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {}
     explicit XMHALF2(_In_reads_(2) const HALF *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMHALF2(float _x, float _y);
     explicit XMHALF2(_In_reads_(2) const float *pArray);
@@ -101,8 +102,8 @@ struct XMSHORTN2
     };
 
     XMSHORTN2() XM_CTOR_DEFAULT
-    explicit XMSHORTN2(uint32_t Packed) : v(Packed) {}
-    XMSHORTN2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMSHORTN2(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMSHORTN2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
     explicit XMSHORTN2(_In_reads_(2) const int16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMSHORTN2(float _x, float _y);
     explicit XMSHORTN2(_In_reads_(2) const float *pArray);
@@ -125,8 +126,8 @@ struct XMSHORT2
     };
 
     XMSHORT2() XM_CTOR_DEFAULT
-    explicit XMSHORT2(uint32_t Packed) : v(Packed) {}
-    XMSHORT2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMSHORT2(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMSHORT2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
     explicit XMSHORT2(_In_reads_(2) const int16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMSHORT2(float _x, float _y);
     explicit XMSHORT2(_In_reads_(2) const float *pArray);
@@ -149,8 +150,8 @@ struct XMUSHORTN2
     };
 
     XMUSHORTN2() XM_CTOR_DEFAULT
-    explicit XMUSHORTN2(uint32_t Packed) : v(Packed) {}
-    XMUSHORTN2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMUSHORTN2(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUSHORTN2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
     explicit XMUSHORTN2(_In_reads_(2) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMUSHORTN2(float _x, float _y);
     explicit XMUSHORTN2(_In_reads_(2) const float *pArray);
@@ -173,8 +174,8 @@ struct XMUSHORT2
     };
 
     XMUSHORT2() XM_CTOR_DEFAULT
-    explicit XMUSHORT2(uint32_t Packed) : v(Packed) {}
-    XMUSHORT2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMUSHORT2(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUSHORT2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
     explicit XMUSHORT2(_In_reads_(2) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMUSHORT2(float _x, float _y);
     explicit XMUSHORT2(_In_reads_(2) const float *pArray);
@@ -198,8 +199,8 @@ struct XMBYTEN2
     };
 
     XMBYTEN2() XM_CTOR_DEFAULT
-    explicit XMBYTEN2(uint16_t Packed) : v(Packed) {}
-    XMBYTEN2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMBYTEN2(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMBYTEN2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
     explicit XMBYTEN2(_In_reads_(2) const int8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMBYTEN2(float _x, float _y);
     explicit XMBYTEN2(_In_reads_(2) const float *pArray);
@@ -222,8 +223,8 @@ struct XMBYTE2
     };
 
     XMBYTE2() XM_CTOR_DEFAULT
-    explicit XMBYTE2(uint16_t Packed) : v(Packed) {}
-    XMBYTE2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMBYTE2(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMBYTE2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
     explicit XMBYTE2(_In_reads_(2) const int8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMBYTE2(float _x, float _y);
     explicit XMBYTE2(_In_reads_(2) const float *pArray);
@@ -246,8 +247,8 @@ struct XMUBYTEN2
     };
 
     XMUBYTEN2() XM_CTOR_DEFAULT
-    explicit XMUBYTEN2(uint16_t Packed) : v(Packed) {}
-    XMUBYTEN2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMUBYTEN2(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUBYTEN2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
     explicit XMUBYTEN2(_In_reads_(2) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMUBYTEN2(float _x, float _y);
     explicit XMUBYTEN2(_In_reads_(2) const float *pArray);
@@ -270,8 +271,8 @@ struct XMUBYTE2
     };
 
     XMUBYTE2() XM_CTOR_DEFAULT
-    explicit XMUBYTE2(uint16_t Packed) : v(Packed) {}
-    XMUBYTE2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
+    explicit XM_CONSTEXPR XMUBYTE2(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUBYTE2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
     explicit XMUBYTE2(_In_reads_(2) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]) {}
     XMUBYTE2(float _x, float _y);
     explicit XMUBYTE2(_In_reads_(2) const float *pArray);
@@ -296,9 +297,9 @@ struct XMU565
     };
 
     XMU565() XM_CTOR_DEFAULT
-    explicit XMU565(uint16_t Packed) : v(Packed) {}
-    XMU565(uint8_t _x, uint8_t _y, uint8_t _z) : x(_x), y(_y), z(_z) {}
-    explicit XMU565(_In_reads_(3) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+    explicit XM_CONSTEXPR XMU565(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMU565(uint8_t _x, uint8_t _y, uint8_t _z) : x(_x), y(_y), z(_z) {}
+    explicit XMU565(_In_reads_(3) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
     XMU565(float _x, float _y, float _z);
     explicit XMU565(_In_reads_(3) const float *pArray);
 
@@ -334,7 +335,7 @@ struct XMFLOAT3PK
     };
 
     XMFLOAT3PK() XM_CTOR_DEFAULT
-    explicit XMFLOAT3PK(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMFLOAT3PK(uint32_t Packed) : v(Packed) {}
     XMFLOAT3PK(float _x, float _y, float _z);
     explicit XMFLOAT3PK(_In_reads_(3) const float *pArray);
 
@@ -367,7 +368,7 @@ struct XMFLOAT3SE
     };
 
     XMFLOAT3SE() XM_CTOR_DEFAULT
-    explicit XMFLOAT3SE(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMFLOAT3SE(uint32_t Packed) : v(Packed) {}
     XMFLOAT3SE(float _x, float _y, float _z);
     explicit XMFLOAT3SE(_In_reads_(3) const float *pArray);
 
@@ -394,8 +395,8 @@ struct XMHALF4
     };
 
     XMHALF4() XM_CTOR_DEFAULT
-    explicit XMHALF4(uint64_t Packed) : v(Packed) {}
-    XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMHALF4(uint64_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMHALF4(_In_reads_(4) const HALF *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMHALF4(float _x, float _y, float _z, float _w);
     explicit XMHALF4(_In_reads_(4) const float *pArray);
@@ -421,8 +422,8 @@ struct XMSHORTN4
     };
 
     XMSHORTN4() XM_CTOR_DEFAULT
-    explicit XMSHORTN4(uint64_t Packed) : v(Packed) {}
-    XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMSHORTN4(uint64_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMSHORTN4(_In_reads_(4) const int16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMSHORTN4(float _x, float _y, float _z, float _w);
     explicit XMSHORTN4(_In_reads_(4) const float *pArray);
@@ -447,8 +448,8 @@ struct XMSHORT4
     };
 
     XMSHORT4() XM_CTOR_DEFAULT
-    explicit XMSHORT4(uint64_t Packed) : v(Packed) {}
-    XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMSHORT4(uint64_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMSHORT4(_In_reads_(4) const int16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMSHORT4(float _x, float _y, float _z, float _w);
     explicit XMSHORT4(_In_reads_(4) const float *pArray);
@@ -473,8 +474,8 @@ struct XMUSHORTN4
     };
 
     XMUSHORTN4() XM_CTOR_DEFAULT
-    explicit XMUSHORTN4(uint64_t Packed) : v(Packed) {}
-    XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMUSHORTN4(uint64_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUSHORTN4(_In_reads_(4) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMUSHORTN4(float _x, float _y, float _z, float _w);
     explicit XMUSHORTN4(_In_reads_(4) const float *pArray);
@@ -499,8 +500,8 @@ struct XMUSHORT4
     };
 
     XMUSHORT4() XM_CTOR_DEFAULT
-    explicit XMUSHORT4(uint64_t Packed) : v(Packed) {}
-    XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMUSHORT4(uint64_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUSHORT4(_In_reads_(4) const uint16_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMUSHORT4(float _x, float _y, float _z, float _w);
     explicit XMUSHORT4(_In_reads_(4) const float *pArray);
@@ -531,7 +532,7 @@ struct XMXDECN4
     };
 
     XMXDECN4() XM_CTOR_DEFAULT
-    explicit XMXDECN4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMXDECN4(uint32_t Packed) : v(Packed) {}
     XMXDECN4(float _x, float _y, float _z, float _w);
     explicit XMXDECN4(_In_reads_(4) const float *pArray);
 
@@ -547,7 +548,7 @@ struct XMXDECN4
 // z, y, and x components.  The w component is stored in the 
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-struct XMXDEC4
+struct XM_DEPRECATED XMXDEC4
 {
     union
     {
@@ -562,7 +563,7 @@ struct XMXDEC4
     };
 
     XMXDEC4() XM_CTOR_DEFAULT
-    explicit XMXDEC4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMXDEC4(uint32_t Packed) : v(Packed) {}
     XMXDEC4(float _x, float _y, float _z, float _w);
     explicit XMXDEC4(_In_reads_(4) const float *pArray);
 
@@ -578,7 +579,7 @@ struct XMXDEC4
 // integers for the z, y, and x components.  The w component is stored in the 
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-struct XMDECN4
+struct XM_DEPRECATED XMDECN4
 {
     union
     {
@@ -593,7 +594,7 @@ struct XMDECN4
     };
 
     XMDECN4() XM_CTOR_DEFAULT
-    explicit XMDECN4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMDECN4(uint32_t Packed) : v(Packed) {}
     XMDECN4(float _x, float _y, float _z, float _w);
     explicit XMDECN4(_In_reads_(4) const float *pArray);
 
@@ -609,7 +610,7 @@ struct XMDECN4
 // z, y, and x components.  The w component is stored in the 
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-struct XMDEC4
+struct XM_DEPRECATED XMDEC4
 {
     union
     {
@@ -624,7 +625,7 @@ struct XMDEC4
     };
 
     XMDEC4() XM_CTOR_DEFAULT
-    explicit XMDEC4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMDEC4(uint32_t Packed) : v(Packed) {}
     XMDEC4(float _x, float _y, float _z, float _w);
     explicit XMDEC4(_In_reads_(4) const float *pArray);
 
@@ -655,7 +656,7 @@ struct XMUDECN4
     };
 
     XMUDECN4() XM_CTOR_DEFAULT
-    explicit XMUDECN4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMUDECN4(uint32_t Packed) : v(Packed) {}
     XMUDECN4(float _x, float _y, float _z, float _w);
     explicit XMUDECN4(_In_reads_(4) const float *pArray);
 
@@ -686,7 +687,7 @@ struct XMUDEC4
     };
 
     XMUDEC4() XM_CTOR_DEFAULT
-    explicit XMUDEC4(uint32_t Packed) : v(Packed) {}
+    explicit XM_CONSTEXPR XMUDEC4(uint32_t Packed) : v(Packed) {}
     XMUDEC4(float _x, float _y, float _z, float _w);
     explicit XMUDEC4(_In_reads_(4) const float *pArray);
 
@@ -713,8 +714,8 @@ struct XMBYTEN4
     };
 
     XMBYTEN4() XM_CTOR_DEFAULT
-    XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMBYTEN4(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMBYTEN4(uint32_t Packed) : v(Packed) {}
     explicit XMBYTEN4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMBYTEN4(float _x, float _y, float _z, float _w);
     explicit XMBYTEN4(_In_reads_(4) const float *pArray);
@@ -739,8 +740,8 @@ struct XMBYTE4
     };
 
     XMBYTE4() XM_CTOR_DEFAULT
-    XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMBYTE4(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMBYTE4(uint32_t Packed) : v(Packed) {}
     explicit XMBYTE4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMBYTE4(float _x, float _y, float _z, float _w);
     explicit XMBYTE4(_In_reads_(4) const float *pArray);
@@ -765,8 +766,8 @@ struct XMUBYTEN4
     };
 
     XMUBYTEN4() XM_CTOR_DEFAULT
-    XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMUBYTEN4(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMUBYTEN4(uint32_t Packed) : v(Packed) {}
     explicit XMUBYTEN4(_In_reads_(4) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMUBYTEN4(float _x, float _y, float _z, float _w);
     explicit XMUBYTEN4(_In_reads_(4) const float *pArray);
@@ -791,8 +792,8 @@ struct XMUBYTE4
     };
 
     XMUBYTE4() XM_CTOR_DEFAULT
-    XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMUBYTE4(uint32_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XM_CONSTEXPR XMUBYTE4(uint32_t Packed) : v(Packed) {}
     explicit XMUBYTE4(_In_reads_(4) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMUBYTE4(float _x, float _y, float _z, float _w);
     explicit XMUBYTE4(_In_reads_(4) const float *pArray);
@@ -818,9 +819,9 @@ struct XMUNIBBLE4
     };
 
     XMUNIBBLE4() XM_CTOR_DEFAULT
-    explicit XMUNIBBLE4(uint16_t Packed) : v(Packed) {}
-    XMUNIBBLE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
-    explicit XMUNIBBLE4(_In_reads_(4) const int8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
+    explicit XM_CONSTEXPR XMUNIBBLE4(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMUNIBBLE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
+    explicit XMUNIBBLE4(_In_reads_(4) const uint8_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     XMUNIBBLE4(float _x, float _y, float _z, float _w);
     explicit XMUNIBBLE4(_In_reads_(4) const float *pArray);
 
@@ -847,9 +848,9 @@ struct XMU555
     };
 
     XMU555() XM_CTOR_DEFAULT
-    explicit XMU555(uint16_t Packed) : v(Packed) {}
-    XMU555(int8_t _x, int8_t _y, int8_t _z, bool _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
-    XMU555(_In_reads_(3) const int8_t *pArray, _In_ bool _w) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}
+    explicit XM_CONSTEXPR XMU555(uint16_t Packed) : v(Packed) {}
+    XM_CONSTEXPR XMU555(uint8_t _x, uint8_t _y, uint8_t _z, bool _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
+    XMU555(_In_reads_(3) const uint8_t *pArray, _In_ bool _w) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}
     XMU555(float _x, float _y, float _z, bool _w);
     XMU555(_In_reads_(3) const float *pArray, _In_ bool _w);
 
@@ -907,9 +908,6 @@ XMVECTOR    XM_CALLCONV     XMLoadShort4(_In_ const XMSHORT4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUShortN4(_In_ const XMUSHORTN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUShort4(_In_ const XMUSHORT4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadXDecN4(_In_ const XMXDECN4* pSource);
-XMVECTOR    XM_CALLCONV     XMLoadXDec4(_In_ const XMXDEC4* pSource);
-XMVECTOR    XM_CALLCONV     XMLoadDecN4(_In_ const XMDECN4* pSource);
-XMVECTOR    XM_CALLCONV     XMLoadDec4(_In_ const XMDEC4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUDecN4(_In_ const XMUDECN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUDecN4_XR(_In_ const XMUDECN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUDec4(_In_ const XMUDEC4* pSource);
@@ -919,6 +917,15 @@ XMVECTOR    XM_CALLCONV     XMLoadUByteN4(_In_ const XMUBYTEN4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUByte4(_In_ const XMUBYTE4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadUNibble4(_In_ const XMUNIBBLE4* pSource);
 XMVECTOR    XM_CALLCONV     XMLoadU555(_In_ const XMU555* pSource);
+
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
+XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadDecN4(_In_ const XMDECN4* pSource);
+XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadDec4(_In_ const XMDEC4* pSource);
+XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadXDec4(_In_ const XMXDEC4* pSource);
+#pragma warning(pop)
 
 /****************************************************************************
  *
@@ -948,9 +955,6 @@ void    XM_CALLCONV     XMStoreShort4(_Out_ XMSHORT4* pDestination, _In_ FXMVECT
 void    XM_CALLCONV     XMStoreUShortN4(_Out_ XMUSHORTN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUShort4(_Out_ XMUSHORT4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreXDecN4(_Out_ XMXDECN4* pDestination, _In_ FXMVECTOR V);
-void    XM_CALLCONV     XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V);
-void    XM_CALLCONV     XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V);
-void    XM_CALLCONV     XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUDecN4(_Out_ XMUDECN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUDecN4_XR(_Out_ XMUDECN4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreUDec4(_Out_ XMUDEC4* pDestination, _In_ FXMVECTOR V);
@@ -961,6 +965,15 @@ void    XM_CALLCONV     XMStoreUByte4(_Out_ XMUBYTE4* pDestination, _In_ FXMVECT
 void    XM_CALLCONV     XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V);
 void    XM_CALLCONV     XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V);
 
+#pragma warning(push)
+#pragma warning(disable : 4996)
+// C4996: ignore deprecation warning
+
+void    XM_DEPRECATED XM_CALLCONV XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V);
+void    XM_DEPRECATED XM_CALLCONV XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V);
+void    XM_DEPRECATED XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V);
+#pragma warning(pop)
+
 /****************************************************************************
  *
  * Implementation
@@ -968,7 +981,11 @@ void    XM_CALLCONV     XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable:4068 4214 4204 4365 4616 6001)
+#pragma warning(disable:4068 4214 4204 4365 4616 6001 6101)
+// C4068/4616: ignore unknown pragmas
+// C4214/4204: nonstandard extension used
+// C4365: Off by default noise
+// C6001/6101: False positives
 
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")

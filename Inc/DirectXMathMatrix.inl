@@ -9,9 +9,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 /****************************************************************************
  *
@@ -2133,14 +2131,14 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 (
     float FovAngleY, 
-    float AspectHByW, 
+    float AspectRatio, 
     float NearZ, 
     float FarZ
 )
 {
     assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    assert(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    assert(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
 #if defined(_XM_NO_INTRINSICS_)
@@ -2150,7 +2148,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     float Height = CosFov / SinFov;
-    float Width = Height / AspectHByW;
+    float Width = Height / AspectRatio;
     float fRange = FarZ / (FarZ-NearZ);
 
     XMMATRIX M;
@@ -2182,7 +2180,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 
     float fRange = FarZ / (FarZ-NearZ);
     float Height = CosFov / SinFov;
-    float Width = Height / AspectHByW;
+    float Width = Height / AspectRatio;
     const XMVECTOR Zero = vdupq_n_f32(0);
 
     XMMATRIX M;
@@ -2200,7 +2198,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     // Note: This is recorded on the stack
     float Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectHByW,
+        Height / AspectRatio,
         Height,
         fRange,
         -fRange * NearZ
@@ -2213,7 +2211,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     // CosFov / SinFov,0,0,0
     XMMATRIX M;
     M.r[0] = vTemp;
-    // 0,Height / AspectHByW,0,0
+    // 0,Height / AspectRatio,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
@@ -2235,14 +2233,14 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
 (
     float FovAngleY, 
-    float AspectHByW, 
+    float AspectRatio, 
     float NearZ, 
     float FarZ
 )
 {
     assert(NearZ > 0.f && FarZ > 0.f);
     assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
-    assert(!XMScalarNearEqual(AspectHByW, 0.0f, 0.00001f));
+    assert(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
     assert(!XMScalarNearEqual(FarZ, NearZ, 0.00001f));
 
 #if defined(_XM_NO_INTRINSICS_)
@@ -2252,7 +2250,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
 
     float Height = CosFov / SinFov;
-    float Width = Height / AspectHByW;
+    float Width = Height / AspectRatio;
     float fRange = FarZ / (NearZ-FarZ);
 
     XMMATRIX M;
@@ -2283,7 +2281,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
     float fRange = FarZ / (NearZ-FarZ);
     float Height = CosFov / SinFov;
-    float Width = Height / AspectHByW;
+    float Width = Height / AspectRatio;
     const XMVECTOR Zero = vdupq_n_f32(0);
 
     XMMATRIX M;
@@ -2300,7 +2298,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     // Note: This is recorded on the stack
     float Height = CosFov / SinFov;
     XMVECTOR rMem = {
-        Height / AspectHByW,
+        Height / AspectRatio,
         Height,
         fRange,
         fRange * NearZ
@@ -2313,7 +2311,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     // CosFov / SinFov,0,0,0
     XMMATRIX M;
     M.r[0] = vTemp;
-    // 0,Height / AspectHByW,0,0
+    // 0,Height / AspectRatio,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp,g_XMMaskY);
     M.r[1] = vTemp;
@@ -3124,28 +3122,6 @@ inline XMMATRIX XM_CALLCONV operator*
  ****************************************************************************/
 
 //------------------------------------------------------------------------------
-
-inline XMFLOAT3X3::XMFLOAT3X3
-(
-    float m00, float m01, float m02,
-    float m10, float m11, float m12,
-    float m20, float m21, float m22
-)
-{
-    m[0][0] = m00;
-    m[0][1] = m01;
-    m[0][2] = m02;
-
-    m[1][0] = m10;
-    m[1][1] = m11;
-    m[1][2] = m12;
-
-    m[2][0] = m20;
-    m[2][1] = m21;
-    m[2][2] = m22;
-}
-
-//------------------------------------------------------------------------------
 _Use_decl_annotations_
 inline XMFLOAT3X3::XMFLOAT3X3
 (
@@ -3187,33 +3163,6 @@ inline XMFLOAT3X3& XMFLOAT3X3::operator=
  * XMFLOAT4X3 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-inline XMFLOAT4X3::XMFLOAT4X3
-(
-    float m00, float m01, float m02,
-    float m10, float m11, float m12,
-    float m20, float m21, float m22,
-    float m30, float m31, float m32
-)
-{
-    m[0][0] = m00;
-    m[0][1] = m01;
-    m[0][2] = m02;
-
-    m[1][0] = m10;
-    m[1][1] = m11;
-    m[1][2] = m12;
-
-    m[2][0] = m20;
-    m[2][1] = m21;
-    m[2][2] = m22;
-
-    m[3][0] = m30;
-    m[3][1] = m31;
-    m[3][2] = m32;
-}
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -3282,37 +3231,6 @@ inline XMFLOAT4X3A& XMFLOAT4X3A::operator=
  * XMFLOAT4X4 operators
  *
  ****************************************************************************/
-
-//------------------------------------------------------------------------------
-
-inline XMFLOAT4X4::XMFLOAT4X4
-(
-    float m00, float m01, float m02, float m03,
-    float m10, float m11, float m12, float m13,
-    float m20, float m21, float m22, float m23,
-    float m30, float m31, float m32, float m33
-)
-{
-    m[0][0] = m00;
-    m[0][1] = m01;
-    m[0][2] = m02;
-    m[0][3] = m03;
-
-    m[1][0] = m10;
-    m[1][1] = m11;
-    m[1][2] = m12;
-    m[1][3] = m13;
-
-    m[2][0] = m20;
-    m[2][1] = m21;
-    m[2][2] = m22;
-    m[2][3] = m23;
-
-    m[3][0] = m30;
-    m[3][1] = m31;
-    m[3][2] = m32;
-    m[3][3] = m33;
-}
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
