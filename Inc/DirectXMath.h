@@ -17,11 +17,12 @@
 
 #define DIRECTX_MATH_VERSION 309
 
+#if defined(_MSC_VER) && (_MSC_VER < 1800)
+#error DirectX Math Visual C++ 2013 or later.
+#endif
 
 #if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
-#if ((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418)
 #define _XM_VECTORCALL_ 1
-#endif
 #endif
 
 #if _XM_VECTORCALL_
@@ -51,9 +52,6 @@
 #endif
 
 #ifdef _XM_F16C_INTRINSICS_
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#error DirectX Math use of F16C intrinsics requires Visual C++ 2012 or later.
-#endif
 #ifndef _XM_AVX_INTRINSICS_
 #define _XM_AVX_INTRINSICS_
 #endif
@@ -88,7 +86,6 @@
 #include <float.h>
 #include <malloc.h>
 #pragma warning(pop)
-
 
 #if defined(_XM_SSE_INTRINSICS_)
 #ifndef _XM_NO_INTRINSICS_
@@ -146,23 +143,6 @@
  * Conditional intrinsics
  *
  ****************************************************************************/
-
-
-#if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-
-#if defined(_MSC_VER) && (_MSC_FULL_VER != 170051221) && (_MSC_FULL_VER < 170065500)
-#define XM_VMULQ_N_F32( a, b ) vmulq_f32( (a), vdupq_n_f32( (b) ) )
-#define XM_VMLAQ_N_F32( a, b, c ) vmlaq_f32( (a), (b), vdupq_n_f32( (c) ) )
-#define XM_VMULQ_LANE_F32( a, b, c ) vmulq_f32( (a), vdupq_lane_f32( (b), (c) ) )
-#define XM_VMLAQ_LANE_F32( a, b, c, d ) vmlaq_f32( (a), (b), vdupq_lane_f32( (c), (d) ) )
-#else
-#define XM_VMULQ_N_F32( a, b ) vmulq_n_f32( (a), (b) )
-#define XM_VMLAQ_N_F32( a, b, c ) vmlaq_n_f32( (a), (b), (c) )
-#define XM_VMULQ_LANE_F32( a, b, c ) vmulq_lane_f32( (a), (b), (c) )
-#define XM_VMLAQ_LANE_F32( a, b, c, d ) vmlaq_lane_f32( (a), (b), (c), (d) )
-#endif
-
-#endif // _XM_ARM_NEON_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
@@ -244,8 +224,8 @@ const uint32_t XM_CRMASK_CR6TRUE    = 0x00000080;
 const uint32_t XM_CRMASK_CR6FALSE   = 0x00000020;
 const uint32_t XM_CRMASK_CR6BOUNDS  = XM_CRMASK_CR6FALSE;
 
-
 const size_t XM_CACHE_LINE_SIZE = 64;
+
 
 /****************************************************************************
  *
@@ -306,9 +286,6 @@ struct __vector4
     };
 };
 #endif // _XM_NO_INTRINSICS_
-
-//------------------------------------------------------------------------------
-typedef uint32_t XM_DEPRECATED __vector4i[4];
 
 //------------------------------------------------------------------------------
 // Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte 

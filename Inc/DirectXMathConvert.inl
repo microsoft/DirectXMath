@@ -42,7 +42,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorIntToFloat
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fScale = 1.0f / (float)(1U << DivExponent);
     float32x4_t vResult = vcvtq_f32_s32( VInt );
-    return XM_VMULQ_N_F32( vResult, fScale );
+    return vmulq_n_f32( vResult, fScale );
 #else // _XM_SSE_INTRINSICS_
     // Convert to floats
     XMVECTOR vResult = _mm_cvtepi32_ps(_mm_castps_si128(VInt));
@@ -83,7 +83,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToInt
     } while (++ElementIndex<4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    float32x4_t vResult = XM_VMULQ_N_F32(VFloat, (float)(1U << MulExponent));
+    float32x4_t vResult = vmulq_n_f32(VFloat, (float)(1U << MulExponent));
     // In case of positive overflow, detect it
     uint32x4_t vOverflow = vcgtq_f32(vResult,g_XMMaxInt);
     // Float to int conversion
@@ -128,7 +128,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorUIntToFloat
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fScale = 1.0f / (float)(1U << DivExponent);
     float32x4_t vResult = vcvtq_f32_u32( VUInt );
-    return XM_VMULQ_N_F32( vResult, fScale );
+    return vmulq_n_f32( vResult, fScale );
 #else // _XM_SSE_INTRINSICS_
     // For the values that are higher than 0x7FFFFFFF, a fixup is needed
     // Determine which ones need the fix.
@@ -179,7 +179,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
     } while (++ElementIndex<4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    float32x4_t vResult = XM_VMULQ_N_F32(VFloat,(float)(1U << MulExponent));
+    float32x4_t vResult = vmulq_n_f32(VFloat,(float)(1U << MulExponent));
     // In case of overflow, detect it
     uint32x4_t vOverflow = vcgtq_f32(vResult,g_XMMaxUInt);
     // Float to int conversion
@@ -618,7 +618,6 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt3
     vMask = _mm_and_ps(_mm_castsi128_ps(iMask),g_XMFixUnsigned);
     vResult = _mm_add_ps(vResult,vMask);
     return vResult; 
-
 #endif
 }
 

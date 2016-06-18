@@ -999,4 +999,3 @@ void    XM_DEPRECATED XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_
 
 }; // namespace DirectX
 
-

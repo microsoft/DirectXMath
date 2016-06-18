@@ -121,7 +121,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     float32x4_t Q2X = vdupq_lane_f32( Q2L, 0 );
     float32x4_t Q2Y = vdupq_lane_f32( Q2L, 1 );
     float32x4_t Q2Z = vdupq_lane_f32( Q2H, 0 );
-    XMVECTOR vResult = XM_VMULQ_LANE_F32(Q1, Q2H, 1);
+    XMVECTOR vResult = vmulq_lane_f32(Q1, Q2H, 1);
 
     // Mul by Q1WZYX
     float32x4_t vTemp = vrev64q_f32(Q1);
@@ -1476,7 +1476,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
     XMVECTOR vLuminance = XMVector3Dot( vColor, gvLuminance );
     XMVECTOR vResult = vsubq_f32(vColor, vLuminance);
-    vResult = XM_VMLAQ_N_F32( vLuminance, vResult, fSaturation );
+    vResult = vmlaq_n_f32( vLuminance, vResult, fSaturation );
     return vbslq_f32( g_XMSelect1110, vResult, vColor );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
@@ -1514,7 +1514,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustContrast
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vResult = vsubq_f32(vColor, g_XMOneHalf.v);
-    vResult = XM_VMLAQ_N_F32( g_XMOneHalf.v, vResult, fContrast );
+    vResult = vmlaq_n_f32( g_XMOneHalf.v, vResult, fContrast );
     return vbslq_f32( g_XMSelect1110, vResult, vColor );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vScale = _mm_set_ps1(fContrast);           // Splat the scale

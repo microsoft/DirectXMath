@@ -483,7 +483,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadColor
     uint16x8_t vInt16 = vmovl_u8( vreinterpret_u8_u32(vInt8) );
     uint32x4_t vInt = vmovl_u16( vget_low_u16(vInt16) );
     float32x4_t R = vcvtq_f32_u32(vInt);
-    return XM_VMULQ_N_F32( R, 1.0f/255.0f );
+    return vmulq_n_f32( R, 1.0f/255.0f );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the color in all four entries
     __m128i vInt = _mm_set1_epi32(pSource->c);
@@ -543,7 +543,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShortN2
     int32x4_t vInt = vmovl_s16( vreinterpret_s16_u32(vInt16) );
     vInt = vandq_s32( vInt, g_XMMaskXY );
     float32x4_t R = vcvtq_f32_s32(vInt);
-    R = XM_VMULQ_N_F32( R, 1.0f/32767.0f );
+    R = vmulq_n_f32( R, 1.0f/32767.0f );
     return vmaxq_f32( R, vdupq_n_f32(-1.f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the two shorts in all four entries (WORD alignment okay,
@@ -623,7 +623,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShortN2
     uint32x4_t vInt = vmovl_u16( vreinterpret_u16_u32(vInt16) );
     vInt = vandq_u32( vInt, g_XMMaskXY );
     float32x4_t R = vcvtq_f32_u32(vInt);
-    R = XM_VMULQ_N_F32( R, 1.0f/65535.0f );
+    R = vmulq_n_f32( R, 1.0f/65535.0f );
     return vmaxq_f32( R, vdupq_n_f32(-1.f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 FixupY16 = {1.0f/65535.0f,1.0f/(65535.0f*65536.0f),0.0f,0.0f};
@@ -707,7 +707,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadByteN2
     int32x4_t vInt = vmovl_s16( vget_low_s16( vInt16 ) );
     vInt = vandq_s32( vInt, g_XMMaskXY );
     float32x4_t R = vcvtq_f32_s32(vInt);
-    R = XM_VMULQ_N_F32( R, 1.0f/127.0f );
+    R = vmulq_n_f32( R, 1.0f/127.0f );
     return vmaxq_f32( R, vdupq_n_f32(-1.f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = {1.0f/127.0f,1.0f/(127.0f*256.0f),0,0};
@@ -791,7 +791,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUByteN2
     uint32x4_t vInt = vmovl_u16( vget_low_u16(vInt16) );
     vInt = vandq_u32( vInt, g_XMMaskXY );
     float32x4_t R = vcvtq_f32_u32(vInt);
-    return XM_VMULQ_N_F32( R, 1.0f/255.0f );
+    return vmulq_n_f32( R, 1.0f/255.0f );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = {1.0f/255.0f,1.0f/(255.0f*256.0f),0,0};
     static const XMVECTORU32 Mask = {0xFF,0xFF00,0,0};
@@ -1070,7 +1070,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadShortN4
     int16x4_t vInt = vld1_s16( (const int16_t*)pSource );
     int32x4_t V = vmovl_s16( vInt );
     V = vcvtq_f32_s32( V );
-    V = XM_VMULQ_N_F32( V,  1.0f/32767.0f );
+    V = vmulq_n_f32( V,  1.0f/32767.0f );
     return vmaxq_f32( V, vdupq_n_f32(-1.f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the color in all four entries (x,z,y,w)
@@ -1150,7 +1150,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUShortN4
     uint16x4_t vInt = vld1_u16( (const uint16_t*)pSource );
     uint32x4_t V = vmovl_u16( vInt );
     V = vcvtq_f32_u32( V );
-    return XM_VMULQ_N_F32( V, 1.0f/65535.0f );
+    return vmulq_n_f32( V, 1.0f/65535.0f );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 FixupY16W16 = {1.0f/65535.0f,1.0f/65535.0f,1.0f/(65535.0f*65536.0f),1.0f/(65535.0f*65536.0f)};
     static const XMVECTORF32 FixaddY16W16  = {0,0,32768.0f*65536.0f,32768.0f*65536.0f};
@@ -1584,7 +1584,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadUByteN4
     uint16x8_t vInt16 = vmovl_u8( vreinterpret_u8_u32(vInt8) );
     uint32x4_t vInt = vmovl_u16( vget_low_u16(vInt16) );
     float32x4_t R = vcvtq_f32_u32(vInt);
-    return XM_VMULQ_N_F32( R, 1.0f/255.0f );
+    return vmulq_n_f32( R, 1.0f/255.0f );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadUByteN4Mul = {1.0f/255.0f,1.0f/(255.0f*256.0f),1.0f/(255.0f*65536.0f),1.0f/(255.0f*65536.0f*256.0f)};
     // Splat the color in all four entries (x,z,y,w)
@@ -1663,7 +1663,7 @@ inline XMVECTOR XM_CALLCONV PackedVector::XMLoadByteN4
     int16x8_t vInt16 = vmovl_s8( vreinterpret_s8_u32(vInt8) );
     int32x4_t vInt = vmovl_s16( vget_low_s16(vInt16) );
     float32x4_t R = vcvtq_f32_s32(vInt);
-    R = XM_VMULQ_N_F32( R, 1.0f/127.0f );
+    R = vmulq_n_f32( R, 1.0f/127.0f );
     return vmaxq_f32( R, vdupq_n_f32(-1.f) );
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 LoadByteN4Mul = {1.0f/127.0f,1.0f/(127.0f*256.0f),1.0f/(127.0f*65536.0f),1.0f/(127.0f*65536.0f*256.0f)};
@@ -1833,7 +1833,7 @@ inline void XM_CALLCONV PackedVector::XMStoreColor
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(0) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 255.0f );
+    R = vmulq_n_f32( R, 255.0f );
     R = XMVectorRound(R);
     uint32x4_t vInt32 = vcvtq_u32_f32(R);
     uint16x4_t vInt16 = vqmovn_u32( vInt32 );
@@ -1902,7 +1902,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShortN2
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(-1.f) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 32767.0f );
+    R = vmulq_n_f32( R, 32767.0f );
     int32x4_t vInt32 = vcvtq_s32_f32(R);
     int16x4_t vInt16 = vqmovn_s32( vInt32 );
     vst1_lane_u32( &pDestination->v, vreinterpret_u32_s16(vInt16), 0 );
@@ -1978,7 +1978,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShortN2
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(0.f) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 65535.0f );
+    R = vmulq_n_f32( R, 65535.0f );
     R = vaddq_f32( R, g_XMOneHalf );
     uint32x4_t vInt32 = vcvtq_u32_f32(R);
     uint16x4_t vInt16 = vqmovn_u32( vInt32 );
@@ -2061,7 +2061,7 @@ inline void XM_CALLCONV PackedVector::XMStoreByteN2
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(-1.f) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 127.0f );
+    R = vmulq_n_f32( R, 127.0f );
     int32x4_t vInt32 = vcvtq_s32_f32(R);
     int16x4_t vInt16 = vqmovn_s32( vInt32 );
     int8x8_t vInt8 = vqmovn_s16( vcombine_s16(vInt16,vInt16) );
@@ -2145,7 +2145,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUByteN2
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(0.f) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 255.0f );
+    R = vmulq_n_f32( R, 255.0f );
     R = vaddq_f32( R, g_XMOneHalf );
     uint32x4_t vInt32 = vcvtq_u32_f32(R);
     uint16x4_t vInt16 = vqmovn_u32( vInt32 );
@@ -2470,7 +2470,7 @@ inline void XM_CALLCONV PackedVector::XMStoreShortN4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmaxq_f32( V, vdupq_n_f32(-1.f) );
     vResult = vminq_f32( vResult, vdupq_n_f32(1.0f) );
-    vResult = XM_VMULQ_N_F32( vResult, 32767.0f );
+    vResult = vmulq_n_f32( vResult, 32767.0f );
     vResult = vcvtq_s32_f32( vResult );
     int16x4_t vInt = vmovn_s32( vResult );
     vst1_s16( reinterpret_cast<int16_t*>(pDestination), vInt );
@@ -2550,7 +2550,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUShortN4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmaxq_f32( V, vdupq_n_f32(0) );
     vResult = vminq_f32( vResult, vdupq_n_f32(1.0f) );
-    vResult = XM_VMULQ_N_F32( vResult, 65535.0f );
+    vResult = vmulq_n_f32( vResult, 65535.0f );
     vResult = vaddq_f32( vResult, g_XMOneHalf );
     vResult = vcvtq_u32_f32( vResult );
     uint16x4_t vInt = vmovn_u32( vResult );
@@ -3131,7 +3131,7 @@ inline void XM_CALLCONV PackedVector::XMStoreUByteN4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(0) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 255.0f );
+    R = vmulq_n_f32( R, 255.0f );
     uint32x4_t vInt32 = vcvtq_u32_f32(R);
     uint16x4_t vInt16 = vqmovn_u32( vInt32 );
     uint8x8_t vInt8 = vqmovn_u16( vcombine_u16(vInt16,vInt16) );
@@ -3243,7 +3243,7 @@ inline void XM_CALLCONV PackedVector::XMStoreByteN4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t R = vmaxq_f32(V, vdupq_n_f32(-1.f) );
     R = vminq_f32(R, vdupq_n_f32(1.0f));
-    R = XM_VMULQ_N_F32( R, 127.0f );
+    R = vmulq_n_f32( R, 127.0f );
     int32x4_t vInt32 = vcvtq_s32_f32(R);
     int16x4_t vInt16 = vqmovn_s32( vInt32 );
     int8x8_t vInt8 = vqmovn_s16( vcombine_s16(vInt16,vInt16) );

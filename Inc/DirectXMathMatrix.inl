@@ -265,32 +265,32 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     float32x2_t VL = vget_low_f32( M1.r[0] );
     float32x2_t VH = vget_high_f32( M1.r[0] );
     // Perform the operation on the first row
-    XMVECTOR vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    XMVECTOR vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    XMVECTOR vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    XMVECTOR vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    XMVECTOR vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    XMVECTOR vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    XMVECTOR vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    XMVECTOR vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     mResult.r[0] = vaddq_f32( vZ, vW );
     // Repeat for the other 3 rows
     VL = vget_low_f32( M1.r[1] );
     VH = vget_high_f32( M1.r[1] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     mResult.r[1] = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[2] );
     VH = vget_high_f32( M1.r[2] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     mResult.r[2] = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[3] );
     VH = vget_high_f32( M1.r[3] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     mResult.r[3] = vaddq_f32( vZ, vW );
     return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -406,32 +406,32 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     float32x2_t VL = vget_low_f32( M1.r[0] );
     float32x2_t VH = vget_high_f32( M1.r[0] );
     // Perform the operation on the first row
-    XMVECTOR vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    XMVECTOR vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    XMVECTOR vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    XMVECTOR vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    XMVECTOR vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    XMVECTOR vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    XMVECTOR vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    XMVECTOR vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     float32x4_t r0 = vaddq_f32( vZ, vW );
     // Repeat for the other 3 rows
     VL = vget_low_f32( M1.r[1] );
     VH = vget_high_f32( M1.r[1] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     float32x4_t r1 = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[2] );
     VH = vget_high_f32( M1.r[2] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     float32x4_t r2 = vaddq_f32( vZ, vW );
     VL = vget_low_f32( M1.r[3] );
     VH = vget_high_f32( M1.r[3] );
-    vX = XM_VMULQ_LANE_F32(M2.r[0], VL, 0);
-    vY = XM_VMULQ_LANE_F32(M2.r[1], VL, 1);
-    vZ = XM_VMLAQ_LANE_F32(vX, M2.r[2], VH, 0);
-    vW = XM_VMLAQ_LANE_F32(vY, M2.r[3], VH, 1);
+    vX = vmulq_lane_f32(M2.r[0], VL, 0);
+    vY = vmulq_lane_f32(M2.r[1], VL, 1);
+    vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
+    vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     float32x4_t r3 = vaddq_f32( vZ, vW );
  
     // Transpose result
