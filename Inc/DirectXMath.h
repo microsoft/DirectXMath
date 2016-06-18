@@ -51,11 +51,9 @@
 #define _XM_F16C_INTRINSICS_
 #endif
 
-#ifdef _XM_F16C_INTRINSICS_
-#ifndef _XM_AVX_INTRINSICS_
+#if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_AVX_INTRINSICS_)
 #define _XM_AVX_INTRINSICS_
 #endif
-#endif // _XM_F16C_INTRINSICS_
 
 #if !defined(_XM_AVX_INTRINSICS_) && defined(__AVX__) && !defined(_XM_NO_INTRINSICS_)
 #define _XM_AVX_INTRINSICS_
@@ -65,7 +63,11 @@
 #define _XM_SSE4_INTRINSICS_
 #endif
 
-#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_)
+#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_SSE3_INTRINSICS_)
+#define _XM_SSE3_INTRINSICS_
+#endif
+
+#if defined(_XM_SSE3_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_)
 #define _XM_SSE_INTRINSICS_
 #endif
 
@@ -87,38 +89,37 @@
 #include <malloc.h>
 #pragma warning(pop)
 
-#if defined(_XM_SSE_INTRINSICS_)
-#ifndef _XM_NO_INTRINSICS_
-#include <xmmintrin.h>
-#include <emmintrin.h>
-#endif
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
 #ifndef _XM_NO_INTRINSICS_
 #pragma warning(push)
 #pragma warning(disable : 4987)
 // C4987: Off by default noise
 #include <intrin.h>
 #pragma warning(pop)
+
+#ifdef _XM_SSE_INTRINSICS_
+#include <xmmintrin.h>
+#include <emmintrin.h>
+
+#ifdef _XM_SSE3_INTRINSICS_
+#include <pmmintrin.h>
+#endif
+
+#ifdef _XM_SSE4_INTRINSICS_
+#include <smmintrin.h>
+#endif
+
+#ifdef _XM_AVX_INTRINSICS_
+#include <immintrin.h>
+#endif
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
 #ifdef _M_ARM64
 #include <arm64_neon.h>
 #else
 #include <arm_neon.h>
 #endif
 #endif
-#endif
-
-#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#pragma warning(push)
-#pragma warning(disable : 4987)
-// C4987: Off by default noise
-#include <intrin.h>
-#pragma warning(pop)
-#include <smmintrin.h>
-#endif
-
-#if defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#include <immintrin.h>
-#endif
+#endif // !_XM_NO_INTRINSICS_
 
 #include <sal.h>
 #include <assert.h>
@@ -1625,7 +1626,7 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
 // Specialized swizzles
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,2,3>(FXMVECTOR V) { return V; }
 
-#if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_SSE3_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,2,2>(FXMVECTOR V) { return _mm_moveldup_ps(V); }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,1,3,3>(FXMVECTOR V) { return _mm_movehdup_ps(V); }
 #endif

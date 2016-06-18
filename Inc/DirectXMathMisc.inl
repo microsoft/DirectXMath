@@ -1981,54 +1981,37 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
 inline bool XMVerifyCPUSupport()
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#if defined(_XM_F16C_INTRINSICS_) || defined(_XM_AVX_INTRINSICS_)
-   int avxCPUInfo[4] = {-1};
-   __cpuid( avxCPUInfo, 0 );
+    int CPUInfo[4] = { -1 };
+    __cpuid(CPUInfo, 0);
+    if (CPUInfo[0] < 1)
+        return false;
 
-   if ( avxCPUInfo[0] < 1  )
-       return false;
-
-    __cpuid(avxCPUInfo, 1 );
+    __cpuid(CPUInfo, 1);
 
 #ifdef _XM_F16C_INTRINSICS_
-    if ( (avxCPUInfo[2] & 0x38000000 ) != 0x38000000 )
-        return false; // No F16C/AVX/OSXSAVE support
-#else
-    if ( (avxCPUInfo[2] & 0x18000000 ) != 0x18000000 )
-        return false; // No AVX/OSXSAVE support
+    if ((CPUInfo[2] & 0x38080001) != 0x38080001)
+        return false; // No F16C/AVX/OSXSAVE/SSE4.1/SSE3 support
+#elif defined(_XM_AVX_INTRINSICS_)
+    if ((CPUInfo[2] & 0x18080001) != 0x18080001)
+        return false; // No AVX/OSXSAVE/SSE4.1/SSE3 support
+#elif defined(_XM_SSE4_INTRINSICS_)
+    if ((CPUInfo[2] & 0x80001) != 0x80001)
+        return false; // No SSE3/SSE4.1 support
+#elif defined(_XM_SSE3_INTRINSICS_)
+    if (!(CPUInfo[2] & 0x1))
+        return false; // No SSE3 support  
 #endif
-#endif
-#ifdef _XM_SSE4_INTRINSICS_
-   int CPUInfo[4] = {-1};
-   __cpuid( CPUInfo, 0 );
 
-   if ( CPUInfo[0] < 1  )
-       return false;
+    // The x64 processor model requires SSE2 support, but no harm in checking
+    if ((CPUInfo[3] & 0x6000000) != 0x6000000)
+        return false; // No SSE2/SSE support
 
-    __cpuid(CPUInfo, 1 );
-
-    if ( (CPUInfo[2] & 0x80001) != 0x80001 )
-        return false; // Missing SSE3 or SSE 4.1 support
-#endif
-#if defined(_M_X64)
-    // The X64 processor model requires SSE2 support
     return true;
-#elif defined(PF_XMMI_INSTRUCTIONS_AVAILABLE)
-    // Note that on Windows 2000 or older, SSE2 detection is not supported so this will always fail
-    // Detecting SSE2 on older versions of Windows would require using cpuid directly
-    return ( IsProcessorFeaturePresent( PF_XMMI_INSTRUCTIONS_AVAILABLE ) != 0 && IsProcessorFeaturePresent( PF_XMMI64_INSTRUCTIONS_AVAILABLE ) != 0 );
-#else
-    // If windows.h is not included, we return false (likely a false negative)
-    return false;
-#endif
 #elif defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#ifdef PF_ARM_NEON_INSTRUCTIONS_AVAILABLE
-    return ( IsProcessorFeaturePresent( PF_ARM_NEON_INSTRUCTIONS_AVAILABLE ) != 0 );
+    // ARM-NEON support is required for the Windows on ARM platform
+    return true;
 #else
-    // If windows.h is not included, we return false (likely a false negative)
-    return false;
-#endif
-#else
+    // No intrinsics path always supported
     return true;
 #endif
 }
