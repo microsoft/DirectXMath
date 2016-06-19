@@ -1983,15 +1983,25 @@ inline bool XMVerifyCPUSupport()
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     int CPUInfo[4] = { -1 };
     __cpuid(CPUInfo, 0);
+
+#ifdef __AVX2__
+    if (CPUInfo[0] < 7)
+        return false;
+#else
     if (CPUInfo[0] < 1)
         return false;
+#endif
 
     __cpuid(CPUInfo, 1);
 
-#ifdef _XM_F16C_INTRINSICS_
+#ifdef __AVX2__
+    // The compiler can emit FMA3 instructions even without explicit intrinsics use
+    if ((CPUInfo[2] & 0x38081001) != 0x38081001)
+        return false; // No F16C/AVX/OSXSAVE/SSE4.1/FMA3/SSE3 support
+#elif defined(_XM_F16C_INTRINSICS_)
     if ((CPUInfo[2] & 0x38080001) != 0x38080001)
         return false; // No F16C/AVX/OSXSAVE/SSE4.1/SSE3 support
-#elif defined(_XM_AVX_INTRINSICS_)
+#elif defined(__AVX__) || defined(_XM_AVX_INTRINSICS_)
     if ((CPUInfo[2] & 0x18080001) != 0x18080001)
         return false; // No AVX/OSXSAVE/SSE4.1/SSE3 support
 #elif defined(_XM_SSE4_INTRINSICS_)
@@ -2005,6 +2015,12 @@ inline bool XMVerifyCPUSupport()
     // The x64 processor model requires SSE2 support, but no harm in checking
     if ((CPUInfo[3] & 0x6000000) != 0x6000000)
         return false; // No SSE2/SSE support
+
+#ifdef __AVX2__
+    __cpuidex(CPUInfo, 7, 0);
+    if (!(CPUInfo[1] & 0x20))
+        return false; // No AVX2 support
+#endif
 
     return true;
 #elif defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
