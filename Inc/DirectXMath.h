@@ -1546,6 +1546,14 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
 
+#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,1,4,5>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_movelh_ps(V1,V2); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<6,7,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_movehl_ps(V1,V2); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,4,1,5>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_unpacklo_ps(V1,V2); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<2,6,3,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_unpackhi_ps(V1,V2); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<2,3,6,7>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_castpd_ps(_mm_unpackhi_pd(_mm_castps_pd(V1), _mm_castps_pd(V2))); }
+#endif
+
 #if defined(_XM_SSE4_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x1); }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x2); }
@@ -1625,6 +1633,13 @@ template<uint32_t SwizzleX, uint32_t SwizzleY, uint32_t SwizzleZ, uint32_t Swizz
 
 // Specialized swizzles
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,2,3>(FXMVECTOR V) { return V; }
+
+#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,1,0,1>(FXMVECTOR V) { return _mm_movelh_ps(V,V); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<2,3,2,3>(FXMVECTOR V) { return _mm_movehl_ps(V,V); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,1,1>(FXMVECTOR V) { return _mm_unpacklo_ps(V,V); }
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<2,2,3,3>(FXMVECTOR V) { return _mm_unpackhi_ps(V,V); }
+#endif
 
 #if defined(_XM_SSE3_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,2,2>(FXMVECTOR V) { return _mm_moveldup_ps(V); }
