@@ -2793,6 +2793,39 @@ inline XMVECTOR XM_CALLCONV XMVectorAdd
 
 //------------------------------------------------------------------------------
 
+inline XMVECTOR XM_CALLCONV XMVectorSum
+(
+    FXMVECTOR V
+)
+{
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMVECTOR Result;
+    Result.vector4_f32[0] = 
+    Result.vector4_f32[1] = 
+    Result.vector4_f32[2] = 
+    Result.vector4_f32[3] = V.vector4_f32[0] + V.vector4_f32[1] + V.vector4_f32[2] + V.vector4_f32[3];
+    return Result;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float32x2_t v1 = vget_low_f32(V);
+    float32x2_t v2 = vget_high_f32(V);
+    v1 = vadd_f32(v1, v2);
+    v1 = vpadd_f32(v1, v1);
+    return vcombine_f32(v1, v1);
+#elif defined(_XM_SSE3_INTRINSICS_)
+    XMVECTOR vTemp = _mm_hadd_ps(V, V);
+    return _mm_hadd_ps(vTemp,vTemp);
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMVECTOR vTemp = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 3, 0, 1));
+    XMVECTOR vTemp2 = _mm_add_ps(V, vTemp);
+    vTemp = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(1, 0, 3, 2));
+    return _mm_add_ps(vTemp, vTemp2);
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 inline XMVECTOR XM_CALLCONV XMVectorAddAngles
 (
     FXMVECTOR V1, 
@@ -12893,9 +12926,8 @@ inline XMVECTOR XM_CALLCONV XMVector4Dot
     float32x4_t vTemp = vmulq_f32( V1, V2 );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     return vcombine_f32( v1, v1 );
 #elif defined(_XM_SSE4_INTRINSICS_)
     return _mm_dp_ps( V1, V2, 0xff );
@@ -13090,9 +13122,8 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLengthEst
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     // Reciprocal sqrt (estimate)
     v2 = vrsqrte_f32( v1 );
     return vcombine_f32(v2, v2);
@@ -13141,9 +13172,8 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLength
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     // Reciprocal sqrt
     float32x2_t  S0 = vrsqrte_f32(v1);
     float32x2_t  P0 = vmul_f32( v1, S0 );
@@ -13201,9 +13231,8 @@ inline XMVECTOR XM_CALLCONV XMVector4LengthEst
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     const float32x2_t zero = vdup_n_f32(0);
     uint32x2_t VEqualsZero = vceq_f32( v1, zero );
     // Sqrt (estimate)
@@ -13256,9 +13285,8 @@ inline XMVECTOR XM_CALLCONV XMVector4Length
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     const float32x2_t zero = vdup_n_f32(0);
     uint32x2_t VEqualsZero = vceq_f32( v1, zero );
     // Sqrt
@@ -13317,9 +13345,8 @@ inline XMVECTOR XM_CALLCONV XMVector4NormalizeEst
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     // Reciprocal sqrt (estimate)
     v2 = vrsqrte_f32( v1 );
     // Normalize
@@ -13381,9 +13408,8 @@ inline XMVECTOR XM_CALLCONV XMVector4Normalize
     float32x4_t vTemp = vmulq_f32( V, V );
     float32x2_t v1 = vget_low_f32( vTemp );
     float32x2_t v2 = vget_high_f32( vTemp );
-    v1 = vpadd_f32( v1, v1 );
-    v2 = vpadd_f32( v2, v2 );
     v1 = vadd_f32( v1, v2 );
+    v1 = vpadd_f32( v1, v1 );
     uint32x2_t VEqualsZero = vceq_f32( v1, vdup_n_f32(0) );
     uint32x2_t VEqualsInf = vceq_f32( v1, vget_low_f32(g_XMInfinity) );
     // Reciprocal sqrt (2 iterations of Newton-Raphson)
