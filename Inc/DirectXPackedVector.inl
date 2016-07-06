@@ -2473,9 +2473,10 @@ inline void XM_CALLCONV PackedVector::XMStoreFloat3SE
     fi.f = maxColor;
     fi.i += 0x00004000; // round up leaving 9 bits in fraction (including assumed 1)
 
-    pDestination->e = (fi.i - 0x37800000) >> 23;
+    uint32_t exp = fi.i >> 23;
+    pDestination->e = exp - 0x6f;
 
-    fi.i = 0x83000000 - fi.i;
+    fi.i = 0x83000000 - (exp << 23);
     float ScaleR = fi.f;
 
 #ifdef _XM_NO_ROUNDF_
@@ -2483,9 +2484,9 @@ inline void XM_CALLCONV PackedVector::XMStoreFloat3SE
     pDestination->ym = static_cast<uint32_t>( Internal::round_to_nearest(y * ScaleR) );
     pDestination->zm = static_cast<uint32_t>( Internal::round_to_nearest(z * ScaleR) );
 #else
-    pDestination->xm = static_cast<uint32_t>( roundf(x * ScaleR) );
-    pDestination->ym = static_cast<uint32_t>( roundf(y * ScaleR) );
-    pDestination->zm = static_cast<uint32_t>( roundf(z * ScaleR) );
+    pDestination->xm = static_cast<uint32_t>( lroundf(x * ScaleR) );
+    pDestination->ym = static_cast<uint32_t>( lroundf(y * ScaleR) );
+    pDestination->zm = static_cast<uint32_t>( lroundf(z * ScaleR) );
 #endif
 }
 
