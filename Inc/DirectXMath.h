@@ -40,7 +40,7 @@
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
-#define XM_CONSTEXPR
+#define XM_CONSTEXPR const
 #else
 #define XM_CONSTEXPR constexpr
 #endif
@@ -198,36 +198,36 @@ namespace DirectX
 #undef XM_CACHE_LINE_SIZE
 #endif
 
-const float XM_PI           = 3.141592654f;
-const float XM_2PI          = 6.283185307f;
-const float XM_1DIVPI       = 0.318309886f;
-const float XM_1DIV2PI      = 0.159154943f;
-const float XM_PIDIV2       = 1.570796327f;
-const float XM_PIDIV4       = 0.785398163f;
+XM_CONSTEXPR float XM_PI        = 3.141592654f;
+XM_CONSTEXPR float XM_2PI       = 6.283185307f;
+XM_CONSTEXPR float XM_1DIVPI    = 0.318309886f;
+XM_CONSTEXPR float XM_1DIV2PI   = 0.159154943f;
+XM_CONSTEXPR float XM_PIDIV2    = 1.570796327f;
+XM_CONSTEXPR float XM_PIDIV4    = 0.785398163f;
 
-const uint32_t XM_SELECT_0          = 0x00000000;
-const uint32_t XM_SELECT_1          = 0xFFFFFFFF;
+XM_CONSTEXPR uint32_t XM_SELECT_0   = 0x00000000;
+XM_CONSTEXPR uint32_t XM_SELECT_1   = 0xFFFFFFFF;
 
-const uint32_t XM_PERMUTE_0X        = 0;
-const uint32_t XM_PERMUTE_0Y        = 1;
-const uint32_t XM_PERMUTE_0Z        = 2;
-const uint32_t XM_PERMUTE_0W        = 3;
-const uint32_t XM_PERMUTE_1X        = 4;
-const uint32_t XM_PERMUTE_1Y        = 5;
-const uint32_t XM_PERMUTE_1Z        = 6;
-const uint32_t XM_PERMUTE_1W        = 7;
+XM_CONSTEXPR uint32_t XM_PERMUTE_0X = 0;
+XM_CONSTEXPR uint32_t XM_PERMUTE_0Y = 1;
+XM_CONSTEXPR uint32_t XM_PERMUTE_0Z = 2;
+XM_CONSTEXPR uint32_t XM_PERMUTE_0W = 3;
+XM_CONSTEXPR uint32_t XM_PERMUTE_1X = 4;
+XM_CONSTEXPR uint32_t XM_PERMUTE_1Y = 5;
+XM_CONSTEXPR uint32_t XM_PERMUTE_1Z = 6;
+XM_CONSTEXPR uint32_t XM_PERMUTE_1W = 7;
 
-const uint32_t XM_SWIZZLE_X         = 0;
-const uint32_t XM_SWIZZLE_Y         = 1;
-const uint32_t XM_SWIZZLE_Z         = 2;
-const uint32_t XM_SWIZZLE_W         = 3;
+XM_CONSTEXPR uint32_t XM_SWIZZLE_X  = 0;
+XM_CONSTEXPR uint32_t XM_SWIZZLE_Y  = 1;
+XM_CONSTEXPR uint32_t XM_SWIZZLE_Z  = 2;
+XM_CONSTEXPR uint32_t XM_SWIZZLE_W  = 3;
 
-const uint32_t XM_CRMASK_CR6        = 0x000000F0;
-const uint32_t XM_CRMASK_CR6TRUE    = 0x00000080;
-const uint32_t XM_CRMASK_CR6FALSE   = 0x00000020;
-const uint32_t XM_CRMASK_CR6BOUNDS  = XM_CRMASK_CR6FALSE;
+XM_CONSTEXPR uint32_t XM_CRMASK_CR6         = 0x000000F0;
+XM_CONSTEXPR uint32_t XM_CRMASK_CR6TRUE     = 0x00000080;
+XM_CONSTEXPR uint32_t XM_CRMASK_CR6FALSE    = 0x00000020;
+XM_CONSTEXPR uint32_t XM_CRMASK_CR6BOUNDS   = XM_CRMASK_CR6FALSE;
 
-const size_t XM_CACHE_LINE_SIZE = 64;
+XM_CONSTEXPR size_t XM_CACHE_LINE_SIZE = 64;
 
 
 /****************************************************************************
