@@ -1972,6 +1972,31 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
     return XMVectorSelect( srgb, V, g_XMSelect1110 );
 }
 
+//------------------------------------------------------------------------------
+
+inline XMVECTOR XM_CALLCONV XMColorRGBToYUV_UHD( FXMVECTOR rgb )
+{
+    static const XMVECTORF32 Scale0 = { 0.2627f, -0.1215f,  0.6150f, 0.0f };
+    static const XMVECTORF32 Scale1 = { 0.6780f, -0.3136f, -0.5655f, 0.0f };
+    static const XMVECTORF32 Scale2 = { 0.0593f,  0.4351f, -0.0495f, 0.0f };
+
+    XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
+    XMVECTOR clr = XMVector3Transform( rgb, M );
+
+    return XMVectorSelect( rgb, clr, g_XMSelect1110 );
+}
+
+inline XMVECTOR XM_CALLCONV XMColorYUVToRGB_UHD( FXMVECTOR yuv )
+{
+    static const XMVECTORF32 Scale1 = {    0.0f, -0.1891f, 2.1620f, 0.0f };
+    static const XMVECTORF32 Scale2 = { 1.1989f, -0.6566f,    0.0f, 0.0f };
+        
+    XMMATRIX M( g_XMOne, Scale1, Scale2, g_XMZero );
+    XMVECTOR clr = XMVector3Transform( yuv, M );
+
+    return XMVectorSelect( yuv, clr, g_XMSelect1110 );
+}
+
 /****************************************************************************
  *
  * Miscellaneous
