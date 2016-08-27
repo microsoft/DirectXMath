@@ -3,5 +3,6 @@
 
 # Explicitly declare code/VS files as CRLF
 *.cpp eol=crlf
+*.cmd eol=crlf
 *.h eol=crlf
 *.inl eol=crlf
