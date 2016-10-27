@@ -126,15 +126,6 @@
 #include <sal.h>
 #include <assert.h>
 
-#ifndef _XM_NO_ROUNDF_
-#ifdef _MSC_VER
-#include <yvals.h>
-#if defined(_CPPLIB_VER) && ( _CPPLIB_VER < 610 )
-#define _XM_NO_ROUNDF_
-#endif
-#endif
-#endif
-
 #pragma warning(push)
 #pragma warning(disable : 4005 4668)
 // C4005/4668: Old header issue

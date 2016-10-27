@@ -200,7 +200,7 @@ inline XMVECTOR CalculateEigenVector( _In_ float m11, _In_ float m12, _In_ float
     fTmp[1] = ( float )( m13 * m12 - m23 * ( m11 - e ) );
     fTmp[2] = ( float )( ( m11 - e ) * ( m22 - e ) - m12 * m12 );
 
-    XMVECTOR vTmp = XMLoadFloat3( (XMFLOAT3*)fTmp );
+    XMVECTOR vTmp = XMLoadFloat3( reinterpret_cast<const XMFLOAT3*>(fTmp) );
 
     if( XMVector3Equal( vTmp, XMVectorZero() ) ) // planar or linear
     {

@@ -14,8 +14,8 @@
 #pragma once
 
 #if defined(_XM_NO_INTRINSICS_)
-#define XMISNAN(x)  ((*(uint32_t*)&(x) & 0x7F800000) == 0x7F800000 && (*(uint32_t*)&(x) & 0x7FFFFF) != 0)
-#define XMISINF(x)  ((*(uint32_t*)&(x) & 0x7FFFFFFF) == 0x7F800000)
+#define XMISNAN(x)  ((*(const uint32_t*)&(x) & 0x7F800000) == 0x7F800000 && (*(const uint32_t*)&(x) & 0x7FFFFF) != 0)
+#define XMISINF(x)  ((*(const uint32_t*)&(x) & 0x7FFFFFFF) == 0x7F800000)
 #endif
 
 #if defined(_XM_SSE_INTRINSICS_)
@@ -2309,10 +2309,9 @@ inline XMVECTOR XM_CALLCONV XMVectorMax
 
 //------------------------------------------------------------------------------
 
-#ifdef _XM_NO_ROUNDF_
-
 namespace Internal
 {
+    // Round to nearest (even) a.k.a. banker's rounding
     inline float round_to_nearest( float x )
     {
         float i = floorf(x);
@@ -2323,7 +2322,7 @@ namespace Internal
             return i + 1.f;
 
         float int_part;
-        modff( i / 2.f, &int_part );
+        (void)modff( i / 2.f, &int_part );
         if ( (2.f*int_part) == i )
         {
             return i;
@@ -2332,8 +2331,6 @@ namespace Internal
         return i + 1.f;
     }
 };
-
-#endif
 
 #if !defined(_XM_NO_INTRINSICS_)
 #pragma float_control(push)
@@ -2347,21 +2344,12 @@ inline XMVECTOR XM_CALLCONV XMVectorRound
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-#ifdef _XM_NO_ROUNDF_
     XMVECTOR Result;
     Result.vector4_f32[0] = Internal::round_to_nearest( V.vector4_f32[0] );
     Result.vector4_f32[1] = Internal::round_to_nearest( V.vector4_f32[1] );
     Result.vector4_f32[2] = Internal::round_to_nearest( V.vector4_f32[2] );
     Result.vector4_f32[3] = Internal::round_to_nearest( V.vector4_f32[3] );
     return Result;
-#else
-    XMVECTOR Result;
-    Result.vector4_f32[0] = roundf( V.vector4_f32[0] );
-    Result.vector4_f32[1] = roundf( V.vector4_f32[1] );
-    Result.vector4_f32[2] = roundf( V.vector4_f32[2] );
-    Result.vector4_f32[3] = roundf( V.vector4_f32[3] );
-    return Result;
-#endif
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     uint32x4_t sign = vandq_u32( V, g_XMNegativeZero );

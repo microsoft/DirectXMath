@@ -2479,15 +2479,9 @@ inline void XM_CALLCONV PackedVector::XMStoreFloat3SE
     fi.i = 0x83000000 - (exp << 23);
     float ScaleR = fi.f;
 
-#ifdef _XM_NO_ROUNDF_
     pDestination->xm = static_cast<uint32_t>( Internal::round_to_nearest(x * ScaleR) );
     pDestination->ym = static_cast<uint32_t>( Internal::round_to_nearest(y * ScaleR) );
     pDestination->zm = static_cast<uint32_t>( Internal::round_to_nearest(z * ScaleR) );
-#else
-    pDestination->xm = static_cast<uint32_t>( lroundf(x * ScaleR) );
-    pDestination->ym = static_cast<uint32_t>( lroundf(y * ScaleR) );
-    pDestination->zm = static_cast<uint32_t>( lroundf(z * ScaleR) );
-#endif
 }
 
 //------------------------------------------------------------------------------
@@ -4364,5 +4358,3 @@ inline PackedVector::XMU555::XMU555
     XMVECTOR V = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray));
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f) ));
 }
-
-
