@@ -2996,6 +2996,13 @@ inline XMMATRIX& XMMATRIX::operator/= (float S)
     r[3] = XMVectorDivide( r[3], vS );
     return *this;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
+#ifdef _M_ARM64
+    float32x4_t vS = vdupq_n_f32( S );
+    r[0] = vdivq_f32( r[0], vS );
+    r[1] = vdivq_f32( r[1], vS );
+    r[2] = vdivq_f32( r[2], vS );
+    r[3] = vdivq_f32( r[3], vS );
+#else
     // 2 iterations of Newton-Raphson refinement of reciprocal
     float32x2_t vS = vdup_n_f32( S );
     float32x2_t R0 = vrecpe_f32( vS );
@@ -3008,6 +3015,7 @@ inline XMMATRIX& XMMATRIX::operator/= (float S)
     r[1] = vmulq_f32( r[1], Reciprocal );
     r[2] = vmulq_f32( r[2], Reciprocal );
     r[3] = vmulq_f32( r[3], Reciprocal );
+#endif
     return *this;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 vS = _mm_set_ps1( S );
@@ -3075,6 +3083,14 @@ inline XMMATRIX XMMATRIX::operator/ (float S) const
     R.r[3] = XMVectorDivide( r[3], vS );
     return R;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
+#ifdef _M_ARM64
+    float32x4_t vS = vdupq_n_f32( S );
+    XMMATRIX R;
+    R.r[0] = vdivq_f32( r[0], vS );
+    R.r[1] = vdivq_f32( r[1], vS );
+    R.r[2] = vdivq_f32( r[2], vS );
+    R.r[3] = vdivq_f32( r[3], vS );
+#else
     // 2 iterations of Newton-Raphson refinement of reciprocal
     float32x2_t vS = vdup_n_f32( S );
     float32x2_t R0 = vrecpe_f32( vS );
@@ -3088,6 +3104,7 @@ inline XMMATRIX XMMATRIX::operator/ (float S) const
     R.r[1] = vmulq_f32( r[1], Reciprocal );
     R.r[2] = vmulq_f32( r[2], Reciprocal );
     R.r[3] = vmulq_f32( r[3], Reciprocal );
+#endif
     return R;
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 vS = _mm_set_ps1( S );

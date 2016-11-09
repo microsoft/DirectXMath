@@ -30,6 +30,10 @@ inline float PackedVector::XMConvertHalfToFloat
     __m128i V1 = _mm_cvtsi32_si128( static_cast<uint32_t>(Value) );
     __m128 V2 = _mm_cvtph_ps( V1 );
     return _mm_cvtss_f32( V2 );
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+    uint16x4_t vHalf = vdup_n_u16(Value);
+    float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
+    return vgetq_lane_f32(vFloat, 0);
 #else
     uint32_t Mantissa = (uint32_t)(Value & 0x03FF);
 
@@ -255,6 +259,117 @@ inline float* PackedVector::XMConvertHalfToFloatStream
     XM_SFENCE();
 
     return pOutputStream;
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+    const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
+    uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    size_t i = 0;
+    size_t four = HalfCount >> 2;
+    if (four > 0)
+    {
+        if (InputStride == sizeof(HALF))
+        {
+            if (OutputStride == sizeof(float))
+            {
+                // Packed input, packed output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    uint16x4_t vHalf = vld1_u16(reinterpret_cast<const uint16_t*>(pHalf));
+                    pHalf += InputStride * 4;
+
+                    float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
+
+                    vst1q_f32(reinterpret_cast<float*>(pFloat), vFloat);
+                    pFloat += OutputStride * 4;
+                    i += 4;
+                }
+            }
+            else
+            {
+                // Packed input, scattered output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    uint16x4_t vHalf = vld1_u16(reinterpret_cast<const uint16_t*>(pHalf));
+                    pHalf += InputStride * 4;
+
+                    float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
+
+                    vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 0);
+                    pFloat += OutputStride;
+                    vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 1);
+                    pFloat += OutputStride;
+                    vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 2);
+                    pFloat += OutputStride;
+                    vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 3);
+                    pFloat += OutputStride;
+                    i += 4;
+                }
+            }
+        }
+        else if (OutputStride == sizeof(float))
+        {
+            // Scattered input, packed output
+            for (size_t j = 0; j < four; ++j)
+            {
+                uint16_t H1 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H2 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H3 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H4 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+
+                uint64_t iHalf = uint64_t(H1) | (uint64_t(H2) << 16) | (uint64_t(H3) << 32) | (uint64_t(H4) << 48);
+                uint16x4_t vHalf = vcreate_u16(iHalf);
+
+                float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
+
+                vst1q_f32(reinterpret_cast<float*>(pFloat), vFloat);
+                pFloat += OutputStride * 4;
+                i += 4;
+            }
+        }
+        else
+        {
+            // Scattered input, scattered output
+            for (size_t j = 0; j < four; ++j)
+            {
+                uint16_t H1 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H2 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H3 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H4 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+
+                uint64_t iHalf = uint64_t(H1) | (uint64_t(H2) << 16) | (uint64_t(H3) << 32) | (uint64_t(H4) << 48);
+                uint16x4_t vHalf = vcreate_u16(iHalf);
+
+                float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
+
+                vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 0);
+                pFloat += OutputStride;
+                vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 1);
+                pFloat += OutputStride;
+                vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 2);
+                pFloat += OutputStride;
+                vst1q_lane_f32(reinterpret_cast<float*>(pFloat), vFloat, 3);
+                pFloat += OutputStride;
+                i += 4;
+            }
+        }
+    }
+
+    for (; i < HalfCount; ++i)
+    {
+        *reinterpret_cast<float*>(pFloat) = XMConvertHalfToFloat(reinterpret_cast<const HALF*>(pHalf)[0]);
+        pHalf += InputStride;
+        pFloat += OutputStride;
+    }
+
+    return pOutputStream;
 #else
     const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
@@ -281,6 +396,10 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
     __m128 V1 = _mm_set_ss( Value );
     __m128i V2 = _mm_cvtps_ph( V1, 0 );
     return static_cast<HALF>( _mm_cvtsi128_si32(V2) );
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+    float32x4_t vFloat = vdupq_n_f32(Value);
+    float16x4_t vHalf = vcvt_f16_f32(vFloat);
+    return vget_lane_u16(vreinterpret_u16_f16(vHalf), 0);
 #else
     uint32_t Result;
 
@@ -488,6 +607,119 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
                 *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 2));
                 pHalf += OutputStride;
                 *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 3));
+                pHalf += OutputStride;
+                i += 4;
+            }
+        }
+    }
+
+    for (; i < FloatCount; ++i)
+    {
+        *reinterpret_cast<HALF*>(pHalf) = XMConvertFloatToHalf(reinterpret_cast<const float*>(pFloat)[0]);
+        pFloat += InputStride; 
+        pHalf += OutputStride;
+    }
+
+    return pOutputStream;
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+    const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
+    uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    size_t i = 0;
+    size_t four = FloatCount >> 2;
+    if (four > 0)
+    {
+        if (InputStride == sizeof(float))
+        {
+            if (OutputStride == sizeof(HALF))
+            {
+                // Packed input, packed output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    float32x4_t vFloat = vld1q_f32(reinterpret_cast<const float*>(pFloat));
+                    pFloat += InputStride*4;
+
+                    uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
+
+                    vst1_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf);
+                    pHalf += OutputStride*4;
+                    i += 4;
+                }
+            }
+            else
+            {
+                // Packed input, scattered output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    float32x4_t vFloat = vld1q_f32(reinterpret_cast<const float*>(pFloat));
+                    pFloat += InputStride*4;
+
+                    uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
+
+                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 0);
+                    pHalf += OutputStride;
+                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 1);
+                    pHalf += OutputStride;
+                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 2);
+                    pHalf += OutputStride;
+                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 3);
+                    pHalf += OutputStride;
+                    i += 4;
+                }
+            }
+        }
+        else if (OutputStride == sizeof(HALF))
+        {
+            // Scattered input, packed output
+            for (size_t j = 0; j < four; ++j)
+            {
+                float32x4_t vFloat = vdupq_n_f32(0);
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 0);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 1);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 2);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 3);
+                pFloat += InputStride;
+
+                uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
+
+                vst1_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf);
+                pHalf += OutputStride*4;
+                i += 4;
+            }
+        }
+        else
+        {
+            // Scattered input, scattered output
+            for (size_t j = 0; j < four; ++j)
+            {
+                float32x4_t vFloat = vdupq_n_f32(0);
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 0);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 1);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 2);
+                pFloat += InputStride;
+
+                vFloat = vld1q_lane_f32(reinterpret_cast<const float*>(pFloat), vFloat, 3);
+                pFloat += InputStride;
+
+                uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
+
+                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 0);
+                pHalf += OutputStride;
+                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 1);
+                pHalf += OutputStride;
+                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 2);
+                pHalf += OutputStride;
+                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 3);
                 pHalf += OutputStride;
                 i += 4;
             }
