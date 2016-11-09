@@ -2035,7 +2035,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
     // 0,0,-fRange * NearZ,0
     vTemp = _mm_shuffle_ps(vTemp,vValues,_MM_SHUFFLE(2,1,0,0));
     M.r[3] = vTemp;
-
     return M;
 #endif
 }
