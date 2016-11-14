@@ -16,5 +16,6 @@
 *.lastbuildstate
 *.ilk
 *.VC.db
+.vs
 /Tests
 /wiki
