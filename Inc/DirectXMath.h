@@ -39,7 +39,7 @@
 #define XM_CTOR_DEFAULT =default;
 #endif
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
+#if defined(_MSC_VER) && (_MSC_FULL_VER < 190023506)
 #define XM_CONSTEXPR const
 #else
 #define XM_CONSTEXPR constexpr
