@@ -4,14 +4,13 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-June 2016
+December 2016
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
 
-
-This code is designed to build with Visual Studio 2013 or 2015. It is recommended that you
-make use of VS 2013 Update 5 or VS 2015 Update 2.
+This code is designed to build with Visual Studio 2013, 2015, or 2017. It is recommended that you
+make use of the latest updates (VS 2013 Update 5 or VS 2015 Update 3).
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -59,6 +58,16 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+December 2016 (3.10)
+    Added XMVectorSum for horizontal adds
+    ARMv8 intrinsics use for ARM64 platform (division, rounding, half-precision conversion)
+    Added SSE3 codepaths using opt-in _XM_SSE3_INTRINSICS_
+    XMVectorRound fix for no-intrinsics to match round to nearest (even)
+    XMStoreFloat3SE fix when max channel isn't a perfect power of 2
+    constexpr conformance fix and workaround for compiler bug in VS 2015 RTM
+    Remove support for VS 2012 compilers
+    Remove __vector4i deprecated type
 
 June 2016 (3.09)
     Includes support for additional optimizations when built with /arch:AVX or /arch:AVX2
