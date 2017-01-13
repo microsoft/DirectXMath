@@ -5,7 +5,7 @@
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
 // THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
 // PARTICULAR PURPOSE.
-//  
+//
 // Copyright (c) Microsoft Corporation. All rights reserved.
 //
 // http://go.microsoft.com/fwlink/?LinkID=615560
@@ -23,7 +23,7 @@
 #error DirectX Math Visual C++ 2013 or later.
 #endif
 
-#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
+#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
 #define _XM_VECTORCALL_ 1
 #endif
 
@@ -74,9 +74,9 @@
 #endif
 
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#if defined(_M_IX86) || defined(_M_X64)
+#if (defined(_M_IX86) || defined(_M_X64)) && !defined(_M_HYBRID_X86_ARM64)
 #define _XM_SSE_INTRINSICS_
-#elif defined(_M_ARM) || defined(_M_ARM64)
+#elif defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
 #define _XM_ARM_NEON_INTRINSICS_
 #elif !defined(_XM_NO_INTRINSICS_)
 #error DirectX Math does not support this target
@@ -115,7 +115,7 @@
 #endif
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#ifdef _M_ARM64
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
 #include <arm64_neon.h>
 #else
 #include <arm_neon.h>
@@ -282,7 +282,7 @@ struct __vector4
 #endif // _XM_NO_INTRINSICS_
 
 //------------------------------------------------------------------------------
-// Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte 
+// Vector intrinsic: Four 32 bit floating point components aligned on a 16 byte
 // boundary and mapped to hardware vector registers
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 typedef __m128 XMVECTOR;
@@ -300,14 +300,14 @@ typedef const XMVECTOR& FXMVECTOR;
 #endif
 
 // Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and x64 vector call; by reference otherwise
-#if ( defined(_M_ARM) || defined(_M_ARM64) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR GXMVECTOR;
 #else
 typedef const XMVECTOR& GXMVECTOR;
 #endif
 
 // Fix-up for (5th & 6th) XMVECTOR parameter to pass in-register for ARM64 and vector call; by reference otherwise
-#if ( defined(_M_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMVECTOR HXMVECTOR;
 #else
 typedef const XMVECTOR& HXMVECTOR;
@@ -407,7 +407,7 @@ XMVECTOR    XM_CALLCONV     operator/ (FXMVECTOR V, float S);
 struct XMMATRIX;
 
 // Fix-up for (1st) XMMATRIX parameter to pass in-register for ARM64 and vector call; by reference otherwise
-#if ( defined(_M_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ ) && !defined(_XM_NO_INTRINSICS_)
 typedef const XMMATRIX FXMMATRIX;
 #else
 typedef const XMMATRIX& FXMMATRIX;
@@ -1174,21 +1174,21 @@ XMFLOAT3*   XM_CALLCONV     XMVector3TransformNormalStream(_Out_writes_bytes_(si
                                                            _In_ size_t OutputStride,
                                                            _In_reads_bytes_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) const XMFLOAT3* pInputStream,
                                                            _In_ size_t InputStride, _In_ size_t VectorCount, _In_ FXMMATRIX M);
-XMVECTOR    XM_CALLCONV     XMVector3Project(FXMVECTOR V, float ViewportX, float ViewportY, float ViewportWidth, float ViewportHeight, float ViewportMinZ, float ViewportMaxZ, 
+XMVECTOR    XM_CALLCONV     XMVector3Project(FXMVECTOR V, float ViewportX, float ViewportY, float ViewportWidth, float ViewportHeight, float ViewportMinZ, float ViewportMaxZ,
                                              FXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 XMFLOAT3*   XM_CALLCONV     XMVector3ProjectStream(_Out_writes_bytes_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
                                                    _In_ size_t OutputStride,
                                                    _In_reads_bytes_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) const XMFLOAT3* pInputStream,
-                                                   _In_ size_t InputStride, _In_ size_t VectorCount, 
-                                                   _In_ float ViewportX, _In_ float ViewportY, _In_ float ViewportWidth, _In_ float ViewportHeight, _In_ float ViewportMinZ, _In_ float ViewportMaxZ, 
+                                                   _In_ size_t InputStride, _In_ size_t VectorCount,
+                                                   _In_ float ViewportX, _In_ float ViewportY, _In_ float ViewportWidth, _In_ float ViewportHeight, _In_ float ViewportMinZ, _In_ float ViewportMaxZ,
                                                    _In_ FXMMATRIX Projection, _In_ CXMMATRIX View, _In_ CXMMATRIX World);
-XMVECTOR    XM_CALLCONV     XMVector3Unproject(FXMVECTOR V, float ViewportX, float ViewportY, float ViewportWidth, float ViewportHeight, float ViewportMinZ, float ViewportMaxZ, 
+XMVECTOR    XM_CALLCONV     XMVector3Unproject(FXMVECTOR V, float ViewportX, float ViewportY, float ViewportWidth, float ViewportHeight, float ViewportMinZ, float ViewportMaxZ,
                                                FXMMATRIX Projection, CXMMATRIX View, CXMMATRIX World);
 XMFLOAT3*   XM_CALLCONV     XMVector3UnprojectStream(_Out_writes_bytes_(sizeof(XMFLOAT3)+OutputStride*(VectorCount-1)) XMFLOAT3* pOutputStream,
                                                      _In_ size_t OutputStride,
                                                      _In_reads_bytes_(sizeof(XMFLOAT3)+InputStride*(VectorCount-1)) const XMFLOAT3* pInputStream,
-                                                     _In_ size_t InputStride, _In_ size_t VectorCount, 
-                                                     _In_ float ViewportX, _In_ float ViewportY, _In_ float ViewportWidth, _In_ float ViewportHeight, _In_ float ViewportMinZ, _In_ float ViewportMaxZ, 
+                                                     _In_ size_t InputStride, _In_ size_t VectorCount,
+                                                     _In_ float ViewportX, _In_ float ViewportY, _In_ float ViewportWidth, _In_ float ViewportHeight, _In_ float ViewportMinZ, _In_ float ViewportMaxZ,
                                                      _In_ FXMMATRIX Projection, _In_ CXMMATRIX View, _In_ CXMMATRIX World);
 
 /****************************************************************************
@@ -1274,9 +1274,9 @@ XMMATRIX    XM_CALLCONV     XMMatrixRotationRollPitchYawFromVector(FXMVECTOR Ang
 XMMATRIX    XM_CALLCONV     XMMatrixRotationNormal(FXMVECTOR NormalAxis, float Angle);
 XMMATRIX    XM_CALLCONV     XMMatrixRotationAxis(FXMVECTOR Axis, float Angle);
 XMMATRIX    XM_CALLCONV     XMMatrixRotationQuaternion(FXMVECTOR Quaternion);
-XMMATRIX    XM_CALLCONV     XMMatrixTransformation2D(FXMVECTOR ScalingOrigin, float ScalingOrientation, FXMVECTOR Scaling, 
+XMMATRIX    XM_CALLCONV     XMMatrixTransformation2D(FXMVECTOR ScalingOrigin, float ScalingOrientation, FXMVECTOR Scaling,
                                                      FXMVECTOR RotationOrigin, float Rotation, GXMVECTOR Translation);
-XMMATRIX    XM_CALLCONV     XMMatrixTransformation(FXMVECTOR ScalingOrigin, FXMVECTOR ScalingOrientationQuaternion, FXMVECTOR Scaling, 
+XMMATRIX    XM_CALLCONV     XMMatrixTransformation(FXMVECTOR ScalingOrigin, FXMVECTOR ScalingOrientationQuaternion, FXMVECTOR Scaling,
                                                    GXMVECTOR RotationOrigin, HXMVECTOR RotationQuaternion, HXMVECTOR Translation);
 XMMATRIX    XM_CALLCONV     XMMatrixAffineTransformation2D(FXMVECTOR Scaling, FXMVECTOR RotationOrigin, float Rotation, FXMVECTOR Translation);
 XMMATRIX    XM_CALLCONV     XMMatrixAffineTransformation(FXMVECTOR Scaling, FXMVECTOR RotationOrigin, FXMVECTOR RotationQuaternion, GXMVECTOR Translation);
@@ -1711,12 +1711,12 @@ template<uint32_t VSLeftRotateElements, uint32_t Select0, uint32_t Select1, uint
  *
  ****************************************************************************/
 
-// The purpose of the following global constants is to prevent redundant 
+// The purpose of the following global constants is to prevent redundant
 // reloading of the constants when they are referenced by more than one
 // separate inline math routine called within the same function.  Declaring
 // a constant locally within a routine is sufficient to prevent redundant
 // reloads of that constant when that single routine is called multiple
-// times in a function, but if the constant is used (and declared) in a 
+// times in a function, but if the constant is used (and declared) in a
 // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST

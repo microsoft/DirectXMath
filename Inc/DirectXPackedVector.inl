@@ -30,7 +30,7 @@ inline float PackedVector::XMConvertHalfToFloat
     __m128i V1 = _mm_cvtsi32_si128( static_cast<uint32_t>(Value) );
     __m128 V2 = _mm_cvtph_ps( V1 );
     return _mm_cvtss_f32( V2 );
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)) && !defined(_XM_NO_INTRINSICS_)
     uint16x4_t vHalf = vdup_n_u16(Value);
     float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
     return vgetq_lane_f32(vFloat, 0);
@@ -259,7 +259,7 @@ inline float* PackedVector::XMConvertHalfToFloatStream
     XM_SFENCE();
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)) && !defined(_XM_NO_INTRINSICS_)
     const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -396,7 +396,7 @@ inline PackedVector::HALF PackedVector::XMConvertFloatToHalf
     __m128 V1 = _mm_set_ss( Value );
     __m128i V2 = _mm_cvtps_ph( V1, 0 );
     return static_cast<HALF>( _mm_cvtsi128_si32(V2) );
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)) && !defined(_XM_NO_INTRINSICS_)
     float32x4_t vFloat = vdupq_n_f32(Value);
     float16x4_t vHalf = vcvt_f16_f32(vFloat);
     return vget_lane_u16(vreinterpret_u16_f16(vHalf), 0);
@@ -621,7 +621,7 @@ inline PackedVector::HALF* PackedVector::XMConvertFloatToHalfStream
     }
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && defined(_M_ARM64) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)) && !defined(_XM_NO_INTRINSICS_)
     const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
     uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
 

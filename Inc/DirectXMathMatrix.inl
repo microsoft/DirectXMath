@@ -2996,7 +2996,7 @@ inline XMMATRIX& XMMATRIX::operator/= (float S)
     r[3] = XMVectorDivide( r[3], vS );
     return *this;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#ifdef _M_ARM64
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
     float32x4_t vS = vdupq_n_f32( S );
     r[0] = vdivq_f32( r[0], vS );
     r[1] = vdivq_f32( r[1], vS );
@@ -3083,7 +3083,7 @@ inline XMMATRIX XMMATRIX::operator/ (float S) const
     R.r[3] = XMVectorDivide( r[3], vS );
     return R;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#ifdef _M_ARM64
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
     float32x4_t vS = vdupq_n_f32( S );
     XMMATRIX R;
     R.r[0] = vdivq_f32( r[0], vS );
