@@ -4,7 +4,7 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-December 2016
+January 2017
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
@@ -59,7 +59,7 @@ https://opensource.microsoft.com/codeofconduct/
 RELEASE HISTORY
 ---------------
 
-December 2016 (3.10)
+January 2017 (3.10)
     Added XMVectorSum for horizontal adds
     ARMv8 intrinsics use for ARM64 platform (division, rounding, half-precision conversion)
     Added SSE3 codepaths using opt-in _XM_SSE3_INTRINSICS_
