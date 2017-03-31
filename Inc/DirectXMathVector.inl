@@ -408,10 +408,10 @@ inline float XM_CALLCONV XMVectorGetByIndex(FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[i];
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return V.n128_f32[i];
-#elif defined(_XM_SSE_INTRINSICS_)
-    return V.m128_f32[i];
+#else
+    XMVECTORF32 U;
+    U.v = V;
+    return U.f[i];
 #endif
 }
 
@@ -478,10 +478,10 @@ inline void XM_CALLCONV XMVectorGetByIndexPtr(float *f, FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     *f = V.vector4_f32[i];
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    *f = V.n128_f32[i];
-#elif defined(_XM_SSE_INTRINSICS_)
-    *f = V.m128_f32[i];
+#else
+    XMVECTORF32 U;
+    U.v = V;
+    *f = U.f[i];
 #endif
 }
 
@@ -562,10 +562,10 @@ inline uint32_t XM_CALLCONV XMVectorGetIntByIndex(FXMVECTOR V, size_t i)
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[i];
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return V.n128_u32[i];
-#elif defined(_XM_SSE_INTRINSICS_)
-    return V.m128_u32[i];
+#else
+    XMVECTORU32 U;
+    U.v = V;
+    return U.u[i];
 #endif
 }
 
@@ -642,10 +642,10 @@ inline void XM_CALLCONV XMVectorGetIntByIndexPtr(uint32_t *x, FXMVECTOR V, size_
     _Analysis_assume_( i < 4 );
 #if defined(_XM_NO_INTRINSICS_)
     *x = V.vector4_u32[i];
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    *x = V.n128_u32[i];
-#elif defined(_XM_SSE_INTRINSICS_)
-    *x = V.m128_u32[i];
+#else
+    XMVECTORU32 U;
+    U.v = V;
+    *x = U.u[i];
 #endif
 }
 
@@ -731,14 +731,11 @@ inline XMVECTOR XM_CALLCONV XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
     U = V;
     U.vector4_f32[i] = f;
     return U;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTOR U = V;
-    U.n128_f32[i] = f;
-    return U;
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR U = V;
-    U.m128_f32[i] = f;
-    return U;
+#else
+    XMVECTORF32 U;
+    U.v = V;
+    U.f[i] = f;
+    return U.v;
 #endif
 }
 
@@ -863,14 +860,11 @@ inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, const float *f, s
     U = V;
     U.vector4_f32[i] = *f;
     return U;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTOR U = V;
-    U.n128_f32[i] = *f;
-    return U;
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR U = V;
-    U.m128_f32[i] = *f;
-    return U;
+#else
+    XMVECTORF32 U;
+    U.v = V;
+    U.f[i] = *f;
+    return U.v;
 #endif
 }
 
@@ -990,12 +984,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_
     U = V;
     U.vector4_u32[i] = x;
     return U;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTORU32 tmp;
-    tmp.v = V;
-    tmp.u[i] = x;
-    return tmp;
-#elif defined(_XM_SSE_INTRINSICS_)
+#else
     XMVECTORU32 tmp;
     tmp.v = V;
     tmp.u[i] = x;
@@ -1125,12 +1114,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t
     U = V;
     U.vector4_u32[i] = *x;
     return U;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTORU32 tmp;
-    tmp.v = V;
-    tmp.u[i] = *x;
-    return tmp;
-#elif defined(_XM_SSE_INTRINSICS_)
+#else
     XMVECTORU32 tmp;
     tmp.v = V;
     tmp.u[i] = *x;
