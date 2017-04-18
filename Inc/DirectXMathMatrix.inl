@@ -297,13 +297,20 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMMATRIX mResult;
+    // Splat the component X,Y,Z then W
+#if defined(_XM_AVX_INTRINSICS_)
+    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
+    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
+    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
+    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 3);
+#else
     // Use vW to hold the original row
     XMVECTOR vW = M1.r[0];
-    // Splat the component X,Y,Z then W
     XMVECTOR vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     XMVECTOR vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     XMVECTOR vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     // Perform the operation on the first row
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
@@ -315,11 +322,18 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vX = _mm_add_ps(vX,vY);
     mResult.r[0] = vX;
     // Repeat for the other 3 rows
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 3);
+#else
     vW = M1.r[1];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -328,11 +342,18 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     mResult.r[1] = vX;
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 3);
+#else
     vW = M1.r[2];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -341,11 +362,18 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     mResult.r[2] = vX;
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 3);
+#else
     vW = M1.r[3];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -450,13 +478,20 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     mResult.r[3] = T1.val[1];
     return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
+    // Splat the component X,Y,Z then W
+#if defined(_XM_AVX_INTRINSICS_)
+    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
+    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
+    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
+    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 3);
+#else
     // Use vW to hold the original row
     XMVECTOR vW = M1.r[0];
-    // Splat the component X,Y,Z then W
     XMVECTOR vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     XMVECTOR vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     XMVECTOR vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     // Perform the operation on the first row
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
@@ -466,13 +501,20 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX,vZ);
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
-    __m128 r0 = vX;
+    XMVECTOR r0 = vX;
     // Repeat for the other 3 rows
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 3);
+#else
     vW = M1.r[1];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -480,12 +522,19 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX,vZ);
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
-    __m128 r1 = vX;
+    XMVECTOR r1 = vX;
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 3);
+#else
     vW = M1.r[2];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -493,12 +542,19 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX,vZ);
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
-    __m128 r2 = vX;
+    XMVECTOR r2 = vX;
+#if defined(_XM_AVX_INTRINSICS_)
+    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 3);
+#else
     vW = M1.r[3];
     vX = XM_PERMUTE_PS(vW,_MM_SHUFFLE(0,0,0,0));
     vY = XM_PERMUTE_PS(vW,_MM_SHUFFLE(1,1,1,1));
     vZ = XM_PERMUTE_PS(vW,_MM_SHUFFLE(2,2,2,2));
     vW = XM_PERMUTE_PS(vW,_MM_SHUFFLE(3,3,3,3));
+#endif
     vX = _mm_mul_ps(vX,M2.r[0]);
     vY = _mm_mul_ps(vY,M2.r[1]);
     vZ = _mm_mul_ps(vZ,M2.r[2]);
@@ -506,7 +562,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX,vZ);
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
-    __m128 r3 = vX;
+    XMVECTOR r3 = vX;
 
     // x.x,x.y,y.x,y.y
     XMVECTOR vTemp1 = _mm_shuffle_ps(r0,r1,_MM_SHUFFLE(1,0,1,0));
