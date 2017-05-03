@@ -52,25 +52,21 @@ namespace XDSP
     {
         using namespace DirectX;
         // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
-        XMVECTOR vi1i2 = XMVectorMultiply(i1, i2);
-        XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
-        XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-        XMVECTOR vr2i1 = XMVectorMultiply(r2, i1);
-        rResult = XMVectorSubtract(vr1r2, vi1i2); // real: (r1*r2 - i1*i2)
-        iResult = XMVectorAdd(vr1i2, vr2i1); // imaginary: (r1*i2 + r2*i1)
-    }
+		XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
+		XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
+		rResult = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+		iResult = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+	}
 
     __forceinline void XM_CALLCONV vmulComplex (_Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1, _In_ FXMVECTOR r2, _In_ FXMVECTOR i2)
     {
         using namespace DirectX;
         // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
-        XMVECTOR vi1i2 = XMVectorMultiply(i1, i2);
-        XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
-        XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-        XMVECTOR vr2i1 = XMVectorMultiply(r2, i1);
-        r1 = XMVectorSubtract(vr1r2, vi1i2); // real: (r1*r2 - i1*i2)
-        i1 = XMVectorAdd(vr1i2, vr2i1); // imaginary: (r1*i2 + r2*i1)
-    }
+		XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
+		XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
+		r1 = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+		i1 = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+	}
 
     //----------------------------------------------------------------------------------
     // Radix-4 decimation-in-time FFT butterfly.
