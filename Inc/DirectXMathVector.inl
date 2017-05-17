@@ -14319,6 +14319,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
  *
  ****************************************************************************/
 
+#ifndef _XM_NO_XMVECTOR_OVERLOADS_
+
 //------------------------------------------------------------------------------
 
 inline XMVECTOR XM_CALLCONV operator+ (FXMVECTOR V)
@@ -14483,6 +14485,8 @@ inline XMVECTOR XM_CALLCONV operator*
 {
     return XMVectorScale(V, S);
 }
+
+#endif /* !_XM_NO_XMVECTOR_OVERLOADS_ */
 
 #if defined(_XM_NO_INTRINSICS_)
 #undef XMISNAN

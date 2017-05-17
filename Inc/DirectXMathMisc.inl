@@ -1948,7 +1948,7 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToSRGB( FXMVECTOR rgb )
 
     XMVECTOR V = XMVectorSaturate(rgb);
     XMVECTOR V0 = XMVectorMultiply( V, Linear );
-    XMVECTOR V1 = Scale * XMVectorPow( V, InvGamma ) - Bias;
+    XMVECTOR V1 = XMVectorSubtract( XMVectorMultiply( Scale, XMVectorPow( V, InvGamma ) ), Bias );
     XMVECTOR select = XMVectorLess( V, Cutoff );
     V = XMVectorSelect( V1, V0, select );
     return XMVectorSelect( rgb, V, g_XMSelect1110 );
@@ -1966,7 +1966,7 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
 
     XMVECTOR V = XMVectorSaturate(srgb);
     XMVECTOR V0 = XMVectorMultiply( V, ILinear );
-    XMVECTOR V1 = XMVectorPow( (V + Bias) * Scale, Gamma );
+    XMVECTOR V1 = XMVectorPow( XMVectorMultiply( XMVectorAdd( V, Bias ), Scale ), Gamma );
     XMVECTOR select = XMVectorGreater( V, Cutoff );
     V = XMVectorSelect( V0, V1, select );
     return XMVectorSelect( srgb, V, g_XMSelect1110 );

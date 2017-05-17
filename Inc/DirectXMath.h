@@ -87,6 +87,10 @@
 #endif
 #endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
+#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && defined(__clang__)
+#define _XM_NO_XMVECTOR_OVERLOADS_
+#endif
+
 #pragma warning(push)
 #pragma warning(disable:4514 4820)
 // C4514/4820: Off by default noise
@@ -385,6 +389,8 @@ __declspec(align(16)) struct XMVECTORU32
 
 //------------------------------------------------------------------------------
 // Vector operators
+
+#ifndef _XM_NO_XMVECTOR_OVERLOADS_
 XMVECTOR    XM_CALLCONV     operator+ (FXMVECTOR V);
 XMVECTOR    XM_CALLCONV     operator- (FXMVECTOR V);
 
@@ -403,6 +409,7 @@ XMVECTOR    XM_CALLCONV     operator/ (FXMVECTOR V1, FXMVECTOR V2);
 XMVECTOR    XM_CALLCONV     operator* (FXMVECTOR V, float S);
 XMVECTOR    XM_CALLCONV     operator* (float S, FXMVECTOR V);
 XMVECTOR    XM_CALLCONV     operator/ (FXMVECTOR V, float S);
+#endif /* !_XM_NO_XMVECTOR_OVERLOADS_ */
 
 //------------------------------------------------------------------------------
 // Matrix type: Sixteen 32 bit floating point components aligned on a
