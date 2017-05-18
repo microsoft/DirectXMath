@@ -106,16 +106,17 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     //   (Q2.w * Q1.w) - (Q2.x * Q1.x) - (Q2.y * Q1.y) - (Q2.z * Q1.z) ]
 
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTOR Result = {
-        (Q2.vector4_f32[3] * Q1.vector4_f32[0]) + (Q2.vector4_f32[0] * Q1.vector4_f32[3]) + (Q2.vector4_f32[1] * Q1.vector4_f32[2]) - (Q2.vector4_f32[2] * Q1.vector4_f32[1]),
-        (Q2.vector4_f32[3] * Q1.vector4_f32[1]) - (Q2.vector4_f32[0] * Q1.vector4_f32[2]) + (Q2.vector4_f32[1] * Q1.vector4_f32[3]) + (Q2.vector4_f32[2] * Q1.vector4_f32[0]),
-        (Q2.vector4_f32[3] * Q1.vector4_f32[2]) + (Q2.vector4_f32[0] * Q1.vector4_f32[1]) - (Q2.vector4_f32[1] * Q1.vector4_f32[0]) + (Q2.vector4_f32[2] * Q1.vector4_f32[3]),
-        (Q2.vector4_f32[3] * Q1.vector4_f32[3]) - (Q2.vector4_f32[0] * Q1.vector4_f32[0]) - (Q2.vector4_f32[1] * Q1.vector4_f32[1]) - (Q2.vector4_f32[2] * Q1.vector4_f32[2]) };
-    return Result;
+    XMVECTORF32 Result = { { {
+            (Q2.vector4_f32[3] * Q1.vector4_f32[0]) + (Q2.vector4_f32[0] * Q1.vector4_f32[3]) + (Q2.vector4_f32[1] * Q1.vector4_f32[2]) - (Q2.vector4_f32[2] * Q1.vector4_f32[1]),
+            (Q2.vector4_f32[3] * Q1.vector4_f32[1]) - (Q2.vector4_f32[0] * Q1.vector4_f32[2]) + (Q2.vector4_f32[1] * Q1.vector4_f32[3]) + (Q2.vector4_f32[2] * Q1.vector4_f32[0]),
+            (Q2.vector4_f32[3] * Q1.vector4_f32[2]) + (Q2.vector4_f32[0] * Q1.vector4_f32[1]) - (Q2.vector4_f32[1] * Q1.vector4_f32[0]) + (Q2.vector4_f32[2] * Q1.vector4_f32[3]),
+            (Q2.vector4_f32[3] * Q1.vector4_f32[3]) - (Q2.vector4_f32[0] * Q1.vector4_f32[0]) - (Q2.vector4_f32[1] * Q1.vector4_f32[1]) - (Q2.vector4_f32[2] * Q1.vector4_f32[2])
+        } } };
+    return Result.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const XMVECTORF32 ControlWZYX = { 1.0f,-1.0f, 1.0f,-1.0f};
-    static const XMVECTORF32 ControlZWXY = { 1.0f, 1.0f,-1.0f,-1.0f};
-    static const XMVECTORF32 ControlYXWZ = {-1.0f, 1.0f, 1.0f,-1.0f};
+    static const XMVECTORF32 ControlWZYX = { { { 1.0f, -1.0f, 1.0f, -1.0f } } };
+    static const XMVECTORF32 ControlZWXY = { { { 1.0f, 1.0f, -1.0f, -1.0f } } };
+    static const XMVECTORF32 ControlYXWZ = { { { -1.0f, 1.0f, 1.0f, -1.0f } } };
 
     float32x2_t Q2L = vget_low_f32(Q2);
     float32x2_t Q2H = vget_high_f32(Q2);
@@ -143,9 +144,9 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     vResult = vmlaq_f32(vResult, Q2Z, ControlYXWZ);
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 ControlWZYX = { 1.0f,-1.0f, 1.0f,-1.0f};
-    static const XMVECTORF32 ControlZWXY = { 1.0f, 1.0f,-1.0f,-1.0f};
-    static const XMVECTORF32 ControlYXWZ = {-1.0f, 1.0f, 1.0f,-1.0f};
+    static const XMVECTORF32 ControlWZYX = { { { 1.0f, -1.0f, 1.0f, -1.0f } } };
+    static const XMVECTORF32 ControlZWXY = { { { 1.0f, 1.0f, -1.0f, -1.0f } } };
+    static const XMVECTORF32 ControlYXWZ = { { { -1.0f, 1.0f, 1.0f, -1.0f } } };
     // Copy to SSE registers and use as few as possible for x86
     XMVECTOR Q2X = Q2;
     XMVECTOR Q2Y = Q2;
@@ -240,18 +241,18 @@ inline XMVECTOR XM_CALLCONV XMQuaternionConjugate
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTOR Result = {
-        -Q.vector4_f32[0],
-        -Q.vector4_f32[1],
-        -Q.vector4_f32[2],
-        Q.vector4_f32[3]
-    };
-    return Result;
+    XMVECTORF32 Result = { { {
+            -Q.vector4_f32[0],
+            -Q.vector4_f32[1],
+            -Q.vector4_f32[2],
+            Q.vector4_f32[3]
+        } } };
+    return Result.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const XMVECTORF32 NegativeOne3 = {-1.0f,-1.0f,-1.0f,1.0f};
+    static const XMVECTORF32 NegativeOne3 = { { { -1.0f, -1.0f, -1.0f, 1.0f } } };
     return vmulq_f32(Q, NegativeOne3.v );
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 NegativeOne3 = {-1.0f,-1.0f,-1.0f,1.0f};
+    static const XMVECTORF32 NegativeOne3 = { { { -1.0f, -1.0f, -1.0f, 1.0f } } };
     return _mm_mul_ps(Q,NegativeOne3);
 #endif
 }
@@ -284,7 +285,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionLn
     FXMVECTOR Q
 )
 {
-    static const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
+    static const XMVECTORF32 OneMinusEpsilon = { { { 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f } } };
 
     XMVECTOR QW = XMVectorSplatW(Q);
     XMVECTOR Q0 = XMVectorSelect(g_XMSelect1110.v, Q, g_XMSelect1110.v);
@@ -355,7 +356,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
 
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
+    const XMVECTORF32 OneMinusEpsilon = { { { 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f } } };
 
     XMVECTOR CosOmega = XMQuaternionDot(Q0, Q1);
 
@@ -397,8 +398,8 @@ inline XMVECTOR XM_CALLCONV XMQuaternionSlerpV
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 OneMinusEpsilon = {1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f};
-    static const XMVECTORU32 SignMask2 = {0x80000000,0x00000000,0x00000000,0x00000000};
+    static const XMVECTORF32 OneMinusEpsilon = { { { 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f, 1.0f - 0.00001f } } };
+    static const XMVECTORU32 SignMask2       = { { { 0x80000000, 0x00000000, 0x00000000, 0x00000000 } } };
 
     XMVECTOR CosOmega = XMQuaternionDot(Q0, Q1);
 
@@ -635,7 +636,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationRollPitchYawFromVector
     FXMVECTOR Angles // <Pitch, Yaw, Roll, 0>
 )
 {
-    static const XMVECTORF32  Sign = {1.0f, -1.0f, -1.0f, 1.0f};
+    static const XMVECTORF32  Sign = { { { 1.0f, -1.0f, -1.0f, 1.0f } } };
 
     XMVECTOR HalfAngles = XMVectorMultiply(Angles, g_XMOneHalf.v);
 
@@ -766,11 +767,11 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix
     return q.v;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const XMVECTORF32 XMPMMP = {+1.0f, -1.0f, -1.0f, +1.0f};
-    static const XMVECTORF32 XMMPMP = {-1.0f, +1.0f, -1.0f, +1.0f};
-    static const XMVECTORF32 XMMMPP = {-1.0f, -1.0f, +1.0f, +1.0f}; 
-    static const XMVECTORU32 Select0110 = { XM_SELECT_0, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 };
-    static const XMVECTORU32 Select0010 = { XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 };
+    static const XMVECTORF32 XMPMMP     = { { { +1.0f, -1.0f, -1.0f, +1.0f } } };
+    static const XMVECTORF32 XMMPMP     = { { { -1.0f, +1.0f, -1.0f, +1.0f } } };
+    static const XMVECTORF32 XMMMPP     = { { { -1.0f, -1.0f, +1.0f, +1.0f } } };
+    static const XMVECTORU32 Select0110 = { { { XM_SELECT_0, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
+    static const XMVECTORU32 Select0010 = { { { XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 } } };
 
     XMVECTOR r0 = M.r[0];
     XMVECTOR r1 = M.r[1];
@@ -853,9 +854,9 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix
     t0 = XMVector4Length(t2);
     return XMVectorDivide(t2, t0);
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 XMPMMP = {+1.0f, -1.0f, -1.0f, +1.0f};
-    static const XMVECTORF32 XMMPMP = {-1.0f, +1.0f, -1.0f, +1.0f};
-    static const XMVECTORF32 XMMMPP = {-1.0f, -1.0f, +1.0f, +1.0f}; 
+    static const XMVECTORF32 XMPMMP = { { { +1.0f, -1.0f, -1.0f, +1.0f } } };
+    static const XMVECTORF32 XMMPMP = { { { -1.0f, +1.0f, -1.0f, +1.0f } } };
+    static const XMVECTORF32 XMMMPP = { { { -1.0f, -1.0f, +1.0f, +1.0f } } };
 
     XMVECTOR r0 = M.r[0];  // (r00, r01, r02, 0)
     XMVECTOR r1 = M.r[1];  // (r10, r11, r12, 0)
@@ -1127,18 +1128,17 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalize
 #if defined(_XM_NO_INTRINSICS_)
     float fLengthSq = sqrtf((P.vector4_f32[0]*P.vector4_f32[0])+(P.vector4_f32[1]*P.vector4_f32[1])+(P.vector4_f32[2]*P.vector4_f32[2]));
     // Prevent divide by zero
-    if (fLengthSq) {
+    if (fLengthSq)
+    {
         fLengthSq = 1.0f/fLengthSq;
     }
-    {
-    XMVECTOR vResult = {
-        P.vector4_f32[0]*fLengthSq,
-        P.vector4_f32[1]*fLengthSq,
-        P.vector4_f32[2]*fLengthSq,
-        P.vector4_f32[3]*fLengthSq
-    };
-    return vResult;
-    }
+    XMVECTORF32 vResult = { { {
+            P.vector4_f32[0] * fLengthSq,
+            P.vector4_f32[1] * fLengthSq,
+            P.vector4_f32[2] * fLengthSq,
+            P.vector4_f32[3] * fLengthSq
+        } } };
+    return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vLength = XMVector3ReciprocalLength(P);
     return XMVectorMultiply( P, vLength );
@@ -1424,12 +1424,12 @@ inline XMVECTOR XM_CALLCONV XMColorNegative
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTORF32 vResult = {
-        1.0f - vColor.vector4_f32[0],
-        1.0f - vColor.vector4_f32[1],
-        1.0f - vColor.vector4_f32[2],
-        vColor.vector4_f32[3]
-    };
+    XMVECTORF32 vResult = { { {
+            1.0f - vColor.vector4_f32[0],
+            1.0f - vColor.vector4_f32[1],
+            1.0f - vColor.vector4_f32[2],
+            vColor.vector4_f32[3]
+        } } };
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vTemp = veorq_u32(vColor,g_XMNegate3);
@@ -1464,9 +1464,8 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     // Luminance = 0.2125f * C[0] + 0.7154f * C[1] + 0.0721f * C[2];
     // Result = (C - Luminance) * Saturation + Luminance;
 
+    const XMVECTORF32 gvLuminance = { { { 0.2125f, 0.7154f, 0.0721f, 0.0f } } };
 #if defined(_XM_NO_INTRINSICS_)
-    const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
-
     float fLuminance = (vColor.vector4_f32[0]*gvLuminance.f[0])+(vColor.vector4_f32[1]*gvLuminance.f[1])+(vColor.vector4_f32[2]*gvLuminance.f[2]);
     XMVECTOR vResult;
     vResult.vector4_f32[0] = ((vColor.vector4_f32[0] - fLuminance)*fSaturation)+fLuminance;
@@ -1475,13 +1474,11 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     vResult.vector4_f32[3] = vColor.vector4_f32[3];
     return vResult;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
     XMVECTOR vLuminance = XMVector3Dot( vColor, gvLuminance );
     XMVECTOR vResult = vsubq_f32(vColor, vLuminance);
     vResult = vmlaq_n_f32( vLuminance, vResult, fSaturation );
     return vbslq_f32( g_XMSelect1110, vResult, vColor );
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 gvLuminance = {0.2125f, 0.7154f, 0.0721f, 0.0f};
     XMVECTOR vLuminance = XMVector3Dot( vColor, gvLuminance );
 // Splat fSaturation
     XMVECTOR vSaturation = _mm_set_ps1(fSaturation);
@@ -1507,12 +1504,12 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustContrast
     // Result = (vColor - 0.5f) * fContrast + 0.5f;
 
 #if defined(_XM_NO_INTRINSICS_)
-    XMVECTORF32 vResult = {
-        ((vColor.vector4_f32[0]-0.5f) * fContrast) + 0.5f,
-        ((vColor.vector4_f32[1]-0.5f) * fContrast) + 0.5f,
-        ((vColor.vector4_f32[2]-0.5f) * fContrast) + 0.5f,
-        vColor.vector4_f32[3]        // Leave W untouched
-    };
+    XMVECTORF32 vResult = { { {
+            ((vColor.vector4_f32[0] - 0.5f) * fContrast) + 0.5f,
+            ((vColor.vector4_f32[1] - 0.5f) * fContrast) + 0.5f,
+            ((vColor.vector4_f32[2] - 0.5f) * fContrast) + 0.5f,
+            vColor.vector4_f32[3]        // Leave W untouched
+        } } };
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vResult = vsubq_f32(vColor, g_XMOneHalf.v);
@@ -1604,8 +1601,8 @@ namespace Internal
 
 inline XMVECTOR XM_CALLCONV XMColorHue2Clr( FXMVECTOR p, FXMVECTOR q, FXMVECTOR h )
 {
-    static const XMVECTORF32 oneSixth  = { 1.0f/6.0f, 1.0f/6.0f, 1.0f/6.0f, 1.0f/6.0f };
-    static const XMVECTORF32 twoThirds = { 2.0f/3.0f, 2.0f/3.0f, 2.0f/3.0f, 2.0f/3.0f };
+    static const XMVECTORF32 oneSixth = { { { 1.0f / 6.0f, 1.0f / 6.0f, 1.0f / 6.0f, 1.0f / 6.0f } } };
+    static const XMVECTORF32 twoThirds = { { { 2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f, 2.0f / 3.0f } } };
     
     XMVECTOR t = h;
 
@@ -1641,7 +1638,7 @@ inline XMVECTOR XM_CALLCONV XMColorHue2Clr( FXMVECTOR p, FXMVECTOR q, FXMVECTOR 
 
 inline XMVECTOR XM_CALLCONV XMColorHSLToRGB( FXMVECTOR hsl )
 {
-    static const XMVECTORF32 oneThird = { 1.0f/3.0f, 1.0f/3.0f, 1.0f/3.0f, 1.0f/3.0f };
+    static const XMVECTORF32 oneThird = { { { 1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f, 1.0f / 3.0f } } };
 
     XMVECTOR s = XMVectorSplatY( hsl );
     XMVECTOR l = XMVectorSplatZ( hsl );
@@ -1806,9 +1803,9 @@ inline XMVECTOR XM_CALLCONV XMColorHSVToRGB( FXMVECTOR hsv )
 
 inline XMVECTOR XM_CALLCONV XMColorRGBToYUV( FXMVECTOR rgb )
 {
-    static const XMVECTORF32 Scale0 = {  0.299f, -0.147f,  0.615f, 0.0f }; 
-    static const XMVECTORF32 Scale1 = {  0.587f, -0.289f, -0.515f, 0.0f };
-    static const XMVECTORF32 Scale2 = {  0.114f,  0.436f, -0.100f, 0.0f };
+    static const XMVECTORF32 Scale0 = { { { 0.299f, -0.147f, 0.615f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { 0.587f, -0.289f, -0.515f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 0.114f, 0.436f, -0.100f, 0.0f } } };
 
     XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVector3Transform( rgb, M );
@@ -1820,8 +1817,8 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToYUV( FXMVECTOR rgb )
 
 inline XMVECTOR XM_CALLCONV XMColorYUVToRGB( FXMVECTOR yuv )
 {
-    static const XMVECTORF32 Scale1 = {   0.0f, -0.395f, 2.032f, 0.0f };
-    static const XMVECTORF32 Scale2 = { 1.140f, -0.581f,   0.0f, 0.0f };
+    static const XMVECTORF32 Scale1 = { { { 0.0f, -0.395f, 2.032f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 1.140f, -0.581f, 0.0f, 0.0f } } };
 
     XMMATRIX M( g_XMOne, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVector3Transform( yuv, M );
@@ -1833,9 +1830,9 @@ inline XMVECTOR XM_CALLCONV XMColorYUVToRGB( FXMVECTOR yuv )
 
 inline XMVECTOR XM_CALLCONV XMColorRGBToYUV_HD( FXMVECTOR rgb )
 {
-    static const XMVECTORF32 Scale0 = { 0.2126f, -0.0997f,  0.6150f, 0.0f };
-    static const XMVECTORF32 Scale1 = { 0.7152f, -0.3354f, -0.5586f, 0.0f };
-    static const XMVECTORF32 Scale2 = { 0.0722f,  0.4351f, -0.0564f, 0.0f };
+    static const XMVECTORF32 Scale0 = { { { 0.2126f, -0.0997f, 0.6150f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { 0.7152f, -0.3354f, -0.5586f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 0.0722f, 0.4351f, -0.0564f, 0.0f } } };
 
     XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVector3Transform( rgb, M );
@@ -1847,8 +1844,8 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToYUV_HD( FXMVECTOR rgb )
 
 inline XMVECTOR XM_CALLCONV XMColorYUVToRGB_HD( FXMVECTOR yuv )
 {
-    static const XMVECTORF32 Scale1 = {    0.0f, -0.2153f, 2.1324f, 0.0f };
-    static const XMVECTORF32 Scale2 = { 1.2803f, -0.3806f,    0.0f, 0.0f };
+    static const XMVECTORF32 Scale1 = { { { 0.0f, -0.2153f, 2.1324f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 1.2803f, -0.3806f, 0.0f, 0.0f } } };
         
     XMMATRIX M( g_XMOne, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVector3Transform( yuv, M );
@@ -1860,10 +1857,10 @@ inline XMVECTOR XM_CALLCONV XMColorYUVToRGB_HD( FXMVECTOR yuv )
 
 inline XMVECTOR XM_CALLCONV XMColorRGBToXYZ( FXMVECTOR rgb )
 {
-    static const XMVECTORF32 Scale0 = { 0.4887180f, 0.1762044f, 0.0000000f, 0.0f };
-    static const XMVECTORF32 Scale1 = { 0.3106803f, 0.8129847f, 0.0102048f, 0.0f };
-    static const XMVECTORF32 Scale2 = { 0.2006017f, 0.0108109f, 0.9897952f, 0.0f };
-    static const XMVECTORF32 Scale = { 1.f/0.17697f, 1.f/0.17697f, 1.f/0.17697f, 0.0f };
+    static const XMVECTORF32 Scale0 = { { { 0.4887180f, 0.1762044f, 0.0000000f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { 0.3106803f, 0.8129847f, 0.0102048f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 0.2006017f, 0.0108109f, 0.9897952f, 0.0f } } };
+    static const XMVECTORF32 Scale  = { { { 1.f / 0.17697f, 1.f / 0.17697f, 1.f / 0.17697f, 0.0f } } };
 
     XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVectorMultiply( XMVector3Transform( rgb, M ), Scale );
@@ -1873,10 +1870,10 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToXYZ( FXMVECTOR rgb )
 
 inline XMVECTOR XM_CALLCONV XMColorXYZToRGB( FXMVECTOR xyz )
 {
-    static const XMVECTORF32 Scale0 = {  2.3706743f, -0.5138850f,  0.0052982f, 0.0f };
-    static const XMVECTORF32 Scale1 = { -0.9000405f,  1.4253036f, -0.0146949f, 0.0f };
-    static const XMVECTORF32 Scale2 = { -0.4706338f,  0.0885814f,  1.0093968f, 0.0f };
-    static const XMVECTORF32 Scale = { 0.17697f, 0.17697f, 0.17697f, 0.0f };
+    static const XMVECTORF32 Scale0 = { { { 2.3706743f, -0.5138850f, 0.0052982f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { -0.9000405f, 1.4253036f, -0.0146949f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { -0.4706338f, 0.0885814f, 1.0093968f, 0.0f } } };
+    static const XMVECTORF32 Scale  = { { { 0.17697f, 0.17697f, 0.17697f, 0.0f } } };
 
     XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
     XMVECTOR clr = XMVector3Transform( XMVectorMultiply( xyz, Scale ), M );
@@ -1888,11 +1885,11 @@ inline XMVECTOR XM_CALLCONV XMColorXYZToRGB( FXMVECTOR xyz )
 
 inline XMVECTOR XM_CALLCONV XMColorXYZToSRGB( FXMVECTOR xyz )
 {
-    static const XMVECTORF32 Scale0 = {  3.2406f, -0.9689f,  0.0557f, 0.0f };
-    static const XMVECTORF32 Scale1 = { -1.5372f,  1.8758f, -0.2040f, 0.0f };
-    static const XMVECTORF32 Scale2 = { -0.4986f,  0.0415f,  1.0570f, 0.0f };
-    static const XMVECTORF32 Cutoff = { 0.0031308f, 0.0031308f, 0.0031308f, 0.0f };
-    static const XMVECTORF32 Exp    = { 1.0f/2.4f, 1.0f/2.4f, 1.0f/2.4f, 1.0f };
+    static const XMVECTORF32 Scale0 = { { { 3.2406f, -0.9689f, 0.0557f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { -1.5372f, 1.8758f, -0.2040f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { -0.4986f, 0.0415f, 1.0570f, 0.0f } } };
+    static const XMVECTORF32 Cutoff = { { { 0.0031308f, 0.0031308f, 0.0031308f, 0.0f } } };
+    static const XMVECTORF32 Exp    = { { { 1.0f / 2.4f, 1.0f / 2.4f, 1.0f / 2.4f, 1.0f } } };
 
     XMMATRIX M( Scale0, Scale1, Scale2, g_XMZero );
     XMVECTOR lclr = XMVector3Transform( xyz, M );
@@ -1914,11 +1911,11 @@ inline XMVECTOR XM_CALLCONV XMColorXYZToSRGB( FXMVECTOR xyz )
 
 inline XMVECTOR XM_CALLCONV XMColorSRGBToXYZ( FXMVECTOR srgb )
 {
-    static const XMVECTORF32 Scale0 = { 0.4124f, 0.2126f, 0.0193f, 0.0f };
-    static const XMVECTORF32 Scale1 = { 0.3576f, 0.7152f, 0.1192f, 0.0f };
-    static const XMVECTORF32 Scale2 = { 0.1805f, 0.0722f, 0.9505f, 0.0f };
-    static const XMVECTORF32 Cutoff = { 0.04045f, 0.04045f, 0.04045f, 0.0f };
-    static const XMVECTORF32 Exp    = { 2.4f, 2.4f, 2.4f, 1.0f };
+    static const XMVECTORF32 Scale0 = { { { 0.4124f, 0.2126f, 0.0193f, 0.0f } } };
+    static const XMVECTORF32 Scale1 = { { { 0.3576f, 0.7152f, 0.1192f, 0.0f } } };
+    static const XMVECTORF32 Scale2 = { { { 0.1805f, 0.0722f, 0.9505f, 0.0f } } };
+    static const XMVECTORF32 Cutoff = { { { 0.04045f, 0.04045f, 0.04045f, 0.0f } } };
+    static const XMVECTORF32 Exp    = { { { 2.4f, 2.4f, 2.4f, 1.0f } } };
 
     XMVECTOR sel = XMVectorGreater( srgb, Cutoff );
 
@@ -1940,11 +1937,11 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToXYZ( FXMVECTOR srgb )
 
 inline XMVECTOR XM_CALLCONV XMColorRGBToSRGB( FXMVECTOR rgb )
 {
-    static const XMVECTORF32 Cutoff = { 0.0031308f, 0.0031308f, 0.0031308f, 1.f };
-    static const XMVECTORF32 Linear = { 12.92f, 12.92f, 12.92f, 1.f };
-    static const XMVECTORF32 Scale = { 1.055f, 1.055f, 1.055f, 1.f };
-    static const XMVECTORF32 Bias = { 0.055f, 0.055f, 0.055f, 0.f };
-    static const XMVECTORF32 InvGamma = { 1.0f/2.4f, 1.0f/2.4f, 1.0f/2.4f, 1.f };
+    static const XMVECTORF32 Cutoff   = { { { 0.0031308f, 0.0031308f, 0.0031308f, 1.f } } };
+    static const XMVECTORF32 Linear   = { { { 12.92f, 12.92f, 12.92f, 1.f } } };
+    static const XMVECTORF32 Scale    = { { { 1.055f, 1.055f, 1.055f, 1.f } } };
+    static const XMVECTORF32 Bias     = { { { 0.055f, 0.055f, 0.055f, 0.f } } };
+    static const XMVECTORF32 InvGamma = { { { 1.0f / 2.4f, 1.0f / 2.4f, 1.0f / 2.4f, 1.f } } };
 
     XMVECTOR V = XMVectorSaturate(rgb);
     XMVECTOR V0 = XMVectorMultiply( V, Linear );
@@ -1958,11 +1955,11 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToSRGB( FXMVECTOR rgb )
 
 inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB( FXMVECTOR srgb )
 {
-    static const XMVECTORF32 Cutoff = { 0.04045f, 0.04045f, 0.04045f, 1.f };
-    static const XMVECTORF32 ILinear = { 1.f/12.92f, 1.f/12.92f, 1.f/12.92f, 1.f };
-    static const XMVECTORF32 Scale = { 1.f/1.055f, 1.f/1.055f, 1.f/1.055f, 1.f };
-    static const XMVECTORF32 Bias = { 0.055f, 0.055f, 0.055f, 0.f };
-    static const XMVECTORF32 Gamma = { 2.4f, 2.4f, 2.4f, 1.f };
+    static const XMVECTORF32 Cutoff  = { { { 0.04045f, 0.04045f, 0.04045f, 1.f } } };
+    static const XMVECTORF32 ILinear = { { { 1.f / 12.92f, 1.f / 12.92f, 1.f / 12.92f, 1.f } } };
+    static const XMVECTORF32 Scale   = { { { 1.f / 1.055f, 1.f / 1.055f, 1.f / 1.055f, 1.f } } };
+    static const XMVECTORF32 Bias    = { { { 0.055f, 0.055f, 0.055f, 0.f } } };
+    static const XMVECTORF32 Gamma   = { { { 2.4f, 2.4f, 2.4f, 1.f } } };
 
     XMVECTOR V = XMVectorSaturate(srgb);
     XMVECTOR V0 = XMVectorMultiply( V, ILinear );

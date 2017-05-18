@@ -329,12 +329,17 @@ namespace TriangleTests
 // C4365: Off by default noise
 // C6001: False positives
 
+#ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
+#endif
 
 #include "DirectXCollision.inl"
 
+#ifdef _PREFAST_
 #pragma prefast(pop)
+#endif
+
 #pragma warning(pop)
 
 }; // namespace DirectX

@@ -990,12 +990,17 @@ void    XM_DEPRECATED XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_
 // C4365: Off by default noise
 // C6001/6101: False positives
 
+#ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
+#endif
 
 #include "DirectXPackedVector.inl"
 
+#ifdef _PREFAST_
 #pragma prefast(pop)
+#endif
+
 #pragma warning(pop)
 
 }; // namespace PackedVector
