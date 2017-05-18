@@ -53,8 +53,20 @@
 #define XM_DEPRECATED __declspec(deprecated("This is deprecated and will be removed in a future version."))
 #endif
 
-#if !defined(_XM_F16C_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
+#if !defined(_XM_AVX2_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
+#define _XM_AVX2_INTRINSICS_
+#endif
+
+#if !defined(_XM_FMA3_INTRINSICS_) && defined(_XM_AVX2_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#define _XM_FMA3_INTRINSICS_
+#endif
+
+#if !defined(_XM_F16C_INTRINSICS_) && defined(_XM_AVX2_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #define _XM_F16C_INTRINSICS_
+#endif
+
+#if defined(_XM_FMA3_INTRINSICS_) && !defined(_XM_AVX_INTRINSICS_)
+#define _XM_AVX_INTRINSICS_
 #endif
 
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_AVX_INTRINSICS_)
@@ -1654,6 +1666,10 @@ template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<2,2,3,3>(FXMVECT
 #if defined(_XM_SSE3_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,2,2>(FXMVECTOR V) { return _mm_moveldup_ps(V); }
 template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1,1,3,3>(FXMVECTOR V) { return _mm_movehdup_ps(V); }
+#endif
+
+#if defined(_XM_AVX2_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0,0,0,0>(FXMVECTOR V) { return _mm_broadcastss_ps( V ); }
 #endif
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)

@@ -240,6 +240,8 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatX
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32( vget_low_f32( V ), 0 );
+#elif defined(_XM_AVX2_INTRINSICS_)
+    return _mm_broadcastss_ps( V );
 #elif defined(_XM_SSE_INTRINSICS_)
     return XM_PERMUTE_PS( V, _MM_SHUFFLE(0, 0, 0, 0) );
 #endif
@@ -3005,6 +3007,8 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
     return Result.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vmlaq_f32( V3, V1, V2 );
+#elif defined(_XM_FMA3_INTRINSICS_)
+    return _mm_fmadd_ps( V1, V2, V3 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_mul_ps( V1, V2 );
     return _mm_add_ps(vResult, V3 );
@@ -3063,6 +3067,8 @@ inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vmlsq_f32( V3, V1, V2 );
+#elif defined(_XM_FMA3_INTRINSICS_)
+    return _mm_fnmadd_ps(V1, V2, V3);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R = _mm_mul_ps( V1, V2 );
     return _mm_sub_ps( V3, R );
