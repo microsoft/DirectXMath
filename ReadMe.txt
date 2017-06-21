@@ -4,7 +4,7 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-January 2017
+June 2017
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
@@ -58,6 +58,12 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+June 2017 (3.11)
+    AVX optimization of XMMatrixMultiply and XMMatrixMultiplyTranspose
+    AVX2 optimization for XMVectorSplatX
+    FMA3 optimization of XMVectorMultiplyAdd and XMVectorNegativeMultiplySubtract (implied by /arch:AVX2)
+    Conformance fixes to support compilation with Clang 3.7
 
 January 2017 (3.10)
     Added XMVectorSum for horizontal adds
