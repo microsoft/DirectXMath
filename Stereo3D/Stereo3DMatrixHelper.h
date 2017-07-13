@@ -1,31 +1,65 @@
-//// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
-//// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
-//// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
-//// PARTICULAR PURPOSE.
-////
-//// Copyright (c) Microsoft Corporation. All rights reserved
+//-------------------------------------------------------------------------------------
+// Stereo3DMatrixHelper.h -- SIMD C++ Math helper for Stereo 3D matrices
+//
+// THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
+// ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
+// THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+// PARTICULAR PURPOSE.
+//  
+// Copyright (c) Microsoft Corporation. All rights reserved.
+//-------------------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma once
+#endif
 
-// Stereo parameters are in the same units as the world.
-struct StereoParameters
+#include "DirectXMath.h"
+
+// Enumeration for stereo channels (left and right).
+enum STEREO_CHANNEL
 {
-    float viewportWidth;        // viewport width
-    float viewportHeight;       // viewport height
-    float viewerDistance;       // distance from viewer
-    float interocularDistance;  // interocular distance
+    STEREO_CHANNEL_LEFT = 0,
+    STEREO_CHANNEL_RIGHT
 };
 
-StereoParameters CreateDefaultStereoParameters(
-    float viewportWidthInches,
-    float viewportHeightInches,
-    float worldScaleInInches,
-    float stereoExaggeration
-    );
+// Enumeration for stereo mode (normal or inverted).
+enum STEREO_MODE
+{
+    STEREO_MODE_NORMAL = 0,
+    STEREO_MODE_INVERTED,
+};
 
-DirectX::XMMATRIX StereoProjectionFieldOfViewRightHand(
-    const StereoParameters& parameters,
-    float nearZ,
-    float farZ,
-    bool rightChannel
-    );
+//------------------------------------------------------------------------------
+//
+// Stereo calibration settings
+//
+// * Viewer distance to the display
+// * Physical display size
+// * Render resolution
+//
+// The stereo separation factor indicates how much separation is between the left and right
+// eyes.  0 is no separation, 1 is full separation. It defaults to 1.0.
+//
+// The debug stereo exaggeration factor indicates how much to increase the interocular spacing and
+// maximum acuity angle from comfortable defaults.  For retail builds, this value should always
+// be 1.0, but during development, on small screens, this value can be raised to up to 2.0 in
+// order to exaggerate the 3D effect.  Values over 1.0 may cause discomfort on normal sized
+// displays. It defaults to 1.0.
+// 
+struct STEREO_PARAMETERS
+{
+    float fViewerDistanceInches;
+    float fDisplaySizeInches;
+    float fPixelResolutionWidth;
+    float fPixelResolutionHeight;
+    float fStereoSeparationFactor;
+    float fStereoExaggerationFactor;
+};
+
+void                StereoCreateDefaultParameters( _Out_ STEREO_PARAMETERS* pStereoParameters );
+
+DirectX::XMMATRIX   StereoProjectionFovLH( _In_opt_ const STEREO_PARAMETERS* pStereoParameters, STEREO_CHANNEL Channel,
+                                           float FovAngleY, float AspectHByW, float NearZ, float FarZ, STEREO_MODE StereoMode );
+
+DirectX::XMMATRIX   StereoProjectionFovRH( _In_opt_ const STEREO_PARAMETERS* pStereoParameters, STEREO_CHANNEL Channel,
+                                           float FovAngleY, float AspectHByW, float NearZ, float FarZ, STEREO_MODE StereoMode );
