@@ -11,6 +11,12 @@
 // http://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
+#pragma warning( disable : 4619 4265 4626 5039 )
+// C4619 #pragma warning warnings
+// C4265 class has virtual functions, but destructor is not virtual
+// C4626 assignment operator was implicitly defined as deleted
+// C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
+
 #include "DirectXSH.h"
 
 #include <d3d11.h>
@@ -20,10 +26,6 @@
 #include <assert.h>
 #include <memory>
 #include <malloc.h>
-
-#pragma warning( disable : 4619 4626 )
-// C4619 #pragma warning warnings
-// C4626 assignment operator was implicitly defined as deleted
 
 #include <wrl/client.h>
 

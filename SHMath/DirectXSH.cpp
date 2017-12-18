@@ -11,14 +11,14 @@
 // http://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
+#pragma warning( disable : 4619 4456 )
+// C4619 #pragma warning warnings
+// C4456 declaration hides previous local declaration
+
 #include "DirectXSH.h"
 #include <assert.h>
 
 using namespace DirectX;
-
-#pragma warning( disable : 4619 4456 )
-// C4619 #pragma warning warnings
-// C4456 declaration hides previous local declaration
 
 namespace
 {
