@@ -1634,7 +1634,7 @@ inline XMVECTOR XM_CALLCONV XMColorHue2Clr( FXMVECTOR p, FXMVECTOR q, FXMVECTOR 
     return p;
 }
 
-}; // namespace Internal
+} // namespace Internal
 
 inline XMVECTOR XM_CALLCONV XMColorHSLToRGB( FXMVECTOR hsl )
 {

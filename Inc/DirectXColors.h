@@ -163,7 +163,7 @@ namespace Colors
     XMGLOBALCONST XMVECTORF32 Yellow               = { { { 1.000000000f, 1.000000000f, 0.000000000f, 1.000000000f } } };
     XMGLOBALCONST XMVECTORF32 YellowGreen          = { { { 0.603921592f, 0.803921640f, 0.196078449f, 1.000000000f } } };
 
-}; // namespace Colors
+} // namespace Colors
 
-}; // namespace DirectX
+} // namespace DirectX
 

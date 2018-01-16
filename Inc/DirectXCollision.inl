@@ -507,7 +507,7 @@ inline void XM_CALLCONV FastIntersectFrustumPlane( _In_ FXMVECTOR Point0, _In_ F
     Inside = XMVectorLess( Max, PlaneDist );
 }
 
-}; // namespace Internal
+} // namespace Internal
 
 
 /****************************************************************************
@@ -4780,5 +4780,5 @@ inline ContainmentType XM_CALLCONV ContainedBy( FXMVECTOR V0, FXMVECTOR V1, FXMV
     return INTERSECTS;
 }
 
-}; // namespace TriangleTests
+} // namespace TriangleTests
 

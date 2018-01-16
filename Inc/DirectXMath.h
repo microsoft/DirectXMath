@@ -2016,5 +2016,5 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatConstantInt(int32_t IntConstant)
 
 #pragma warning(pop)
 
-}; // namespace DirectX
+} // namespace DirectX
 

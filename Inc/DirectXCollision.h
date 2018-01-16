@@ -342,5 +342,5 @@ namespace TriangleTests
 
 #pragma warning(pop)
 
-}; // namespace DirectX
+} // namespace DirectX
 
