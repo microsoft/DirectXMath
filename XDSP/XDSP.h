@@ -33,12 +33,6 @@
 
 namespace XDSP
 {
-    #if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
-    #define XM_CALLCONV __fastcall
-    typedef const DirectX::XMVECTOR& HXMVECTOR;
-    typedef const DirectX::XMMATRIX& FXMMATRIX;
-    #endif
-
     typedef DirectX::XMVECTOR XMVECTOR;
     typedef DirectX::FXMVECTOR FXMVECTOR;
     typedef DirectX::GXMVECTOR GXMVECTOR;
@@ -802,6 +796,6 @@ namespace XDSP
         }
     }
 
-}; // namespace XDSP
+} // namespace XDSP
 
 #pragma warning(pop)

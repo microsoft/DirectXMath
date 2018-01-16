@@ -162,7 +162,7 @@ namespace
     }
 #pragma warning(pop)
 
-}; // namespace anonymous
+} // namespace anonymous
 
 //-------------------------------------------------------------------------------------
 // Projects a function represented in a cube map into spherical harmonics.

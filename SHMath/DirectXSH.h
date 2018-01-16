@@ -13,7 +13,7 @@
 
 #pragma once
 
-#define DIRECTX_SHMATH_VERSION 103
+#define DIRECTX_SHMATH_VERSION 104
 
 #include <DirectXMath.h>
 
@@ -24,12 +24,6 @@ struct ID3D11Texture2D;
 
 namespace DirectX
 {
-#if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
-#define XM_CALLCONV __fastcall
-typedef const DirectX::XMVECTOR& HXMVECTOR;
-typedef const DirectX::XMMATRIX& FXMMATRIX;
-#endif
-
 const size_t XM_SH_MINORDER = 2;
 const size_t XM_SH_MAXORDER = 6;
 
@@ -72,4 +66,4 @@ bool XM_CALLCONV XMSHEvalHemisphereLight( _In_ size_t order, _In_ FXMVECTOR dir,
 HRESULT SHProjectCubeMap( _In_ ID3D11DeviceContext *context, _In_ size_t order, _In_ ID3D11Texture2D *cubeMap,
                           _Out_writes_opt_(order*order) float *resultR, _Out_writes_opt_(order*order) float *resultG, _Out_writes_opt_(order*order) float *resultB );
 
-}; // namespace DirectX
+} // namespace DirectX

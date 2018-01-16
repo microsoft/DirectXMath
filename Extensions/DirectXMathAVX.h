@@ -34,11 +34,6 @@
 
 namespace DirectX
 {
-#if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
-#define XM_CALLCONV __fastcall
-typedef const DirectX::XMVECTOR& HXMVECTOR;
-typedef const DirectX::XMMATRIX& FXMMATRIX;
-#endif
 
 namespace AVX
 {
@@ -284,6 +279,6 @@ template<uint32_t Elements>
     return AVX::XMVectorSwizzle<(4 - Elements) & 3, (5 - Elements) & 3, (6 - Elements) & 3, (7 - Elements) & 3>(V);
 }
 
-}; // namespace AVX
+} // namespace AVX
 
-}; // namespace DirectX;
+} // namespace DirectX;

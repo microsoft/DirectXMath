@@ -34,11 +34,6 @@
 
 namespace DirectX
 {
-#if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
-#define XM_CALLCONV __fastcall
-typedef const DirectX::XMVECTOR& HXMVECTOR;
-typedef const DirectX::XMMATRIX& FXMMATRIX;
-#endif
 
 namespace FMA3
 {
@@ -400,6 +395,6 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     return mResult;
 }
 
-}; // namespace FMA3
+} // namespace FMA3
 
-}; // namespace DirectX;
+} // namespace DirectX;

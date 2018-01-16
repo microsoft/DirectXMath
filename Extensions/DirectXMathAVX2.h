@@ -35,11 +35,6 @@
 
 namespace DirectX
 {
-#if (DIRECTXMATH_VERSION < 305) && !defined(XM_CALLCONV)
-#define XM_CALLCONV __fastcall
-typedef const DirectX::XMVECTOR& HXMVECTOR;
-typedef const DirectX::XMMATRIX& FXMMATRIX;
-#endif
 
 namespace AVX2
 {
@@ -967,6 +962,6 @@ inline void XM_CALLCONV XMStoreHalf4( _Out_ PackedVector::XMHALF4* pDestination,
     _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), V1 );
 }
 
-}; // namespace AVX2
+} // namespace AVX2
 
-}; // namespace DirectX;
+} // namespace DirectX;
