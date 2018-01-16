@@ -40,7 +40,7 @@ namespace
     typedef std::unique_ptr<DirectX::XMVECTOR, aligned_deleter> ScopedAlignedArrayXMVECTOR;
 
     //-------------------------------------------------------------------------------------
-    // This code is lifted from DirectXTex http://directxtex.codeplex.com/
+    // This code is lifted from DirectXTex http://go.microsoft.com/fwlink/?LinkId=248926
     // If you need additional DXGI format support, see DirectXTexConvert.cpp
     //-------------------------------------------------------------------------------------
 #define LOAD_SCANLINE( type, func )\
@@ -87,8 +87,12 @@ namespace
 #pragma warning(push)
 #pragma warning(disable : 6101)
     _Success_(return)
-        bool _LoadScanline(_Out_writes_(count) DirectX::XMVECTOR* pDestination, _In_ size_t count,
-            _In_reads_bytes_(size) LPCVOID pSource, _In_ size_t size, _In_ DXGI_FORMAT format)
+        bool _LoadScanline(
+            _Out_writes_(count) DirectX::XMVECTOR* pDestination,
+            size_t count,
+            _In_reads_bytes_(size) LPCVOID pSource,
+            size_t size,
+            DXGI_FORMAT format)
     {
         assert(pDestination && count > 0 && (((uintptr_t)pDestination & 0xF) == 0));
         assert(pSource && size > 0);
@@ -260,8 +264,8 @@ HRESULT DirectX::SHProjectCubeMap(
     if (resultB)
         memset(resultB, 0, sizeof(float)*order*order);
 
-    float shBuff[XM_SH_MAXORDER*XM_SH_MAXORDER];
-    float shBuffB[XM_SH_MAXORDER*XM_SH_MAXORDER];
+    float shBuff[XM_SH_MAXORDER*XM_SH_MAXORDER] = {};
+    float shBuffB[XM_SH_MAXORDER*XM_SH_MAXORDER] = {};
 
     //--- Process each face of the cubemap
     for (UINT face = 0; face < 6; ++face)
@@ -283,12 +287,12 @@ HRESULT DirectX::SHProjectCubeMap(
                 return E_FAIL;
             }
 
-            const float fV = y*fS + fB;
+            const float fV = y * fS + fB;
 
             XMVECTOR* pixel = ptr;
             for (UINT x = 0; x < desc.Width; ++x, ++pixel)
             {
-                const float fU = x*fS + fB;
+                const float fU = x * fS + fB;
 
                 float ix, iy, iz;
                 switch (face)
@@ -338,7 +342,7 @@ HRESULT DirectX::SHProjectCubeMap(
                 XMVECTOR dir = XMVectorSet(ix, iy, iz, 0);
                 dir = XMVector3Normalize(dir);
 
-                const float fDiffSolid = 4.0f / ((1.0f + fU*fU + fV*fV)*sqrtf(1.0f + fU*fU + fV*fV));
+                const float fDiffSolid = 4.0f / ((1.0f + fU * fU + fV * fV)*sqrtf(1.0f + fU * fU + fV * fV));
                 fWt += fDiffSolid;
 
                 XMSHEvalDirection(shBuff, order, dir);

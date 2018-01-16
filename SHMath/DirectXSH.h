@@ -11,9 +11,7 @@
 // http://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #define DIRECTX_SHMATH_VERSION 103
 
