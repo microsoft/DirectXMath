@@ -19,9 +19,6 @@
 
 #include <winerror.h>
 
-struct ID3D11DeviceContext;
-struct ID3D11Texture2D;
-
 namespace DirectX
 {
 const size_t XM_SH_MINORDER = 2;
@@ -63,7 +60,14 @@ bool XM_CALLCONV XMSHEvalConeLight( _In_ size_t order, _In_ FXMVECTOR dir, _In_ 
 bool XM_CALLCONV XMSHEvalHemisphereLight( _In_ size_t order, _In_ FXMVECTOR dir, _In_ FXMVECTOR topColor, _In_ FXMVECTOR bottomColor,
                                           _Out_writes_(order*order) float *resultR, _Out_writes_opt_(order*order) float *resultG, _Out_writes_opt_(order*order) float *resultB );
 
+#if defined(__d3d11_h__) || defined(__d3d11_x_h__)
 HRESULT SHProjectCubeMap( _In_ ID3D11DeviceContext *context, _In_ size_t order, _In_ ID3D11Texture2D *cubeMap,
                           _Out_writes_opt_(order*order) float *resultR, _Out_writes_opt_(order*order) float *resultG, _Out_writes_opt_(order*order) float *resultB );
+#endif
+
+#if defined(__d3d12_h__) || defined(__d3d12_x_h__)
+HRESULT SHProjectCubeMap(_In_ size_t order, _In_ const D3D12_RESOURCE_DESC& desc, _In_ const D3D12_SUBRESOURCE_DATA cubeMap[6],
+                         _Out_writes_opt_(order*order) float *resultR, _Out_writes_opt_(order*order) float *resultG, _Out_writes_opt_(order*order) float *resultB);
+#endif
 
 } // namespace DirectX

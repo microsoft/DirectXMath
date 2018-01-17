@@ -1,5 +1,5 @@
 //-------------------------------------------------------------------------------------
-// DirectXSHD3D11.cpp -- C++ Spherical Harmonics Math Library
+// DirectXSHD3D12.cpp -- C++ Spherical Harmonics Math Library
 //
 // THIS CODE AND INFORMATION IS PROVIDED "AS IS" WITHOUT WARRANTY OF
 // ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO
@@ -17,7 +17,7 @@
 // C4626 assignment operator was implicitly defined as deleted
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
 
-#include <d3d11_1.h>
+#include <d3d12.h>
 
 #include "DirectXSH.h"
 
@@ -171,23 +171,18 @@ namespace
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 HRESULT DirectX::SHProjectCubeMap(
-    ID3D11DeviceContext *context,
     size_t order,
-    ID3D11Texture2D *cubeMap,
+    const D3D12_RESOURCE_DESC& desc,
+    const D3D12_SUBRESOURCE_DATA cubeMap[6],
     float *resultR,
     float *resultG,
-    float* resultB)
+    float *resultB)
 {
-    if (!context || !cubeMap)
-        return E_INVALIDARG;
-
     if (order < XM_SH_MINORDER || order > XM_SH_MAXORDER)
         return E_INVALIDARG;
 
-    D3D11_TEXTURE2D_DESC desc;
-    cubeMap->GetDesc(&desc);
-
-    if ((desc.ArraySize != 6)
+    if (desc.Dimension != D3D12_RESOURCE_DIMENSION_TEXTURE2D
+        || (desc.DepthOrArraySize != 6)
         || (desc.Width != desc.Height)
         || (desc.SampleDesc.Count > 1))
         return E_FAIL;
@@ -209,35 +204,8 @@ HRESULT DirectX::SHProjectCubeMap(
         return E_FAIL;
     }
 
-    //--- Create a staging resource copy (if needed) to be able to read data
-    ID3D11Texture2D* texture = nullptr;
-
-    ComPtr<ID3D11Texture2D> staging;
-    if (!(desc.CPUAccessFlags & D3D11_CPU_ACCESS_READ))
-    {
-        D3D11_TEXTURE2D_DESC sdesc = desc;
-        sdesc.BindFlags = 0;
-        sdesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
-        sdesc.Usage = D3D11_USAGE_STAGING;
-
-        ComPtr<ID3D11Device> device;
-        context->GetDevice(&device);
-
-        HRESULT hr = device->CreateTexture2D(&sdesc, nullptr, &staging);
-        if (FAILED(hr))
-            return hr;
-
-        context->CopyResource(staging.Get(), cubeMap);
-
-        texture = staging.Get();
-    }
-    else
-        texture = cubeMap;
-
-    assert(texture != 0);
-
     //--- Setup for SH projection
-    ScopedAlignedArrayXMVECTOR scanline(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR)*desc.Width, 16)));
+    ScopedAlignedArrayXMVECTOR scanline(reinterpret_cast<XMVECTOR*>(_aligned_malloc(static_cast<size_t>(sizeof(XMVECTOR)*desc.Width), 16)));
     if (!scanline)
         return E_OUTOFMEMORY;
 
@@ -270,20 +238,15 @@ HRESULT DirectX::SHProjectCubeMap(
     //--- Process each face of the cubemap
     for (UINT face = 0; face < 6; ++face)
     {
-        UINT dindex = D3D11CalcSubresource(0, face, desc.MipLevels);
+        if (!cubeMap[face].pData)
+            return E_POINTER;
 
-        D3D11_MAPPED_SUBRESOURCE mapped;
-        HRESULT hr = context->Map(texture, dindex, D3D11_MAP_READ, 0, &mapped);
-        if (FAILED(hr))
-            return hr;
-
-        const uint8_t *pSrc = reinterpret_cast<const uint8_t*>(mapped.pData);
+        const uint8_t *pSrc = reinterpret_cast<const uint8_t*>(cubeMap[face].pData);
         for (UINT y = 0; y < desc.Height; ++y)
         {
             XMVECTOR* ptr = scanline.get();
-            if (!_LoadScanline(ptr, desc.Width, pSrc, mapped.RowPitch, desc.Format))
+            if (!_LoadScanline(ptr, static_cast<size_t>(desc.Width), pSrc, cubeMap[face].RowPitch, desc.Format))
             {
-                context->Unmap(texture, dindex);
                 return E_FAIL;
             }
 
@@ -355,10 +318,8 @@ HRESULT DirectX::SHProjectCubeMap(
                 if (resultB) XMSHAdd(resultB, order, resultB, XMSHScale(shBuffB, order, shBuff, clr.z*fDiffSolid));
             }
 
-            pSrc += mapped.RowPitch;
+            pSrc += cubeMap[face].RowPitch;
         }
-
-        context->Unmap(texture, dindex);
     }
 
     const float fNormProj = (4.0f*XM_PI) / fWt;
