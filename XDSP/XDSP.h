@@ -739,8 +739,8 @@ namespace XDSP
         assert(uLog2Length >= 2 && uLog2Length <= 9);
         _Analysis_assume_(uLog2Length >= 2 && uLog2Length <= 9);
 
-        XMVECTOR vRealTemp[768] = { 0 };
-        XMVECTOR vImaginaryTemp[768] = { 0 };
+        XMVECTOR vRealTemp[768] = {};
+        XMVECTOR vImaginaryTemp[768] = {};
 
         const size_t uLength = size_t(1) << uLog2Length;
 
