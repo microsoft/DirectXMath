@@ -3006,7 +3006,11 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
         } } };
     return Result.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
+    return vfmaq_f32( V3, V1, V2 );
+#else
     return vmlaq_f32( V3, V1, V2 );
+#endif
 #elif defined(_XM_FMA3_INTRINSICS_)
     return _mm_fmadd_ps( V1, V2, V3 );
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -3066,7 +3070,11 @@ inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
         } } };
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64)
+    return vfmsq_f32( V3, V1, V2 );
+#else
     return vmlsq_f32( V3, V1, V2 );
+#endif
 #elif defined(_XM_FMA3_INTRINSICS_)
     return _mm_fnmadd_ps(V1, V2, V3);
 #elif defined(_XM_SSE_INTRINSICS_)
