@@ -421,6 +421,10 @@ inline HALF XMConvertFloatToHalf
             Result = 0x7C00U; // INF
         }
     }
+    else if (!IValue)
+    {
+        Result = 0;
+    }
     else
     {
         if (IValue < 0x38800000U)
