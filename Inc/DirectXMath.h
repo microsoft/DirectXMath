@@ -20,25 +20,17 @@
 #define DIRECTX_MATH_VERSION 311
 
 #if defined(_MSC_VER) && (_MSC_VER < 1800)
-#error DirectX Math Visual C++ 2013 or later.
+#error DirectX Math requires Visual C++ 2013 or later.
 #endif
 
 #if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
-#if ((_MSC_FULL_VER >= 170065501) && (_MSC_VER < 1800)) || (_MSC_FULL_VER >= 180020418)
 #define _XM_VECTORCALL_ 1
-#endif
 #endif
 
 #if _XM_VECTORCALL_
 #define XM_CALLCONV __vectorcall
 #else
 #define XM_CALLCONV __fastcall
-#endif
-
-#if defined(_MSC_VER) && (_MSC_VER < 1800)
-#define XM_CTOR_DEFAULT {}
-#else
-#define XM_CTOR_DEFAULT =default;
 #endif
 
 #if defined(_MSC_VER) && (_MSC_FULL_VER < 190023506)
@@ -464,7 +456,7 @@ __declspec(align(16)) struct XMMATRIX
     XMVECTOR r[4];
 #endif
 
-    XMMATRIX() XM_CTOR_DEFAULT
+    XMMATRIX() =default;
 #if defined(_MSC_VER) && _MSC_VER >= 1900
     constexpr XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3) : r{ R0,R1,R2,R3 } {}
 #else
@@ -508,7 +500,7 @@ struct XMFLOAT2
     float x;
     float y;
 
-    XMFLOAT2() XM_CTOR_DEFAULT
+    XMFLOAT2() =default;
     XM_CONSTEXPR XMFLOAT2(float _x, float _y) : x(_x), y(_y) {}
     explicit XMFLOAT2(_In_reads_(2) const float *pArray) : x(pArray[0]), y(pArray[1]) {}
 
@@ -518,7 +510,7 @@ struct XMFLOAT2
 // 2D Vector; 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
 {
-    XMFLOAT2A() XM_CTOR_DEFAULT
+    XMFLOAT2A() =default;
     XM_CONSTEXPR XMFLOAT2A(float _x, float _y) : XMFLOAT2(_x, _y) {}
     explicit XMFLOAT2A(_In_reads_(2) const float *pArray) : XMFLOAT2(pArray) {}
 
@@ -532,7 +524,7 @@ struct XMINT2
     int32_t x;
     int32_t y;
 
-    XMINT2() XM_CTOR_DEFAULT
+    XMINT2() =default;
     XM_CONSTEXPR XMINT2(int32_t _x, int32_t _y) : x(_x), y(_y) {}
     explicit XMINT2(_In_reads_(2) const int32_t *pArray) : x(pArray[0]), y(pArray[1]) {}
 
@@ -545,7 +537,7 @@ struct XMUINT2
     uint32_t x;
     uint32_t y;
 
-    XMUINT2() XM_CTOR_DEFAULT
+    XMUINT2() =default;
     XM_CONSTEXPR XMUINT2(uint32_t _x, uint32_t _y) : x(_x), y(_y) {}
     explicit XMUINT2(_In_reads_(2) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]) {}
 
@@ -560,7 +552,7 @@ struct XMFLOAT3
     float y;
     float z;
 
-    XMFLOAT3() XM_CTOR_DEFAULT
+    XMFLOAT3() =default;
     XM_CONSTEXPR XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
     explicit XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
@@ -570,7 +562,7 @@ struct XMFLOAT3
 // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
 {
-    XMFLOAT3A() XM_CTOR_DEFAULT
+    XMFLOAT3A() =default;
     XM_CONSTEXPR XMFLOAT3A(float _x, float _y, float _z) : XMFLOAT3(_x, _y, _z) {}
     explicit XMFLOAT3A(_In_reads_(3) const float *pArray) : XMFLOAT3(pArray) {}
 
@@ -585,7 +577,7 @@ struct XMINT3
     int32_t y;
     int32_t z;
 
-    XMINT3() XM_CTOR_DEFAULT
+    XMINT3() =default;
     XM_CONSTEXPR XMINT3(int32_t _x, int32_t _y, int32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMINT3(_In_reads_(3) const int32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
@@ -599,7 +591,7 @@ struct XMUINT3
     uint32_t y;
     uint32_t z;
 
-    XMUINT3() XM_CTOR_DEFAULT
+    XMUINT3() =default;
     XM_CONSTEXPR XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) : x(_x), y(_y), z(_z) {}
     explicit XMUINT3(_In_reads_(3) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
@@ -615,7 +607,7 @@ struct XMFLOAT4
     float z;
     float w;
 
-    XMFLOAT4() XM_CTOR_DEFAULT
+    XMFLOAT4() =default;
     XM_CONSTEXPR XMFLOAT4(float _x, float _y, float _z, float _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMFLOAT4(_In_reads_(4) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
@@ -625,7 +617,7 @@ struct XMFLOAT4
 // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
 {
-    XMFLOAT4A() XM_CTOR_DEFAULT
+    XMFLOAT4A() =default;
     XM_CONSTEXPR XMFLOAT4A(float _x, float _y, float _z, float _w) : XMFLOAT4(_x, _y, _z, _w) {}
     explicit XMFLOAT4A(_In_reads_(4) const float *pArray) : XMFLOAT4(pArray) {}
 
@@ -641,7 +633,7 @@ struct XMINT4
     int32_t z;
     int32_t w;
 
-    XMINT4() XM_CTOR_DEFAULT
+    XMINT4() =default;
     XM_CONSTEXPR XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMINT4(_In_reads_(4) const int32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
@@ -656,7 +648,7 @@ struct XMUINT4
     uint32_t z;
     uint32_t w;
 
-    XMUINT4() XM_CTOR_DEFAULT
+    XMUINT4() =default;
     XM_CONSTEXPR XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XMUINT4(_In_reads_(4) const uint32_t *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
@@ -678,7 +670,7 @@ struct XMFLOAT3X3
         float m[3][3];
     };
 
-    XMFLOAT3X3() XM_CTOR_DEFAULT
+    XMFLOAT3X3() =default;
     XM_CONSTEXPR XMFLOAT3X3(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22)
@@ -709,7 +701,7 @@ struct XMFLOAT4X3
         float m[4][3];
     };
 
-    XMFLOAT4X3() XM_CTOR_DEFAULT
+    XMFLOAT4X3() =default;
     XM_CONSTEXPR XMFLOAT4X3(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22,
@@ -730,7 +722,7 @@ struct XMFLOAT4X3
 // 4x3 Matrix: 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
 {
-    XMFLOAT4X3A() XM_CTOR_DEFAULT
+    XMFLOAT4X3A() =default;
     XM_CONSTEXPR XMFLOAT4X3A(float m00, float m01, float m02,
                             float m10, float m11, float m12,
                             float m20, float m21, float m22,
@@ -760,7 +752,7 @@ struct XMFLOAT4X4
         float m[4][4];
     };
 
-    XMFLOAT4X4() XM_CTOR_DEFAULT
+    XMFLOAT4X4() =default;
     XM_CONSTEXPR XMFLOAT4X4(float m00, float m01, float m02, float m03,
                             float m10, float m11, float m12, float m13,
                             float m20, float m21, float m22, float m23,
@@ -780,7 +772,7 @@ struct XMFLOAT4X4
 // 4x4 Matrix: 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
 {
-    XMFLOAT4X4A() XM_CTOR_DEFAULT
+    XMFLOAT4X4A() =default;
     XM_CONSTEXPR XMFLOAT4X4A(float m00, float m01, float m02, float m03,
                              float m10, float m11, float m12, float m13,
                              float m20, float m21, float m22, float m23,

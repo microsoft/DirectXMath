@@ -298,7 +298,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 #elif defined(_XM_SSE_INTRINSICS_)
     XMMATRIX mResult;
     // Splat the component X,Y,Z then W
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
     XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
     XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
@@ -322,7 +322,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vX = _mm_add_ps(vX,vY);
     mResult.r[0] = vX;
     // Repeat for the other 3 rows
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
@@ -342,7 +342,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     mResult.r[1] = vX;
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
@@ -362,7 +362,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     mResult.r[2] = vX;
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
@@ -479,7 +479,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the component X,Y,Z then W
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
     XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
     XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
@@ -503,7 +503,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX,vY);
     XMVECTOR r0 = vX;
     // Repeat for the other 3 rows
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
@@ -523,7 +523,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     XMVECTOR r1 = vX;
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
@@ -543,7 +543,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vY = _mm_add_ps(vY,vW);
     vX = _mm_add_ps(vX,vY);
     XMVECTOR r2 = vX;
-#if defined(_XM_AVX_INTRINSICS_) && (!defined(_MSC_VER) || (_MSC_VER >= 1800))
+#if defined(_XM_AVX_INTRINSICS_)
     vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
     vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
     vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
