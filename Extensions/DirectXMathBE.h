@@ -92,7 +92,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEndian
     return _mm_castsi128_ps( Result );
 }
 
-}; // namespace SSSE3
+} // namespace SSSE3
 #endif // !_M_ARM
 
 } // namespace DirectX;
