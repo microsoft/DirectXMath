@@ -2309,7 +2309,7 @@ namespace Internal
     }
 };
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__)
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -2358,7 +2358,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRound
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__)
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
