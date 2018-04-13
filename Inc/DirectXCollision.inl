@@ -156,13 +156,13 @@ inline bool SolveCubic( _In_ float e, _In_ float f, _In_ float g, _Out_ float* t
     q = g - e * f / 3.0f + e * e * e * 2.0f / 27.0f;
     h = q * q / 4.0f + p * p * p / 27.0f;
 
-    if( h > 0.0 )
+    if( h > 0 )
     {
         *t = *u = *v = 0.f;
         return false; // only one real root
     }
 
-    if( ( h == 0.0 ) && ( q == 0.0 ) ) // all the same root
+    if( ( h == 0 ) && ( q == 0 ) ) // all the same root
     {
         *t = - e / 3;
         *u = - e / 3;
@@ -203,39 +203,39 @@ inline XMVECTOR CalculateEigenVector( _In_ float m11, _In_ float m12, _In_ float
         float f1, f2, f3;
 
         // we only have one equation - find a valid one
-        if( ( m11 - e != 0.0 ) || ( m12 != 0.0 ) || ( m13 != 0.0 ) )
+        if( ( m11 - e != 0 ) || ( m12 != 0 ) || ( m13 != 0 ) )
         {
             f1 = m11 - e; f2 = m12; f3 = m13;
         }
-        else if( ( m12 != 0.0 ) || ( m22 - e != 0.0 ) || ( m23 != 0.0 ) )
+        else if( ( m12 != 0 ) || ( m22 - e != 0 ) || ( m23 != 0 ) )
         {
             f1 = m12; f2 = m22 - e; f3 = m23;
         }
-        else if( ( m13 != 0.0 ) || ( m23 != 0.0 ) || ( m33 - e != 0.0 ) )
+        else if( ( m13 != 0 ) || ( m23 != 0 ) || ( m33 - e != 0 ) )
         {
             f1 = m13; f2 = m23; f3 = m33 - e;
         }
         else
         {
             // error, we'll just make something up - we have NO context
-            f1 = 1.0; f2 = 0.0; f3 = 0.0;
+            f1 = 1.0f; f2 = 0.0f; f3 = 0.0f;
         }
 
-        if( f1 == 0.0 )
+        if( f1 == 0 )
             vTmp = XMVectorSetX( vTmp, 0.0f );
         else
             vTmp = XMVectorSetX( vTmp, 1.0f );
 
-        if( f2 == 0.0 )
+        if( f2 == 0 )
             vTmp = XMVectorSetY( vTmp, 0.0f );
         else
             vTmp = XMVectorSetY( vTmp, 1.0f );
 
-        if( f3 == 0.0 )
+        if( f3 == 0 )
         {
             vTmp = XMVectorSetZ( vTmp, 0.0f );
             // recalculate y to make equation work
-            if( m12 != 0.0 )
+            if( m12 != 0 )
                 vTmp = XMVectorSetY( vTmp, ( float )( -f1 / f2 ) );
         }
         else
