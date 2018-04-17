@@ -265,7 +265,7 @@ struct BoundingFrustum
         : Origin(_Origin), Orientation(_Orientation),
           RightSlope(_RightSlope), LeftSlope(_LeftSlope), TopSlope(_TopSlope), BottomSlope(_BottomSlope),
           Near(_Near), Far(_Far) {}
-    BoundingFrustum( _In_ CXMMATRIX Projection ) { CreateFromMatrix( *this, Projection ); }
+    BoundingFrustum( _In_ CXMMATRIX Projection );
 
     // Methods
     void    XM_CALLCONV     Transform( _Out_ BoundingFrustum& Out, _In_ FXMMATRIX M ) const;
@@ -345,6 +345,7 @@ namespace TriangleTests
 #ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
+#pragma prefast(disable : 26495, "Union initialization confuses /analyze")
 #endif
 
 #include "DirectXCollision.inl"

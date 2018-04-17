@@ -2803,6 +2803,13 @@ inline void BoundingOrientedBox::CreateFromPoints( BoundingOrientedBox& Out, siz
  *
  ****************************************************************************/
 
+_Use_decl_annotations_
+inline BoundingFrustum::BoundingFrustum( CXMMATRIX Projection )
+{
+    CreateFromMatrix(*this, Projection);
+}
+
+
 //-----------------------------------------------------------------------------
 // Transform a frustum by an angle preserving transform.
 //-----------------------------------------------------------------------------
