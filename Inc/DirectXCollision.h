@@ -46,7 +46,7 @@ struct BoundingSphere
     float Radius;               // Radius of the sphere.
 
     // Creators
-    BoundingSphere() : Center(0,0,0), Radius( 1.f ) {}
+    BoundingSphere() throw() : Center(0, 0, 0), Radius(1.f) {}
 
     BoundingSphere(const BoundingSphere&) = default;
     BoundingSphere& operator=(const BoundingSphere&) = default;
@@ -112,7 +112,7 @@ struct BoundingBox
     XMFLOAT3 Extents;           // Distance from the center to each side.
 
     // Creators
-    BoundingBox() : Center(0,0,0), Extents( 1.f, 1.f, 1.f ) {}
+    BoundingBox() throw() : Center(0, 0, 0), Extents(1.f, 1.f, 1.f) {}
 
     BoundingBox(const BoundingBox&) = default;
     BoundingBox& operator=(const BoundingBox&) = default;
@@ -179,7 +179,7 @@ struct BoundingOrientedBox
     XMFLOAT4 Orientation;       // Unit quaternion representing rotation (box -> world).
 
     // Creators
-    BoundingOrientedBox() : Center(0,0,0), Extents( 1.f, 1.f, 1.f ), Orientation(0,0,0, 1.f ) {}
+    BoundingOrientedBox() throw() : Center(0, 0, 0), Extents(1.f, 1.f, 1.f), Orientation(0, 0, 0, 1.f) {}
 
     BoundingOrientedBox(const BoundingOrientedBox&) = default;
     BoundingOrientedBox& operator=(const BoundingOrientedBox&) = default;
@@ -248,8 +248,9 @@ struct BoundingFrustum
     float Near, Far;            // Z of the near plane and far plane.
 
     // Creators
-    BoundingFrustum() : Origin(0,0,0), Orientation(0,0,0, 1.f), RightSlope( 1.f ), LeftSlope( -1.f ),
-                        TopSlope( 1.f ), BottomSlope( -1.f ), Near(0), Far( 1.f ) {}
+    BoundingFrustum() throw() :
+        Origin(0, 0, 0), Orientation(0, 0, 0, 1.f), RightSlope(1.f), LeftSlope(-1.f),
+        TopSlope(1.f), BottomSlope(-1.f), Near(0), Far(1.f) {}
 
     BoundingFrustum(const BoundingFrustum&) = default;
     BoundingFrustum& operator=(const BoundingFrustum&) = default;
