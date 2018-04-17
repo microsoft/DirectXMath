@@ -268,11 +268,12 @@ inline bool XMComparisonAnyOutOfBounds(uint32_t CR) { return (((CR) & XM_CRMASK_
  ****************************************************************************/
 
 #pragma warning(push)
-#pragma warning(disable:4068 4201 4365 4324 4820)
+#pragma warning(disable:4068 4201 4365 4324 4608 4820)
 // C4068: ignore unknown pragmas
 // C4201: nonstandard extension used : nameless struct/union
 // C4365: Off by default noise
 // C4324/4820: padding warnings
+// C4608: false union intialization warning from VS 2013
 
 #ifdef _PREFAST_
 #pragma prefast(push)
