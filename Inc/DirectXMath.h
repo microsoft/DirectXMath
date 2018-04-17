@@ -836,9 +836,6 @@ __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
                             float m30, float m31, float m32) :
         XMFLOAT4X3(m00,m01,m02,m10,m11,m12,m20,m21,m22,m30,m31,m32) {}
     explicit XMFLOAT4X3A(_In_reads_(12) const float *pArray) : XMFLOAT4X3(pArray) {}
-
-    float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
-    float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
 };
 
 //------------------------------------------------------------------------------
@@ -900,9 +897,6 @@ __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
                              float m30, float m31, float m32, float m33)
         : XMFLOAT4X4(m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,m23,m30,m31,m32,m33) {}
     explicit XMFLOAT4X4A(_In_reads_(16) const float *pArray) : XMFLOAT4X4(pArray) {}
-
-    float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
-    float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
