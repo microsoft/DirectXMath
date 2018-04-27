@@ -241,10 +241,10 @@ struct BoundingFrustum
     XMFLOAT3 Origin;            // Origin of the frustum (and projection).
     XMFLOAT4 Orientation;       // Quaternion representing rotation.
 
-    float RightSlope;           // Positive X slope (X/Z).
-    float LeftSlope;            // Negative X slope.
-    float TopSlope;             // Positive Y slope (Y/Z).
-    float BottomSlope;          // Negative Y slope.
+    float RightSlope;           // Positive X (X/Z)
+    float LeftSlope;            // Negative X
+    float TopSlope;             // Positive Y (Y/Z)
+    float BottomSlope;          // Negative Y
     float Near, Far;            // Z of the near plane and far plane.
 
     // Creators

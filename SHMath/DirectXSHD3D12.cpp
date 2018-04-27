@@ -246,12 +246,12 @@ HRESULT DirectX::SHProjectCubeMap(
                 return E_FAIL;
             }
 
-            const float fV = y * fS + fB;
+            const float v = y * fS + fB;
 
             XMVECTOR* pixel = ptr;
             for (UINT x = 0; x < desc.Width; ++x, ++pixel)
             {
-                const float fU = x * fS + fB;
+                const float u = x * fS + fB;
 
                 float ix, iy, iz;
                 switch (face)
@@ -301,7 +301,7 @@ HRESULT DirectX::SHProjectCubeMap(
                 XMVECTOR dir = XMVectorSet(ix, iy, iz, 0);
                 dir = XMVector3Normalize(dir);
 
-                const float fDiffSolid = 4.0f / ((1.0f + fU * fU + fV * fV)*sqrtf(1.0f + fU * fU + fV * fV));
+                const float fDiffSolid = 4.0f / ((1.0f + u * u + v * v)*sqrtf(1.0f + u * u + v * v));
                 fWt += fDiffSolid;
 
                 XMSHEvalDirection(shBuff, order, dir);
