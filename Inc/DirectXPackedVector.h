@@ -18,11 +18,10 @@ namespace PackedVector
 {
 
 #pragma warning(push)
-#pragma warning(disable:4201 4365 4324 4608 4996)
+#pragma warning(disable:4201 4365 4324 4996)
 // C4201: nonstandard extension used
 // C4365: Off by default noise
 // C4324: alignment padding warnings
-// C4608: false union intialization warning from VS 2013
 // C4996: deprecation warnings
 
 //------------------------------------------------------------------------------
@@ -51,10 +50,8 @@ struct XMCOLOR
     XMCOLOR(const XMCOLOR&) = default;
     XMCOLOR& operator=(const XMCOLOR&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMCOLOR(XMCOLOR&&) = default;
     XMCOLOR& operator=(XMCOLOR&&) = default;
-#endif
 
     XM_CONSTEXPR XMCOLOR(uint32_t Color) : c(Color) {}
     XMCOLOR(float _r, float _g, float _b, float _a);
@@ -89,10 +86,8 @@ struct XMHALF2
     XMHALF2(const XMHALF2&) = default;
     XMHALF2& operator=(const XMHALF2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMHALF2(XMHALF2&&) = default;
     XMHALF2& operator=(XMHALF2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMHALF2(uint32_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMHALF2(HALF _x, HALF _y) : x(_x), y(_y) {}
@@ -122,10 +117,8 @@ struct XMSHORTN2
     XMSHORTN2(const XMSHORTN2&) = default;
     XMSHORTN2& operator=(const XMSHORTN2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMSHORTN2(XMSHORTN2&&) = default;
     XMSHORTN2& operator=(XMSHORTN2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMSHORTN2(uint32_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMSHORTN2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
@@ -154,10 +147,8 @@ struct XMSHORT2
     XMSHORT2(const XMSHORT2&) = default;
     XMSHORT2& operator=(const XMSHORT2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMSHORT2(XMSHORT2&&) = default;
     XMSHORT2& operator=(XMSHORT2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMSHORT2(uint32_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMSHORT2(int16_t _x, int16_t _y) : x(_x), y(_y) {}
@@ -186,10 +177,8 @@ struct XMUSHORTN2
     XMUSHORTN2(const XMUSHORTN2&) = default;
     XMUSHORTN2& operator=(const XMUSHORTN2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUSHORTN2(XMUSHORTN2&&) = default;
     XMUSHORTN2& operator=(XMUSHORTN2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUSHORTN2(uint32_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUSHORTN2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
@@ -218,10 +207,8 @@ struct XMUSHORT2
     XMUSHORT2(const XMUSHORT2&) = default;
     XMUSHORT2& operator=(const XMUSHORT2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUSHORT2(XMUSHORT2&&) = default;
     XMUSHORT2& operator=(XMUSHORT2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUSHORT2(uint32_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUSHORT2(uint16_t _x, uint16_t _y) : x(_x), y(_y) {}
@@ -251,10 +238,8 @@ struct XMBYTEN2
     XMBYTEN2(const XMBYTEN2&) = default;
     XMBYTEN2& operator=(const XMBYTEN2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMBYTEN2(XMBYTEN2&&) = default;
     XMBYTEN2& operator=(XMBYTEN2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMBYTEN2(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMBYTEN2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
@@ -283,10 +268,8 @@ struct XMBYTE2
     XMBYTE2(const XMBYTE2&) = default;
     XMBYTE2& operator=(const XMBYTE2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMBYTE2(XMBYTE2&&) = default;
     XMBYTE2& operator=(XMBYTE2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMBYTE2(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMBYTE2(int8_t _x, int8_t _y) : x(_x), y(_y) {}
@@ -315,10 +298,8 @@ struct XMUBYTEN2
     XMUBYTEN2(const XMUBYTEN2&) = default;
     XMUBYTEN2& operator=(const XMUBYTEN2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUBYTEN2(XMUBYTEN2&&) = default;
     XMUBYTEN2& operator=(XMUBYTEN2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUBYTEN2(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUBYTEN2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
@@ -347,10 +328,8 @@ struct XMUBYTE2
     XMUBYTE2(const XMUBYTE2&) = default;
     XMUBYTE2& operator=(const XMUBYTE2&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUBYTE2(XMUBYTE2&&) = default;
     XMUBYTE2& operator=(XMUBYTE2&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUBYTE2(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUBYTE2(uint8_t _x, uint8_t _y) : x(_x), y(_y) {}
@@ -381,10 +360,8 @@ struct XMU565
     XMU565(const XMU565&) = default;
     XMU565& operator=(const XMU565&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMU565(XMU565&&) = default;
     XMU565& operator=(XMU565&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMU565(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMU565(uint8_t _x, uint8_t _y, uint8_t _z) : x(_x), y(_y), z(_z) {}
@@ -427,10 +404,8 @@ struct XMFLOAT3PK
     XMFLOAT3PK(const XMFLOAT3PK&) = default;
     XMFLOAT3PK& operator=(const XMFLOAT3PK&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMFLOAT3PK(XMFLOAT3PK&&) = default;
     XMFLOAT3PK& operator=(XMFLOAT3PK&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMFLOAT3PK(uint32_t Packed) : v(Packed) {}
     XMFLOAT3PK(float _x, float _y, float _z);
@@ -468,10 +443,8 @@ struct XMFLOAT3SE
     XMFLOAT3SE(const XMFLOAT3SE&) = default;
     XMFLOAT3SE& operator=(const XMFLOAT3SE&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMFLOAT3SE(XMFLOAT3SE&&) = default;
     XMFLOAT3SE& operator=(XMFLOAT3SE&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMFLOAT3SE(uint32_t Packed) : v(Packed) {}
     XMFLOAT3SE(float _x, float _y, float _z);
@@ -503,10 +476,8 @@ struct XMHALF4
     XMHALF4(const XMHALF4&) = default;
     XMHALF4& operator=(const XMHALF4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMHALF4(XMHALF4&&) = default;
     XMHALF4& operator=(XMHALF4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMHALF4(uint64_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -538,10 +509,8 @@ struct XMSHORTN4
     XMSHORTN4(const XMSHORTN4&) = default;
     XMSHORTN4& operator=(const XMSHORTN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMSHORTN4(XMSHORTN4&&) = default;
     XMSHORTN4& operator=(XMSHORTN4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMSHORTN4(uint64_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -572,10 +541,8 @@ struct XMSHORT4
     XMSHORT4(const XMSHORT4&) = default;
     XMSHORT4& operator=(const XMSHORT4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMSHORT4(XMSHORT4&&) = default;
     XMSHORT4& operator=(XMSHORT4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMSHORT4(uint64_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -606,10 +573,8 @@ struct XMUSHORTN4
     XMUSHORTN4(const XMUSHORTN4&) = default;
     XMUSHORTN4& operator=(const XMUSHORTN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUSHORTN4(XMUSHORTN4&&) = default;
     XMUSHORTN4& operator=(XMUSHORTN4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUSHORTN4(uint64_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -640,10 +605,8 @@ struct XMUSHORT4
     XMUSHORT4(const XMUSHORT4&) = default;
     XMUSHORT4& operator=(const XMUSHORT4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUSHORT4(XMUSHORT4&&) = default;
     XMUSHORT4& operator=(XMUSHORT4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUSHORT4(uint64_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -680,10 +643,8 @@ struct XMXDECN4
     XMXDECN4(const XMXDECN4&) = default;
     XMXDECN4& operator=(const XMXDECN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMXDECN4(XMXDECN4&&) = default;
     XMXDECN4& operator=(XMXDECN4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMXDECN4(uint32_t Packed) : v(Packed) {}
     XMXDECN4(float _x, float _y, float _z, float _w);
@@ -719,10 +680,8 @@ struct XM_DEPRECATED XMXDEC4
     XMXDEC4(const XMXDEC4&) = default;
     XMXDEC4& operator=(const XMXDEC4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMXDEC4(XMXDEC4&&) = default;
     XMXDEC4& operator=(XMXDEC4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMXDEC4(uint32_t Packed) : v(Packed) {}
     XMXDEC4(float _x, float _y, float _z, float _w);
@@ -758,10 +717,8 @@ struct XM_DEPRECATED XMDECN4
     XMDECN4(const XMDECN4&) = default;
     XMDECN4& operator=(const XMDECN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMDECN4(XMDECN4&&) = default;
     XMDECN4& operator=(XMDECN4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMDECN4(uint32_t Packed) : v(Packed) {}
     XMDECN4(float _x, float _y, float _z, float _w);
@@ -797,10 +754,8 @@ struct XM_DEPRECATED XMDEC4
     XMDEC4(const XMDEC4&) = default;
     XMDEC4& operator=(const XMDEC4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMDEC4(XMDEC4&&) = default;
     XMDEC4& operator=(XMDEC4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMDEC4(uint32_t Packed) : v(Packed) {}
     XMDEC4(float _x, float _y, float _z, float _w);
@@ -836,10 +791,8 @@ struct XMUDECN4
     XMUDECN4(const XMUDECN4&) = default;
     XMUDECN4& operator=(const XMUDECN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUDECN4(XMUDECN4&&) = default;
     XMUDECN4& operator=(XMUDECN4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUDECN4(uint32_t Packed) : v(Packed) {}
     XMUDECN4(float _x, float _y, float _z, float _w);
@@ -875,10 +828,8 @@ struct XMUDEC4
     XMUDEC4(const XMUDEC4&) = default;
     XMUDEC4& operator=(const XMUDEC4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUDEC4(XMUDEC4&&) = default;
     XMUDEC4& operator=(XMUDEC4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUDEC4(uint32_t Packed) : v(Packed) {}
     XMUDEC4(float _x, float _y, float _z, float _w);
@@ -910,10 +861,8 @@ struct XMBYTEN4
     XMBYTEN4(const XMBYTEN4&) = default;
     XMBYTEN4& operator=(const XMBYTEN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMBYTEN4(XMBYTEN4&&) = default;
     XMBYTEN4& operator=(XMBYTEN4&&) = default;
-#endif
 
     XM_CONSTEXPR XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XM_CONSTEXPR XMBYTEN4(uint32_t Packed) : v(Packed) {}
@@ -944,10 +893,8 @@ struct XMBYTE4
     XMBYTE4(const XMBYTE4&) = default;
     XMBYTE4& operator=(const XMBYTE4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMBYTE4(XMBYTE4&&) = default;
     XMBYTE4& operator=(XMBYTE4&&) = default;
-#endif
 
     XM_CONSTEXPR XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XM_CONSTEXPR XMBYTE4(uint32_t Packed) : v(Packed) {}
@@ -978,10 +925,8 @@ struct XMUBYTEN4
     XMUBYTEN4(const XMUBYTEN4&) = default;
     XMUBYTEN4& operator=(const XMUBYTEN4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUBYTEN4(XMUBYTEN4&&) = default;
     XMUBYTEN4& operator=(XMUBYTEN4&&) = default;
-#endif
 
     XM_CONSTEXPR XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XM_CONSTEXPR XMUBYTEN4(uint32_t Packed) : v(Packed) {}
@@ -1012,10 +957,8 @@ struct XMUBYTE4
     XMUBYTE4(const XMUBYTE4&) = default;
     XMUBYTE4& operator=(const XMUBYTE4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUBYTE4(XMUBYTE4&&) = default;
     XMUBYTE4& operator=(XMUBYTE4&&) = default;
-#endif
 
     XM_CONSTEXPR XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
     explicit XM_CONSTEXPR XMUBYTE4(uint32_t Packed) : v(Packed) {}
@@ -1047,10 +990,8 @@ struct XMUNIBBLE4
     XMUNIBBLE4(const XMUNIBBLE4&) = default;
     XMUNIBBLE4& operator=(const XMUNIBBLE4&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMUNIBBLE4(XMUNIBBLE4&&) = default;
     XMUNIBBLE4& operator=(XMUNIBBLE4&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMUNIBBLE4(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMUNIBBLE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) : x(_x), y(_y), z(_z), w(_w) {}
@@ -1084,10 +1025,8 @@ struct XMU555
     XMU555(const XMU555&) = default;
     XMU555& operator=(const XMU555&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     XMU555(XMU555&&) = default;
     XMU555& operator=(XMU555&&) = default;
-#endif
 
     explicit XM_CONSTEXPR XMU555(uint16_t Packed) : v(Packed) {}
     XM_CONSTEXPR XMU555(uint8_t _x, uint8_t _y, uint8_t _z, bool _w) : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}

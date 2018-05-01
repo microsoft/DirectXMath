@@ -46,15 +46,13 @@ struct BoundingSphere
     float Radius;               // Radius of the sphere.
 
     // Creators
-    BoundingSphere() throw() : Center(0, 0, 0), Radius(1.f) {}
+    BoundingSphere() noexcept : Center(0, 0, 0), Radius(1.f) {}
 
     BoundingSphere(const BoundingSphere&) = default;
     BoundingSphere& operator=(const BoundingSphere&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     BoundingSphere(BoundingSphere&&) = default;
     BoundingSphere& operator=(BoundingSphere&&) = default;
-#endif
 
     XM_CONSTEXPR BoundingSphere( _In_ const XMFLOAT3& center, _In_ float radius )
         : Center(center), Radius(radius) {}
@@ -112,15 +110,13 @@ struct BoundingBox
     XMFLOAT3 Extents;           // Distance from the center to each side.
 
     // Creators
-    BoundingBox() throw() : Center(0, 0, 0), Extents(1.f, 1.f, 1.f) {}
+    BoundingBox() noexcept : Center(0, 0, 0), Extents(1.f, 1.f, 1.f) {}
 
     BoundingBox(const BoundingBox&) = default;
     BoundingBox& operator=(const BoundingBox&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     BoundingBox(BoundingBox&&) = default;
     BoundingBox& operator=(BoundingBox&&) = default;
-#endif
 
     XM_CONSTEXPR BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
         : Center(center), Extents(extents) {}
@@ -179,15 +175,13 @@ struct BoundingOrientedBox
     XMFLOAT4 Orientation;       // Unit quaternion representing rotation (box -> world).
 
     // Creators
-    BoundingOrientedBox() throw() : Center(0, 0, 0), Extents(1.f, 1.f, 1.f), Orientation(0, 0, 0, 1.f) {}
+    BoundingOrientedBox() noexcept : Center(0, 0, 0), Extents(1.f, 1.f, 1.f), Orientation(0, 0, 0, 1.f) {}
 
     BoundingOrientedBox(const BoundingOrientedBox&) = default;
     BoundingOrientedBox& operator=(const BoundingOrientedBox&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     BoundingOrientedBox(BoundingOrientedBox&&) = default;
     BoundingOrientedBox& operator=(BoundingOrientedBox&&) = default;
-#endif
 
     XM_CONSTEXPR BoundingOrientedBox( _In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation )
         : Center(_Center), Extents(_Extents), Orientation(_Orientation) {}
@@ -248,17 +242,15 @@ struct BoundingFrustum
     float Near, Far;            // Z of the near plane and far plane.
 
     // Creators
-    BoundingFrustum() throw() :
+    BoundingFrustum() noexcept :
         Origin(0, 0, 0), Orientation(0, 0, 0, 1.f), RightSlope(1.f), LeftSlope(-1.f),
         TopSlope(1.f), BottomSlope(-1.f), Near(0), Far(1.f) {}
 
     BoundingFrustum(const BoundingFrustum&) = default;
     BoundingFrustum& operator=(const BoundingFrustum&) = default;
 
-#if !defined(_MSC_VER) || _MSC_VER >= 1900
     BoundingFrustum(BoundingFrustum&&) = default;
     BoundingFrustum& operator=(BoundingFrustum&&) = default;
-#endif
 
     XM_CONSTEXPR BoundingFrustum( _In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
                      _In_ float _RightSlope, _In_ float _LeftSlope, _In_ float _TopSlope, _In_ float _BottomSlope,
