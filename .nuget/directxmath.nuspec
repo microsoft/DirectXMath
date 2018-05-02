@@ -23,7 +23,7 @@
 
         <file target="include" src="Inc\*" />
 
-        <file src="nuget/directxmath.targets" target="build\native" />
+        <file src=".nuget/directxmath.targets" target="build\native" />
       
     </files>
 </package>
