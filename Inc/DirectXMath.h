@@ -748,7 +748,7 @@ struct XMFLOAT3X3
 };
 
 //------------------------------------------------------------------------------
-// 4x3 Matrix: 32 bit floating point components
+// 4x3 Row-major Matrix: 32 bit floating point components
 struct XMFLOAT4X3
 {
     union
@@ -761,6 +761,7 @@ struct XMFLOAT4X3
             float _41, _42, _43;
         };
         float m[4][3];
+        float f[12];
     };
 
     XMFLOAT4X3() = default;
@@ -785,7 +786,7 @@ struct XMFLOAT4X3
     float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
 };
 
-// 4x3 Matrix: 32 bit floating point components aligned on a 16 byte boundary
+// 4x3 Row-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
 __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
 {
     XMFLOAT4X3A() = default;
@@ -802,6 +803,60 @@ __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
                             float m30, float m31, float m32) :
         XMFLOAT4X3(m00,m01,m02,m10,m11,m12,m20,m21,m22,m30,m31,m32) {}
     explicit XMFLOAT4X3A(_In_reads_(12) const float *pArray) : XMFLOAT4X3(pArray) {}
+};
+
+//------------------------------------------------------------------------------
+// 3x4 Column-major Matrix: 32 bit floating point components
+struct XMFLOAT3X4
+{
+    union
+    {
+        struct
+        {
+            float _11, _12, _13, _14;
+            float _21, _22, _23, _24;
+            float _31, _32, _33, _34;
+        };
+        float m[3][4];
+        float f[12];
+    };
+
+    XMFLOAT3X4() = default;
+
+    XMFLOAT3X4(const XMFLOAT3X4&) = default;
+    XMFLOAT3X4& operator=(const XMFLOAT3X4&) = default;
+
+    XMFLOAT3X4(XMFLOAT3X4&&) = default;
+    XMFLOAT3X4& operator=(XMFLOAT3X4&&) = default;
+
+    XM_CONSTEXPR XMFLOAT3X4(float m00, float m01, float m02, float m03,
+                            float m10, float m11, float m12, float m13,
+                            float m20, float m21, float m22, float m23)
+        : _11(m00), _12(m01), _13(m02), _14(m03),
+          _21(m10), _22(m11), _23(m12), _24(m13),
+          _31(m20), _32(m21), _33(m22), _34(m23) {}
+    explicit XMFLOAT3X4(_In_reads_(12) const float *pArray);
+
+    float       operator() (size_t Row, size_t Column) const { return m[Row][Column]; }
+    float&      operator() (size_t Row, size_t Column) { return m[Row][Column]; }
+};
+
+// 3x4 Column-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
+__declspec(align(16)) struct XMFLOAT3X4A : public XMFLOAT3X4
+{
+    XMFLOAT3X4A() = default;
+
+    XMFLOAT3X4A(const XMFLOAT3X4A&) = default;
+    XMFLOAT3X4A& operator=(const XMFLOAT3X4A&) = default;
+
+    XMFLOAT3X4A(XMFLOAT3X4A&&) = default;
+    XMFLOAT3X4A& operator=(XMFLOAT3X4A&&) = default;
+
+    XM_CONSTEXPR XMFLOAT3X4A(float m00, float m01, float m02, float m03,
+                             float m10, float m11, float m12, float m13,
+                             float m20, float m21, float m22, float m23) :
+        XMFLOAT3X4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23) {}
+    explicit XMFLOAT3X4A(_In_reads_(12) const float *pArray) : XMFLOAT3X4(pArray) {}
 };
 
 //------------------------------------------------------------------------------
@@ -923,6 +978,8 @@ XMVECTOR    XM_CALLCONV     XMLoadUInt4(_In_ const XMUINT4* pSource);
 XMMATRIX    XM_CALLCONV     XMLoadFloat3x3(_In_ const XMFLOAT3X3* pSource);
 XMMATRIX    XM_CALLCONV     XMLoadFloat4x3(_In_ const XMFLOAT4X3* pSource);
 XMMATRIX    XM_CALLCONV     XMLoadFloat4x3A(_In_ const XMFLOAT4X3A* pSource);
+XMMATRIX    XM_CALLCONV     XMLoadFloat3x4(_In_ const XMFLOAT3X4* pSource);
+XMMATRIX    XM_CALLCONV     XMLoadFloat3x4A(_In_ const XMFLOAT3X4A* pSource);
 XMMATRIX    XM_CALLCONV     XMLoadFloat4x4(_In_ const XMFLOAT4X4* pSource);
 XMMATRIX    XM_CALLCONV     XMLoadFloat4x4A(_In_ const XMFLOAT4X4A* pSource);
 
@@ -959,6 +1016,8 @@ void        XM_CALLCONV     XMStoreUInt4(_Out_ XMUINT4* pDestination, _In_ FXMVE
 void        XM_CALLCONV     XMStoreFloat3x3(_Out_ XMFLOAT3X3* pDestination, _In_ FXMMATRIX M);
 void        XM_CALLCONV     XMStoreFloat4x3(_Out_ XMFLOAT4X3* pDestination, _In_ FXMMATRIX M);
 void        XM_CALLCONV     XMStoreFloat4x3A(_Out_ XMFLOAT4X3A* pDestination, _In_ FXMMATRIX M);
+void        XM_CALLCONV     XMStoreFloat3x4(_Out_ XMFLOAT3X4* pDestination, _In_ FXMMATRIX M);
+void        XM_CALLCONV     XMStoreFloat3x4A(_Out_ XMFLOAT3X4A* pDestination, _In_ FXMMATRIX M);
 void        XM_CALLCONV     XMStoreFloat4x4(_Out_ XMFLOAT4X4* pDestination, _In_ FXMMATRIX M);
 void        XM_CALLCONV     XMStoreFloat4x4A(_Out_ XMFLOAT4X4A* pDestination, _In_ FXMMATRIX M);
 

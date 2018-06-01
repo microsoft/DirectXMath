@@ -1002,6 +1002,169 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
+inline XMMATRIX XM_CALLCONV XMLoadFloat3x4
+(
+    const XMFLOAT3X4* pSource
+)
+{
+    assert(pSource);
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMMATRIX M;
+    M.r[0].vector4_f32[0] = pSource->m[0][0];
+    M.r[0].vector4_f32[1] = pSource->m[1][0];
+    M.r[0].vector4_f32[2] = pSource->m[2][0];
+    M.r[0].vector4_f32[3] = 0.0f;
+
+    M.r[1].vector4_f32[0] = pSource->m[0][1];
+    M.r[1].vector4_f32[1] = pSource->m[1][1];
+    M.r[1].vector4_f32[2] = pSource->m[2][1];
+    M.r[1].vector4_f32[3] = 0.0f;
+
+    M.r[2].vector4_f32[0] = pSource->m[0][2];
+    M.r[2].vector4_f32[1] = pSource->m[1][2];
+    M.r[2].vector4_f32[2] = pSource->m[2][2];
+    M.r[2].vector4_f32[3] = 0.0f;
+
+    M.r[3].vector4_f32[0] = pSource->m[0][3];
+    M.r[3].vector4_f32[1] = pSource->m[1][3];
+    M.r[3].vector4_f32[2] = pSource->m[2][3];
+    M.r[3].vector4_f32[3] = 1.0f;
+    return M;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float32x2x4_t vTemp0 = vld4_f32(&pSource->_11);
+    float32x4_t vTemp1 = vld1q_f32(&pSource->_31);
+
+    float32x2_t l = vget_low_f32(vTemp1);
+    float32x4_t T0 = vcombine_f32(vTemp0.val[0], l);
+    float32x2_t rl = vrev64_f32(l);
+    float32x4_t T1 = vcombine_f32(vTemp0.val[1], rl);
+
+    float32x2_t h = vget_high_f32(vTemp1);
+    float32x4_t T2 = vcombine_f32(vTemp0.val[2], h);
+    float32x2_t rh = vrev64_f32(h);
+    float32x4_t T3 = vcombine_f32(vTemp0.val[3], rh);
+
+    XMMATRIX M = {};
+    M.r[0] = vandq_u32(T0, g_XMMask3);
+    M.r[1] = vandq_u32(T1, g_XMMask3);
+    M.r[2] = vandq_u32(T2, g_XMMask3);
+    M.r[3] = vsetq_lane_f32(1.f, T3, 3);
+    return M;
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMMATRIX M;
+    M.r[0] = _mm_loadu_ps(&pSource->_11);
+    M.r[1] = _mm_loadu_ps(&pSource->_21);
+    M.r[2] = _mm_loadu_ps(&pSource->_31);
+    M.r[3] = g_XMIdentityR3;
+
+    // x.x,x.y,y.x,y.y
+    XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
+    // x.z,x.w,y.z,y.w
+    XMVECTOR vTemp3 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(3, 2, 3, 2));
+    // z.x,z.y,w.x,w.y
+    XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
+    // z.z,z.w,w.z,w.w
+    XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
+    XMMATRIX mResult;
+
+    // x.x,y.x,z.x,w.x
+    mResult.r[0] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.y,y.y,z.y,w.y
+    mResult.r[1] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
+    // x.z,y.z,z.z,w.z
+    mResult.r[2] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.w,y.w,z.w,w.w
+    mResult.r[3] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(3, 1, 3, 1));
+    return mResult;
+#endif
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline XMMATRIX XM_CALLCONV XMLoadFloat3x4A
+(
+    const XMFLOAT3X4A* pSource
+)
+{
+    assert(pSource);
+    assert(((uintptr_t)pSource & 0xF) == 0);
+#if defined(_XM_NO_INTRINSICS_)
+
+    XMMATRIX M;
+    M.r[0].vector4_f32[0] = pSource->m[0][0];
+    M.r[0].vector4_f32[1] = pSource->m[1][0];
+    M.r[0].vector4_f32[2] = pSource->m[2][0];
+    M.r[0].vector4_f32[3] = 0.0f;
+
+    M.r[1].vector4_f32[0] = pSource->m[0][1];
+    M.r[1].vector4_f32[1] = pSource->m[1][1];
+    M.r[1].vector4_f32[2] = pSource->m[2][1];
+    M.r[1].vector4_f32[3] = 0.0f;
+
+    M.r[2].vector4_f32[0] = pSource->m[0][2];
+    M.r[2].vector4_f32[1] = pSource->m[1][2];
+    M.r[2].vector4_f32[2] = pSource->m[2][2];
+    M.r[2].vector4_f32[3] = 0.0f;
+
+    M.r[3].vector4_f32[0] = pSource->m[0][3];
+    M.r[3].vector4_f32[1] = pSource->m[1][3];
+    M.r[3].vector4_f32[2] = pSource->m[2][3];
+    M.r[3].vector4_f32[3] = 1.0f;
+    return M;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float32x2x4_t vTemp0 = vld4_f32_ex(&pSource->_11, 128);
+    float32x4_t vTemp1 = vld1q_f32_ex(&pSource->_31, 128);
+
+    float32x2_t l = vget_low_f32(vTemp1);
+    float32x4_t T0 = vcombine_f32(vTemp0.val[0], l);
+    float32x2_t rl = vrev64_f32(l);
+    float32x4_t T1 = vcombine_f32(vTemp0.val[1], rl);
+
+    float32x2_t h = vget_high_f32(vTemp1);
+    float32x4_t T2 = vcombine_f32(vTemp0.val[2], h);
+    float32x2_t rh = vrev64_f32(h);
+    float32x4_t T3 = vcombine_f32(vTemp0.val[3], rh);
+
+    XMMATRIX M = {};
+    M.r[0] = vandq_u32(T0, g_XMMask3);
+    M.r[1] = vandq_u32(T1, g_XMMask3);
+    M.r[2] = vandq_u32(T2, g_XMMask3);
+    M.r[3] = vsetq_lane_f32(1.f, T3, 3);
+    return M;
+#elif defined(_XM_SSE_INTRINSICS_)
+    XMMATRIX M;
+    M.r[0] = _mm_load_ps(&pSource->_11);
+    M.r[1] = _mm_load_ps(&pSource->_21);
+    M.r[2] = _mm_load_ps(&pSource->_31);
+    M.r[3] = g_XMIdentityR3;
+
+    // x.x,x.y,y.x,y.y
+    XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
+    // x.z,x.w,y.z,y.w
+    XMVECTOR vTemp3 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(3, 2, 3, 2));
+    // z.x,z.y,w.x,w.y
+    XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
+    // z.z,z.w,w.z,w.w
+    XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
+    XMMATRIX mResult;
+
+    // x.x,y.x,z.x,w.x
+    mResult.r[0] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.y,y.y,z.y,w.y
+    mResult.r[1] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
+    // x.z,y.z,z.z,w.z
+    mResult.r[2] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.w,y.w,z.w,w.w
+    mResult.r[3] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(3, 1, 3, 1));
+    return mResult;
+#endif
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
 inline XMMATRIX XM_CALLCONV XMLoadFloat4x4
 (
     const XMFLOAT4X4* pSource
@@ -1801,6 +1964,125 @@ inline void XM_CALLCONV XMStoreFloat4x3A
     _mm_store_ps(&pDestination->m[0][0],vTemp1);
     _mm_store_ps(&pDestination->m[1][1],vTemp2);
     _mm_store_ps(&pDestination->m[2][2],vTemp3);
+#endif
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XM_CALLCONV XMStoreFloat3x4
+(
+    XMFLOAT3X4* pDestination,
+    FXMMATRIX M
+)
+{
+    assert(pDestination);
+#if defined(_XM_NO_INTRINSICS_)
+
+    pDestination->m[0][0] = M.r[0].vector4_f32[0];
+    pDestination->m[0][1] = M.r[1].vector4_f32[0];
+    pDestination->m[0][2] = M.r[2].vector4_f32[0];
+    pDestination->m[0][3] = M.r[3].vector4_f32[0];
+
+    pDestination->m[1][0] = M.r[0].vector4_f32[1];
+    pDestination->m[1][1] = M.r[1].vector4_f32[1];
+    pDestination->m[1][2] = M.r[2].vector4_f32[1];
+    pDestination->m[1][3] = M.r[3].vector4_f32[1];
+
+    pDestination->m[2][0] = M.r[0].vector4_f32[2];
+    pDestination->m[2][1] = M.r[1].vector4_f32[2];
+    pDestination->m[2][2] = M.r[2].vector4_f32[2];
+    pDestination->m[2][3] = M.r[3].vector4_f32[2];
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float32x4x2_t P0 = vzipq_f32(M.r[0], M.r[2]);
+    float32x4x2_t P1 = vzipq_f32(M.r[1], M.r[3]);
+
+    float32x4x2_t T0 = vzipq_f32(P0.val[0], P1.val[0]);
+    float32x4x2_t T1 = vzipq_f32(P0.val[1], P1.val[1]);
+
+    vst1q_f32(&pDestination->m[0][0], T0.val[0]);
+    vst1q_f32(&pDestination->m[1][0], T0.val[1]);
+    vst1q_f32(&pDestination->m[2][0], T1.val[0]);
+#elif defined(_XM_SSE_INTRINSICS_)
+    // x.x,x.y,y.x,y.y
+    XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
+    // x.z,x.w,y.z,y.w
+    XMVECTOR vTemp3 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(3, 2, 3, 2));
+    // z.x,z.y,w.x,w.y
+    XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
+    // z.z,z.w,w.z,w.w
+    XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
+
+    // x.x,y.x,z.x,w.x
+    XMVECTOR r0 = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.y,y.y,z.y,w.y
+    XMVECTOR r1 = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
+    // x.z,y.z,z.z,w.z
+    XMVECTOR r2 = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
+
+    _mm_storeu_ps(&pDestination->m[0][0], r0);
+    _mm_storeu_ps(&pDestination->m[1][0], r1);
+    _mm_storeu_ps(&pDestination->m[2][0], r2);
+#endif
+}
+
+//------------------------------------------------------------------------------
+_Use_decl_annotations_
+inline void XM_CALLCONV XMStoreFloat3x4A
+(
+    XMFLOAT3X4A* pDestination,
+    FXMMATRIX M
+)
+{
+    assert(pDestination);
+    assert(((uintptr_t)pDestination & 0xF) == 0);
+#if defined(_XM_NO_INTRINSICS_)
+
+    pDestination->m[0][0] = M.r[0].vector4_f32[0];
+    pDestination->m[0][1] = M.r[1].vector4_f32[0];
+    pDestination->m[0][2] = M.r[2].vector4_f32[0];
+    pDestination->m[0][3] = M.r[3].vector4_f32[0];
+
+    pDestination->m[1][0] = M.r[0].vector4_f32[1];
+    pDestination->m[1][1] = M.r[1].vector4_f32[1];
+    pDestination->m[1][2] = M.r[2].vector4_f32[1];
+    pDestination->m[1][3] = M.r[3].vector4_f32[1];
+
+    pDestination->m[2][0] = M.r[0].vector4_f32[2];
+    pDestination->m[2][1] = M.r[1].vector4_f32[2];
+    pDestination->m[2][2] = M.r[2].vector4_f32[2];
+    pDestination->m[2][3] = M.r[3].vector4_f32[2];
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float32x4x2_t P0 = vzipq_f32(M.r[0], M.r[2]);
+    float32x4x2_t P1 = vzipq_f32(M.r[1], M.r[3]);
+
+    float32x4x2_t T0 = vzipq_f32(P0.val[0], P1.val[0]);
+    float32x4x2_t T1 = vzipq_f32(P0.val[1], P1.val[1]);
+
+    vst1q_f32_ex(&pDestination->m[0][0], T0.val[0], 128);
+    vst1q_f32_ex(&pDestination->m[1][0], T0.val[1], 128);
+    vst1q_f32_ex(&pDestination->m[2][0], T1.val[0], 128);
+#elif defined(_XM_SSE_INTRINSICS_)
+    // x.x,x.y,y.x,y.y
+    XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
+    // x.z,x.w,y.z,y.w
+    XMVECTOR vTemp3 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(3, 2, 3, 2));
+    // z.x,z.y,w.x,w.y
+    XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
+    // z.z,z.w,w.z,w.w
+    XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
+
+    // x.x,y.x,z.x,w.x
+    XMVECTOR r0 = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
+    // x.y,y.y,z.y,w.y
+    XMVECTOR r1 = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
+    // x.z,y.z,z.z,w.z
+    XMVECTOR r2 = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
+
+    _mm_store_ps(&pDestination->m[0][0], r0);
+    _mm_store_ps(&pDestination->m[1][0], r1);
+    _mm_store_ps(&pDestination->m[2][0], r2);
 #endif
 }
 
