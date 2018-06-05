@@ -93,9 +93,9 @@ namespace XDSP
         using namespace DirectX;
 
         // sign constants for radix-4 butterflies
-        const static XMVECTORF32 vDFT4SignBits1 = { 1.0f, -1.0f,  1.0f, -1.0f };
-        const static XMVECTORF32 vDFT4SignBits2 = { 1.0f,  1.0f, -1.0f, -1.0f };
-        const static XMVECTORF32 vDFT4SignBits3 = { 1.0f, -1.0f, -1.0f,  1.0f };
+        static const XMVECTORF32 vDFT4SignBits1 = { 1.0f, -1.0f,  1.0f, -1.0f };
+        static const XMVECTORF32 vDFT4SignBits2 = { 1.0f,  1.0f, -1.0f, -1.0f };
+        static const XMVECTORF32 vDFT4SignBits3 = { 1.0f, -1.0f, -1.0f,  1.0f };
 
         // calculating Temp
         // [r1X| r1X|r1Y| r1Y] + [r1Z|-r1Z|r1W|-r1W]
