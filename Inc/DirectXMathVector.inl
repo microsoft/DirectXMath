@@ -2552,13 +2552,13 @@ inline XMVECTOR XM_CALLCONV XMVectorClamp
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR vResult;
-    vResult = vmaxq_f32(Min,V);
-    vResult = vminq_f32(vResult,Max);
+    vResult = vmaxq_f32(Min, V);
+    vResult = vminq_f32(Max, vResult);
     return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult;
-    vResult = _mm_max_ps(Min,V);
-    vResult = _mm_min_ps(vResult,Max);
+    vResult = _mm_max_ps(Min, V);
+    vResult = _mm_min_ps(Max, vResult);
     return vResult;
 #endif
 }
