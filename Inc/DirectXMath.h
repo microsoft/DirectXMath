@@ -455,10 +455,15 @@ __declspec(align(16)) struct XMMATRIX
     XMMATRIX() = default;
 
     XMMATRIX(const XMMATRIX&) = default;
+
+#if defined(_MSC_VER)
+    XMMATRIX& operator= (const XMMATRIX& M) noexcept { r[0] = M.r[0]; r[1] = M.r[1]; r[2] = M.r[2]; r[3] = M.r[3]; return *this; }
+#else
     XMMATRIX& operator=(const XMMATRIX&) = default;
 
     XMMATRIX(XMMATRIX&&) = default;
     XMMATRIX& operator=(XMMATRIX&&) = default;
+#endif
 
     constexpr XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3) : r{ R0,R1,R2,R3 } {}
     XMMATRIX(float m00, float m01, float m02, float m03,
