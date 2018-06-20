@@ -456,7 +456,7 @@ __declspec(align(16)) struct XMMATRIX
 
     XMMATRIX(const XMMATRIX&) = default;
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER) && (_MSC_FULL_VER < 191426431)
     XMMATRIX& operator= (const XMMATRIX& M) noexcept { r[0] = M.r[0]; r[1] = M.r[1]; r[2] = M.r[2]; r[3] = M.r[3]; return *this; }
 #else
     XMMATRIX& operator=(const XMMATRIX&) = default;
