@@ -18,14 +18,14 @@ enum ContainmentType
 {
     DISJOINT = 0,
     INTERSECTS = 1,
-    CONTAINS = 2,
+    CONTAINS = 2
 };
 
 enum PlaneIntersectionType
 {
     FRONT = 0,
     INTERSECTING = 1,
-    BACK = 2,
+    BACK = 2
 };
 
 struct BoundingBox;
@@ -319,7 +319,7 @@ namespace TriangleTests
                                                          _In_ GXMVECTOR Plane0, _In_ HXMVECTOR Plane1, _In_ HXMVECTOR Plane2,
                                                          _In_ CXMVECTOR Plane3, _In_ CXMVECTOR Plane4, _In_ CXMVECTOR Plane5 );
         // Test a triangle against six planes at once (see BoundingFrustum::GetPlanes)
-};
+}
 
 #pragma warning(pop)
 
