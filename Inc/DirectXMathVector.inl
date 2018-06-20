@@ -9,6 +9,11 @@
 
 #pragma once
 
+#if defined(_XM_NO_INTRINSICS_)
+#define XMISNAN(x)  isnan(x)
+#define XMISINF(x)  isinf(x)
+#endif
+
 #if defined(_XM_SSE_INTRINSICS_)
 
 #define XM3UNPACK3INTO4(l1,l2,l3) \
@@ -2173,10 +2178,10 @@ inline XMVECTOR XM_CALLCONV XMVectorIsNaN
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTORU32 Control = { { {
-            isnan(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0,
-            isnan(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0,
-            isnan(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0,
-            isnan(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0
+            XMISNAN(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0,
+            XMISNAN(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0,
+            XMISNAN(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0,
+            XMISNAN(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0
         } } };
     return Control.v;
 
@@ -2201,10 +2206,10 @@ inline XMVECTOR XM_CALLCONV XMVectorIsInfinite
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTORU32 Control = { { {
-            isinf(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0,
-            isinf(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0,
-            isinf(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0,
-            isinf(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0
+            XMISINF(V.vector4_f32[0]) ? 0xFFFFFFFFU : 0,
+            XMISINF(V.vector4_f32[1]) ? 0xFFFFFFFFU : 0,
+            XMISINF(V.vector4_f32[2]) ? 0xFFFFFFFFU : 0,
+            XMISINF(V.vector4_f32[3]) ? 0xFFFFFFFFU : 0
         } } };
     return Control.v;
 
@@ -2373,7 +2378,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTruncate
 
     for (i = 0; i < 4; i++)
     {
-        if (isnan(V.vector4_f32[i]))
+        if (XMISNAN(V.vector4_f32[i]))
         {
             Result.vector4_u32[i] = 0x7FC00000;
         }
@@ -6744,8 +6749,8 @@ inline bool XM_CALLCONV XMVector2IsNaN
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (isnan(V.vector4_f32[0]) ||
-            isnan(V.vector4_f32[1]));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x2_t VL = vget_low_f32( V );
     // Test against itself. NaN is always not equal
@@ -6769,8 +6774,8 @@ inline bool XM_CALLCONV XMVector2IsInfinite
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (isinf(V.vector4_f32[0]) ||
-            isinf(V.vector4_f32[1]));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Mask off the sign bit
     uint32x2_t vTemp = vand_u32( vget_low_f32( V ) , vget_low_f32( g_XMAbsMask ) );
@@ -9124,9 +9129,9 @@ inline bool XM_CALLCONV XMVector3IsNaN
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (isnan(V.vector4_f32[0]) ||
-            isnan(V.vector4_f32[1]) ||
-            isnan(V.vector4_f32[2]));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]) ||
+            XMISNAN(V.vector4_f32[2]));
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Test against itself. NaN is always not equal
@@ -9151,9 +9156,9 @@ inline bool XM_CALLCONV XMVector3IsInfinite
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (isinf(V.vector4_f32[0]) ||
-            isinf(V.vector4_f32[1]) ||
-            isinf(V.vector4_f32[2]));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]) ||
+            XMISINF(V.vector4_f32[2]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Mask off the sign bit
     uint32x4_t vTempInf = vandq_u32( V, g_XMAbsMask );
@@ -13115,10 +13120,10 @@ inline bool XM_CALLCONV XMVector4IsNaN
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
-    return (isnan(V.vector4_f32[0]) ||
-            isnan(V.vector4_f32[1]) ||
-            isnan(V.vector4_f32[2]) ||
-            isnan(V.vector4_f32[3]));
+    return (XMISNAN(V.vector4_f32[0]) ||
+            XMISNAN(V.vector4_f32[1]) ||
+            XMISNAN(V.vector4_f32[2]) ||
+            XMISNAN(V.vector4_f32[3]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Test against itself. NaN is always not equal
     uint32x4_t vTempNan = vceqq_f32( V, V );
@@ -13143,10 +13148,10 @@ inline bool XM_CALLCONV XMVector4IsInfinite
 {
 #if defined(_XM_NO_INTRINSICS_)
 
-    return (isinf(V.vector4_f32[0]) ||
-            isinf(V.vector4_f32[1]) ||
-            isinf(V.vector4_f32[2]) ||
-            isinf(V.vector4_f32[3]));
+    return (XMISINF(V.vector4_f32[0]) ||
+            XMISINF(V.vector4_f32[1]) ||
+            XMISINF(V.vector4_f32[2]) ||
+            XMISINF(V.vector4_f32[3]));
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Mask off the sign bit
@@ -14589,6 +14594,11 @@ inline XMVECTOR XM_CALLCONV operator*
 }
 
 #endif /* !_XM_NO_XMVECTOR_OVERLOADS_ */
+
+#if defined(_XM_NO_INTRINSICS_)
+#undef XMISNAN
+#undef XMISINF
+#endif
 
 #if defined(_XM_SSE_INTRINSICS_)
 #undef XM3UNPACK3INTO4
