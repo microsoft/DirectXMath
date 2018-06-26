@@ -1124,7 +1124,7 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalize
 #if defined(_XM_NO_INTRINSICS_)
     float fLengthSq = sqrtf((P.vector4_f32[0]*P.vector4_f32[0])+(P.vector4_f32[1]*P.vector4_f32[1])+(P.vector4_f32[2]*P.vector4_f32[2]));
     // Prevent divide by zero
-    if (fLengthSq)
+    if (fLengthSq > 0)
     {
         fLengthSq = 1.0f/fLengthSq;
     }
@@ -1748,7 +1748,7 @@ inline XMVECTOR XM_CALLCONV XMColorHSVToRGB( FXMVECTOR hsv )
     // t = v*(1 - (1-f)*s)
     XMVECTOR t = XMVectorMultiply( v, XMVectorSubtract( g_XMOne, XMVectorMultiply( XMVectorSubtract( g_XMOne, f ), s ) ) );
 
-    int ii = static_cast<int>( XMVectorGetX( XMVectorMod( i, g_XMSix ) ) );
+    auto ii = static_cast<int>( XMVectorGetX( XMVectorMod( i, g_XMSix ) ) );
 
     XMVECTOR _rgb;
 
@@ -2143,7 +2143,7 @@ inline float XMScalarModAngle
     Angle = Angle + XM_PI;
     // Perform the modulo, unsigned
     float fTemp = fabsf(Angle);
-    fTemp = fTemp - (XM_2PI * (float)((int32_t)(fTemp/XM_2PI)));
+    fTemp = fTemp - (XM_2PI * static_cast<float>(static_cast<int32_t>(fTemp/XM_2PI)));
     // Restore the number to the range of -XM_PI to XM_PI-epsilon
     fTemp = fTemp - XM_PI;
     // If the modulo'd value was negative, restore negation
@@ -2164,11 +2164,11 @@ inline float XMScalarSin
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 
@@ -2198,11 +2198,11 @@ inline float XMScalarSinEst
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 
@@ -2232,11 +2232,11 @@ inline float XMScalarCos
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 
@@ -2274,11 +2274,11 @@ inline float XMScalarCosEst
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 
@@ -2322,11 +2322,11 @@ inline void XMScalarSinCos
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 
@@ -2374,11 +2374,11 @@ inline void XMScalarSinCosEst
     float quotient = XM_1DIV2PI*Value;
     if (Value >= 0.0f)
     {
-        quotient = (float)((int)(quotient + 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient + 0.5f));
     }
     else
     {
-        quotient = (float)((int)(quotient - 0.5f));
+        quotient = static_cast<float>(static_cast<int>(quotient - 0.5f));
     }
     float y = Value - XM_2PI*quotient;
 

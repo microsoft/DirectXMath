@@ -192,9 +192,9 @@ inline XMVECTOR CalculateEigenVector( _In_ float m11, _In_ float m12, _In_ float
                                       _In_ float m22, _In_ float m23, _In_ float m33, _In_ float e )
 {
     float fTmp[3];
-    fTmp[0] = ( float )( m12 * m23 - m13 * ( m22 - e ) );
-    fTmp[1] = ( float )( m13 * m12 - m23 * ( m11 - e ) );
-    fTmp[2] = ( float )( ( m11 - e ) * ( m22 - e ) - m12 * m12 );
+    fTmp[0] = m12 * m23 - m13 * ( m22 - e );
+    fTmp[1] = m13 * m12 - m23 * ( m11 - e );
+    fTmp[2] = ( m11 - e ) * ( m22 - e ) - m12 * m12;
 
     XMVECTOR vTmp = XMLoadFloat3( reinterpret_cast<const XMFLOAT3*>(fTmp) );
 
@@ -236,11 +236,11 @@ inline XMVECTOR CalculateEigenVector( _In_ float m11, _In_ float m12, _In_ float
             vTmp = XMVectorSetZ( vTmp, 0.0f );
             // recalculate y to make equation work
             if( m12 != 0 )
-                vTmp = XMVectorSetY( vTmp, ( float )( -f1 / f2 ) );
+                vTmp = XMVectorSetY( vTmp, -f1 / f2 );
         }
         else
         {
-            vTmp = XMVectorSetZ( vTmp, ( float )( ( f2 - f1 ) / f3 ) );
+            vTmp = XMVectorSetZ( vTmp, ( f2 - f1 ) / f3 );
         }
     }
 
@@ -2006,7 +2006,7 @@ inline void XM_CALLCONV BoundingOrientedBox::Transform( BoundingOrientedBox& Out
 _Use_decl_annotations_
 inline void BoundingOrientedBox::GetCorners( XMFLOAT3* Corners ) const
 {
-    assert( Corners != 0 );
+    assert( Corners != nullptr );
 
     // Load the box
     XMVECTOR vCenter = XMLoadFloat3( &Center );
@@ -2698,7 +2698,7 @@ _Use_decl_annotations_
 inline void BoundingOrientedBox::CreateFromPoints( BoundingOrientedBox& Out, size_t Count, const XMFLOAT3* pPoints, size_t Stride )
 {
     assert( Count > 0 );
-    assert( pPoints != 0 );
+    assert( pPoints != nullptr );
 
     XMVECTOR CenterOfMass = XMVectorZero();
 
@@ -2895,7 +2895,7 @@ inline void XM_CALLCONV BoundingFrustum::Transform( BoundingFrustum& Out, float 
 _Use_decl_annotations_
 inline void BoundingFrustum::GetCorners( XMFLOAT3* Corners ) const
 {
-    assert( Corners != 0 );
+    assert( Corners != nullptr );
 
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin = XMLoadFloat3( &Origin );

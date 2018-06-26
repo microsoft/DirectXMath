@@ -29,7 +29,7 @@ inline bool XM_CALLCONV XMMatrixIsNaN
 {
 #if defined(_XM_NO_INTRINSICS_)
     size_t i = 16;
-    const uint32_t *pWork = (const uint32_t *)(&M.m[0][0]);
+    auto pWork = reinterpret_cast<const uint32_t *>(&M.m[0][0]);
     do {
         // Fetch value into integer unit
         uint32_t uTest = pWork[0];
@@ -94,7 +94,7 @@ inline bool XM_CALLCONV XMMatrixIsInfinite
 {
 #if defined(_XM_NO_INTRINSICS_)
     size_t i = 16;
-    const uint32_t *pWork = (const uint32_t *)(&M.m[0][0]);
+    auto pWork = reinterpret_cast<const uint32_t *>(&M.m[0][0]);
     do {
         // Fetch value into integer unit
         uint32_t uTest = pWork[0];
@@ -157,7 +157,7 @@ inline bool XM_CALLCONV XMMatrixIsIdentity
 {
 #if defined(_XM_NO_INTRINSICS_)
     // Use the integer pipeline to reduce branching to a minimum
-    const uint32_t *pWork = (const uint32_t*)(&M.m[0][0]);
+    auto pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
     // Convert 1.0f to zero and or them together
     uint32_t uOne = pWork[0]^0x3F800000U;
     // Or all the 0.0f entries together
@@ -995,7 +995,7 @@ inline bool XM_CALLCONV XMMatrixDecompose
     matTemp.r[2] = M.r[2];
     matTemp.r[3] = g_XMIdentityR3.v;
 
-    float *pfScales = (float *)outScale;
+    auto pfScales = reinterpret_cast<float *>(outScale);
 
     size_t a, b, c;
     XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0])); 
@@ -2981,10 +2981,10 @@ inline XMMATRIX::XMMATRIX
 )
 {
     assert( pArray != nullptr );
-    r[0] = XMLoadFloat4((const XMFLOAT4*)pArray);
-    r[1] = XMLoadFloat4((const XMFLOAT4*)(pArray + 4));
-    r[2] = XMLoadFloat4((const XMFLOAT4*)(pArray + 8));
-    r[3] = XMLoadFloat4((const XMFLOAT4*)(pArray + 12));
+    r[0] = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray));
+    r[1] = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray + 4));
+    r[2] = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray + 8));
+    r[3] = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray + 12));
 }
 
 //------------------------------------------------------------------------------

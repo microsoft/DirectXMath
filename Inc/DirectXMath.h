@@ -1666,7 +1666,7 @@ namespace Internal
     {
         static XMVECTOR     XM_CALLCONV     Permute(FXMVECTOR v1, FXMVECTOR v2) { return _mm_shuffle_ps(v2, v1, Shuffle); }
     };
-};
+}
 
 #endif // _XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
@@ -1944,12 +1944,12 @@ XMGLOBALCONST XMVECTORI32 g_XMFltMax                = { { { 0x7F7FFFFF, 0x7F7FFF
 XMGLOBALCONST XMVECTORU32 g_XMNegOneMask            = { { { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF } } };
 XMGLOBALCONST XMVECTORU32 g_XMMaskA8R8G8B8          = { { { 0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000 } } };
 XMGLOBALCONST XMVECTORU32 g_XMFlipA8R8G8B8          = { { { 0x00000000, 0x00000000, 0x00000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixAA8R8G8B8          = { { { 0.0f, 0.0f, 0.0f, (float) (0x80000000U) } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeA8R8G8B8     = { { { 1.0f / (255.0f*(float) (0x10000)), 1.0f / (255.0f*(float) (0x100)), 1.0f / 255.0f, 1.0f / (255.0f*(float) (0x1000000)) } } };
+XMGLOBALCONST XMVECTORF32 g_XMFixAA8R8G8B8          = { { { 0.0f, 0.0f, 0.0f, float(0x80000000U) } } };
+XMGLOBALCONST XMVECTORF32 g_XMNormalizeA8R8G8B8     = { { { 1.0f / (255.0f*float(0x10000)), 1.0f / (255.0f*float(0x100)), 1.0f / 255.0f, 1.0f / (255.0f*float(0x1000000)) } } };
 XMGLOBALCONST XMVECTORU32 g_XMMaskA2B10G10R10       = { { { 0x000003FF, 0x000FFC00, 0x3FF00000, 0xC0000000 } } };
 XMGLOBALCONST XMVECTORU32 g_XMFlipA2B10G10R10       = { { { 0x00000200, 0x00080000, 0x20000000, 0x80000000 } } };
-XMGLOBALCONST XMVECTORF32 g_XMFixAA2B10G10R10       = { { { -512.0f, -512.0f*(float) (0x400), -512.0f*(float) (0x100000), (float) (0x80000000U) } } };
-XMGLOBALCONST XMVECTORF32 g_XMNormalizeA2B10G10R10  = { { { 1.0f / 511.0f, 1.0f / (511.0f*(float) (0x400)), 1.0f / (511.0f*(float) (0x100000)), 1.0f / (3.0f*(float) (0x40000000)) } } };
+XMGLOBALCONST XMVECTORF32 g_XMFixAA2B10G10R10       = { { { -512.0f, -512.0f*float(0x400), -512.0f*float(0x100000), float(0x80000000U) } } };
+XMGLOBALCONST XMVECTORF32 g_XMNormalizeA2B10G10R10  = { { { 1.0f / 511.0f, 1.0f / (511.0f*float(0x400)), 1.0f / (511.0f*float(0x100000)), 1.0f / (3.0f*float(0x40000000)) } } };
 XMGLOBALCONST XMVECTORU32 g_XMMaskX16Y16            = { { { 0x0000FFFF, 0xFFFF0000, 0x00000000, 0x00000000 } } };
 XMGLOBALCONST XMVECTORI32 g_XMFlipX16Y16            = { { { 0x00008000, 0x00000000, 0x00000000, 0x00000000 } } };
 XMGLOBALCONST XMVECTORF32 g_XMFixX16Y16             = { { { -32768.0f, 0.0f, 0.0f, 0.0f } } };
@@ -1979,7 +1979,7 @@ XMGLOBALCONST XMVECTORU32 g_XMFlipW                 = { { { 0, 0, 0, 0x80000000 
 XMGLOBALCONST XMVECTORU32 g_XMFlipYZ                = { { { 0, 0x80000000, 0x80000000, 0 } } };
 XMGLOBALCONST XMVECTORU32 g_XMFlipZW                = { { { 0, 0, 0x80000000, 0x80000000 } } };
 XMGLOBALCONST XMVECTORU32 g_XMFlipYW                = { { { 0, 0x80000000, 0, 0x80000000 } } };
-XMGLOBALCONST XMVECTORI32 g_XMMaskDec4              = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, 0x3 << 30 } } };
+XMGLOBALCONST XMVECTORI32 g_XMMaskDec4              = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, static_cast<int>(0xC0000000) } } };
 XMGLOBALCONST XMVECTORI32 g_XMXorDec4               = { { { 0x200, 0x200 << 10, 0x200 << 20, 0 } } };
 XMGLOBALCONST XMVECTORF32 g_XMAddUDec4              = { { { 0, 0, 0, 32768.0f*65536.0f } } };
 XMGLOBALCONST XMVECTORF32 g_XMAddDec4               = { { { -512.0f, -512.0f*1024.0f, -512.0f*1024.0f*1024.0f, 0 } } };
@@ -2067,7 +2067,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, 
 #else // XM_SSE_INTRINSICS_
     static const XMVECTORU32 g_vMask1 = { { { 1, 1, 1, 1 } } };
     // Move the parms to a vector
-    __m128i vTemp = _mm_set_epi32(C3,C2,C1,C0);
+    __m128i vTemp = _mm_set_epi32(static_cast<int>(C3), static_cast<int>(C2), static_cast<int>(C1), static_cast<int>(C0));
     // Mask off the low bits
     vTemp = _mm_and_si128(vTemp,g_vMask1);
     // 0xFFFFFFFF on true bits
@@ -2099,7 +2099,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatConstant(int32_t IntConstant, uint32_t 
     // Convert DivExponent into 1.0f/(1<<DivExponent)
     uint32_t uScale = 0x3F800000U - (DivExponent << 23);
     // Splat the scalar value (It's really a float)
-    vScale = vdupq_n_s32(uScale);
+    vScale = vdupq_n_u32(uScale);
     // Multiply by the reciprocal (Perform a right shift by DivExponent)
     vResult = vmulq_f32(vResult,reinterpret_cast<const float32x4_t *>(&vScale)[0]);
     return vResult;
@@ -2111,7 +2111,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatConstant(int32_t IntConstant, uint32_t 
     // Convert DivExponent into 1.0f/(1<<DivExponent)
     uint32_t uScale = 0x3F800000U - (DivExponent << 23);
     // Splat the scalar value (It's really a float)
-    vScale = _mm_set1_epi32(uScale);
+    vScale = _mm_set1_epi32(static_cast<int>(uScale));
     // Multiply by the reciprocal (Perform a right shift by DivExponent)
     vResult = _mm_mul_ps(vResult,_mm_castsi128_ps(vScale));
     return vResult;
