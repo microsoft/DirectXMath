@@ -4,13 +4,13 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-February 2018
+July 2018
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
 
 This code is designed to build with Visual Studio 2015 or 2017. It is recommended that you
-make use of the latest updates (VS 2015 Update 3 or VS 2017 15.6 update).
+make use of the latest updates (VS 2015 Update 3 or VS 2017 15.7 update or later).
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -18,7 +18,8 @@ see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee66327
 Inc\
     DirectXMath Files (in the DirectX C++ namespace)
         DirectXMath.h - Core library
-        DirectXPackedVector.h - Load/Store functions and types for working with various compressed GPU formats
+        DirectXPackedVector.h - Load/Store functions and types for working with various
+                                compressed GPU formats
         DirectXColors.h - .NET-style Color defines in sRGB color space
         DirectXCollision.h - Bounding volume collision library
 
@@ -44,7 +45,7 @@ XDSP\
 All content and source code for this package are subject to the terms of the MIT License.
 <http://opensource.org/licenses/MIT>.
 
-Documentation is available at <https://msdn.microsoft.com/en-us/library/windows/desktop/hh437833.aspx>.
+Documentation is available at <https://docs.microsoft.com/en-us/windows/desktop/dxmath/directxmath-portal>.
 
 For the latest version of DirectXMath, bug reports, etc. please visit the project site.
 <https://github.com/Microsoft/DirectXMath>
@@ -58,6 +59,14 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+July 2018 (3.13)
+    XMFLOAT3X4, XMFLOAT3X4A, and associated Load/Store functions
+    Move/copy constructors and assignment operators for C++ types
+    Minor fix for XMVectorClamp behavior with NaN
+    Fixed compilation warnings with VS 2017 (15.7 update), Intel C++ 18.0 compiler, and clang 6
+    Retired VS 2013 support
+    Minor code cleanup
 
 February 2018 (3.12)
     ARM64 use of fused multiply-accumulate intriniscs

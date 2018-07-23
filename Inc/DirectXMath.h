@@ -13,7 +13,7 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 312
+#define DIRECTX_MATH_VERSION 313
 
 #if defined(_MSC_VER) && (_MSC_VER < 1900)
 #error DirectX Math requires Visual C++ 2015 or later.

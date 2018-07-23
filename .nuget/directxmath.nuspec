@@ -8,7 +8,7 @@
         <owners>microsoft,directxtk</owners>
         <summary>DirectXMath is an all inline SIMD C++ linear algebra library for use in games and graphics apps.</summary>
         <description>The DirectXMath API provides SIMD-friendly C++ types and functions for common linear algebra and graphics math operations common to DirectX applications. The library provides optimized versions for Windows 32-bit (x86), Windows 64-bit (x64), and Windows RT through SSE2 and ARM-NEON intrinsics support in the Visual Studio compiler.</description>
-        <releaseNotes>Matches the February 2018 release.</releaseNotes>
+        <releaseNotes>Matches the July 2018 release.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkID=615560</projectUrl>
         <iconUrl>https://github.com/Microsoft/DirectXMath/wiki/X_jpg.jpg</iconUrl>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
