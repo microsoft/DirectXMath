@@ -615,7 +615,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt3
     // For only the ones that are too big, add the fixup
     vMask = _mm_and_ps(_mm_castsi128_ps(iMask),g_XMFixUnsigned);
     vResult = _mm_add_ps(vResult,vMask);
-    return vResult; 
+    return vResult;
 #endif
 }
 
@@ -828,7 +828,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat3x3
     __m128 T2 = _mm_unpacklo_ps( V2, Z );
     __m128 T3 = _mm_shuffle_ps( V3, T2, _MM_SHUFFLE( 0, 1, 0, 0 ) );
     __m128 T4 = _mm_movehl_ps( T2, T3 );
-    __m128 T5 = _mm_movehl_ps( Z, T1 );  
+    __m128 T5 = _mm_movehl_ps( Z, T1 );
 
     XMMATRIX M;
     M.r[0] = _mm_movelh_ps( V1, T1 );
@@ -887,7 +887,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3
     M.r[3] = vsetq_lane_f32( 1.f, T3, 3 );
     return M;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Use unaligned load instructions to 
+    // Use unaligned load instructions to
     // load the 12 floats
     // vTemp1 = x1,y1,z1,x2
     XMVECTOR vTemp1 = _mm_loadu_ps(&pSource->m[0][0]);
@@ -968,7 +968,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A
     M.r[3] = vsetq_lane_f32( 1.f, T3, 3 );
     return M;
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Use aligned load instructions to 
+    // Use aligned load instructions to
     // load the 12 floats
     // vTemp1 = x1,y1,z1,x2
     XMVECTOR vTemp1 = _mm_load_ps(&pSource->m[0][0]);
@@ -1306,7 +1306,7 @@ inline void XM_CALLCONV XMStoreFloat
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt2
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1328,7 +1328,7 @@ inline void XM_CALLCONV XMStoreInt2
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt2A
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1349,7 +1349,7 @@ inline void XM_CALLCONV XMStoreInt2A
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat2
 (
-    XMFLOAT2* pDestination, 
+    XMFLOAT2* pDestination,
     FXMVECTOR  V
 )
 {
@@ -1371,7 +1371,7 @@ inline void XM_CALLCONV XMStoreFloat2
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat2A
 (
-    XMFLOAT2A*   pDestination, 
+    XMFLOAT2A*   pDestination,
     FXMVECTOR     V
 )
 {
@@ -1465,7 +1465,7 @@ inline void XM_CALLCONV XMStoreUInt2
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt3
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1491,7 +1491,7 @@ inline void XM_CALLCONV XMStoreInt3
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt3A
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1516,7 +1516,7 @@ inline void XM_CALLCONV XMStoreInt3A
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat3
 (
-    XMFLOAT3* pDestination, 
+    XMFLOAT3* pDestination,
     FXMVECTOR V
 )
 {
@@ -1542,7 +1542,7 @@ inline void XM_CALLCONV XMStoreFloat3
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat3A
 (
-    XMFLOAT3A*   pDestination, 
+    XMFLOAT3A*   pDestination,
     FXMVECTOR     V
 )
 {
@@ -1648,7 +1648,7 @@ inline void XM_CALLCONV XMStoreUInt3
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt4
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1669,7 +1669,7 @@ inline void XM_CALLCONV XMStoreInt4
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreInt4A
 (
-    uint32_t*    pDestination, 
+    uint32_t*    pDestination,
     FXMVECTOR V
 )
 {
@@ -1691,7 +1691,7 @@ inline void XM_CALLCONV XMStoreInt4A
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4
 (
-    XMFLOAT4* pDestination, 
+    XMFLOAT4* pDestination,
     FXMVECTOR  V
 )
 {
@@ -1712,7 +1712,7 @@ inline void XM_CALLCONV XMStoreFloat4
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4A
 (
-    XMFLOAT4A*   pDestination, 
+    XMFLOAT4A*   pDestination,
     FXMVECTOR     V
 )
 {
@@ -1803,8 +1803,8 @@ inline void XM_CALLCONV XMStoreUInt4
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat3x3
 (
-    XMFLOAT3X3*	pDestination, 
-    FXMMATRIX	M
+    XMFLOAT3X3* pDestination,
+    FXMMATRIX   M
 )
 {
     assert(pDestination);
@@ -1850,7 +1850,7 @@ inline void XM_CALLCONV XMStoreFloat3x3
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4x3
 (
-    XMFLOAT4X3* pDestination, 
+    XMFLOAT4X3* pDestination,
     FXMMATRIX M
 )
 {
@@ -1905,8 +1905,8 @@ inline void XM_CALLCONV XMStoreFloat4x3
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4x3A
 (
-    XMFLOAT4X3A*	pDestination, 
-    FXMMATRIX		M
+    XMFLOAT4X3A*    pDestination,
+    FXMMATRIX       M
 )
 {
     assert(pDestination);
@@ -2090,7 +2090,7 @@ inline void XM_CALLCONV XMStoreFloat3x4A
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4x4
 (
-    XMFLOAT4X4* pDestination, 
+    XMFLOAT4X4* pDestination,
     FXMMATRIX M
 )
 {
@@ -2134,8 +2134,8 @@ inline void XM_CALLCONV XMStoreFloat4x4
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreFloat4x4A
 (
-    XMFLOAT4X4A*	pDestination, 
-    FXMMATRIX		M
+    XMFLOAT4X4A*    pDestination,
+    FXMMATRIX       M
 )
 {
     assert(pDestination);

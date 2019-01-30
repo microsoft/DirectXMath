@@ -13,7 +13,7 @@
 
 namespace DirectX
 {
-    
+
 namespace PackedVector
 {
 
@@ -63,7 +63,7 @@ struct XMCOLOR
 };
 
 //------------------------------------------------------------------------------
-// 16 bit floating point number consisting of a sign bit, a 5 bit biased 
+// 16 bit floating point number consisting of a sign bit, a 5 bit biased
 // exponent, and a 10 bit mantissa
 typedef uint16_t HALF;
 
@@ -619,9 +619,9 @@ struct XMUSHORT4
 
 //------------------------------------------------------------------------------
 // 4D Vector; 10-10-10-2 bit normalized components packed into a 32 bit integer
-// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned, 
-// normalized integer for the w component and 10 bit signed, normalized 
-// integers for the z, y, and x components.  The w component is stored in the 
+// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned,
+// normalized integer for the w component and 10 bit signed, normalized
+// integers for the z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XMXDECN4
@@ -657,8 +657,8 @@ struct XMXDECN4
 
 // 4D Vector; 10-10-10-2 bit components packed into a 32 bit integer
 // The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned
-// integer for the w component and 10 bit signed integers for the 
-// z, y, and x components.  The w component is stored in the 
+// integer for the w component and 10 bit signed integers for the
+// z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XM_DEPRECATED XMXDEC4
@@ -693,9 +693,9 @@ struct XM_DEPRECATED XMXDEC4
 };
 
 // 4D Vector; 10-10-10-2 bit normalized components packed into a 32 bit integer
-// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit signed, 
-// normalized integer for the w component and 10 bit signed, normalized 
-// integers for the z, y, and x components.  The w component is stored in the 
+// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit signed,
+// normalized integer for the w component and 10 bit signed, normalized
+// integers for the z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XM_DEPRECATED XMDECN4
@@ -730,9 +730,9 @@ struct XM_DEPRECATED XMDECN4
 };
 
 // 4D Vector; 10-10-10-2 bit components packed into a 32 bit integer
-// The 4D Vector is packed into 32 bits as follows: a 2 bit signed, 
-// integer for the w component and 10 bit signed integers for the 
-// z, y, and x components.  The w component is stored in the 
+// The 4D Vector is packed into 32 bits as follows: a 2 bit signed,
+// integer for the w component and 10 bit signed integers for the
+// z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XM_DEPRECATED XMDEC4
@@ -767,9 +767,9 @@ struct XM_DEPRECATED XMDEC4
 };
 
 // 4D Vector; 10-10-10-2 bit normalized components packed into a 32 bit integer
-// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned, 
-// normalized integer for the w component and 10 bit unsigned, normalized 
-// integers for the z, y, and x components.  The w component is stored in the 
+// The normalized 4D Vector is packed into 32 bits as follows: a 2 bit unsigned,
+// normalized integer for the w component and 10 bit unsigned, normalized
+// integers for the z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XMUDECN4
@@ -804,9 +804,9 @@ struct XMUDECN4
 };
 
 // 4D Vector; 10-10-10-2 bit components packed into a 32 bit integer
-// The 4D Vector is packed into 32 bits as follows: a 2 bit unsigned, 
-// integer for the w component and 10 bit unsigned integers 
-// for the z, y, and x components.  The w component is stored in the 
+// The 4D Vector is packed into 32 bits as follows: a 2 bit unsigned,
+// integer for the w component and 10 bit unsigned integers
+// for the z, y, and x components.  The w component is stored in the
 // most significant bits and the x component in the least significant bits
 // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
 struct XMUDEC4

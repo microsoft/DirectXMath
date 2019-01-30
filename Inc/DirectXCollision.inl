@@ -122,7 +122,7 @@ inline XMVECTOR PointOnLineSegmentNearestPoint( _In_ FXMVECTOR S1, _In_ FXMVECTO
 }
 
 //-----------------------------------------------------------------------------
-// Test if the point (P) on the plane of the triangle is inside the triangle 
+// Test if the point (P) on the plane of the triangle is inside the triangle
 // (V0, V1, V2).
 //-----------------------------------------------------------------------------
 inline XMVECTOR XM_CALLCONV PointOnPlaneInsideTriangle( _In_ FXMVECTOR P, _In_ FXMVECTOR V0, _In_ FXMVECTOR V1, _In_ GXMVECTOR V2 )
@@ -130,7 +130,7 @@ inline XMVECTOR XM_CALLCONV PointOnPlaneInsideTriangle( _In_ FXMVECTOR P, _In_ F
     // Compute the triangle normal.
     XMVECTOR N = XMVector3Cross( XMVectorSubtract( V2, V0 ), XMVectorSubtract( V1, V0 ) );
 
-    // Compute the cross products of the vector from the base of each edge to 
+    // Compute the cross products of the vector from the base of each edge to
     // the point with each edge vector.
     XMVECTOR C0 = XMVector3Cross( XMVectorSubtract( P, V0 ), XMVectorSubtract( V1, V0 ) );
     XMVECTOR C1 = XMVector3Cross( XMVectorSubtract( P, V1 ), XMVectorSubtract( V2, V1 ) );
@@ -421,7 +421,7 @@ inline void FastIntersectAxisAlignedBoxPlane( _In_ FXMVECTOR Center, _In_ FXMVEC
     // Project the axes of the box onto the normal of the plane.  Half the
     // length of the projection (sometime called the "radius") is equal to
     // h(u) * abs(n dot b(u))) + h(v) * abs(n dot b(v)) + h(w) * abs(n dot b(w))
-    // where h(i) are extents of the box, n is the plane normal, and b(i) are the 
+    // where h(i) are extents of the box, n is the plane normal, and b(i) are the
     // axes of the box. In this case b(i) = [(1,0,0), (0,1,0), (0,0,1)].
     XMVECTOR Radius = XMVector3Dot( Extents, XMVectorAbs( Plane ) );
 
@@ -442,7 +442,7 @@ inline void XM_CALLCONV FastIntersectOrientedBoxPlane( _In_ FXMVECTOR Center, _I
     // Project the axes of the box onto the normal of the plane.  Half the
     // length of the projection (sometime called the "radius") is equal to
     // h(u) * abs(n dot b(u))) + h(v) * abs(n dot b(v)) + h(w) * abs(n dot b(w))
-    // where h(i) are extents of the box, n is the plane normal, and b(i) are the 
+    // where h(i) are extents of the box, n is the plane normal, and b(i) are the
     // axes of the box.
     XMVECTOR Radius = XMVector3Dot( Plane, Axis0 );
     Radius = XMVectorInsert<0, 0, 1, 0, 0>( Radius, XMVector3Dot( Plane, Axis1 ) );
@@ -523,7 +523,7 @@ inline void XM_CALLCONV BoundingSphere::Transform( BoundingSphere& Out, FXMMATRI
 
     // Transform the center of the sphere.
     XMVECTOR C = XMVector3Transform( vCenter, M );
-    
+
     XMVECTOR dX = XMVector3Dot( M.r[0], M.r[0] );
     XMVECTOR dY = XMVector3Dot( M.r[1], M.r[1] );
     XMVECTOR dZ = XMVector3Dot( M.r[2], M.r[2] );
@@ -745,7 +745,7 @@ inline bool BoundingSphere::Intersects( const BoundingSphere& sh ) const
     XMVECTOR vCenterB = XMLoadFloat3( &sh.Center );
     XMVECTOR vRadiusB = XMVectorReplicatePtr( &sh.Radius );
 
-    // Distance squared between centers.    
+    // Distance squared between centers.
     XMVECTOR Delta = XMVectorSubtract( vCenterB, vCenterA );
     XMVECTOR DistanceSquared = XMVector3LengthSq( Delta );
 
@@ -789,7 +789,7 @@ inline bool BoundingSphere::Intersects( const BoundingFrustum& fr ) const
 _Use_decl_annotations_
 inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXMVECTOR V2 ) const
 {
-    // Load the sphere.    
+    // Load the sphere.
     XMVECTOR vCenter = XMLoadFloat3( &Center );
     XMVECTOR vRadius = XMVectorReplicatePtr( &Radius );
 
@@ -810,7 +810,7 @@ inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, 
     // Project the center of the sphere onto the plane of the triangle.
     XMVECTOR Point = XMVectorNegativeMultiplySubtract( N, Dist, vCenter );
 
-    // Is it inside all the edges? If so we intersect because the distance 
+    // Is it inside all the edges? If so we intersect because the distance
     // to the plane is less than the radius.
     XMVECTOR Intersection = DirectX::Internal::PointOnPlaneInsideTriangle( Point, V0, V1, V2 );
 
@@ -820,21 +820,21 @@ inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR V0, FXMVECTOR V1, 
     // Edge 0,1
     Point = DirectX::Internal::PointOnLineSegmentNearestPoint( V0, V1, vCenter );
 
-    // If the distance to the center of the sphere to the point is less than 
+    // If the distance to the center of the sphere to the point is less than
     // the radius of the sphere then it must intersect.
     Intersection = XMVectorOrInt( Intersection, XMVectorLessOrEqual( XMVector3LengthSq( XMVectorSubtract( vCenter, Point ) ), RadiusSq ) );
 
     // Edge 1,2
     Point = DirectX::Internal::PointOnLineSegmentNearestPoint( V1, V2, vCenter );
 
-    // If the distance to the center of the sphere to the point is less than 
+    // If the distance to the center of the sphere to the point is less than
     // the radius of the sphere then it must intersect.
     Intersection = XMVectorOrInt( Intersection, XMVectorLessOrEqual( XMVector3LengthSq( XMVectorSubtract( vCenter, Point ) ), RadiusSq ) );
 
     // Edge 2,0
     Point = DirectX::Internal::PointOnLineSegmentNearestPoint( V2, V0, vCenter );
 
-    // If the distance to the center of the sphere to the point is less than 
+    // If the distance to the center of the sphere to the point is less than
     // the radius of the sphere then it must intersect.
     Intersection = XMVectorOrInt( Intersection, XMVectorLessOrEqual( XMVector3LengthSq( XMVectorSubtract( vCenter, Point ) ), RadiusSq ) );
 
@@ -899,7 +899,7 @@ inline bool XM_CALLCONV BoundingSphere::Intersects( FXMVECTOR Origin, FXMVECTOR 
 
     XMVECTOR NoIntersection;
 
-    // If the ray origin is outside the sphere and the center of the sphere is 
+    // If the ray origin is outside the sphere and the center of the sphere is
     // behind the ray origin there is no intersection.
     NoIntersection = XMVectorAndInt( XMVectorLess( s, XMVectorZero() ), XMVectorGreater( l2, r2 ) );
 
@@ -1019,7 +1019,7 @@ inline void BoundingSphere::CreateMerged( BoundingSphere& Out, const BoundingSph
     float t1 = XMMin( -r1, d-r2 );
     float t2 = XMMax( r1, d+r2 );
     float t_5 = (t2 - t1) * 0.5f;
-    
+
     XMVECTOR NCenter = XMVectorAdd( Center1, XMVectorMultiply( N, XMVectorReplicate( t_5 + t1 ) ) );
 
     XMStoreFloat3( &Out.Center, NCenter );
@@ -1049,10 +1049,10 @@ inline void BoundingSphere::CreateFromBoundingBox( BoundingSphere& Out, const Bo
 
 
 //-----------------------------------------------------------------------------
-// Find the approximate smallest enclosing bounding sphere for a set of 
-// points. Exact computation of the smallest enclosing bounding sphere is 
+// Find the approximate smallest enclosing bounding sphere for a set of
+// points. Exact computation of the smallest enclosing bounding sphere is
 // possible but is slower and requires a more complex algorithm.
-// The algorithm is based on  Jack Ritter, "An Efficient Bounding Sphere", 
+// The algorithm is based on  Jack Ritter, "An Efficient Bounding Sphere",
 // Graphics Gems.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1538,7 +1538,7 @@ inline bool XM_CALLCONV BoundingBox::Intersects( FXMVECTOR V0, FXMVECTOR V1, FXM
     XMVECTOR BoxMin = XMVectorSubtract( vCenter, vExtents );
     XMVECTOR BoxMax = XMVectorAdd( vCenter, vExtents );
 
-    // Test the axes of the box (in effect test the AAB against the minimal AAB 
+    // Test the axes of the box (in effect test the AAB against the minimal AAB
     // around the triangle).
     XMVECTOR TriMin = XMVectorMin( XMVectorMin( V0, V1 ), V2 );
     XMVECTOR TriMax = XMVectorMax( XMVectorMax( V0, V1 ), V2 );
@@ -1721,7 +1721,7 @@ inline PlaneIntersectionType XM_CALLCONV BoundingBox::Intersects( FXMVECTOR Plan
 
 
 //-----------------------------------------------------------------------------
-// Compute the intersection of a ray (Origin, Direction) with an axis aligned 
+// Compute the intersection of a ray (Origin, Direction) with an axis aligned
 // box using the slabs method.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -2260,7 +2260,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingBox& box ) const
 
 
 //-----------------------------------------------------------------------------
-// Fast oriented box / oriented box intersection test using the separating axis 
+// Fast oriented box / oriented box intersection test using the separating axis
 // theorem.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -2287,7 +2287,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     //
     // a(u) = axes of A = (1,0,0), (0,1,0), (0,0,1)
     // b(u) = axes of B relative to A = (r00,r10,r20), (r01,r11,r21), (r02,r12,r22)
-    //  
+    //
     // For each possible separating axis l:
     //   d(A) = sum (for i = u,v,w) h(A)(i) * abs( a(i) dot l )
     //   d(B) = sum (for i = u,v,w) h(B)(i) * abs( b(i) dot l )
@@ -2339,7 +2339,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVectorSplatY( t );
     d_A = XMVectorSplatY( h_A );
     d_B = XMVector3Dot( h_B, AR1X );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(w) = (0, 0, 1)
@@ -2349,7 +2349,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVectorSplatZ( t );
     d_A = XMVectorSplatZ( h_A );
     d_B = XMVector3Dot( h_B, AR2X );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = b(u) = (r00, r10, r20)
@@ -2358,7 +2358,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, RX0 );
     d_A = XMVector3Dot( h_A, ARX0 );
     d_B = XMVectorSplatX( h_B );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = b(v) = (r01, r11, r21)
@@ -2367,7 +2367,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, RX1 );
     d_A = XMVector3Dot( h_A, ARX1 );
     d_B = XMVectorSplatY( h_B );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = b(w) = (r02, r12, r22)
@@ -2376,7 +2376,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, RX2 );
     d_A = XMVector3Dot( h_A, ARX2 );
     d_B = XMVectorSplatZ( h_B );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(u) x b(u) = (0, -r20, r10)
@@ -2385,7 +2385,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0W, XM_PERMUTE_1Z, XM_PERMUTE_0Y, XM_PERMUTE_0X>( RX0, XMVectorNegate( RX0 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( ARX0 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( AR0X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(u) x b(v) = (0, -r21, r11)
@@ -2394,7 +2394,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0W, XM_PERMUTE_1Z, XM_PERMUTE_0Y, XM_PERMUTE_0X>( RX1, XMVectorNegate( RX1 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( ARX1 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( AR0X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(u) x b(w) = (0, -r22, r12)
@@ -2403,7 +2403,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0W, XM_PERMUTE_1Z, XM_PERMUTE_0Y, XM_PERMUTE_0X>( RX2, XMVectorNegate( RX2 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( ARX2 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( AR0X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(v) x b(u) = (r20, 0, -r00)
@@ -2412,7 +2412,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0Z, XM_PERMUTE_0W, XM_PERMUTE_1X, XM_PERMUTE_0Y>( RX0, XMVectorNegate( RX0 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( ARX0 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( AR1X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(v) x b(v) = (r21, 0, -r01)
@@ -2421,7 +2421,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0Z, XM_PERMUTE_0W, XM_PERMUTE_1X, XM_PERMUTE_0Y>( RX1, XMVectorNegate( RX1 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( ARX1 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( AR1X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(v) x b(w) = (r22, 0, -r02)
@@ -2430,7 +2430,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_0Z, XM_PERMUTE_0W, XM_PERMUTE_1X, XM_PERMUTE_0Y>( RX2, XMVectorNegate( RX2 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( ARX2 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( AR1X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(w) x b(u) = (-r10, r00, 0)
@@ -2439,7 +2439,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_1Y, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_0Z>( RX0, XMVectorNegate( RX0 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( ARX0 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_Y, XM_SWIZZLE_X>( AR2X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(w) x b(v) = (-r11, r01, 0)
@@ -2448,7 +2448,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_1Y, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_0Z>( RX1, XMVectorNegate( RX1 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( ARX1 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Y>( AR2X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // l = a(w) x b(w) = (-r12, r02, 0)
@@ -2457,7 +2457,7 @@ inline bool BoundingOrientedBox::Intersects( const BoundingOrientedBox& box ) co
     d = XMVector3Dot( t, XMVectorPermute<XM_PERMUTE_1Y, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_0Z>( RX2, XMVectorNegate( RX2 ) ) );
     d_A = XMVector3Dot( h_A, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( ARX2 ) );
     d_B = XMVector3Dot( h_B, XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_Z>( AR2X ) );
-    NoIntersection = XMVectorOrInt( NoIntersection, 
+    NoIntersection = XMVectorOrInt( NoIntersection,
                                     XMVectorGreater( XMVectorAbs(d), XMVectorAdd( d_A, d_B ) ) );
 
     // No seperating axis found, boxes must intersect.
@@ -2684,13 +2684,13 @@ inline void BoundingOrientedBox::CreateFromBoundingBox( BoundingOrientedBox& Out
 
 
 //-----------------------------------------------------------------------------
-// Find the approximate minimum oriented bounding box containing a set of 
-// points.  Exact computation of minimum oriented bounding box is possible but 
+// Find the approximate minimum oriented bounding box containing a set of
+// points.  Exact computation of minimum oriented bounding box is possible but
 // is slower and requires a more complex algorithm.
 // The algorithm works by computing the inertia tensor of the points and then
 // using the eigenvectors of the intertia tensor as the axes of the box.
-// Computing the intertia tensor of the convex hull of the points will usually 
-// result in better bounding box but the computation is more complex. 
+// Computing the intertia tensor of the convex hull of the points will usually
+// result in better bounding box but the computation is more complex.
 // Exact computation of the minimum oriented bounding box is possible but the
 // best know algorithm is O(N^3) and is significanly more complex to implement.
 //-----------------------------------------------------------------------------
@@ -2747,9 +2747,9 @@ inline void BoundingOrientedBox::CreateFromPoints( BoundingOrientedBox& Out, siz
     R.r[2] = XMVectorSetW( v3, 0.f );
     R.r[3] = g_XMIdentityR3.v;
 
-    // Multiply by -1 to convert the matrix into a right handed coordinate 
-    // system (Det ~= 1) in case the eigenvectors form a left handed 
-    // coordinate system (Det ~= -1) because XMQuaternionRotationMatrix only 
+    // Multiply by -1 to convert the matrix into a right handed coordinate
+    // system (Det ~= 1) in case the eigenvectors form a left handed
+    // coordinate system (Det ~= -1) because XMQuaternionRotationMatrix only
     // works on right handed matrices.
     XMVECTOR Det = XMMatrixDeterminant( R );
 
@@ -3003,7 +3003,7 @@ inline ContainmentType XM_CALLCONV BoundingFrustum::Contains( FXMVECTOR V0, FXMV
     XMVECTOR LeftPlane = XMVectorSet( -1.0f, 0.0f, LeftSlope, 0.0f );
     LeftPlane = DirectX::Internal::XMPlaneTransform( LeftPlane, vOrientation, vOrigin );
     LeftPlane = XMPlaneNormalize( LeftPlane );
-    
+
     XMVECTOR TopPlane = XMVectorSet( 0.0f, 1.0f, -TopSlope, 0.0f );
     TopPlane = DirectX::Internal::XMPlaneTransform( TopPlane, vOrientation, vOrigin );
     TopPlane = XMPlaneNormalize( TopPlane );
@@ -3040,7 +3040,7 @@ inline ContainmentType BoundingFrustum::Contains( const BoundingSphere& sh ) con
     XMVECTOR LeftPlane = XMVectorSet( -1.0f, 0.0f, LeftSlope, 0.0f );
     LeftPlane = DirectX::Internal::XMPlaneTransform( LeftPlane, vOrientation, vOrigin );
     LeftPlane = XMPlaneNormalize( LeftPlane );
-    
+
     XMVECTOR TopPlane = XMVectorSet( 0.0f, 1.0f, -TopSlope, 0.0f );
     TopPlane = DirectX::Internal::XMPlaneTransform( TopPlane, vOrientation, vOrigin );
     TopPlane = XMPlaneNormalize( TopPlane );
@@ -3077,7 +3077,7 @@ inline ContainmentType BoundingFrustum::Contains( const BoundingBox& box ) const
     XMVECTOR LeftPlane = XMVectorSet( -1.0f, 0.0f, LeftSlope, 0.0f );
     LeftPlane = DirectX::Internal::XMPlaneTransform( LeftPlane, vOrientation, vOrigin );
     LeftPlane = XMPlaneNormalize( LeftPlane );
-    
+
     XMVECTOR TopPlane = XMVectorSet( 0.0f, 1.0f, -TopSlope, 0.0f );
     TopPlane = DirectX::Internal::XMPlaneTransform( TopPlane, vOrientation, vOrigin );
     TopPlane = XMPlaneNormalize( TopPlane );
@@ -3114,7 +3114,7 @@ inline ContainmentType BoundingFrustum::Contains( const BoundingOrientedBox& box
     XMVECTOR LeftPlane = XMVectorSet( -1.0f, 0.0f, LeftSlope, 0.0f );
     LeftPlane = DirectX::Internal::XMPlaneTransform( LeftPlane, vOrientation, vOrigin );
     LeftPlane = XMPlaneNormalize( LeftPlane );
-    
+
     XMVECTOR TopPlane = XMVectorSet( 0.0f, 1.0f, -TopSlope, 0.0f );
     TopPlane = DirectX::Internal::XMPlaneTransform( TopPlane, vOrientation, vOrigin );
     TopPlane = XMPlaneNormalize( TopPlane );
@@ -3151,7 +3151,7 @@ inline ContainmentType BoundingFrustum::Contains( const BoundingFrustum& fr ) co
     XMVECTOR LeftPlane = XMVectorSet( -1.0f, 0.0f, LeftSlope, 0.0f );
     LeftPlane = DirectX::Internal::XMPlaneTransform( LeftPlane, vOrientation, vOrigin );
     LeftPlane = XMPlaneNormalize( LeftPlane );
-    
+
     XMVECTOR TopPlane = XMVectorSet( 0.0f, 1.0f, -TopSlope, 0.0f );
     TopPlane = DirectX::Internal::XMPlaneTransform( TopPlane, vOrientation, vOrigin );
     TopPlane = XMPlaneNormalize( TopPlane );
@@ -3168,7 +3168,7 @@ inline ContainmentType BoundingFrustum::Contains( const BoundingFrustum& fr ) co
 // Exact sphere vs frustum test.  The algorithm first checks the sphere against
 // the planes of the frustum, then if the plane checks were indeterminate finds
 // the nearest feature (plane, line, point) on the frustum to the center of the
-// sphere and compares the distance to the nearest feature to the radius of the 
+// sphere and compares the distance to the nearest feature to the radius of the
 // sphere
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -3228,7 +3228,7 @@ inline bool BoundingFrustum::Intersects( const BoundingSphere& sh ) const
         CenterInsideAll = XMVectorAndInt( CenterInsideAll, XMVectorLessOrEqual( Dist[i], Zero ) );
     }
 
-    // If the sphere is outside any of the planes it is outside. 
+    // If the sphere is outside any of the planes it is outside.
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3236,13 +3236,13 @@ inline bool BoundingFrustum::Intersects( const BoundingSphere& sh ) const
     if ( XMVector4EqualInt( InsideAll, XMVectorTrueInt() ) )
         return true;
 
-    // If the center of the sphere is inside all planes and the sphere intersects 
+    // If the center of the sphere is inside all planes and the sphere intersects
     // one or more planes then it must intersect.
     if ( XMVector4EqualInt( CenterInsideAll, XMVectorTrueInt() ) )
         return true;
 
     // The sphere may be outside the frustum or intersecting the frustum.
-    // Find the nearest feature (face, edge, or corner) on the frustum 
+    // Find the nearest feature (face, edge, or corner) on the frustum
     // to the sphere.
 
     // The faces adjacent to each face are:
@@ -3266,11 +3266,11 @@ inline bool BoundingFrustum::Intersects( const BoundingSphere& sh ) const
 
         // Set w of the point to one.
         Point = XMVectorInsert<0, 0, 0, 0, 1>( Point, XMVectorSplatOne() );
-        
+
         // If the point is inside the face (inside the adjacent planes) then
         // this plane is the nearest feature.
         XMVECTOR InsideFace = XMVectorTrueInt();
-        
+
         for ( size_t j = 0; j < 4; j++ )
         {
             size_t plane_index = adjacent_faces[i][j];
@@ -3278,10 +3278,10 @@ inline bool BoundingFrustum::Intersects( const BoundingSphere& sh ) const
             InsideFace = XMVectorAndInt( InsideFace,
                            XMVectorLessOrEqual( XMVector4Dot( Point, Planes[plane_index] ), Zero ) );
         }
-     
+
         // Since we have already checked distance from the plane we know that the
         // sphere must intersect if this plane is the nearest feature.
-        Intersects = XMVectorOrInt( Intersects, 
+        Intersects = XMVectorOrInt( Intersects,
                                     XMVectorAndInt( XMVectorGreater( Dist[i], Zero ), InsideFace ) );
     }
 
@@ -3330,7 +3330,7 @@ inline bool BoundingFrustum::Intersects( const BoundingSphere& sh ) const
 
         XMVECTOR DistSq = XMVector3Dot( Delta, Delta );
 
-        // If the distance to the center of the sphere to the point is less than 
+        // If the distance to the center of the sphere to the point is less than
         // the radius of the sphere then it must intersect.
         Intersects = XMVectorOrInt( Intersects, XMVectorLessOrEqual( DistSq, RadiusSq ) );
     }
@@ -3389,7 +3389,7 @@ inline bool BoundingFrustum::Intersects( const BoundingOrientedBox& box ) const
 
     assert( DirectX::Internal::XMQuaternionIsUnit( BoxOrientation ) );
 
-    // Transform the oriented box into the space of the frustum in order to 
+    // Transform the oriented box into the space of the frustum in order to
     // minimize the number of transforms we have to do.
     Center = XMVector3InverseRotate( XMVectorSubtract( Center, vOrigin ), FrustumOrientation );
     BoxOrientation = XMQuaternionMultiply( BoxOrientation, XMQuaternionConjugate( FrustumOrientation ) );
@@ -3413,7 +3413,7 @@ inline bool BoundingFrustum::Intersects( const BoundingOrientedBox& box ) const
         // Project the axes of the box onto the normal of the plane.  Half the
         // length of the projection (sometime called the "radius") is equal to
         // h(u) * abs(n dot b(u))) + h(v) * abs(n dot b(v)) + h(w) * abs(n dot b(w))
-        // where h(i) are extents of the box, n is the plane normal, and b(i) are the 
+        // where h(i) are extents of the box, n is the plane normal, and b(i) are the
         // axes of the box.
         XMVECTOR Radius = XMVector3Dot( Planes[i], R.r[0] );
         Radius = XMVectorSelect( Radius, XMVector3Dot( Planes[i], R.r[1] ), SelectY );
@@ -3430,7 +3430,7 @@ inline bool BoundingFrustum::Intersects( const BoundingOrientedBox& box ) const
         CenterInsideAll = XMVectorAndInt( CenterInsideAll, XMVectorLessOrEqual( Dist, Zero ) );
     }
 
-    // If the box is outside any of the planes it is outside. 
+    // If the box is outside any of the planes it is outside.
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3438,7 +3438,7 @@ inline bool BoundingFrustum::Intersects( const BoundingOrientedBox& box ) const
     if ( XMVector4EqualInt( InsideAll, XMVectorTrueInt() ) )
         return true;
 
-    // If the center of the box is inside all planes and the box intersects 
+    // If the center of the box is inside all planes and the box intersects
     // one or more planes then it must intersect.
     if ( XMVector4EqualInt( CenterInsideAll, XMVectorTrueInt() ) )
         return true;
@@ -3582,7 +3582,7 @@ inline bool BoundingFrustum::Intersects( const BoundingFrustum& fr ) const
 
     assert( DirectX::Internal::XMQuaternionIsUnit( OrientationA ) );
 
-    // Transform frustum A into the space of the frustum B in order to 
+    // Transform frustum A into the space of the frustum B in order to
     // minimize the number of transforms we have to do.
     OriginA = XMVector3InverseRotate( XMVectorSubtract( OriginA, OriginB ), OrientationB );
     OrientationA = XMQuaternionMultiply( OrientationA, XMQuaternionConjugate( OrientationB ) );
@@ -3635,7 +3635,7 @@ inline bool BoundingFrustum::Intersects( const BoundingFrustum& fr ) const
         InsideAll = XMVectorAndInt( InsideAll, XMVectorLessOrEqual( Max, PlaneDistB[i] ) );
     }
 
-    // If the frustum A is outside any of the planes of frustum B it is outside. 
+    // If the frustum A is outside any of the planes of frustum B it is outside.
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3704,7 +3704,7 @@ inline bool BoundingFrustum::Intersects( const BoundingFrustum& fr ) const
         Outside = XMVectorOrInt( Outside, XMVectorGreater( Min, PlaneDistA[i] ) );
     }
 
-    // If the frustum B is outside any of the planes of frustum A it is outside. 
+    // If the frustum B is outside any of the planes of frustum A it is outside.
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3815,7 +3815,7 @@ inline bool XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR V0, FXMVECTOR V1,
         InsideAll = XMVectorAndInt( InsideAll, XMVectorLessOrEqual( MaxDist, PlaneDist ) );
     }
 
-    // If the triangle is outside any of the planes it is outside. 
+    // If the triangle is outside any of the planes it is outside.
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3854,7 +3854,7 @@ inline bool XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR V0, FXMVECTOR V1,
         MaxDist = XMVectorMax( MaxDist, Temp );
     }
 
-    Outside = XMVectorOrInt( XMVectorGreater( MinDist, Dist ), XMVectorLess( MaxDist, Dist ) );   
+    Outside = XMVectorOrInt( XMVectorGreater( MinDist, Dist ), XMVectorLess( MaxDist, Dist ) );
     if ( XMVector4EqualInt( Outside, XMVectorTrueInt() ) )
         return false;
 
@@ -3955,8 +3955,8 @@ inline PlaneIntersectionType XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR 
     XMVECTOR Corners7 = XMVectorMultiplyAdd( LeftBottom, vFar, vOrigin );
 
     XMVECTOR Outside, Inside;
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane, Outside, Inside );
 
     // If the frustum is outside any plane it is outside.
@@ -4065,7 +4065,7 @@ inline bool XM_CALLCONV BoundingFrustum::Intersects( FXMVECTOR rayOrigin, FXMVEC
     {
         Dist = distance;
         return true;
-    }    
+    }
 
     Dist = 0.f;
     return false;
@@ -4113,43 +4113,43 @@ inline ContainmentType XM_CALLCONV BoundingFrustum::ContainedBy( FXMVECTOR Plane
     XMVECTOR Outside, Inside;
 
     // Test against each plane.
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane0, Outside, Inside );
 
     XMVECTOR AnyOutside = Outside;
     XMVECTOR AllInside = Inside;
 
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane1, Outside, Inside );
 
     AnyOutside = XMVectorOrInt( AnyOutside, Outside );
     AllInside = XMVectorAndInt( AllInside, Inside );
 
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane2, Outside, Inside );
 
     AnyOutside = XMVectorOrInt( AnyOutside, Outside );
     AllInside = XMVectorAndInt( AllInside, Inside );
 
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane3, Outside, Inside );
 
     AnyOutside = XMVectorOrInt( AnyOutside, Outside );
     AllInside = XMVectorAndInt( AllInside, Inside );
 
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane4, Outside, Inside );
 
     AnyOutside = XMVectorOrInt( AnyOutside, Outside );
     AllInside = XMVectorAndInt( AllInside, Inside );
 
-    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3, 
-                                                  Corners4, Corners5, Corners6, Corners7, 
+    DirectX::Internal::FastIntersectFrustumPlane( Corners0, Corners1, Corners2, Corners3,
+                                                  Corners4, Corners5, Corners6, Corners7,
                                                   Plane5, Outside, Inside );
 
     AnyOutside = XMVectorOrInt( AnyOutside, Outside );
@@ -4171,7 +4171,7 @@ inline ContainmentType XM_CALLCONV BoundingFrustum::ContainedBy( FXMVECTOR Plane
 //-----------------------------------------------------------------------------
 // Build the 6 frustum planes from a frustum.
 //
-// The intended use for these routines is for fast culling to a view frustum.  
+// The intended use for these routines is for fast culling to a view frustum.
 // When the volume being tested against a view frustum is small relative to the
 // view frustum it is usually either inside all six planes of the frustum
 // (CONTAINS) or outside one of the planes of the frustum (DISJOINT). If neither
@@ -4295,12 +4295,12 @@ namespace TriangleTests
 {
 
 //-----------------------------------------------------------------------------
-// Compute the intersection of a ray (Origin, Direction) with a triangle 
-// (V0, V1, V2).  Return true if there is an intersection and also set *pDist 
+// Compute the intersection of a ray (Origin, Direction) with a triangle
+// (V0, V1, V2).  Return true if there is an intersection and also set *pDist
 // to the distance along the ray to the intersection.
-// 
-// The algorithm is based on Moller, Tomas and Trumbore, "Fast, Minimum Storage 
-// Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, no. 1, 
+//
+// The algorithm is based on Moller, Tomas and Trumbore, "Fast, Minimum Storage
+// Ray-Triangle Intersection", Journal of Graphics Tools, vol. 2, no. 1,
 // pp 21-28, 1997.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -4404,14 +4404,14 @@ inline bool XM_CALLCONV Intersects( FXMVECTOR Origin, FXMVECTOR Direction, FXMVE
 //-----------------------------------------------------------------------------
 // Test if two triangles intersect.
 //
-// The final test of algorithm is based on Shen, Heng, and Tang, "A Fast 
-// Triangle-Triangle Overlap Test Using Signed Distances", Journal of Graphics 
-// Tools, vol. 8, no. 1, pp 17-23, 2003 and Guigue and Devillers, "Fast and 
-// Robust Triangle-Triangle Overlap Test Using Orientation Predicates", Journal 
+// The final test of algorithm is based on Shen, Heng, and Tang, "A Fast
+// Triangle-Triangle Overlap Test Using Signed Distances", Journal of Graphics
+// Tools, vol. 8, no. 1, pp 17-23, 2003 and Guigue and Devillers, "Fast and
+// Robust Triangle-Triangle Overlap Test Using Orientation Predicates", Journal
 // of Graphics Tools, vol. 8, no. 1, pp 25-32, 2003.
 //
 // The final test could be considered an edge-edge separating plane test with
-// the 9 possible cases narrowed down to the only two pairs of edges that can 
+// the 9 possible cases narrowed down to the only two pairs of edges that can
 // actaully result in a seperation.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -4548,7 +4548,7 @@ inline bool XM_CALLCONV Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GX
 
     //
     // Find the single vertex of A and B (ie the vertex on the opposite side
-    // of the plane from the other two) and reorder the edges so we can compute 
+    // of the plane from the other two) and reorder the edges so we can compute
     // the signed edge/edge distances.
     //
     // if ( (V0 >= 0 && V1 <  0 && V2 <  0) ||
@@ -4557,7 +4557,7 @@ inline bool XM_CALLCONV Intersects( FXMVECTOR A0, FXMVECTOR A1, FXMVECTOR A2, GX
     //      (V0 <  0 && V1 >= 0 && V2 >= 0) ) then V0 is singular;
     //
     // If our singular vertex is not on the positive side of the plane we reverse
-    // the triangle winding so that the overlap comparisons will compare the 
+    // the triangle winding so that the overlap comparisons will compare the
     // correct edges with the correct signs.
     //
     XMVECTOR ADistIsLessEqual = XMVectorOrInt( ADistIsLess, ADistIsZero );

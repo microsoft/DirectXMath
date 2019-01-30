@@ -216,7 +216,7 @@ inline bool XM_CALLCONV XMMatrixIsIdentity
 // Perform a 4x4 matrix multiply by a 4x4 matrix
 inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 (
-    FXMMATRIX M1, 
+    FXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -386,7 +386,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
 
 inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
 (
-    FXMMATRIX M1, 
+    FXMMATRIX M1,
     CXMMATRIX M2
 )
 {
@@ -459,7 +459,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vZ = vmlaq_lane_f32(vX, M2.r[2], VH, 0);
     vW = vmlaq_lane_f32(vY, M2.r[3], VH, 1);
     float32x4_t r3 = vaddq_f32( vZ, vW );
- 
+
     // Transpose result
     float32x4x2_t P0 = vzipq_f32( r0, r2 );
     float32x4x2_t P1 = vzipq_f32( r1, r3 );
@@ -652,7 +652,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranspose
 _Use_decl_annotations_
 inline XMMATRIX XM_CALLCONV XMMatrixInverse
 (
-    XMVECTOR* pDeterminant, 
+    XMVECTOR* pDeterminant,
     FXMMATRIX  M
 )
 {
@@ -718,7 +718,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     V0[2] = XMVectorSwizzle<XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_W, XM_SWIZZLE_X>(MT.r[3]);
     V1[2] = XMVectorPermute<XM_PERMUTE_0Z, XM_PERMUTE_1W, XM_PERMUTE_1Z, XM_PERMUTE_0Z>(D1, D2);
     V0[3] = XMVectorSwizzle<XM_SWIZZLE_Y, XM_SWIZZLE_W, XM_SWIZZLE_X, XM_SWIZZLE_Z>(MT.r[2]);
-    V1[3] = XMVectorPermute<XM_PERMUTE_1W, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_1Z>(D1, D2); 
+    V1[3] = XMVectorPermute<XM_PERMUTE_1W, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_1Z>(D1, D2);
 
     XMVECTOR C1 = XMVectorNegativeMultiplySubtract(V0[0], V1[0], C0);
     C0 = XMVectorMultiplyAdd(V0[0], V1[0], C0);
@@ -959,7 +959,7 @@ inline XMVECTOR XM_CALLCONV XMMatrixDeterminant
             }                       \
         }                           \
     }
-                                    
+
 #define XM3_DECOMP_EPSILON 0.0001f
 
 _Use_decl_annotations_
@@ -998,9 +998,9 @@ inline bool XM_CALLCONV XMMatrixDecompose
     auto pfScales = reinterpret_cast<float *>(outScale);
 
     size_t a, b, c;
-    XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0])); 
-    XMVectorGetXPtr(&pfScales[1],XMVector3Length(ppvBasis[1][0])); 
-    XMVectorGetXPtr(&pfScales[2],XMVector3Length(ppvBasis[2][0])); 
+    XMVectorGetXPtr(&pfScales[0],XMVector3Length(ppvBasis[0][0]));
+    XMVectorGetXPtr(&pfScales[1],XMVector3Length(ppvBasis[1][0]));
+    XMVectorGetXPtr(&pfScales[2],XMVector3Length(ppvBasis[2][0]));
     pfScales[3] = 0.f;
 
     XM3RANKDECOMPOSE(a, b, c, pfScales[0], pfScales[1], pfScales[2])
@@ -1031,7 +1031,7 @@ inline bool XM_CALLCONV XMMatrixDecompose
     {
         ppvBasis[c][0] = XMVector3Cross(ppvBasis[a][0],ppvBasis[b][0]);
     }
-        
+
     ppvBasis[c][0] = XMVector3Normalize(ppvBasis[c][0]);
 
     float fDet = XMVectorGetX(XMMatrixDeterminant(matTemp));
@@ -1108,8 +1108,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixSet
 
 inline XMMATRIX XM_CALLCONV XMMatrixTranslation
 (
-    float OffsetX, 
-    float OffsetY, 
+    float OffsetX,
+    float OffsetY,
     float OffsetZ
 )
 {
@@ -1193,8 +1193,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranslationFromVector
 
 inline XMMATRIX XM_CALLCONV XMMatrixScaling
 (
-    float ScaleX, 
-    float ScaleY, 
+    float ScaleX,
+    float ScaleY,
     float ScaleZ
 )
 {
@@ -1296,7 +1296,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationX
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
- 
+
     float    fSinAngle;
     float    fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
@@ -1372,7 +1372,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationY
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
- 
+
     float    fSinAngle;
     float    fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
@@ -1448,7 +1448,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationZ
 )
 {
 #if defined(_XM_NO_INTRINSICS_)
- 
+
     float    fSinAngle;
     float    fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
@@ -1520,8 +1520,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationZ
 
 inline XMMATRIX XM_CALLCONV XMMatrixRotationRollPitchYaw
 (
-    float Pitch, 
-    float Yaw, 
+    float Pitch,
+    float Yaw,
     float Roll
 )
 {
@@ -1544,7 +1544,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationRollPitchYawFromVector
 
 inline XMMATRIX XM_CALLCONV XMMatrixRotationNormal
 (
-    FXMVECTOR NormalAxis, 
+    FXMVECTOR NormalAxis,
     float     Angle
 )
 {
@@ -1634,7 +1634,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationNormal
 
 inline XMMATRIX XM_CALLCONV XMMatrixRotationAxis
 (
-    FXMVECTOR Axis, 
+    FXMVECTOR Axis,
     float     Angle
 )
 {
@@ -1735,11 +1735,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationQuaternion
 
 inline XMMATRIX XM_CALLCONV XMMatrixTransformation2D
 (
-    FXMVECTOR ScalingOrigin, 
-    float     ScalingOrientation, 
-    FXMVECTOR Scaling, 
-    FXMVECTOR RotationOrigin, 
-    float     Rotation, 
+    FXMVECTOR ScalingOrigin,
+    float     ScalingOrientation,
+    FXMVECTOR Scaling,
+    FXMVECTOR RotationOrigin,
+    float     Rotation,
     GXMVECTOR Translation
 )
 {
@@ -1774,11 +1774,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixTransformation2D
 
 inline XMMATRIX XM_CALLCONV XMMatrixTransformation
 (
-    FXMVECTOR ScalingOrigin, 
-    FXMVECTOR ScalingOrientationQuaternion, 
-    FXMVECTOR Scaling, 
-    GXMVECTOR RotationOrigin, 
-    HXMVECTOR RotationQuaternion, 
+    FXMVECTOR ScalingOrigin,
+    FXMVECTOR ScalingOrientationQuaternion,
+    FXMVECTOR Scaling,
+    GXMVECTOR RotationOrigin,
+    HXMVECTOR RotationQuaternion,
     HXMVECTOR Translation
 )
 {
@@ -1812,9 +1812,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixTransformation
 
 inline XMMATRIX XM_CALLCONV XMMatrixAffineTransformation2D
 (
-    FXMVECTOR Scaling, 
-    FXMVECTOR RotationOrigin, 
-    float     Rotation, 
+    FXMVECTOR Scaling,
+    FXMVECTOR RotationOrigin,
+    float     Rotation,
     FXMVECTOR Translation
 )
 {
@@ -1839,9 +1839,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixAffineTransformation2D
 
 inline XMMATRIX XM_CALLCONV XMMatrixAffineTransformation
 (
-    FXMVECTOR Scaling, 
-    FXMVECTOR RotationOrigin, 
-    FXMVECTOR RotationQuaternion, 
+    FXMVECTOR Scaling,
+    FXMVECTOR RotationOrigin,
+    FXMVECTOR RotationQuaternion,
     GXMVECTOR Translation
 )
 {
@@ -1893,7 +1893,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixReflect
 
 inline XMMATRIX XM_CALLCONV XMMatrixShadow
 (
-    FXMVECTOR ShadowPlane, 
+    FXMVECTOR ShadowPlane,
     FXMVECTOR LightPosition
 )
 {
@@ -1928,8 +1928,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixShadow
 
 inline XMMATRIX XM_CALLCONV XMMatrixLookAtLH
 (
-    FXMVECTOR EyePosition, 
-    FXMVECTOR FocusPosition, 
+    FXMVECTOR EyePosition,
+    FXMVECTOR FocusPosition,
     FXMVECTOR UpDirection
 )
 {
@@ -1941,8 +1941,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookAtLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixLookAtRH
 (
-    FXMVECTOR EyePosition, 
-    FXMVECTOR FocusPosition, 
+    FXMVECTOR EyePosition,
+    FXMVECTOR FocusPosition,
     FXMVECTOR UpDirection
 )
 {
@@ -1954,8 +1954,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookAtRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixLookToLH
 (
-    FXMVECTOR EyePosition, 
-    FXMVECTOR EyeDirection, 
+    FXMVECTOR EyePosition,
+    FXMVECTOR EyeDirection,
     FXMVECTOR UpDirection
 )
 {
@@ -1992,8 +1992,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookToLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixLookToRH
 (
-    FXMVECTOR EyePosition, 
-    FXMVECTOR EyeDirection, 
+    FXMVECTOR EyePosition,
+    FXMVECTOR EyeDirection,
     FXMVECTOR UpDirection
 )
 {
@@ -2010,9 +2010,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixLookToRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
 (
-    float ViewWidth, 
-    float ViewHeight, 
-    float NearZ, 
+    float ViewWidth,
+    float ViewHeight,
+    float NearZ,
     float FarZ
 )
 {
@@ -2042,7 +2042,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
     M.m[2][2] = fRange;
     M.m[2][3] = 1.0f;
 
-    M.m[3][0] = 0.0f;  
+    M.m[3][0] = 0.0f;
     M.m[3][1] = 0.0f;
     M.m[3][2] = -fRange * NearZ;
     M.m[3][3] = 0.0f;
@@ -2071,7 +2071,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // TwoNearZ / ViewWidth,0,0,0
@@ -2097,9 +2097,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
 (
-    float ViewWidth, 
-    float ViewHeight, 
-    float NearZ, 
+    float ViewWidth,
+    float ViewHeight,
+    float NearZ,
     float FarZ
 )
 {
@@ -2159,7 +2159,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // TwoNearZ / ViewWidth,0,0,0
@@ -2185,9 +2185,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 (
-    float FovAngleY, 
-    float AspectRatio, 
-    float NearZ, 
+    float FovAngleY,
+    float AspectRatio,
+    float NearZ,
     float FarZ
 )
 {
@@ -2260,7 +2260,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
@@ -2287,9 +2287,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
 (
-    float FovAngleY, 
-    float AspectRatio, 
-    float NearZ, 
+    float FovAngleY,
+    float AspectRatio,
+    float NearZ,
     float FarZ
 )
 {
@@ -2360,7 +2360,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // CosFov / SinFov,0,0,0
@@ -2387,11 +2387,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
 (
-    float ViewLeft, 
-    float ViewRight, 
-    float ViewBottom, 
-    float ViewTop, 
-    float NearZ, 
+    float ViewLeft,
+    float ViewRight,
+    float ViewBottom,
+    float ViewTop,
+    float NearZ,
     float FarZ
 )
 {
@@ -2439,7 +2439,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32( TwoNearZ * ReciprocalWidth, Zero, 0 );
     M.r[1] = vsetq_lane_f32( TwoNearZ * ReciprocalHeight, Zero, 1 );
-    M.r[2] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
+    M.r[2] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth,
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
                          fRange,
                          1.0f);
@@ -2460,7 +2460,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // TwoNearZ*ReciprocalWidth,0,0,0
@@ -2485,11 +2485,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
 (
-    float ViewLeft, 
-    float ViewRight, 
-    float ViewBottom, 
-    float ViewTop, 
-    float NearZ, 
+    float ViewLeft,
+    float ViewRight,
+    float ViewBottom,
+    float ViewTop,
+    float NearZ,
     float FarZ
 )
 {
@@ -2537,7 +2537,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32( TwoNearZ * ReciprocalWidth, Zero, 0 );
     M.r[1] = vsetq_lane_f32( TwoNearZ * ReciprocalHeight, Zero, 1 );
-    M.r[2] = XMVectorSet((ViewLeft + ViewRight) * ReciprocalWidth, 
+    M.r[2] = XMVectorSet((ViewLeft + ViewRight) * ReciprocalWidth,
                          (ViewTop + ViewBottom) * ReciprocalHeight,
                          fRange,
                          -1.0f);
@@ -2558,7 +2558,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // TwoNearZ*ReciprocalWidth,0,0,0
@@ -2583,9 +2583,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH
 (
-    float ViewWidth, 
-    float ViewHeight, 
-    float NearZ, 
+    float ViewWidth,
+    float ViewHeight,
+    float NearZ,
     float FarZ
 )
 {
@@ -2641,7 +2641,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // 2.0f / ViewWidth,0,0,0
@@ -2667,9 +2667,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH
 (
-    float ViewWidth, 
-    float ViewHeight, 
-    float NearZ, 
+    float ViewWidth,
+    float ViewHeight,
+    float NearZ,
     float FarZ
 )
 {
@@ -2725,7 +2725,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // 2.0f / ViewWidth,0,0,0
@@ -2751,11 +2751,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH
 
 inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
 (
-    float ViewLeft, 
-    float ViewRight, 
-    float ViewBottom, 
-    float ViewTop, 
-    float NearZ, 
+    float ViewLeft,
+    float ViewRight,
+    float ViewBottom,
+    float ViewTop,
+    float NearZ,
     float FarZ
 )
 {
@@ -2800,7 +2800,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
     M.r[0] = vsetq_lane_f32( ReciprocalWidth + ReciprocalWidth, Zero, 0 );
     M.r[1] = vsetq_lane_f32( ReciprocalHeight + ReciprocalHeight, Zero, 1 );
     M.r[2] = vsetq_lane_f32( fRange, Zero, 2 );
-    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
+    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth,
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
                          -fRange * NearZ,
                          1.0f);
@@ -2825,7 +2825,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // fReciprocalWidth*2,0,0,0
@@ -2851,11 +2851,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterLH
 
 inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
 (
-    float ViewLeft, 
-    float ViewRight, 
-    float ViewBottom, 
-    float ViewTop, 
-    float NearZ, 
+    float ViewLeft,
+    float ViewRight,
+    float ViewBottom,
+    float ViewTop,
+    float NearZ,
     float FarZ
 )
 {
@@ -2885,7 +2885,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
     M.m[2][2] = fRange;
     M.m[2][3] = 0.0f;
 
-    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
+    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth,
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
                          fRange * NearZ,
                          1.0f);
@@ -2900,7 +2900,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
     M.r[0] = vsetq_lane_f32( ReciprocalWidth + ReciprocalWidth, Zero, 0 );
     M.r[1] = vsetq_lane_f32( ReciprocalHeight + ReciprocalHeight, Zero, 1 );
     M.r[2] = vsetq_lane_f32( fRange, Zero, 2 );
-    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth, 
+    M.r[3] = XMVectorSet(-(ViewLeft + ViewRight) * ReciprocalWidth,
                          -(ViewTop + ViewBottom) * ReciprocalHeight,
                          fRange * NearZ,
                          1.0f);
@@ -2925,7 +2925,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicOffCenterRH
     };
     // Copy from memory to SSE register
     XMVECTOR vValues = rMem;
-    XMVECTOR vTemp = _mm_setzero_ps(); 
+    XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp,vValues);
     // fReciprocalWidth*2,0,0,0

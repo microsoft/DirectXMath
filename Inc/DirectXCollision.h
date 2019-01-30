@@ -73,13 +73,13 @@ struct BoundingSphere
     bool Intersects( _In_ const BoundingBox& box ) const;
     bool Intersects( _In_ const BoundingOrientedBox& box ) const;
     bool Intersects( _In_ const BoundingFrustum& fr ) const;
-    
+
     bool    XM_CALLCONV     Intersects( _In_ FXMVECTOR V0, _In_ FXMVECTOR V1, _In_ FXMVECTOR V2 ) const;
         // Triangle-sphere test
 
     PlaneIntersectionType    XM_CALLCONV     Intersects( _In_ FXMVECTOR Plane ) const;
         // Plane-sphere test
-    
+
     bool    XM_CALLCONV     Intersects( _In_ FXMVECTOR Origin, _In_ FXMVECTOR Direction, _Out_ float& Dist ) const;
         // Ray-sphere test
 
@@ -120,7 +120,7 @@ struct BoundingBox
 
     XM_CONSTEXPR BoundingBox( _In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents )
         : Center(center), Extents(extents) {}
-    
+
     // Methods
     void    XM_CALLCONV     Transform( _Out_ BoundingBox& Out, _In_ FXMMATRIX M ) const;
     void    XM_CALLCONV     Transform( _Out_ BoundingBox& Out, _In_ float Scale, _In_ FXMVECTOR Rotation, _In_ FXMVECTOR Translation ) const;
@@ -134,7 +134,7 @@ struct BoundingBox
     ContainmentType Contains( _In_ const BoundingBox& box ) const;
     ContainmentType Contains( _In_ const BoundingOrientedBox& box ) const;
     ContainmentType Contains( _In_ const BoundingFrustum& fr ) const;
-    
+
     bool Intersects( _In_ const BoundingSphere& sh ) const;
     bool Intersects( _In_ const BoundingBox& box ) const;
     bool Intersects( _In_ const BoundingOrientedBox& box ) const;
@@ -210,7 +210,7 @@ struct BoundingOrientedBox
 
     PlaneIntersectionType    XM_CALLCONV     Intersects( _In_ FXMVECTOR Plane ) const;
         // Plane-OrientedBox test
-    
+
     bool    XM_CALLCONV     Intersects( _In_ FXMVECTOR Origin, _In_ FXMVECTOR Direction, _Out_ float& Dist ) const;
         // Ray-OrientedBox test
 
