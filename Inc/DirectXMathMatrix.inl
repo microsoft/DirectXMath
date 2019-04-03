@@ -21,6 +21,11 @@
 
 //------------------------------------------------------------------------------
 
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(push)
+#pragma float_control(precise, on)
+#endif
+
 // Return true if any entry in the matrix is NaN
 inline bool XM_CALLCONV XMMatrixIsNaN
 (
@@ -83,6 +88,10 @@ inline bool XM_CALLCONV XMMatrixIsNaN
 #else
 #endif
 }
+
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(pop)
+#endif
 
 //------------------------------------------------------------------------------
 

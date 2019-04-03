@@ -2170,6 +2170,11 @@ inline XMVECTOR XM_CALLCONV XMVectorInBoundsR
 
 //------------------------------------------------------------------------------
 
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(push)
+#pragma float_control(precise, on)
+#endif
+
 inline XMVECTOR XM_CALLCONV XMVectorIsNaN
 (
     FXMVECTOR V
@@ -2195,6 +2200,10 @@ inline XMVECTOR XM_CALLCONV XMVectorIsNaN
     return _mm_cmpneq_ps(V,V);
 #endif
 }
+
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(pop)
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -6743,6 +6752,11 @@ inline bool XM_CALLCONV XMVector2InBounds
 
 //------------------------------------------------------------------------------
 
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(push)
+#pragma float_control(precise, on)
+#endif
+
 inline bool XM_CALLCONV XMVector2IsNaN
 (
     FXMVECTOR V
@@ -6764,6 +6778,10 @@ inline bool XM_CALLCONV XMVector2IsNaN
     return ((_mm_movemask_ps(vTempNan)&3) != 0);
 #endif
 }
+
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(pop)
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -9122,6 +9140,11 @@ inline bool XM_CALLCONV XMVector3InBounds
 
 //------------------------------------------------------------------------------
 
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(push)
+#pragma float_control(precise, on)
+#endif
+
 inline bool XM_CALLCONV XMVector3IsNaN
 (
     FXMVECTOR V
@@ -9147,6 +9170,10 @@ inline bool XM_CALLCONV XMVector3IsNaN
     return ((_mm_movemask_ps(vTempNan)&7) != 0);
 #endif
 }
+
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(pop)
+#endif
 
 //------------------------------------------------------------------------------
 
@@ -13114,6 +13141,11 @@ inline bool XM_CALLCONV XMVector4InBounds
 
 //------------------------------------------------------------------------------
 
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(push)
+#pragma float_control(precise, on)
+#endif
+
 inline bool XM_CALLCONV XMVector4IsNaN
 (
     FXMVECTOR V
@@ -13138,6 +13170,10 @@ inline bool XM_CALLCONV XMVector4IsNaN
     return (_mm_movemask_ps(vTempNan)!=0);
 #endif
 }
+
+#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#pragma float_control(pop)
+#endif
 
 //------------------------------------------------------------------------------
 
