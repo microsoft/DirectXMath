@@ -53,6 +53,10 @@
 #define _XM_F16C_INTRINSICS_
 #endif
 
+#if !defined(_XM_F16C_INTRINSICS_) && defined(__F16C__) && !defined(_XM_NO_INTRINSICS_)
+#define _XM_F16C_INTRINSICS_
+#endif
+
 #if defined(_XM_FMA3_INTRINSICS_) && !defined(_XM_AVX_INTRINSICS_)
 #define _XM_AVX_INTRINSICS_
 #endif
