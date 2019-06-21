@@ -1977,7 +1977,11 @@ inline bool XMVerifyCPUSupport()
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     int CPUInfo[4] = { -1 };
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuid(CPUInfo, 0);
+#endif
 
 #ifdef __AVX2__
     if (CPUInfo[0] < 7)
@@ -1987,7 +1991,11 @@ inline bool XMVerifyCPUSupport()
         return false;
 #endif
 
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuid(CPUInfo, 1);
+#endif
 
 #if defined(__AVX2__) || defined(_XM_AVX2_INTRINSICS_)
     // The compiler can emit FMA3 instructions even without explicit intrinsics use
@@ -2018,7 +2026,11 @@ inline bool XMVerifyCPUSupport()
         return false; // No SSE2/SSE support
 
 #if defined(__AVX2__) || defined(_XM_AVX2_INTRINSICS_)
+#ifdef __clang__
+    __cpuid_count(0, 7, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuidex(CPUInfo, 7, 0);
+#endif
     if (!(CPUInfo[1] & 0x20))
         return false; // No AVX2 support
 #endif
