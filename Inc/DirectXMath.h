@@ -110,6 +110,10 @@
 #include <intrin.h>
 #pragma warning(pop)
 
+#ifdef __clang__
+#include <cpuid.h>
+#endif
+
 #ifdef _XM_SSE_INTRINSICS_
 #include <xmmintrin.h>
 #include <emmintrin.h>
