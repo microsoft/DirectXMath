@@ -64,9 +64,9 @@ inline bool XM_CALLCONV XMMatrixIsNaN
     vY = vorrq_u32(vY,vW);
     vX = vorrq_u32(vX,vY);
     // If any tested true, return true
-    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vX), vget_high_u8(vX));
-    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
-    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vX), vget_high_u8(vX));
+    uint16x4x2_t vTemp2 = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp2.val[1], 1);
     return (r != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Load in registers
@@ -132,9 +132,9 @@ inline bool XM_CALLCONV XMMatrixIsInfinite
     vTemp3 = vorrq_u32(vTemp3,vTemp4);
     vTemp1 = vorrq_u32(vTemp1,vTemp3);
     // If any are infinity, the signs are true.
-    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
-    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
-    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
+    uint16x4x2_t vTemp5 = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp5.val[1], 1);
     return (r != 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Mask off the sign bits
@@ -201,9 +201,9 @@ inline bool XM_CALLCONV XMMatrixIsIdentity
     vTemp1 = vandq_u32(vTemp1,vTemp2);
     vTemp3 = vandq_u32(vTemp3,vTemp4);
     vTemp1 = vandq_u32(vTemp1,vTemp3);
-    int8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
-    vTemp = vzip_u16(vTemp.val[0], vTemp.val[1]);
-    uint32_t r = vget_lane_u32(vTemp.val[1], 1);
+    uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vTemp1), vget_high_u8(vTemp1));
+    uint16x4x2_t vTemp5 = vzip_u16(vTemp.val[0], vTemp.val[1]);
+    uint32_t r = vget_lane_u32(vTemp5.val[1], 1);
     return ( r == 0xFFFFFFFFU );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vTemp1 = _mm_cmpeq_ps(M.r[0],g_XMIdentityR0);

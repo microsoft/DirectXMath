@@ -2959,8 +2959,8 @@ inline void XM_CALLCONV XMStoreXDecN4
     int32x4_t vResultw = vandq_s32(vResulti,g_XMMaskW);
     vResulti = vaddq_s32(vResulti,vResultw);
     // Do a horizontal or of all 4 entries
-    uint32x2_t vTemp = vget_low_u32(vreinterpret_u32_s32(vResulti));
-    uint32x2_t vhi = vget_high_u32(vreinterpret_u32_s32(vResulti));
+    uint32x2_t vTemp = vget_low_u32(vreinterpretq_u32_s32(vResulti));
+    uint32x2_t vhi = vget_high_u32(vreinterpretq_u32_s32(vResulti));
     vTemp = vorr_u32( vTemp, vhi );
     vTemp = vpadd_u32( vTemp, vTemp );
     vst1_lane_u32( &pDestination->v, vTemp, 0 );
@@ -3027,8 +3027,8 @@ inline void XM_CALLCONV XMStoreXDec4
     int32x4_t vResulti = vcvtq_s32_f32(vResult);
     vResulti = vandq_s32(vResulti,MaskXDec4);
     // Do a horizontal or of 4 entries
-    uint32x2_t vTemp = vget_low_u32(vreinterpret_u32_s32(vResulti));
-    uint32x2_t vTemp2 = vget_high_u32(vreinterpret_u32_s32(vResulti));
+    uint32x2_t vTemp = vget_low_u32(vreinterpretq_u32_s32(vResulti));
+    uint32x2_t vTemp2 = vget_high_u32(vreinterpretq_u32_s32(vResulti));
     vTemp = vorr_u32( vTemp, vTemp2 );
     // Perform a single bit left shift on y|w
     vTemp2 = vdup_lane_u32( vTemp, 1 );
@@ -3309,8 +3309,8 @@ inline void XM_CALLCONV XMStoreDecN4
     int32x4_t vResulti = vcvtq_s32_f32(vResult);
     vResulti = vandq_s32(vResulti,g_XMMaskDec4);
     // Do a horizontal or of 4 entries
-    uint32x2_t vTemp = vget_low_u32(vreinterpret_u32_s32(vResulti));
-    uint32x2_t vhi = vget_high_u32(vreinterpret_u32_s32(vResulti));
+    uint32x2_t vTemp = vget_low_u32(vreinterpretq_u32_s32(vResulti));
+    uint32x2_t vhi = vget_high_u32(vreinterpretq_u32_s32(vResulti));
     vTemp = vorr_u32( vTemp, vhi );
     vTemp = vpadd_u32( vTemp, vTemp );
     vst1_lane_u32( &pDestination->v, vTemp, 0 );
@@ -3370,8 +3370,8 @@ inline void XM_CALLCONV XMStoreDec4
     int32x4_t vResulti = vcvtq_s32_f32(vResult);
     vResulti = vandq_s32(vResulti,g_XMMaskDec4);
     // Do a horizontal or of all 4 entries
-    uint32x2_t vTemp = vget_low_u32(vreinterpret_u32_s32(vResulti));
-    uint32x2_t vhi = vget_high_u32(vreinterpret_u32_s32(vResulti));
+    uint32x2_t vTemp = vget_low_u32(vreinterpretq_u32_s32(vResulti));
+    uint32x2_t vhi = vget_high_u32(vreinterpretq_u32_s32(vResulti));
     vTemp = vorr_u32( vTemp, vhi );
     vTemp = vpadd_u32( vTemp, vTemp );
     vst1_lane_u32( &pDestination->v, vTemp, 0 );
