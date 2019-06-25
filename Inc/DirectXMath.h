@@ -110,7 +110,7 @@
 #include <intrin.h>
 #pragma warning(pop)
 
-#ifdef __clang__
+#if defined(__clang__) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 
