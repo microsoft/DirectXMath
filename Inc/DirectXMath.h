@@ -100,7 +100,6 @@
 // C4514/4820: Off by default noise
 #include <math.h>
 #include <float.h>
-#include <malloc.h>
 #pragma warning(pop)
 
 #ifndef _XM_NO_INTRINSICS_
