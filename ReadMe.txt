@@ -4,13 +4,14 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 2018
+July 2019
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
 
-This code is designed to build with Visual Studio 2015 or 2017. It is recommended that you
-make use of the latest updates (VS 2015 Update 3 or VS 2017 15.7 update or later).
+This code is designed to build with Visual Studio 2015, 2017, or 2019. It is recommended
+that you make use of the latest updates (VS 2015 Update 3, VS 2017 15.9 update, or
+VS 2019 Update 1 or later).
 
 These components are designed to work without requiring any content from the DirectX SDK. For details,
 see "Where is the DirectX SDK?" <http://msdn.microsoft.com/en-us/library/ee663275.aspx>.
@@ -59,6 +60,14 @@ https://opensource.microsoft.com/codeofconduct/
 ---------------
 RELEASE HISTORY
 ---------------
+
+July 2019 (3.14)
+    Added float control around IsNan functions to resolve issue with VS 2019 with /fp:fast
+    XMVerifyCPUSupport updated for clang/LLVM cpuid implementation on x86/x64
+    Added support for clang/LLVM built-in platform defines as well as the MSVC ones
+    Cleaned up ARM-NEON intrinsics type issues for improved portability
+    Removed unneeded malloc.h include in DirectXMath.h
+    Whitespace cleanup
 
 July 2018 (3.13)
     XMFLOAT3X4, XMFLOAT3X4A, and associated Load/Store functions
