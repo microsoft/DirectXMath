@@ -25,8 +25,10 @@
 
 #if _XM_VECTORCALL_
 #define XM_CALLCONV __vectorcall
-#else
+#elif !defined(__GNUC__) 
 #define XM_CALLCONV __fastcall
+#else
+#define XM_CALLCONV
 #endif
 
 #ifndef XM_DEPRECATED
