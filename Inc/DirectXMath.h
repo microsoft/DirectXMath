@@ -32,7 +32,11 @@
 #endif
 
 #ifndef XM_DEPRECATED
+#ifdef __GNUC__
+#define XM_DEPRECATED __attribute__ ((deprecated))
+#else
 #define XM_DEPRECATED __declspec(deprecated("This is deprecated and will be removed in a future version."))
+#endif
 #endif
 
 #if !defined(_XM_AVX2_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
