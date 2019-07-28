@@ -1908,7 +1908,11 @@ namespace DirectX
      // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
+#if defined(__GNUC__) && !defined(_WIN32)
+#define XMGLOBALCONST extern const __attribute__((weak))
+#else
 #define XMGLOBALCONST extern const __declspec(selectany)
+#endif
 #endif
 
     XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients0 = { { { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f } } };
