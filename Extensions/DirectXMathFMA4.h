@@ -14,6 +14,9 @@
 #endif
 
 #include <ammintrin.h>
+#ifdef __GNUC__
+#include <x86intrin.h>
+#endif
 
 #include <DirectXMath.h>
 
