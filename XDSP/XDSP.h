@@ -17,46 +17,50 @@
 #pragma once
 
 #include <assert.h>
-#include <directxmath.h>
+#include <DirectXMath.h>
 
 #pragma warning(push)
 #pragma warning(disable : 4005 4668)
 #include <stdint.h>
 #pragma warning(pop)
 
+#include <string.h>
+
 #pragma warning(push)
 #pragma warning(disable: 4328 4640 6001 6262)
 
 namespace XDSP
 {
-    typedef DirectX::XMVECTOR XMVECTOR;
-    typedef DirectX::FXMVECTOR FXMVECTOR;
-    typedef DirectX::GXMVECTOR GXMVECTOR;
-    typedef DirectX::CXMVECTOR CXMVECTOR;
+    using XMVECTOR = DirectX::XMVECTOR;
+    using FXMVECTOR = DirectX::FXMVECTOR;
+    using GXMVECTOR = DirectX::GXMVECTOR;
+    using CXMVECTOR = DirectX::CXMVECTOR;
 
     inline bool ISPOWEROF2(size_t n) { return ( ((n)&((n)-1)) == 0 && (n) != 0 ); }
 
     // Parallel multiplication of four complex numbers, assuming real and imaginary values are stored in separate vectors.
-    __forceinline void XM_CALLCONV vmulComplex (_Out_ XMVECTOR& rResult, _Out_ XMVECTOR& iResult,
-                                                _In_ FXMVECTOR r1, _In_ FXMVECTOR i1, _In_ FXMVECTOR r2, _In_ GXMVECTOR i2)
+    inline void XM_CALLCONV vmulComplex(
+        _Out_ XMVECTOR& rResult, _Out_ XMVECTOR& iResult,
+        _In_ FXMVECTOR r1, _In_ FXMVECTOR i1, _In_ FXMVECTOR r2, _In_ GXMVECTOR i2)
     {
         using namespace DirectX;
         // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
-		XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
-		XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-		rResult = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
-		iResult = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
-	}
+        XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
+        XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
+        rResult = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+        iResult = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+    }
 
-    __forceinline void XM_CALLCONV vmulComplex (_Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1, _In_ FXMVECTOR r2, _In_ FXMVECTOR i2)
+    inline void XM_CALLCONV vmulComplex(
+        _Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1, _In_ FXMVECTOR r2, _In_ FXMVECTOR i2)
     {
         using namespace DirectX;
         // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
-		XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
-		XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-		r1 = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
-		i1 = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
-	}
+        XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
+        XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
+        r1 = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+        i1 = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+    }
 
     //----------------------------------------------------------------------------------
     // Radix-4 decimation-in-time FFT butterfly.
@@ -88,14 +92,14 @@ namespace XDSP
     //          | 1  0 -1  0 |   | (rTempZ,iTempZ) |   | (rTempX - rTempZ, iTempX - iTempZ) |
     //          | 0  1  0  j |   | (rTempW,iTempW) |   | (rTempY - iTempW, iTempY + rTempW) |
     //----------------------------------------------------------------------------------
-    __forceinline void ButterflyDIT4_1 (_Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1)
+    inline void ButterflyDIT4_1 (_Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1)
     {
         using namespace DirectX;
 
         // sign constants for radix-4 butterflies
-        static const XMVECTORF32 vDFT4SignBits1 = { 1.0f, -1.0f,  1.0f, -1.0f };
-        static const XMVECTORF32 vDFT4SignBits2 = { 1.0f,  1.0f, -1.0f, -1.0f };
-        static const XMVECTORF32 vDFT4SignBits3 = { 1.0f, -1.0f, -1.0f,  1.0f };
+        static const XMVECTORF32 vDFT4SignBits1 = { { { 1.0f, -1.0f,  1.0f, -1.0f } } };
+        static const XMVECTORF32 vDFT4SignBits2 = { { { 1.0f,  1.0f, -1.0f, -1.0f } } };
+        static const XMVECTORF32 vDFT4SignBits3 = { { { 1.0f, -1.0f, -1.0f,  1.0f } } };
 
         // calculating Temp
         // [r1X| r1X|r1Y| r1Y] + [r1Z|-r1Z|r1W|-r1W]
@@ -144,25 +148,26 @@ namespace XDSP
     //          | 1  0 -1  0 |   | (rTemp2,iTemp2) |   | (rTemp0 - rTemp2, iTemp0 - iTemp2) |
     //          | 0  1  0  j |   | (rTemp3,iTemp3) |   | (rTemp1 - iTemp3, iTemp1 + rTemp3) |
     //----------------------------------------------------------------------------------
-    __forceinline void ButterflyDIT4_4 (_Inout_ XMVECTOR& r0,
-                                        _Inout_ XMVECTOR& r1,
-                                        _Inout_ XMVECTOR& r2,
-                                        _Inout_ XMVECTOR& r3,
-                                        _Inout_ XMVECTOR& i0,
-                                        _Inout_ XMVECTOR& i1,
-                                        _Inout_ XMVECTOR& i2,
-                                        _Inout_ XMVECTOR& i3,
-                                        _In_reads_(uStride*4) const XMVECTOR* __restrict pUnityTableReal,
-                                        _In_reads_(uStride*4) const XMVECTOR* __restrict pUnityTableImaginary,
-                                        _In_ size_t uStride,
-                                        _In_ const bool fLast)
+    inline void ButterflyDIT4_4(
+        _Inout_ XMVECTOR& r0,
+        _Inout_ XMVECTOR& r1,
+        _Inout_ XMVECTOR& r2,
+        _Inout_ XMVECTOR& r3,
+        _Inout_ XMVECTOR& i0,
+        _Inout_ XMVECTOR& i1,
+        _Inout_ XMVECTOR& i2,
+        _Inout_ XMVECTOR& i3,
+        _In_reads_(uStride * 4) const XMVECTOR* __restrict pUnityTableReal,
+        _In_reads_(uStride * 4) const XMVECTOR* __restrict pUnityTableImaginary,
+        _In_ size_t uStride,
+        _In_ const bool fLast)
     {
         using namespace DirectX;
 
         assert(pUnityTableReal);
         assert(pUnityTableImaginary);
-        assert((uintptr_t)pUnityTableReal % 16 == 0);
-        assert((uintptr_t)pUnityTableImaginary % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pUnityTableReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pUnityTableImaginary) % 16 == 0);
         assert(ISPOWEROF2(uStride));
 
         // calculating Temp
@@ -178,10 +183,10 @@ namespace XDSP
         XMVECTOR rTemp3 = XMVectorSubtract(r1, r3);
         XMVECTOR iTemp3 = XMVectorSubtract(i1, i3);
 
-        XMVECTOR rTemp4 = XMVectorAdd(rTemp0, rTemp2); 
+        XMVECTOR rTemp4 = XMVectorAdd(rTemp0, rTemp2);
         XMVECTOR iTemp4 = XMVectorAdd(iTemp0, iTemp2);
 
-        XMVECTOR rTemp5 = XMVectorAdd(rTemp1, iTemp3); 
+        XMVECTOR rTemp5 = XMVectorAdd(rTemp1, iTemp3);
         XMVECTOR iTemp5 = XMVectorSubtract(iTemp1, rTemp3);
 
         XMVECTOR rTemp6 = XMVectorSubtract(rTemp0, rTemp2);
@@ -193,9 +198,9 @@ namespace XDSP
         // calculating Result
         // vmulComplex(rTemp0, iTemp0, rTemp0, iTemp0, pUnityTableReal[0], pUnityTableImaginary[0]); // first one is always trivial
         vmulComplex(rTemp5, iTemp5, pUnityTableReal[uStride], pUnityTableImaginary[uStride]);
-        vmulComplex(rTemp6, iTemp6, pUnityTableReal[uStride*2], pUnityTableImaginary[uStride*2]);
-        vmulComplex(rTemp7, iTemp7, pUnityTableReal[uStride*3], pUnityTableImaginary[uStride*3]);
-        
+        vmulComplex(rTemp6, iTemp6, pUnityTableReal[uStride * 2], pUnityTableImaginary[uStride * 2]);
+        vmulComplex(rTemp7, iTemp7, pUnityTableReal[uStride * 3], pUnityTableImaginary[uStride * 3]);
+
         if (fLast)
         {
             ButterflyDIT4_1(rTemp4, iTemp4);
@@ -223,17 +228,18 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    __forceinline void FFT4(_Inout_updates_(uCount) XMVECTOR* __restrict pReal,
-                            _Inout_updates_(uCount) XMVECTOR* __restrict pImaginary,
-                            _In_ const size_t uCount=1)
+    inline void FFT4(
+        _Inout_updates_(uCount) XMVECTOR* __restrict pReal,
+        _Inout_updates_(uCount) XMVECTOR* __restrict pImaginary,
+        const size_t uCount = 1)
     {
         assert(pReal);
         assert(pImaginary);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
         assert(ISPOWEROF2(uCount));
 
-        for (size_t uIndex=0; uIndex < uCount; ++uIndex)
+        for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
         {
             ButterflyDIT4_1(pReal[uIndex], pImaginary[uIndex]);
         }
@@ -248,32 +254,33 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount*2 elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    __forceinline void FFT8 (_Inout_updates_(uCount*2) XMVECTOR* __restrict pReal,
-                             _Inout_updates_(uCount*2) XMVECTOR* __restrict pImaginary,
-                             _In_ const size_t uCount=1)
+    inline void FFT8(
+        _Inout_updates_(uCount * 2) XMVECTOR* __restrict pReal,
+        _Inout_updates_(uCount * 2) XMVECTOR* __restrict pImaginary,
+        _In_ const size_t uCount = 1)
     {
         using namespace DirectX;
 
         assert(pReal);
         assert(pImaginary);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
         assert(ISPOWEROF2(uCount));
 
-        static const XMVECTORF32 wr1 = {  1.0f,  0.70710677f,  0.0f, -0.70710677f };
-        static const XMVECTORF32 wi1 = {  0.0f, -0.70710677f, -1.0f, -0.70710677f };
-        static const XMVECTORF32 wr2 = { -1.0f, -0.70710677f,  0.0f,  0.70710677f };
-        static const XMVECTORF32 wi2 = {  0.0f,  0.70710677f,  1.0f,  0.70710677f };
+        static const XMVECTORF32 wr1 = { { { 1.0f,  0.70710677f,  0.0f, -0.70710677f } } };
+        static const XMVECTORF32 wi1 = { { { 0.0f, -0.70710677f, -1.0f, -0.70710677f } } };
+        static const XMVECTORF32 wr2 = { { { -1.0f, -0.70710677f,  0.0f,  0.70710677f } } };
+        static const XMVECTORF32 wi2 = { { { 0.0f,  0.70710677f,  1.0f,  0.70710677f } } };
 
-        for (size_t uIndex=0; uIndex < uCount; ++uIndex)
+        for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
         {
-            XMVECTOR* __restrict pR = pReal      + uIndex*2;
-            XMVECTOR* __restrict pI = pImaginary + uIndex*2;
+            XMVECTOR* __restrict pR = pReal + uIndex * 2;
+            XMVECTOR* __restrict pI = pImaginary + uIndex * 2;
 
-            XMVECTOR oddsR  = XMVectorPermute<1,3,5,7>(pR[0], pR[1]);
-            XMVECTOR evensR = XMVectorPermute<0,2,4,6>(pR[0], pR[1]);
-            XMVECTOR oddsI  = XMVectorPermute<1,3,5,7>(pI[0], pI[1]);
-            XMVECTOR evensI = XMVectorPermute<0,2,4,6>(pI[0], pI[1]);
+            XMVECTOR oddsR = XMVectorPermute<1, 3, 5, 7>(pR[0], pR[1]);
+            XMVECTOR evensR = XMVectorPermute<0, 2, 4, 6>(pR[0], pR[1]);
+            XMVECTOR oddsI = XMVectorPermute<1, 3, 5, 7>(pI[0], pI[1]);
+            XMVECTOR evensI = XMVectorPermute<0, 2, 4, 6>(pI[0], pI[1]);
             ButterflyDIT4_1(oddsR, oddsI);
             ButterflyDIT4_1(evensR, evensI);
 
@@ -297,40 +304,46 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount*4 elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    __forceinline void FFT16 (_Inout_updates_(uCount*4) XMVECTOR* __restrict pReal,
-                              _Inout_updates_(uCount*4) XMVECTOR* __restrict pImaginary,
-                              _In_ const size_t uCount=1)
+    inline void FFT16(
+        _Inout_updates_(uCount * 4) XMVECTOR* __restrict pReal,
+        _Inout_updates_(uCount * 4) XMVECTOR* __restrict pImaginary,
+        _In_ const size_t uCount = 1)
     {
         using namespace DirectX;
 
         assert(pReal);
         assert(pImaginary);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
         assert(ISPOWEROF2(uCount));
 
-        static const XMVECTORF32 aUnityTableReal[4]      = { { 1.0f, 1.0f, 1.0f, 1.0f },
-                                                             { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f },
-                                                             { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f },
-                                                             { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f } };
-        static const XMVECTORF32 aUnityTableImaginary[4] = { { -0.0f, -0.0f, -0.0f, -0.0f },
-                                                             { -0.0f, -0.38268343f, -0.70710677f, -0.92387950f },
-                                                             { -0.0f, -0.70710677f, -1.0f, -0.70710677f },
-                                                             { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f } };
-
-        for (size_t uIndex=0; uIndex < uCount; ++uIndex)
+        static const XMVECTORF32 aUnityTableReal[4] = {
+            { { { 1.0f, 1.0f, 1.0f, 1.0f } } },
+            { { { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f } } },
+            { { { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f } } },
+            { { { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f } } }
+        };
+        static const XMVECTORF32 aUnityTableImaginary[4] =
         {
-            ButterflyDIT4_4(pReal[uIndex*4],
-                            pReal[uIndex*4 + 1],
-                            pReal[uIndex*4 + 2],
-                            pReal[uIndex*4 + 3],
-                            pImaginary[uIndex*4],
-                            pImaginary[uIndex*4 + 1],
-                            pImaginary[uIndex*4 + 2],
-                            pImaginary[uIndex*4 + 3],
-                            reinterpret_cast<const XMVECTOR*>(aUnityTableReal),
-                            reinterpret_cast<const XMVECTOR*>(aUnityTableImaginary),
-                            1, true);
+            { { { -0.0f, -0.0f, -0.0f, -0.0f } } },
+            { { { -0.0f, -0.38268343f, -0.70710677f, -0.92387950f } } },
+            { { { -0.0f, -0.70710677f, -1.0f, -0.70710677f } } },
+            { { { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f } } }
+        };
+
+        for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
+        {
+            ButterflyDIT4_4(pReal[uIndex * 4],
+                pReal[uIndex * 4 + 1],
+                pReal[uIndex * 4 + 2],
+                pReal[uIndex * 4 + 3],
+                pImaginary[uIndex * 4],
+                pImaginary[uIndex * 4 + 1],
+                pImaginary[uIndex * 4 + 2],
+                pImaginary[uIndex * 4 + 3],
+                reinterpret_cast<const XMVECTOR*>(aUnityTableReal),
+                reinterpret_cast<const XMVECTOR*>(aUnityTableImaginary),
+                1, true);
         }
     }
 
@@ -357,9 +370,9 @@ namespace XDSP
         assert(pReal);
         assert(pImaginary);
         assert(pUnityTable);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
-        assert((uintptr_t)pUnityTable % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pUnityTable) % 16 == 0);
         assert(uLength > 16);
         _Analysis_assume_(uLength > 16);
         assert(ISPOWEROF2(uLength));
@@ -478,8 +491,8 @@ namespace XDSP
         assert(uLog2Length >= 2);
         _Analysis_assume_(uLog2Length >= 2);
 
-        float*       __restrict pfOutput = (float* __restrict)pOutput;
-        const float* __restrict pfInput  = (const float* __restrict)pInput;
+        float*       __restrict pfOutput = reinterpret_cast<float*>(pOutput);
+        const float* __restrict pfInput  = reinterpret_cast<const float*>(pInput);
         const size_t uLength = size_t(1) << uLog2Length;
 
         if ((uLog2Length & 0x1) == 0)
@@ -647,9 +660,9 @@ namespace XDSP
         assert(pReal);
         assert(pImaginary);
         assert(pUnityTable);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
-        assert((uintptr_t)pUnityTable % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pUnityTable) % 16 == 0);
         assert(uChannelCount > 0 && uChannelCount <= 6);
         assert(uLog2Length >= 2 && uLog2Length <= 9);
 
@@ -727,9 +740,9 @@ namespace XDSP
         assert(pReal);
         assert(pImaginary);
         assert(pUnityTable);
-        assert((uintptr_t)pReal % 16 == 0);
-        assert((uintptr_t)pImaginary % 16 == 0);
-        assert((uintptr_t)pUnityTable % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pReal) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
+        assert(reinterpret_cast<uintptr_t>(pUnityTable) % 16 == 0);
         assert(uChannelCount > 0 && uChannelCount <= 6);
         _Analysis_assume_(uChannelCount > 0 && uChannelCount <= 6);
         assert(uLog2Length >= 2 && uLog2Length <= 9);
