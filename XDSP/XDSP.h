@@ -22,6 +22,10 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifndef _WIN32
+#define memcpy_s(d,ds,s,c) memcpy(d,s,c)
+#endif
+
 #pragma warning(push)
 #pragma warning(disable: 6001 6262)
 
