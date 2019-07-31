@@ -11,6 +11,13 @@
 // C4619 #pragma warning warnings
 // C4456 declaration hides previous local declaration
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wold-style-cast"
+#pragma clang diagnostic ignored "-Wshadow"
+#pragma clang diagnostic ignored "-Wunused-const-variable"
+#pragma clang diagnostic ignored "-Wunused-function"
+#endif
+
 #include "DirectXSH.h"
 #include <assert.h>
 
@@ -18,7 +25,9 @@ using namespace DirectX;
 
 namespace
 {
+#ifdef _PREFAST_
 #pragma prefast(disable:246, "generated code by maple (nested const variable definitions)")
+#endif
 
     const float fExtraNormFac[XM_SH_MAXORDER] = { 2.0f*sqrtf(XM_PI), 2.0f / 3.0f*sqrtf(3.0f*XM_PI), 2.0f / 5.0f*sqrtf(5.0f*XM_PI), 2.0f / 7.0f*sqrtf(7.0f*XM_PI), 2.0f / 3.0f*sqrtf(XM_PI), 2.0f / 11.0f*sqrtf(11.0f*XM_PI) };
 

@@ -9,11 +9,9 @@
 
 #pragma once
 
-#define DIRECTX_SHMATH_VERSION 104
+#define DIRECTX_SHMATH_VERSION 105
 
 #include <DirectXMath.h>
-
-#include <winerror.h>
 
 namespace DirectX
 {

@@ -25,6 +25,11 @@
 
 #include <wrl/client.h>
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wcovered-switch-default"
+#pragma clang diagnostic ignored "-Wswitch-enum"
+#endif
+
 using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
@@ -90,7 +95,7 @@ namespace
             size_t size,
             DXGI_FORMAT format)
     {
-        assert(pDestination && count > 0 && (((uintptr_t)pDestination & 0xF) == 0));
+        assert(pDestination && count > 0 && ((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0));
         assert(pSource && size > 0);
 
         using namespace DirectX::PackedVector;
@@ -120,7 +125,7 @@ namespace
             LOAD_SCANLINE2(XMFLOAT2, XMLoadFloat2, g_XMIdentityR3)
 
         case DXGI_FORMAT_R11G11B10_FLOAT:
-            LOAD_SCANLINE3(XMFLOAT3PK, XMLoadFloat3PK, g_XMIdentityR3);
+            LOAD_SCANLINE3(XMFLOAT3PK, XMLoadFloat3PK, g_XMIdentityR3)
 
         case DXGI_FORMAT_R16G16_FLOAT:
             LOAD_SCANLINE2(XMHALF2, XMLoadHalf2, g_XMIdentityR3)
@@ -241,7 +246,7 @@ HRESULT DirectX::SHProjectCubeMap(
         for (UINT y = 0; y < desc.Height; ++y)
         {
             XMVECTOR* ptr = scanline.get();
-            if (!_LoadScanline(ptr, static_cast<size_t>(desc.Width), pSrc, cubeMap[face].RowPitch, desc.Format))
+            if (!_LoadScanline(ptr, static_cast<size_t>(desc.Width), pSrc, static_cast<size_t>(cubeMap[face].RowPitch), desc.Format))
             {
                 return E_FAIL;
             }
@@ -257,39 +262,39 @@ HRESULT DirectX::SHProjectCubeMap(
                 switch (face)
                 {
                 case 0: // Positive X
-                    iz = 1.0f - (2.0f * (float)x + 1.0f) * fPicSize;
-                    iy = 1.0f - (2.0f * (float)y + 1.0f) * fPicSize;
+                    iz = 1.0f - (2.0f * float(x) + 1.0f) * fPicSize;
+                    iy = 1.0f - (2.0f * float(y) + 1.0f) * fPicSize;
                     ix = 1.0f;
                     break;
 
                 case 1: // Negative X
-                    iz = -1.0f + (2.0f * (float)x + 1.0f) * fPicSize;
-                    iy = 1.0f - (2.0f * (float)y + 1.0f) * fPicSize;
+                    iz = -1.0f + (2.0f * float(x) + 1.0f) * fPicSize;
+                    iy = 1.0f - (2.0f * float(y) + 1.0f) * fPicSize;
                     ix = -1;
                     break;
 
                 case 2: // Positive Y
-                    iz = -1.0f + (2.0f * (float)y + 1.0f) * fPicSize;
+                    iz = -1.0f + (2.0f * float(y) + 1.0f) * fPicSize;
                     iy = 1.0f;
-                    ix = -1.0f + (2.0f * (float)x + 1.0f) * fPicSize;
+                    ix = -1.0f + (2.0f * float(x) + 1.0f) * fPicSize;
                     break;
 
                 case 3: // Negative Y
-                    iz = 1.0f - (2.0f * (float)y + 1.0f) * fPicSize;
+                    iz = 1.0f - (2.0f * float(y) + 1.0f) * fPicSize;
                     iy = -1.0f;
-                    ix = -1.0f + (2.0f * (float)x + 1.0f) * fPicSize;
+                    ix = -1.0f + (2.0f * float(x) + 1.0f) * fPicSize;
                     break;
 
                 case 4: // Positive Z
                     iz = 1.0f;
-                    iy = 1.0f - (2.0f * (float)y + 1.0f) * fPicSize;
-                    ix = -1.0f + (2.0f * (float)x + 1.0f) * fPicSize;
+                    iy = 1.0f - (2.0f * float(y) + 1.0f) * fPicSize;
+                    ix = -1.0f + (2.0f * float(x) + 1.0f) * fPicSize;
                     break;
 
                 case 5: // Negative Z
                     iz = -1.0f;
-                    iy = 1.0f - (2.0f * (float)y + 1.0f) * fPicSize;
-                    ix = 1.0f - (2.0f * (float)x + 1.0f) * fPicSize;
+                    iy = 1.0f - (2.0f * float(y) + 1.0f) * fPicSize;
+                    ix = 1.0f - (2.0f * float(x) + 1.0f) * fPicSize;
                     break;
 
                 default:
