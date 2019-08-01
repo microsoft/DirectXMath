@@ -2027,7 +2027,7 @@ inline bool XMVerifyCPUSupport()
 
 #if defined(__AVX2__) || defined(_XM_AVX2_INTRINSICS_)
 #ifdef __clang__
-    __cpuid_count(0, 7, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+    __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuidex(CPUInfo, 7, 0);
 #endif
