@@ -7,24 +7,11 @@
 // http://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#ifdef _M_ARM
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
 #error FMA3 not supported on ARM platform
 #endif
-
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#error FMA3 intrinsics requires Visual C++ 2012 or later.
-#endif
-
-#pragma warning(push)
-#pragma warning(disable : 4987)
-#include <intrin.h>
-#pragma warning(pop)
-
-#include <immintrin.h>
 
 #include <DirectXMath.h>
 
@@ -41,12 +28,20 @@ inline bool XMVerifyFMA3Support()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
-    __cpuid( CPUInfo, 0 );
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0);
+#endif
 
     if ( CPUInfo[0] < 1  )
         return false;
 
-    __cpuid(CPUInfo, 1 );
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1);
+#endif
 
     // We check for FMA3, AVX, OSXSAVE
     return ( (CPUInfo[2] & 0x18001000) == 0x18001000 );
@@ -221,7 +216,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Unproject
     CXMMATRIX World
 )
 {
-    static const XMVECTORF32 D = { -1.0f, 1.0f, 0.0f, 0.0f };
+    static const XMVECTORF32 D = { { { -1.0f, 1.0f, 0.0f, 0.0f } } };
 
     XMVECTOR Scale = XMVectorSet(ViewportWidth * 0.5f, -ViewportHeight * 0.5f, ViewportMaxZ - ViewportMinZ, 1.0f);
     Scale = XMVectorReciprocal(Scale);

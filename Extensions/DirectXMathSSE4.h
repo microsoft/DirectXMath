@@ -7,18 +7,11 @@
 // http://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#ifdef _M_ARM
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
 #error SSE4 not supported on ARM platform
 #endif
-
-#pragma warning(push)
-#pragma warning(disable : 4987)
-#include <intrin.h>
-#pragma warning(pop)
 
 #include <smmintrin.h>
 
@@ -35,13 +28,20 @@ inline bool XMVerifySSE4Support()
     // Should return true on AMD Bulldozer, Intel Core 2 ("Penryn"), and Intel Core i7 ("Nehalem") or later processors
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
-    int CPUInfo[4] = {-1};
-    __cpuid( CPUInfo, 0 );
-
+    int CPUInfo[4] = { -1 };
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0);
+#endif
     if ( CPUInfo[0] < 1  )
         return false;
 
-    __cpuid(CPUInfo, 1 );
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1);
+#endif
 
     // We only check for SSE4.1 instruction set. SSE4.2 instructions are not used.
     return ( (CPUInfo[2] & 0x80000) == 0x80000 );
@@ -52,22 +52,26 @@ inline bool XMVerifySSE4Support()
 // Vector
 //-------------------------------------------------------------------------------------
 
+#ifdef __clang__
+#pragma clang diagnostic ignored "-Wundefined-reinterpret-cast"
+#endif
+
 inline void XM_CALLCONV XMVectorGetYPtr(_Out_ float *y, _In_ FXMVECTOR V)
 {
     assert( y != nullptr );
-    *((int*)y) = _mm_extract_ps( V, 1 );
+    *reinterpret_cast<int*>(y) = _mm_extract_ps( V, 1 );
 }
 
 inline void XM_CALLCONV XMVectorGetZPtr(_Out_ float *z, _In_ FXMVECTOR V)
 {
     assert( z != nullptr );
-    *((int*)z) = _mm_extract_ps( V, 2 );
+    *reinterpret_cast<int*>(z) = _mm_extract_ps( V, 2 );
 }
 
 inline void XM_CALLCONV XMVectorGetWPtr(_Out_ float *w, _In_ FXMVECTOR V)
 {
     assert( w != nullptr );
-    *((int*)w) = _mm_extract_ps( V, 3 );
+    *reinterpret_cast<int*>(w) = _mm_extract_ps( V, 3 );
 }
 
 inline uint32_t XM_CALLCONV XMVectorGetIntY(FXMVECTOR V)
@@ -410,4 +414,4 @@ inline XMVECTOR XM_CALLCONV XMPlaneNormalize( FXMVECTOR P )
 
 } // namespace SSE4
 
-} // namespace DirectX;
+} // namespace DirectX

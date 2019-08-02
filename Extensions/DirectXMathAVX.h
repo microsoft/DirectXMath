@@ -7,24 +7,11 @@
 // http://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#ifdef _M_ARM
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
 #error AVX not supported on ARM platform
 #endif
-
-#if defined(_MSC_VER) && (_MSC_VER < 1600)
-#error AVX intrinsics requires Visual C++ 2010 Service Pack 1 or later.
-#endif
-
-#pragma warning(push)
-#pragma warning(disable : 4987)
-#include <intrin.h>
-#pragma warning(pop)
-
-#include <immintrin.h>
 
 #include <DirectXMath.h>
 
@@ -41,12 +28,20 @@ inline bool XMVerifyAVXSupport()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuid( CPUInfo, 0 );
+#endif
 
     if ( CPUInfo[0] < 1  )
         return false;
 
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuid(CPUInfo, 1 );
+#endif
 
     // We check for AVX, OSXSAVE, SSSE4.1, and SSE3
     return ( (CPUInfo[2] & 0x18080001) == 0x18080001 );
@@ -97,9 +92,9 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute( FXMVECTOR V1, FXMVECTOR V2, uint32_
     assert( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
     _Analysis_assume_( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
 
-    static const XMVECTORU32 three = { 3, 3, 3, 3 };
+    static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    _declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
     
     __m128i vSelect = _mm_cmpgt_epi32( vControl, three );
@@ -210,8 +205,8 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
 }
 
 // Special-case permute templates
-template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
-template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
+template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR) { return V1; }
+template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,6,7>(FXMVECTOR, FXMVECTOR V2) { return V2; }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x1); }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x2); }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x3); }

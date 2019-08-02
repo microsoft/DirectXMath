@@ -7,24 +7,11 @@
 // http://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#ifdef _M_ARM
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
 #error AVX2 not supported on ARM platform
 #endif
-
-#if defined(_MSC_VER) && (_MSC_VER < 1700)
-#error AVX2 intrinsics requires Visual C++ 2012 or later.
-#endif
-
-#pragma warning(push)
-#pragma warning(disable : 4987)
-#include <intrin.h>
-#pragma warning(pop)
-
-#include <immintrin.h>
 
 #include <DirectXMath.h>
 #include <DirectXPackedVector.h>
@@ -42,18 +29,30 @@ inline bool XMVerifyAVX2Support()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
-    __cpuid( CPUInfo, 0 );
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0);
+#endif
 
     if ( CPUInfo[0] < 7  )
         return false;
 
-    __cpuid(CPUInfo, 1 );
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1);
+#endif
 
     // We check for F16C, FMA3, AVX, OSXSAVE, SSSE4.1, and SSE3
     if ( (CPUInfo[2] & 0x38081001) != 0x38081001 )
         return false;
 
+#ifdef __clang__
+    __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
     __cpuidex(CPUInfo, 7, 0);
+#endif
 
     return ( (CPUInfo[1] & 0x20 ) == 0x20 );
 }
@@ -123,9 +122,9 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute( FXMVECTOR V1, FXMVECTOR V2, uint32_
     assert( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
     _Analysis_assume_( PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7 );
 
-    static const XMVECTORU32 three = { 3, 3, 3, 3 };
+    static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    _declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
     
     __m128i vSelect = _mm_cmpgt_epi32( vControl, three );
@@ -305,7 +304,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Unproject
     CXMMATRIX World
 )
 {
-    static const XMVECTORF32 D = { -1.0f, 1.0f, 0.0f, 0.0f };
+    static const XMVECTORF32 D = { { { -1.0f, 1.0f, 0.0f, 0.0f } } };
 
     XMVECTOR Scale = XMVectorSet(ViewportWidth * 0.5f, -ViewportHeight * 0.5f, ViewportMaxZ - ViewportMinZ, 1.0f);
     Scale = XMVectorReciprocal(Scale);
@@ -550,8 +549,8 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
 }
 
 // Special-case permute templates
-template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { (V2); return V1; }
-template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,6,7>(FXMVECTOR V1, FXMVECTOR V2) { (V1); return V2; }
+template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,1,2,3>(FXMVECTOR V1, FXMVECTOR) { return V1; }
+template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,6,7>(FXMVECTOR, FXMVECTOR V2) { return V2; }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,1,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x1); }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<0,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x2); }
 template<> inline XMVECTOR XM_CALLCONV XMVectorPermute<4,5,2,3>(FXMVECTOR V1, FXMVECTOR V2) { return _mm_blend_ps(V1,V2,0x3); }
@@ -622,7 +621,7 @@ template<uint32_t Elements>
 
 inline float XMConvertHalfToFloat( PackedVector::HALF Value )
 {
-    __m128i V1 = _mm_cvtsi32_si128( static_cast<uint32_t>(Value) );
+    __m128i V1 = _mm_cvtsi32_si128( static_cast<int>(Value) );
     __m128 V2 = _mm_cvtph_ps( V1 );
     return _mm_cvtss_f32( V2 );
 }
@@ -647,29 +646,33 @@ inline float* XMConvertHalfToFloatStream
 
     assert(pOutputStream);
     assert(pInputStream);
-    const uint8_t* pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
-    uint8_t* pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    assert(InputStride >= sizeof(HALF));
+    assert(OutputStride >= sizeof(float));
+
+    auto pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i = 0;
     size_t four = HalfCount >> 2;
-    if ( four > 0 )
+    if (four > 0)
     {
         if (InputStride == sizeof(HALF))
         {
             if (OutputStride == sizeof(float))
             {
-                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                if ((reinterpret_cast<uintptr_t>(pFloat) & 0xF) == 0)
                 {
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
-                        pHalf += InputStride*4;
+                        __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                        pHalf += InputStride * 4;
 
-                        __m128 FV = _mm_cvtph_ps( HV );
+                        __m128 FV = _mm_cvtph_ps(HV);
 
-                        _mm_stream_ps( reinterpret_cast<float*>(pFloat), FV );
-                        pFloat += OutputStride*4; 
+                        _mm_stream_ps(reinterpret_cast<float*>(pFloat), FV);
+                        pFloat += OutputStride * 4;
                         i += 4;
                     }
                 }
@@ -678,13 +681,13 @@ inline float* XMConvertHalfToFloatStream
                     // Packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
-                        pHalf += InputStride*4;
+                        __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                        pHalf += InputStride * 4;
 
-                        __m128 FV = _mm_cvtph_ps( HV );
+                        __m128 FV = _mm_cvtph_ps(HV);
 
-                        _mm_storeu_ps( reinterpret_cast<float*>(pFloat), FV );
-                        pFloat += OutputStride*4; 
+                        _mm_storeu_ps(reinterpret_cast<float*>(pFloat), FV);
+                        pFloat += OutputStride * 4;
                         i += 4;
                     }
                 }
@@ -694,26 +697,26 @@ inline float* XMConvertHalfToFloatStream
                 // Packed input, scattered output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128i HV = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pHalf) );
-                    pHalf += InputStride*4;
+                    __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                    pHalf += InputStride * 4;
 
-                    __m128 FV = _mm_cvtph_ps( HV );
+                    __m128 FV = _mm_cvtph_ps(HV);
 
-                    _mm_store_ss( reinterpret_cast<float*>(pFloat), FV );
-                    pFloat += OutputStride; 
-                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 1 );
-                    pFloat += OutputStride; 
-                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 2 );
-                    pFloat += OutputStride; 
-                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps( FV, 3 );
-                    pFloat += OutputStride; 
+                    _mm_store_ss(reinterpret_cast<float*>(pFloat), FV);
+                    pFloat += OutputStride;
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 1);
+                    pFloat += OutputStride;
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 2);
+                    pFloat += OutputStride;
+                    *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 3);
+                    pFloat += OutputStride;
                     i += 4;
                 }
             }
         }
         else if (OutputStride == sizeof(float))
         {
-            if ( ((uintptr_t)pFloat & 0xF) == 0)
+            if ((reinterpret_cast<uintptr_t>(pFloat) & 0xF) == 0)
             {
                 // Scattered input, aligned & packed output
                 for (size_t j = 0; j < four; ++j)
@@ -728,14 +731,14 @@ inline float* XMConvertHalfToFloatStream
                     pHalf += InputStride;
 
                     __m128i HV = _mm_setzero_si128();
-                    HV = _mm_insert_epi16( HV, H1, 0 );
-                    HV = _mm_insert_epi16( HV, H2, 1 );
-                    HV = _mm_insert_epi16( HV, H3, 2 );
-                    HV = _mm_insert_epi16( HV, H4, 3 );
-                    __m128 FV = _mm_cvtph_ps( HV );
+                    HV = _mm_insert_epi16(HV, H1, 0);
+                    HV = _mm_insert_epi16(HV, H2, 1);
+                    HV = _mm_insert_epi16(HV, H3, 2);
+                    HV = _mm_insert_epi16(HV, H4, 3);
+                    __m128 FV = _mm_cvtph_ps(HV);
 
-                    _mm_stream_ps( reinterpret_cast<float*>(pFloat ), FV );
-                    pFloat += OutputStride*4; 
+                    _mm_stream_ps(reinterpret_cast<float*>(pFloat), FV);
+                    pFloat += OutputStride * 4;
                     i += 4;
                 }
             }
@@ -754,16 +757,49 @@ inline float* XMConvertHalfToFloatStream
                     pHalf += InputStride;
 
                     __m128i HV = _mm_setzero_si128();
-                    HV = _mm_insert_epi16( HV, H1, 0 );
-                    HV = _mm_insert_epi16( HV, H2, 1 );
-                    HV = _mm_insert_epi16( HV, H3, 2 );
-                    HV = _mm_insert_epi16( HV, H4, 3 );
-                    __m128 FV = _mm_cvtph_ps( HV );
+                    HV = _mm_insert_epi16(HV, H1, 0);
+                    HV = _mm_insert_epi16(HV, H2, 1);
+                    HV = _mm_insert_epi16(HV, H3, 2);
+                    HV = _mm_insert_epi16(HV, H4, 3);
+                    __m128 FV = _mm_cvtph_ps(HV);
 
-                    _mm_storeu_ps( reinterpret_cast<float*>(pFloat ), FV );
-                    pFloat += OutputStride*4; 
+                    _mm_storeu_ps(reinterpret_cast<float*>(pFloat), FV);
+                    pFloat += OutputStride * 4;
                     i += 4;
                 }
+
+            }
+        }
+        else
+        {
+            // Scattered input, scattered output
+            for (size_t j = 0; j < four; ++j)
+            {
+                uint16_t H1 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H2 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H3 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+                uint16_t H4 = *reinterpret_cast<const HALF*>(pHalf);
+                pHalf += InputStride;
+
+                __m128i HV = _mm_setzero_si128();
+                HV = _mm_insert_epi16(HV, H1, 0);
+                HV = _mm_insert_epi16(HV, H2, 1);
+                HV = _mm_insert_epi16(HV, H3, 2);
+                HV = _mm_insert_epi16(HV, H4, 3);
+                __m128 FV = _mm_cvtph_ps(HV);
+
+                _mm_store_ss(reinterpret_cast<float*>(pFloat), FV);
+                pFloat += OutputStride;
+                *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 1);
+                pFloat += OutputStride;
+                *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 2);
+                pFloat += OutputStride;
+                *reinterpret_cast<int*>(pFloat) = _mm_extract_ps(FV, 3);
+                pFloat += OutputStride;
+                i += 4;
             }
         }
     }
@@ -792,8 +828,12 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
 
     assert(pOutputStream);
     assert(pInputStream);
-    const uint8_t* pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
-    uint8_t* pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    assert(InputStride >= sizeof(float));
+    assert(OutputStride >= sizeof(HALF));
+
+    auto pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i = 0;
     size_t four = FloatCount >> 2;
@@ -803,18 +843,18 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
         {
             if (OutputStride == sizeof(HALF))
             {
-                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                if ((reinterpret_cast<uintptr_t>(pFloat) & 0xF) == 0)
                 {
                     // Aligned and packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV = _mm_load_ps( reinterpret_cast<const float*>(pFloat) );
-                        pFloat += InputStride*4;
+                        __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
+                        pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+                        __m128i HV = _mm_cvtps_ph(FV, 0);
 
-                        _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
-                        pHalf += OutputStride*4;
+                        _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
+                        pHalf += OutputStride * 4;
                         i += 4;
                     }
                 }
@@ -823,36 +863,36 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
                     // Packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV = _mm_loadu_ps( reinterpret_cast<const float*>(pFloat) );
-                        pFloat += InputStride*4;
+                        __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
+                        pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+                        __m128i HV = _mm_cvtps_ph(FV, 0);
 
-                        _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
-                        pHalf += OutputStride*4;
+                        _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
+                        pHalf += OutputStride * 4;
                         i += 4;
                     }
                 }
             }
             else
             {
-                if ( ((uintptr_t)pFloat & 0xF) == 0)
+                if ((reinterpret_cast<uintptr_t>(pFloat) & 0xF) == 0)
                 {
                     // Aligned & packed input, scattered output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV = _mm_load_ps( reinterpret_cast<const float*>(pFloat) );
-                        pFloat += InputStride*4;
+                        __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
+                        pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+                        __m128i HV = _mm_cvtps_ph(FV, 0);
 
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 0 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 1 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 1));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 2 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 2));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 3 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 3));
                         pHalf += OutputStride;
                         i += 4;
                     }
@@ -862,18 +902,18 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
                     // Packed input, scattered output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV = _mm_loadu_ps( reinterpret_cast<const float*>(pFloat) );
-                        pFloat += InputStride*4;
+                        __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
+                        pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph( FV, 0 );
+                        __m128i HV = _mm_cvtps_ph(FV, 0);
 
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 0 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 1 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 1));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 2 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 2));
                         pHalf += OutputStride;
-                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>( _mm_extract_epi16( HV, 3 ) );
+                        *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 3));
                         pHalf += OutputStride;
                         i += 4;
                     }
@@ -885,26 +925,60 @@ inline PackedVector::HALF* XMConvertFloatToHalfStream
             // Scattered input, packed output
             for (size_t j = 0; j < four; ++j)
             {
-                __m128 FV1 = _mm_load_ss( reinterpret_cast<const float*>(pFloat) );
+                __m128 FV1 = _mm_load_ss(reinterpret_cast<const float*>(pFloat));
                 pFloat += InputStride;
 
-                __m128 FV2 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
                 pFloat += InputStride;
 
-                __m128 FV3 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
                 pFloat += InputStride;
 
-                __m128 FV4 = _mm_broadcast_ss( reinterpret_cast<const float*>(pFloat) );
+                __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
                 pFloat += InputStride;
 
-                __m128 FV = _mm_blend_ps( FV1, FV2, 0x2 );
-                __m128 FT = _mm_blend_ps( FV3, FV4, 0x8 );
-                FV = _mm_blend_ps( FV, FT, 0xC );
+                __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
+                __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
+                FV = _mm_blend_ps(FV, FT, 0xC);
 
-                __m128i HV = _mm_cvtps_ph( FV, 0 );
+                __m128i HV = _mm_cvtps_ph(FV, 0);
 
-                _mm_storel_epi64( reinterpret_cast<__m128i*>(pHalf), HV );
-                pHalf += OutputStride*4;
+                _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
+                pHalf += OutputStride * 4;
+                i += 4;
+            }
+        }
+        else
+        {
+            // Scattered input, scattered output
+            for (size_t j = 0; j < four; ++j)
+            {
+                __m128 FV1 = _mm_load_ss(reinterpret_cast<const float*>(pFloat));
+                pFloat += InputStride;
+
+                __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                pFloat += InputStride;
+
+                __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                pFloat += InputStride;
+
+                __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                pFloat += InputStride;
+
+                __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
+                __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
+                FV = _mm_blend_ps(FV, FT, 0xC);
+
+                __m128i HV = _mm_cvtps_ph(FV, 0);
+
+                *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
+                pHalf += OutputStride;
+                *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 1));
+                pHalf += OutputStride;
+                *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 2));
+                pHalf += OutputStride;
+                *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 3));
+                pHalf += OutputStride;
                 i += 4;
             }
         }

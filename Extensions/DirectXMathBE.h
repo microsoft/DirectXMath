@@ -7,16 +7,9 @@
 // http://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#pragma warning(push)
-#pragma warning(disable : 4987)
-#include <intrin.h>
-#pragma warning(pop)
-
-#ifndef _M_ARM
+#if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64)
 #include <tmmintrin.h>
 #endif
 
@@ -31,15 +24,15 @@ inline XMVECTOR XM_CALLCONV XMVectorEndian
 )
 {
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    static const XMVECTORU32 idx = { 0x00010203, 0x04050607, 0x08090A0B, 0x0C0D0E0F };
+    static const XMVECTORU32 idx = { { { 0x00010203u, 0x04050607u, 0x08090A0Bu, 0x0C0D0E0Fu } } };
 
-    int8x8x2_t tbl;
-    tbl.val[0] = vget_low_f32(V);
-    tbl.val[1] = vget_high_f32(V);
+    uint8x8x2_t tbl;
+    tbl.val[0] = vreinterpret_u8_f32(vget_low_f32(V));
+    tbl.val[1] = vreinterpret_u8_f32(vget_high_f32(V));
 
-    const __n64 rL = vtbl2_u8( tbl, vget_low_f32(idx) );
-    const __n64 rH = vtbl2_u8( tbl, vget_high_f32(idx) );
-    return vcombine_f32( rL, rH );
+    const uint8x8_t rL = vtbl2_u8(tbl, vget_low_u32(idx));
+    const uint8x8_t rH = vtbl2_u8(tbl, vget_high_u32(idx));
+    return vcombine_f32(vreinterpret_f32_u8(rL), vreinterpret_f32_u8(rH));
 #else
     XMVECTORU32 E;
     E.v = V;
@@ -56,7 +49,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEndian
 }
 
 
-#ifndef _M_ARM
+#if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64)
 namespace SSSE3
 {
 
@@ -65,13 +58,21 @@ inline bool XMVerifySSSE3Support()
     // Should return true on AMD Bulldozer, Intel Core i7/i5/i3, Intel Atom, or later processors
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
-    int CPUInfo[4] = {-1};
-    __cpuid( CPUInfo, 0 );
+    int CPUInfo[4] = { -1 };
+#ifdef __clang__
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0);
+#endif
 
     if ( CPUInfo[0] < 1  )
         return false;
 
-    __cpuid(CPUInfo, 1 );
+#ifdef __clang__
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 1);
+#endif
 
     // Check for SSSE3 instruction set.
     return ( (CPUInfo[2] & 0x200) != 0 );
@@ -82,13 +83,13 @@ inline XMVECTOR XM_CALLCONV XMVectorEndian
     FXMVECTOR V 
 )
 {
-    static const XMVECTORU32 idx = { 0x00010203, 0x04050607, 0x08090A0B, 0x0C0D0E0F };
+    static const XMVECTORU32 idx = { { { 0x00010203u, 0x04050607u, 0x08090A0Bu, 0x0C0D0E0Fu } } };
    
     __m128i Result = _mm_shuffle_epi8( _mm_castps_si128(V), idx );
     return _mm_castsi128_ps( Result );
 }
 
 } // namespace SSSE3
-#endif // !_M_ARM
+#endif // X86 || X64
 
-} // namespace DirectX;
+} // namespace DirectX
