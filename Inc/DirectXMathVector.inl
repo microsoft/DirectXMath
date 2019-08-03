@@ -1297,7 +1297,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
 #elif defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    XM_ALIGNED_DATA(16) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128(reinterpret_cast<const __m128i*>(&elem[0]));
 
     __m128i vSelect = _mm_cmpgt_epi32(vControl, three);
@@ -4055,8 +4055,8 @@ inline XMVECTOR XM_CALLCONV XMVectorPow
         } } };
     return vResult.v;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __declspec(align(16)) float a[4];
-    __declspec(align(16)) float b[4];
+    XM_ALIGNED_DATA(16) float a[4];
+    XM_ALIGNED_DATA(16) float b[4];
     _mm_store_ps(a, V1);
     _mm_store_ps(b, V2);
     XMVECTOR vResult = _mm_setr_ps(
