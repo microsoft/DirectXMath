@@ -104,7 +104,7 @@
 #pragma warning(pop)
 #endif
 
-#if defined(__clang__) && (__x86_64__ || __i386__)
+#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 
