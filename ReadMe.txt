@@ -4,7 +4,7 @@ DirectXMath
 
 Copyright (c) Microsoft Corporation. All rights reserved.
 
-July 2019
+August 2019
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library
 for use in games and graphics apps
@@ -61,7 +61,7 @@ https://opensource.microsoft.com/codeofconduct/
 RELEASE HISTORY
 ---------------
 
-July 2019 (3.14)
+August 2019 (3.14)
     Added float control around IsNan functions to resolve issue with VS 2019 with /fp:fast
     XMVerifyCPUSupport updated for clang/LLVM cpuid implementation on x86/x64
     Added support for clang/LLVM built-in platform defines as well as the MSVC ones
