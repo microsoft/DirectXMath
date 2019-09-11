@@ -141,7 +141,7 @@
 #endif
 #endif // !_XM_NO_INTRINSICS_
 
-#include <sal.h>
+#include "sal.h"
 #include <assert.h>
 
 #pragma warning(push)
