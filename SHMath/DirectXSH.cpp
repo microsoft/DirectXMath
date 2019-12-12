@@ -983,7 +983,7 @@ _Use_decl_annotations_
 float* XM_CALLCONV DirectX::XMSHEvalDirection(
     float *result,
     size_t order,
-    FXMVECTOR dir)
+    FXMVECTOR dir) noexcept
 {
     if (!result)
         return nullptr;
@@ -1036,7 +1036,7 @@ float* XM_CALLCONV DirectX::XMSHRotate(
     float *result,
     size_t order,
     FXMMATRIX rotMatrix,
-    const float *input)
+    const float *input) noexcept
 {
     if (!result || !input)
         return nullptr;
@@ -1173,7 +1173,7 @@ float* DirectX::XMSHRotateZ(
     float *result,
     size_t order,
     float angle,
-    const float *input)
+    const float *input) noexcept
 {
     if (!result || !input)
         return nullptr;
@@ -1347,7 +1347,7 @@ float* DirectX::XMSHAdd(
     float *result,
     size_t order,
     const float *inputA,
-    const float *inputB)
+    const float *inputB) noexcept
 {
     if (!result || !inputA || !inputB)
         return nullptr;
@@ -1373,7 +1373,7 @@ float* DirectX::XMSHScale(
     float *result,
     size_t order,
     const float *input,
-    float scale)
+    float scale) noexcept
 {
     if (!result || !input)
         return nullptr;
@@ -1398,7 +1398,7 @@ _Use_decl_annotations_
 float DirectX::XMSHDot(
     size_t order, 
     const float *inputA, 
-    const float *inputB)
+    const float *inputB) noexcept
 {
     if (!inputA || !inputB)
         return 0.f;
@@ -1431,7 +1431,7 @@ float* DirectX::XMSHMultiply(
     float *result,
     size_t order,
     const float *inputF,
-    const float *inputG)
+    const float *inputG) noexcept
 {
     switch (order)
     {
@@ -1464,7 +1464,7 @@ _Use_decl_annotations_
 float* DirectX::XMSHMultiply2(
     float *y,
     const float *f,
-    const float *g)
+    const float *g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1507,7 +1507,7 @@ _Use_decl_annotations_
 float* DirectX::XMSHMultiply3(
     float *y,
     const float *f,
-    const float *g)
+    const float *g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1629,7 +1629,7 @@ _Use_decl_annotations_
 float* DirectX::XMSHMultiply4(
     float *y,
     const float *f,
-    const float *g)
+    const float *g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1964,7 +1964,7 @@ _Use_decl_annotations_
 float* DirectX::XMSHMultiply5(
     float *y,
     const float *f,
-    const float *g)
+    const float *g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -2780,7 +2780,7 @@ _Use_decl_annotations_
 float* DirectX::XMSHMultiply6(
     float *y,
     const float *f,
-    const float *g)
+    const float *g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -4479,7 +4479,7 @@ bool XM_CALLCONV DirectX::XMSHEvalDirectionalLight(
     FXMVECTOR color,
     float *resultR,
     float *resultG,
-    float *resultB)
+    float *resultB) noexcept
 {
     if (!resultR)
         return false;
@@ -4547,7 +4547,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
     FXMVECTOR color,
     float *resultR,
     float *resultG,
-    float *resultB)
+    float *resultB) noexcept
 {
     if (!resultR)
         return false;
@@ -4677,7 +4677,7 @@ bool XM_CALLCONV DirectX::XMSHEvalConeLight(
     FXMVECTOR color,
     float *resultR,
     float *resultG,
-    float *resultB)
+    float *resultB) noexcept
 {
     if (!resultR)
         return false;
@@ -4798,7 +4798,7 @@ bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(
     FXMVECTOR bottomColor,
     float *resultR,
     float *resultG,
-    float *resultB)
+    float *resultB) noexcept
 {
     if (!resultR)
         return false;

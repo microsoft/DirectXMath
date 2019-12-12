@@ -177,7 +177,7 @@ HRESULT DirectX::SHProjectCubeMap(
     const D3D12_SUBRESOURCE_DATA cubeMap[6],
     float *resultR,
     float *resultG,
-    float *resultB)
+    float *resultB) noexcept
 {
     if (order < XM_SH_MINORDER || order > XM_SH_MAXORDER)
         return E_INVALIDARG;

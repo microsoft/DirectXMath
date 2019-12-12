@@ -177,7 +177,7 @@ HRESULT DirectX::SHProjectCubeMap(
     ID3D11Texture2D *cubeMap,
     float *resultR,
     float *resultG,
-    float* resultB)
+    float* resultB) noexcept
 {
     if (!context || !cubeMap)
         return E_INVALIDARG;
