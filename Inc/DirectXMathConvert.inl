@@ -1533,7 +1533,6 @@ inline void XM_CALLCONV XMStoreFloat3
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
 #elif defined(_XM_SSE4_INTRINSICS_)
     _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
-    __m128 z = _mm_movehl_ps( V, V );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
@@ -1562,7 +1561,6 @@ inline void XM_CALLCONV XMStoreFloat3A
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
 #elif defined(_XM_SSE4_INTRINSICS_)
     _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
-    __m128 z = _mm_movehl_ps( V, V );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );

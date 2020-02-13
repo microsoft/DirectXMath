@@ -2068,6 +2068,11 @@ XMGLOBALCONST XMVECTORF32 g_UShortMax               = { { { 65535.0f, 65535.0f, 
 #pragma prefast(disable : 26495, "Union initialization confuses /analyze")
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundefined-reinterpret-cast"
+#endif
+
 //------------------------------------------------------------------------------
 
 inline XMVECTOR XM_CALLCONV XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, uint32_t C2, uint32_t C3)
@@ -2163,6 +2168,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatConstantInt(int32_t IntConstant)
 #include "DirectXMathVector.inl"
 #include "DirectXMathMatrix.inl"
 #include "DirectXMathMisc.inl"
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #ifdef _PREFAST_
 #pragma prefast(pop)
