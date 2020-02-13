@@ -507,11 +507,13 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3
     float32x2_t zero = vdup_n_f32(0);
     float32x2_t y = vld1_lane_f32( reinterpret_cast<const float*>(pSource)+2, zero, 0 );
     return vcombine_f32( x, y );
-#elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( &pSource->x );
-    __m128 y = _mm_load_ss( &pSource->y );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( &pSource->z );
-    __m128 xy = _mm_unpacklo_ps( x, y );
+    return _mm_insert_ps( xy, z, 0x20 );
+#elif defined(_XM_SSE_INTRINSICS_)
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    __m128 z = _mm_load_ss( &pSource->z );
     return _mm_movelh_ps( xy, z );
 #endif
 }
@@ -1529,12 +1531,14 @@ inline void XM_CALLCONV XMStoreFloat3
     float32x2_t VL = vget_low_f32(V);
     vst1_f32( reinterpret_cast<float*>(pDestination), VL );
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
+    __m128 z = _mm_movehl_ps( V, V );
+    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T1 = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR T2 = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
-    _mm_store_ss( &pDestination->x, V );
-    _mm_store_ss( &pDestination->y, T1 );
-    _mm_store_ss( &pDestination->z, T2 );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
+    __m128 z = _mm_movehl_ps( V, V );
+    _mm_store_ss( &pDestination->z, z );
 #endif
 }
 
@@ -1556,10 +1560,14 @@ inline void XM_CALLCONV XMStoreFloat3A
     float32x2_t VL = vget_low_f32(V);
     vst1_f32_ex( reinterpret_cast<float*>(pDestination), VL, 64 );
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
-#elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
+#elif defined(_XM_SSE4_INTRINSICS_)
     _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
-    _mm_store_ss( &pDestination->z, T );
+    __m128 z = _mm_movehl_ps( V, V );
+    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
+#elif defined(_XM_SSE_INTRINSICS_)
+    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
+    __m128 z = _mm_movehl_ps( V, V );
+    _mm_store_ss( &pDestination->z, z );
 #endif
 }
 
