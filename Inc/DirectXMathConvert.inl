@@ -377,7 +377,8 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt2
     float32x2_t zero = vdup_n_f32(0);
     return vcombine_f32( v, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    __m128 V = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    return _mm_cvtepi32_ps(_mm_castps_si128(V));
 #endif
 }
 
@@ -439,6 +440,10 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3
     uint32x2_t zero = vdup_n_u32(0);
     uint32x2_t y = vld1_lane_u32( pSource+2, zero, 0 );
     return vcombine_u32( x, y );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
+    return _mm_insert_ps( xy, z, 0x20 );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
@@ -466,6 +471,10 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3A
     // Reads an extra integer which is zero'd
     uint32x4_t V = vld1q_u32_ex( pSource, 128 );
     return vsetq_lane_u32( 0, V, 3 );
+#elif defined(_XM_SSE4_INTRINSICS_)
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
+    return _mm_insert_ps( xy, z, 0x20 );
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
