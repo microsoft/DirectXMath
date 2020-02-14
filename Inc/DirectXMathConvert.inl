@@ -1523,8 +1523,8 @@ inline void XM_CALLCONV XMStoreFloat3
     vst1_f32( reinterpret_cast<float*>(pDestination), VL );
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
 #elif defined(_XM_SSE4_INTRINSICS_)
-    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 0 );
-    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 1 );
+    *reinterpret_cast<int*>( &pDestination->x ) = _mm_extract_ps( V, 0 );
+    *reinterpret_cast<int*>( &pDestination->y ) = _mm_extract_ps( V, 1 );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR T1 = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
