@@ -278,9 +278,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt2
     uint32x2_t zero = vdup_n_u32(0);
     return vcombine_u32( x, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(pSource) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(pSource+1) );
-    return _mm_unpacklo_ps( x, y );
+    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
 #endif
 }
 
@@ -305,8 +303,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt2A
     uint32x2_t zero = vdup_n_u32(0);
     return vcombine_u32( x, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pSource) );
-    return _mm_castsi128_ps(V);
+    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
 #endif
 }
 
@@ -330,9 +327,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat2
     float32x2_t zero = vdup_n_f32(0);
     return vcombine_f32( x, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( &pSource->x );
-    __m128 y = _mm_load_ss( &pSource->y );
-    return _mm_unpacklo_ps( x, y );
+    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
 #endif
 }
 
@@ -357,8 +352,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat2A
     float32x2_t zero = vdup_n_f32(0);
     return vcombine_f32( x, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128i V = _mm_loadl_epi64( reinterpret_cast<const __m128i*>(pSource) );
-    return _mm_castsi128_ps(V);
+    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
 #endif
 }
 
@@ -383,10 +377,7 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt2
     float32x2_t zero = vdup_n_f32(0);
     return vcombine_f32( v, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(&pSource->x) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(&pSource->y) );
-    __m128 V = _mm_unpacklo_ps( x, y );
-    return _mm_cvtepi32_ps(_mm_castps_si128(V));
+    return _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
 #endif
 }
 
@@ -411,9 +402,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt2
     float32x2_t zero = vdup_n_f32(0);
     return vcombine_f32( v, zero );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(&pSource->x) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(&pSource->y) );
-    __m128 V = _mm_unpacklo_ps( x, y );
+    __m128 V = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     // For the values that are higher than 0x7FFFFFFF, a fixup is needed
     // Determine which ones need the fix.
     XMVECTOR vMask = _mm_and_ps(V,g_XMNegativeZero);
@@ -451,10 +440,8 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3
     uint32x2_t y = vld1_lane_u32( pSource+2, zero, 0 );
     return vcombine_u32( x, y );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(pSource) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(pSource+1) );
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
-    __m128 xy = _mm_unpacklo_ps( x, y );
     return _mm_movelh_ps( xy, z );
 #endif
 }
@@ -480,10 +467,9 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3A
     uint32x4_t V = vld1q_u32_ex( pSource, 128 );
     return vsetq_lane_u32( 0, V, 3 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    // Reads an extra integer which is zero'd
-    __m128i V = _mm_load_si128( reinterpret_cast<const __m128i*>(pSource) );
-    V = _mm_and_si128( V, g_XMMask3 );
-    return _mm_castsi128_ps(V);
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
+    __m128 z = _mm_load_ss( reinterpret_cast<const float*>(pSource+2) );
+    return _mm_movelh_ps( xy, z );
 #endif
 }
 
@@ -569,10 +555,8 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt3
     int32x4_t v = vcombine_s32( x, y );
     return vcvtq_f32_s32( v );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(&pSource->x) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(&pSource->y) );
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( reinterpret_cast<const float*>(&pSource->z) );
-    __m128 xy = _mm_unpacklo_ps( x, y );
     __m128 V = _mm_movelh_ps( xy, z );
     return _mm_cvtepi32_ps(_mm_castps_si128(V));
 #endif
@@ -600,10 +584,8 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt3
     uint32x4_t v = vcombine_u32( x, y );
     return vcvtq_f32_u32( v );
 #elif defined(_XM_SSE_INTRINSICS_)
-    __m128 x = _mm_load_ss( reinterpret_cast<const float*>(&pSource->x) );
-    __m128 y = _mm_load_ss( reinterpret_cast<const float*>(&pSource->y) );
+    __m128 xy = _mm_castpd_ps( _mm_load_sd( reinterpret_cast<const double*>( pSource ) ) );
     __m128 z = _mm_load_ss( reinterpret_cast<const float*>(&pSource->z) );
-    __m128 xy = _mm_unpacklo_ps( x, y );
     __m128 V = _mm_movelh_ps( xy, z );
     // For the values that are higher than 0x7FFFFFFF, a fixup is needed
     // Determine which ones need the fix.
@@ -1343,7 +1325,7 @@ inline void XM_CALLCONV XMStoreInt2A
     uint32x2_t VL = vget_low_u32(V);
     vst1_u32_ex( pDestination, VL, 64 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
 #endif
 }
 
@@ -1386,7 +1368,7 @@ inline void XM_CALLCONV XMStoreFloat2A
     float32x2_t VL = vget_low_f32(V);
     vst1_f32_ex( reinterpret_cast<float*>(pDestination), VL, 64 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
 #endif
 }
 
@@ -1508,9 +1490,9 @@ inline void XM_CALLCONV XMStoreInt3A
     vst1_u32_ex( pDestination, VL, 64 );
     vst1q_lane_u32( pDestination+2, *reinterpret_cast<const uint32x4_t*>(&V), 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
-    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination[2]), T );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
+    __m128 z = _mm_movehl_ps( V, V );
+    _mm_store_ss( reinterpret_cast<float*>(&pDestination[2]), z );
 #endif
 }
 
@@ -1532,12 +1514,15 @@ inline void XM_CALLCONV XMStoreFloat3
     vst1_f32( reinterpret_cast<float*>(pDestination), VL );
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
 #elif defined(_XM_SSE4_INTRINSICS_)
-    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
+    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 0 );
+    *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 1 );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
-    __m128 z = _mm_movehl_ps( V, V );
-    _mm_store_ss( &pDestination->z, z );
+    XMVECTOR T1 = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
+    XMVECTOR T2 = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( &pDestination->x, V );
+    _mm_store_ss( &pDestination->y, T1 );
+    _mm_store_ss( &pDestination->z, T2 );
 #endif
 }
 
@@ -1560,10 +1545,10 @@ inline void XM_CALLCONV XMStoreFloat3A
     vst1_f32_ex( reinterpret_cast<float*>(pDestination), VL, 64 );
     vst1q_lane_f32( reinterpret_cast<float*>(pDestination)+2, V, 2 );
 #elif defined(_XM_SSE4_INTRINSICS_)
-    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    _mm_storel_epi64( reinterpret_cast<__m128i*>(pDestination), _mm_castps_si128(V) );
+    _mm_store_sd( reinterpret_cast<double*>(pDestination), _mm_castps_pd(V) );
     __m128 z = _mm_movehl_ps( V, V );
     _mm_store_ss( &pDestination->z, z );
 #endif
