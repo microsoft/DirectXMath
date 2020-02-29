@@ -1311,9 +1311,7 @@ inline void XM_CALLCONV XMStoreInt2
     uint32x2_t VL = vget_low_u32(V);
     vst1_u32( pDestination, VL );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T = XM_PERMUTE_PS( V, _MM_SHUFFLE( 1, 1, 1, 1 ) );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination[0]), V );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination[1]), T );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(V));
 #endif
 }
 
@@ -1354,9 +1352,7 @@ inline void XM_CALLCONV XMStoreFloat2
     float32x2_t VL = vget_low_f32(V);
     vst1_f32( reinterpret_cast<float*>(pDestination), VL );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T = XM_PERMUTE_PS( V, _MM_SHUFFLE( 1, 1, 1, 1 ) );
-    _mm_store_ss( &pDestination->x, V );
-    _mm_store_ss( &pDestination->y, T );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(V));
 #endif
 }
 
@@ -1407,9 +1403,7 @@ inline void XM_CALLCONV XMStoreSInt2
     vOverflow = _mm_andnot_ps(vOverflow,_mm_castsi128_ps(vResulti));
     vOverflow = _mm_or_ps(vOverflow,vResult);
     // Write two ints
-    XMVECTOR T = XM_PERMUTE_PS( vOverflow, _MM_SHUFFLE( 1, 1, 1, 1 ) );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->x), vOverflow );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->y), T );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(vOverflow));
 #endif
 }
 
@@ -1448,9 +1442,7 @@ inline void XM_CALLCONV XMStoreUInt2
     // On those that are too large, set to 0xFFFFFFFF
     vResult = _mm_or_ps(vResult,vOverflow);
     // Write two uints
-    XMVECTOR T = XM_PERMUTE_PS( vResult, _MM_SHUFFLE( 1, 1, 1, 1 ) );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->x), vResult );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->y), T );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(vResult));
 #endif
 }
 
@@ -1472,11 +1464,9 @@ inline void XM_CALLCONV XMStoreInt3
     vst1_u32( pDestination, VL );
     vst1q_lane_u32( pDestination+2, *reinterpret_cast<const uint32x4_t*>(&V), 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T1 = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR T2 = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
-    _mm_store_ss( reinterpret_cast<float*>(pDestination), V );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination[1]), T1 );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination[2]), T2 );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(V));
+    __m128 z = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( reinterpret_cast<float*>(&pDestination[2]), z );
 #endif
 }
 
@@ -1527,11 +1517,9 @@ inline void XM_CALLCONV XMStoreFloat3
     *reinterpret_cast<int*>( &pDestination->y ) = _mm_extract_ps( V, 1 );
     *reinterpret_cast<int*>( &pDestination->z ) = _mm_extract_ps( V, 2 );
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR T1 = XM_PERMUTE_PS(V,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR T2 = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
-    _mm_store_ss( &pDestination->x, V );
-    _mm_store_ss( &pDestination->y, T1 );
-    _mm_store_ss( &pDestination->z, T2 );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(V));
+    __m128 z = XM_PERMUTE_PS(V,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss(&pDestination->z, z);
 #endif
 }
 
@@ -1591,11 +1579,9 @@ inline void XM_CALLCONV XMStoreSInt3
     vOverflow = _mm_andnot_ps(vOverflow,_mm_castsi128_ps(vResulti));
     vOverflow = _mm_or_ps(vOverflow,vResult);
     // Write 3 uints
-    XMVECTOR T1 = XM_PERMUTE_PS(vOverflow,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR T2 = XM_PERMUTE_PS(vOverflow,_MM_SHUFFLE(2,2,2,2));
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->x), vOverflow );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->y), T1 );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->z), T2 );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(vOverflow));
+    __m128 z = XM_PERMUTE_PS(vOverflow,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( reinterpret_cast<float*>(&pDestination->z), z );
 #endif
 }
 
@@ -1636,11 +1622,9 @@ inline void XM_CALLCONV XMStoreUInt3
     // On those that are too large, set to 0xFFFFFFFF
     vResult = _mm_or_ps(vResult,vOverflow);
     // Write 3 uints
-    XMVECTOR T1 = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(1,1,1,1));
-    XMVECTOR T2 = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(2,2,2,2));
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->x), vResult );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->y), T1 );
-    _mm_store_ss( reinterpret_cast<float*>(&pDestination->z), T2 );
+    _mm_store_sd(reinterpret_cast<double*>(pDestination), _mm_castps_pd(vResult));
+    __m128 z = XM_PERMUTE_PS(vResult,_MM_SHUFFLE(2,2,2,2));
+    _mm_store_ss( reinterpret_cast<float*>(&pDestination->z), z );
 #endif
 }
 

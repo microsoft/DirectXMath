@@ -7934,12 +7934,11 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 x = _mm_load_ss( reinterpret_cast<const float*>(pInputVector) );
-            __m128 y = _mm_load_ss( reinterpret_cast<const float*>(pInputVector+4) );
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
             pInputVector += InputStride;
 
-            XMVECTOR Y = XM_PERMUTE_PS(y,_MM_SHUFFLE(0,0,0,0));
-            XMVECTOR X = XM_PERMUTE_PS(x,_MM_SHUFFLE(0,0,0,0));
+            XMVECTOR Y = XM_PERMUTE_PS(xy,_MM_SHUFFLE(1,1,1,1));
+            XMVECTOR X = XM_PERMUTE_PS(xy,_MM_SHUFFLE(0,0,0,0));
 
             XMVECTOR vTemp = _mm_mul_ps( Y, row1 );
             XMVECTOR vTemp2 = _mm_mul_ps( X, row0 );
@@ -8254,10 +8253,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                     XMVECTOR W = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(3, 3, 3, 3) );
 
                     vTemp = _mm_div_ps( vTemp, W );
-                    vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+                    _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
 
                     // Result 2
@@ -8272,10 +8269,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                     W = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(3, 3, 3, 3) );
 
                     vTemp = _mm_div_ps( vTemp, W );
-                    vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+                    _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
 
                     i += 2;
@@ -8303,10 +8298,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
             XMVECTOR W = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(3, 3, 3, 3) );
 
             vTemp = _mm_div_ps( vTemp, W );
-            vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+            _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
         }
     }
@@ -8315,12 +8308,11 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 x = _mm_load_ss( reinterpret_cast<const float*>(pInputVector) );
-            __m128 y = _mm_load_ss( reinterpret_cast<const float*>(pInputVector+4) );
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
             pInputVector += InputStride;
 
-            XMVECTOR Y = XM_PERMUTE_PS( y, _MM_SHUFFLE(0, 0, 0, 0) );
-            XMVECTOR X = XM_PERMUTE_PS( x, _MM_SHUFFLE(0, 0, 0, 0) );
+            XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
+            XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
 
             XMVECTOR vTemp = _mm_mul_ps( Y, row1 );
             XMVECTOR vTemp2 = _mm_mul_ps( X, row0 );
@@ -8330,10 +8322,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
             XMVECTOR W = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(3, 3, 3, 3) );
 
             vTemp = _mm_div_ps( vTemp, W );
-            vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+            _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
         }
     }
@@ -8584,10 +8574,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                     XMVECTOR vTemp = _mm_mul_ps( Y, row1 );
                     XMVECTOR vTemp2 = _mm_mul_ps( X, row0 );
                     vTemp = _mm_add_ps( vTemp, vTemp2 );
-                    vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+                    _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
 
                     // Result 2
@@ -8597,10 +8585,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                     vTemp = _mm_mul_ps( Y, row1 );
                     vTemp2 = _mm_mul_ps( X, row0 );
                     vTemp = _mm_add_ps( vTemp, vTemp2 );
-                    vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-                    _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+                    _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
 
                     i += 2;
@@ -8623,10 +8609,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
             XMVECTOR vTemp = _mm_mul_ps( Y, row1 );
             XMVECTOR vTemp2 = _mm_mul_ps( X, row0 );
             vTemp = _mm_add_ps( vTemp, vTemp2 );
-            vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+            _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
         }
     }
@@ -8635,20 +8619,17 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 x = _mm_load_ss( reinterpret_cast<const float*>(pInputVector) );
-            __m128 y = _mm_load_ss( reinterpret_cast<const float*>(pInputVector+4) );
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
             pInputVector += InputStride;
 
-            XMVECTOR Y = XM_PERMUTE_PS( y, _MM_SHUFFLE(0, 0, 0, 0) );
-            XMVECTOR X = XM_PERMUTE_PS( x, _MM_SHUFFLE(0, 0, 0, 0) );
+            XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
+            XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
 
             XMVECTOR vTemp = _mm_mul_ps( Y, row1 );
             XMVECTOR vTemp2 = _mm_mul_ps( X, row0 );
             vTemp = _mm_add_ps( vTemp, vTemp2 );
-            vTemp2 = XM_PERMUTE_PS( vTemp, _MM_SHUFFLE(1, 1, 1, 1) );
 
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector), vTemp );
-            _mm_store_ss( reinterpret_cast<float*>(pOutputVector+4), vTemp2 );
+            _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
         }
     }
