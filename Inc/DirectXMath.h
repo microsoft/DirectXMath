@@ -266,13 +266,13 @@ namespace DirectX
 
     // Condition register evaluation proceeding a recording (R) comparison
 
-    inline bool XMComparisonAllTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) == XM_CRMASK_CR6TRUE); }
-    inline bool XMComparisonAnyTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) != XM_CRMASK_CR6FALSE); }
-    inline bool XMComparisonAllFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) == XM_CRMASK_CR6FALSE); }
-    inline bool XMComparisonAnyFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) != XM_CRMASK_CR6TRUE); }
-    inline bool XMComparisonMixed(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6) == 0); }
-    inline bool XMComparisonAllInBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) == XM_CRMASK_CR6BOUNDS); }
-    inline bool XMComparisonAnyOutOfBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) != XM_CRMASK_CR6BOUNDS); }
+    inline constexpr bool XMComparisonAllTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) == XM_CRMASK_CR6TRUE); }
+    inline constexpr bool XMComparisonAnyTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) != XM_CRMASK_CR6FALSE); }
+    inline constexpr bool XMComparisonAllFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) == XM_CRMASK_CR6FALSE); }
+    inline constexpr bool XMComparisonAnyFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) != XM_CRMASK_CR6TRUE); }
+    inline constexpr bool XMComparisonMixed(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6) == 0); }
+    inline constexpr bool XMComparisonAllInBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) == XM_CRMASK_CR6BOUNDS); }
+    inline constexpr bool XMComparisonAnyOutOfBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) != XM_CRMASK_CR6BOUNDS); }
 
 
     /****************************************************************************
