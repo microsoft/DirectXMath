@@ -15,8 +15,8 @@
 
 #define DIRECTX_MATH_VERSION 314
 
-#if defined(_MSC_VER) && (_MSC_VER < 1900)
-#error DirectX Math requires Visual C++ 2015 or later.
+#if defined(_MSC_VER) && (_MSC_VER < 1910)
+#error DirectX Math requires Visual C++ 2017 or later.
 #endif
 
 #if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
@@ -27,14 +27,6 @@
 #define XM_CALLCONV __vectorcall
 #else
 #define XM_CALLCONV __fastcall
-#endif
-
-#if defined(_MSC_VER) && (_MSC_FULL_VER < 190023506)
-#define XM_CONST const
-#define XM_CONSTEXPR
-#else
-#define XM_CONST constexpr
-#define XM_CONSTEXPR constexpr
 #endif
 
 #ifndef XM_DEPRECATED
@@ -219,36 +211,36 @@ namespace DirectX
 #undef XM_CACHE_LINE_SIZE
 #endif
 
-    XM_CONST float XM_PI = 3.141592654f;
-    XM_CONST float XM_2PI = 6.283185307f;
-    XM_CONST float XM_1DIVPI = 0.318309886f;
-    XM_CONST float XM_1DIV2PI = 0.159154943f;
-    XM_CONST float XM_PIDIV2 = 1.570796327f;
-    XM_CONST float XM_PIDIV4 = 0.785398163f;
+    constexpr float XM_PI = 3.141592654f;
+    constexpr float XM_2PI = 6.283185307f;
+    constexpr float XM_1DIVPI = 0.318309886f;
+    constexpr float XM_1DIV2PI = 0.159154943f;
+    constexpr float XM_PIDIV2 = 1.570796327f;
+    constexpr float XM_PIDIV4 = 0.785398163f;
 
-    XM_CONST uint32_t XM_SELECT_0 = 0x00000000;
-    XM_CONST uint32_t XM_SELECT_1 = 0xFFFFFFFF;
+    constexpr uint32_t XM_SELECT_0 = 0x00000000;
+    constexpr uint32_t XM_SELECT_1 = 0xFFFFFFFF;
 
-    XM_CONST uint32_t XM_PERMUTE_0X = 0;
-    XM_CONST uint32_t XM_PERMUTE_0Y = 1;
-    XM_CONST uint32_t XM_PERMUTE_0Z = 2;
-    XM_CONST uint32_t XM_PERMUTE_0W = 3;
-    XM_CONST uint32_t XM_PERMUTE_1X = 4;
-    XM_CONST uint32_t XM_PERMUTE_1Y = 5;
-    XM_CONST uint32_t XM_PERMUTE_1Z = 6;
-    XM_CONST uint32_t XM_PERMUTE_1W = 7;
+    constexpr uint32_t XM_PERMUTE_0X = 0;
+    constexpr uint32_t XM_PERMUTE_0Y = 1;
+    constexpr uint32_t XM_PERMUTE_0Z = 2;
+    constexpr uint32_t XM_PERMUTE_0W = 3;
+    constexpr uint32_t XM_PERMUTE_1X = 4;
+    constexpr uint32_t XM_PERMUTE_1Y = 5;
+    constexpr uint32_t XM_PERMUTE_1Z = 6;
+    constexpr uint32_t XM_PERMUTE_1W = 7;
 
-    XM_CONST uint32_t XM_SWIZZLE_X = 0;
-    XM_CONST uint32_t XM_SWIZZLE_Y = 1;
-    XM_CONST uint32_t XM_SWIZZLE_Z = 2;
-    XM_CONST uint32_t XM_SWIZZLE_W = 3;
+    constexpr uint32_t XM_SWIZZLE_X = 0;
+    constexpr uint32_t XM_SWIZZLE_Y = 1;
+    constexpr uint32_t XM_SWIZZLE_Z = 2;
+    constexpr uint32_t XM_SWIZZLE_W = 3;
 
-    XM_CONST uint32_t XM_CRMASK_CR6 = 0x000000F0;
-    XM_CONST uint32_t XM_CRMASK_CR6TRUE = 0x00000080;
-    XM_CONST uint32_t XM_CRMASK_CR6FALSE = 0x00000020;
-    XM_CONST uint32_t XM_CRMASK_CR6BOUNDS = XM_CRMASK_CR6FALSE;
+    constexpr uint32_t XM_CRMASK_CR6 = 0x000000F0;
+    constexpr uint32_t XM_CRMASK_CR6TRUE = 0x00000080;
+    constexpr uint32_t XM_CRMASK_CR6FALSE = 0x00000020;
+    constexpr uint32_t XM_CRMASK_CR6BOUNDS = XM_CRMASK_CR6FALSE;
 
-    XM_CONST size_t XM_CACHE_LINE_SIZE = 64;
+    constexpr size_t XM_CACHE_LINE_SIZE = 64;
 
 
     /****************************************************************************
@@ -269,8 +261,8 @@ namespace DirectX
 
      // Unit conversion
 
-    inline XM_CONSTEXPR float XMConvertToRadians(float fDegrees) noexcept { return fDegrees * (XM_PI / 180.0f); }
-    inline XM_CONSTEXPR float XMConvertToDegrees(float fRadians) noexcept { return fRadians * (180.0f / XM_PI); }
+    inline constexpr float XMConvertToRadians(float fDegrees) noexcept { return fDegrees * (XM_PI / 180.0f); }
+    inline constexpr float XMConvertToDegrees(float fRadians) noexcept { return fRadians * (180.0f / XM_PI); }
 
     // Condition register evaluation proceeding a recording (R) comparison
 
@@ -532,7 +524,7 @@ namespace DirectX
         XMFLOAT2(XMFLOAT2&&) = default;
         XMFLOAT2& operator=(XMFLOAT2&&) = default;
 
-        XM_CONSTEXPR XMFLOAT2(float _x, float _y) noexcept : x(_x), y(_y) {}
+        constexpr XMFLOAT2(float _x, float _y) noexcept : x(_x), y(_y) {}
         explicit XMFLOAT2(_In_reads_(2) const float* pArray)  noexcept : x(pArray[0]), y(pArray[1]) {}
     };
 
@@ -547,7 +539,7 @@ namespace DirectX
         XMFLOAT2A(XMFLOAT2A&&) = default;
         XMFLOAT2A& operator=(XMFLOAT2A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT2A(float _x, float _y) noexcept : XMFLOAT2(_x, _y) {}
+        constexpr XMFLOAT2A(float _x, float _y) noexcept : XMFLOAT2(_x, _y) {}
         explicit XMFLOAT2A(_In_reads_(2) const float* pArray) noexcept : XMFLOAT2(pArray) {}
     };
 
@@ -566,7 +558,7 @@ namespace DirectX
         XMINT2(XMINT2&&) = default;
         XMINT2& operator=(XMINT2&&) = default;
 
-        XM_CONSTEXPR XMINT2(int32_t _x, int32_t _y) noexcept : x(_x), y(_y) {}
+        constexpr XMINT2(int32_t _x, int32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMINT2(_In_reads_(2) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
     };
 
@@ -584,7 +576,7 @@ namespace DirectX
         XMUINT2(XMUINT2&&) = default;
         XMUINT2& operator=(XMUINT2&&) = default;
 
-        XM_CONSTEXPR XMUINT2(uint32_t _x, uint32_t _y) noexcept : x(_x), y(_y) {}
+        constexpr XMUINT2(uint32_t _x, uint32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMUINT2(_In_reads_(2) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
     };
 
@@ -604,7 +596,7 @@ namespace DirectX
         XMFLOAT3(XMFLOAT3&&) = default;
         XMFLOAT3& operator=(XMFLOAT3&&) = default;
 
-        XM_CONSTEXPR XMFLOAT3(float _x, float _y, float _z) noexcept : x(_x), y(_y), z(_z) {}
+        constexpr XMFLOAT3(float _x, float _y, float _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMFLOAT3(_In_reads_(3) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
     };
 
@@ -619,7 +611,7 @@ namespace DirectX
         XMFLOAT3A(XMFLOAT3A&&) = default;
         XMFLOAT3A& operator=(XMFLOAT3A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT3A(float _x, float _y, float _z) noexcept : XMFLOAT3(_x, _y, _z) {}
+        constexpr XMFLOAT3A(float _x, float _y, float _z) noexcept : XMFLOAT3(_x, _y, _z) {}
         explicit XMFLOAT3A(_In_reads_(3) const float* pArray) noexcept : XMFLOAT3(pArray) {}
     };
 
@@ -639,7 +631,7 @@ namespace DirectX
         XMINT3(XMINT3&&) = default;
         XMINT3& operator=(XMINT3&&) = default;
 
-        XM_CONSTEXPR XMINT3(int32_t _x, int32_t _y, int32_t _z) noexcept : x(_x), y(_y), z(_z) {}
+        constexpr XMINT3(int32_t _x, int32_t _y, int32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMINT3(_In_reads_(3) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
     };
 
@@ -658,7 +650,7 @@ namespace DirectX
         XMUINT3(XMUINT3&&) = default;
         XMUINT3& operator=(XMUINT3&&) = default;
 
-        XM_CONSTEXPR XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
+        constexpr XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMUINT3(_In_reads_(3) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
     };
 
@@ -679,7 +671,7 @@ namespace DirectX
         XMFLOAT4(XMFLOAT4&&) = default;
         XMFLOAT4& operator=(XMFLOAT4&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4(float _x, float _y, float _z, float _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+        constexpr XMFLOAT4(float _x, float _y, float _z, float _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMFLOAT4(_In_reads_(4) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     };
 
@@ -694,7 +686,7 @@ namespace DirectX
         XMFLOAT4A(XMFLOAT4A&&) = default;
         XMFLOAT4A& operator=(XMFLOAT4A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4A(float _x, float _y, float _z, float _w) noexcept : XMFLOAT4(_x, _y, _z, _w) {}
+        constexpr XMFLOAT4A(float _x, float _y, float _z, float _w) noexcept : XMFLOAT4(_x, _y, _z, _w) {}
         explicit XMFLOAT4A(_In_reads_(4) const float* pArray) noexcept : XMFLOAT4(pArray) {}
     };
 
@@ -715,7 +707,7 @@ namespace DirectX
         XMINT4(XMINT4&&) = default;
         XMINT4& operator=(XMINT4&&) = default;
 
-        XM_CONSTEXPR XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+        constexpr XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMINT4(_In_reads_(4) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     };
 
@@ -735,7 +727,7 @@ namespace DirectX
         XMUINT4(XMUINT4&&) = default;
         XMUINT4& operator=(XMUINT4&&) = default;
 
-        XM_CONSTEXPR XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+        constexpr XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMUINT4(_In_reads_(4) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     };
 
@@ -762,7 +754,7 @@ namespace DirectX
         XMFLOAT3X3(XMFLOAT3X3&&) = default;
         XMFLOAT3X3& operator=(XMFLOAT3X3&&) = default;
 
-        XM_CONSTEXPR XMFLOAT3X3(float m00, float m01, float m02,
+        constexpr XMFLOAT3X3(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22) noexcept
             : _11(m00), _12(m01), _13(m02),
@@ -799,7 +791,7 @@ namespace DirectX
         XMFLOAT4X3(XMFLOAT4X3&&) = default;
         XMFLOAT4X3& operator=(XMFLOAT4X3&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4X3(float m00, float m01, float m02,
+        constexpr XMFLOAT4X3(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22,
             float m30, float m31, float m32) noexcept
@@ -824,7 +816,7 @@ namespace DirectX
         XMFLOAT4X3A(XMFLOAT4X3A&&) = default;
         XMFLOAT4X3A& operator=(XMFLOAT4X3A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4X3A(float m00, float m01, float m02,
+        constexpr XMFLOAT4X3A(float m00, float m01, float m02,
             float m10, float m11, float m12,
             float m20, float m21, float m22,
             float m30, float m31, float m32)  noexcept :
@@ -856,7 +848,7 @@ namespace DirectX
         XMFLOAT3X4(XMFLOAT3X4&&) = default;
         XMFLOAT3X4& operator=(XMFLOAT3X4&&) = default;
 
-        XM_CONSTEXPR XMFLOAT3X4(float m00, float m01, float m02, float m03,
+        constexpr XMFLOAT3X4(float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23) noexcept
             : _11(m00), _12(m01), _13(m02), _14(m03),
@@ -879,7 +871,7 @@ namespace DirectX
         XMFLOAT3X4A(XMFLOAT3X4A&&) = default;
         XMFLOAT3X4A& operator=(XMFLOAT3X4A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT3X4A(float m00, float m01, float m02, float m03,
+        constexpr XMFLOAT3X4A(float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23)  noexcept :
             XMFLOAT3X4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23) {}
@@ -910,7 +902,7 @@ namespace DirectX
         XMFLOAT4X4(XMFLOAT4X4&&) = default;
         XMFLOAT4X4& operator=(XMFLOAT4X4&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4X4(float m00, float m01, float m02, float m03,
+        constexpr XMFLOAT4X4(float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23,
             float m30, float m31, float m32, float m33) noexcept
@@ -935,7 +927,7 @@ namespace DirectX
         XMFLOAT4X4A(XMFLOAT4X4A&&) = default;
         XMFLOAT4X4A& operator=(XMFLOAT4X4A&&) = default;
 
-        XM_CONSTEXPR XMFLOAT4X4A(float m00, float m01, float m02, float m03,
+        constexpr XMFLOAT4X4A(float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
             float m20, float m21, float m22, float m23,
             float m30, float m31, float m32, float m33) noexcept

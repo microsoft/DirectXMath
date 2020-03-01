@@ -54,7 +54,7 @@ namespace DirectX
         BoundingSphere(BoundingSphere&&) = default;
         BoundingSphere& operator=(BoundingSphere&&) = default;
 
-        XM_CONSTEXPR BoundingSphere(_In_ const XMFLOAT3& center, _In_ float radius) noexcept
+        constexpr BoundingSphere(_In_ const XMFLOAT3& center, _In_ float radius) noexcept
             : Center(center), Radius(radius) {}
 
         // Methods
@@ -118,7 +118,7 @@ namespace DirectX
         BoundingBox(BoundingBox&&) = default;
         BoundingBox& operator=(BoundingBox&&) = default;
 
-        XM_CONSTEXPR BoundingBox(_In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents) noexcept
+        constexpr BoundingBox(_In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents) noexcept
             : Center(center), Extents(extents) {}
 
         // Methods
@@ -183,7 +183,7 @@ namespace DirectX
         BoundingOrientedBox(BoundingOrientedBox&&) = default;
         BoundingOrientedBox& operator=(BoundingOrientedBox&&) = default;
 
-        XM_CONSTEXPR BoundingOrientedBox(_In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation) noexcept
+        constexpr BoundingOrientedBox(_In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation) noexcept
             : Center(_Center), Extents(_Extents), Orientation(_Orientation) {}
 
         // Methods
@@ -252,7 +252,7 @@ namespace DirectX
         BoundingFrustum(BoundingFrustum&&) = default;
         BoundingFrustum& operator=(BoundingFrustum&&) = default;
 
-        XM_CONSTEXPR BoundingFrustum(_In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
+        constexpr BoundingFrustum(_In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
             _In_ float _RightSlope, _In_ float _LeftSlope, _In_ float _TopSlope, _In_ float _BottomSlope,
             _In_ float _Near, _In_ float _Far) noexcept
             : Origin(_Origin), Orientation(_Orientation),

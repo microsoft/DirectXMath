@@ -53,7 +53,7 @@ namespace DirectX
             XMCOLOR(XMCOLOR&&) = default;
             XMCOLOR& operator=(XMCOLOR&&) = default;
 
-            XM_CONSTEXPR XMCOLOR(uint32_t Color) noexcept : c(Color) {}
+            constexpr XMCOLOR(uint32_t Color) noexcept : c(Color) {}
             XMCOLOR(float _r, float _g, float _b, float _a) noexcept;
             explicit XMCOLOR(_In_reads_(4) const float* pArray) noexcept;
 
@@ -89,8 +89,8 @@ namespace DirectX
             XMHALF2(XMHALF2&&) = default;
             XMHALF2& operator=(XMHALF2&&) = default;
 
-            explicit XM_CONSTEXPR XMHALF2(uint32_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMHALF2(HALF _x, HALF _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMHALF2(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMHALF2(HALF _x, HALF _y) noexcept : x(_x), y(_y) {}
             explicit XMHALF2(_In_reads_(2) const HALF* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMHALF2(float _x, float _y) noexcept;
             explicit XMHALF2(_In_reads_(2) const float* pArray) noexcept;
@@ -120,8 +120,8 @@ namespace DirectX
             XMSHORTN2(XMSHORTN2&&) = default;
             XMSHORTN2& operator=(XMSHORTN2&&) = default;
 
-            explicit XM_CONSTEXPR XMSHORTN2(uint32_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMSHORTN2(int16_t _x, int16_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMSHORTN2(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMSHORTN2(int16_t _x, int16_t _y) noexcept : x(_x), y(_y) {}
             explicit XMSHORTN2(_In_reads_(2) const int16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMSHORTN2(float _x, float _y) noexcept;
             explicit XMSHORTN2(_In_reads_(2) const float* pArray) noexcept;
@@ -150,8 +150,8 @@ namespace DirectX
             XMSHORT2(XMSHORT2&&) = default;
             XMSHORT2& operator=(XMSHORT2&&) = default;
 
-            explicit XM_CONSTEXPR XMSHORT2(uint32_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMSHORT2(int16_t _x, int16_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMSHORT2(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMSHORT2(int16_t _x, int16_t _y) noexcept : x(_x), y(_y) {}
             explicit XMSHORT2(_In_reads_(2) const int16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMSHORT2(float _x, float _y) noexcept;
             explicit XMSHORT2(_In_reads_(2) const float* pArray) noexcept;
@@ -180,8 +180,8 @@ namespace DirectX
             XMUSHORTN2(XMUSHORTN2&&) = default;
             XMUSHORTN2& operator=(XMUSHORTN2&&) = default;
 
-            explicit XM_CONSTEXPR XMUSHORTN2(uint32_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUSHORTN2(uint16_t _x, uint16_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMUSHORTN2(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMUSHORTN2(uint16_t _x, uint16_t _y) noexcept : x(_x), y(_y) {}
             explicit XMUSHORTN2(_In_reads_(2) const uint16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMUSHORTN2(float _x, float _y) noexcept;
             explicit XMUSHORTN2(_In_reads_(2) const float* pArray) noexcept;
@@ -210,8 +210,8 @@ namespace DirectX
             XMUSHORT2(XMUSHORT2&&) = default;
             XMUSHORT2& operator=(XMUSHORT2&&) = default;
 
-            explicit XM_CONSTEXPR XMUSHORT2(uint32_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUSHORT2(uint16_t _x, uint16_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMUSHORT2(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMUSHORT2(uint16_t _x, uint16_t _y) noexcept : x(_x), y(_y) {}
             explicit XMUSHORT2(_In_reads_(2) const uint16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMUSHORT2(float _x, float _y) noexcept;
             explicit XMUSHORT2(_In_reads_(2) const float* pArray) noexcept;
@@ -241,8 +241,8 @@ namespace DirectX
             XMBYTEN2(XMBYTEN2&&) = default;
             XMBYTEN2& operator=(XMBYTEN2&&) = default;
 
-            explicit XM_CONSTEXPR XMBYTEN2(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMBYTEN2(int8_t _x, int8_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMBYTEN2(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMBYTEN2(int8_t _x, int8_t _y) noexcept : x(_x), y(_y) {}
             explicit XMBYTEN2(_In_reads_(2) const int8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMBYTEN2(float _x, float _y) noexcept;
             explicit XMBYTEN2(_In_reads_(2) const float* pArray) noexcept;
@@ -271,8 +271,8 @@ namespace DirectX
             XMBYTE2(XMBYTE2&&) = default;
             XMBYTE2& operator=(XMBYTE2&&) = default;
 
-            explicit XM_CONSTEXPR XMBYTE2(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMBYTE2(int8_t _x, int8_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMBYTE2(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMBYTE2(int8_t _x, int8_t _y) noexcept : x(_x), y(_y) {}
             explicit XMBYTE2(_In_reads_(2) const int8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMBYTE2(float _x, float _y) noexcept;
             explicit XMBYTE2(_In_reads_(2) const float* pArray) noexcept;
@@ -301,8 +301,8 @@ namespace DirectX
             XMUBYTEN2(XMUBYTEN2&&) = default;
             XMUBYTEN2& operator=(XMUBYTEN2&&) = default;
 
-            explicit XM_CONSTEXPR XMUBYTEN2(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUBYTEN2(uint8_t _x, uint8_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMUBYTEN2(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMUBYTEN2(uint8_t _x, uint8_t _y) noexcept : x(_x), y(_y) {}
             explicit XMUBYTEN2(_In_reads_(2) const uint8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMUBYTEN2(float _x, float _y) noexcept;
             explicit XMUBYTEN2(_In_reads_(2) const float* pArray) noexcept;
@@ -331,8 +331,8 @@ namespace DirectX
             XMUBYTE2(XMUBYTE2&&) = default;
             XMUBYTE2& operator=(XMUBYTE2&&) = default;
 
-            explicit XM_CONSTEXPR XMUBYTE2(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUBYTE2(uint8_t _x, uint8_t _y) noexcept : x(_x), y(_y) {}
+            explicit constexpr XMUBYTE2(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMUBYTE2(uint8_t _x, uint8_t _y) noexcept : x(_x), y(_y) {}
             explicit XMUBYTE2(_In_reads_(2) const uint8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
             XMUBYTE2(float _x, float _y) noexcept;
             explicit XMUBYTE2(_In_reads_(2) const float* pArray) noexcept;
@@ -363,8 +363,8 @@ namespace DirectX
             XMU565(XMU565&&) = default;
             XMU565& operator=(XMU565&&) = default;
 
-            explicit XM_CONSTEXPR XMU565(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMU565(uint8_t _x, uint8_t _y, uint8_t _z) noexcept : x(_x), y(_y), z(_z) {}
+            explicit constexpr XMU565(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMU565(uint8_t _x, uint8_t _y, uint8_t _z) noexcept : x(_x), y(_y), z(_z) {}
             explicit XMU565(_In_reads_(3) const uint8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
             XMU565(float _x, float _y, float _z) noexcept;
             explicit XMU565(_In_reads_(3) const float* pArray) noexcept;
@@ -407,7 +407,7 @@ namespace DirectX
             XMFLOAT3PK(XMFLOAT3PK&&) = default;
             XMFLOAT3PK& operator=(XMFLOAT3PK&&) = default;
 
-            explicit XM_CONSTEXPR XMFLOAT3PK(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMFLOAT3PK(uint32_t Packed) noexcept : v(Packed) {}
             XMFLOAT3PK(float _x, float _y, float _z) noexcept;
             explicit XMFLOAT3PK(_In_reads_(3) const float* pArray) noexcept;
 
@@ -446,7 +446,7 @@ namespace DirectX
             XMFLOAT3SE(XMFLOAT3SE&&) = default;
             XMFLOAT3SE& operator=(XMFLOAT3SE&&) = default;
 
-            explicit XM_CONSTEXPR XMFLOAT3SE(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMFLOAT3SE(uint32_t Packed) noexcept : v(Packed) {}
             XMFLOAT3SE(float _x, float _y, float _z) noexcept;
             explicit XMFLOAT3SE(_In_reads_(3) const float* pArray) noexcept;
 
@@ -479,8 +479,8 @@ namespace DirectX
             XMHALF4(XMHALF4&&) = default;
             XMHALF4& operator=(XMHALF4&&) = default;
 
-            explicit XM_CONSTEXPR XMHALF4(uint64_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMHALF4(uint64_t Packed) noexcept : v(Packed) {}
+            constexpr XMHALF4(HALF _x, HALF _y, HALF _z, HALF _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMHALF4(_In_reads_(4) const HALF* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMHALF4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMHALF4(_In_reads_(4) const float* pArray) noexcept;
@@ -512,8 +512,8 @@ namespace DirectX
             XMSHORTN4(XMSHORTN4&&) = default;
             XMSHORTN4& operator=(XMSHORTN4&&) = default;
 
-            explicit XM_CONSTEXPR XMSHORTN4(uint64_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMSHORTN4(uint64_t Packed) noexcept : v(Packed) {}
+            constexpr XMSHORTN4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMSHORTN4(_In_reads_(4) const int16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMSHORTN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMSHORTN4(_In_reads_(4) const float* pArray) noexcept;
@@ -544,8 +544,8 @@ namespace DirectX
             XMSHORT4(XMSHORT4&&) = default;
             XMSHORT4& operator=(XMSHORT4&&) = default;
 
-            explicit XM_CONSTEXPR XMSHORT4(uint64_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMSHORT4(uint64_t Packed) noexcept : v(Packed) {}
+            constexpr XMSHORT4(int16_t _x, int16_t _y, int16_t _z, int16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMSHORT4(_In_reads_(4) const int16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMSHORT4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMSHORT4(_In_reads_(4) const float* pArray) noexcept;
@@ -576,8 +576,8 @@ namespace DirectX
             XMUSHORTN4(XMUSHORTN4&&) = default;
             XMUSHORTN4& operator=(XMUSHORTN4&&) = default;
 
-            explicit XM_CONSTEXPR XMUSHORTN4(uint64_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMUSHORTN4(uint64_t Packed) noexcept : v(Packed) {}
+            constexpr XMUSHORTN4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMUSHORTN4(_In_reads_(4) const uint16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMUSHORTN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUSHORTN4(_In_reads_(4) const float* pArray) noexcept;
@@ -608,8 +608,8 @@ namespace DirectX
             XMUSHORT4(XMUSHORT4&&) = default;
             XMUSHORT4& operator=(XMUSHORT4&&) = default;
 
-            explicit XM_CONSTEXPR XMUSHORT4(uint64_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMUSHORT4(uint64_t Packed) noexcept : v(Packed) {}
+            constexpr XMUSHORT4(uint16_t _x, uint16_t _y, uint16_t _z, uint16_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMUSHORT4(_In_reads_(4) const uint16_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMUSHORT4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUSHORT4(_In_reads_(4) const float* pArray) noexcept;
@@ -646,7 +646,7 @@ namespace DirectX
             XMXDECN4(XMXDECN4&&) = default;
             XMXDECN4& operator=(XMXDECN4&&) = default;
 
-            explicit XM_CONSTEXPR XMXDECN4(uint32_t Packed) : v(Packed) {}
+            explicit constexpr XMXDECN4(uint32_t Packed) : v(Packed) {}
             XMXDECN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMXDECN4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -683,7 +683,7 @@ namespace DirectX
             XMXDEC4(XMXDEC4&&) = default;
             XMXDEC4& operator=(XMXDEC4&&) = default;
 
-            explicit XM_CONSTEXPR XMXDEC4(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMXDEC4(uint32_t Packed) noexcept : v(Packed) {}
             XMXDEC4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMXDEC4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -720,7 +720,7 @@ namespace DirectX
             XMDECN4(XMDECN4&&) = default;
             XMDECN4& operator=(XMDECN4&&) = default;
 
-            explicit XM_CONSTEXPR XMDECN4(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMDECN4(uint32_t Packed) noexcept : v(Packed) {}
             XMDECN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMDECN4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -757,7 +757,7 @@ namespace DirectX
             XMDEC4(XMDEC4&&) = default;
             XMDEC4& operator=(XMDEC4&&) = default;
 
-            explicit XM_CONSTEXPR XMDEC4(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMDEC4(uint32_t Packed) noexcept : v(Packed) {}
             XMDEC4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMDEC4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -794,7 +794,7 @@ namespace DirectX
             XMUDECN4(XMUDECN4&&) = default;
             XMUDECN4& operator=(XMUDECN4&&) = default;
 
-            explicit XM_CONSTEXPR XMUDECN4(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMUDECN4(uint32_t Packed) noexcept : v(Packed) {}
             XMUDECN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUDECN4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -831,7 +831,7 @@ namespace DirectX
             XMUDEC4(XMUDEC4&&) = default;
             XMUDEC4& operator=(XMUDEC4&&) = default;
 
-            explicit XM_CONSTEXPR XMUDEC4(uint32_t Packed) noexcept : v(Packed) {}
+            explicit constexpr XMUDEC4(uint32_t Packed) noexcept : v(Packed) {}
             XMUDEC4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUDEC4(_In_reads_(4) const float* pArray) noexcept;
 
@@ -864,8 +864,8 @@ namespace DirectX
             XMBYTEN4(XMBYTEN4&&) = default;
             XMBYTEN4& operator=(XMBYTEN4&&) = default;
 
-            XM_CONSTEXPR XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
-            explicit XM_CONSTEXPR XMBYTEN4(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMBYTEN4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMBYTEN4(uint32_t Packed) noexcept : v(Packed) {}
             explicit XMBYTEN4(_In_reads_(4) const int8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMBYTEN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMBYTEN4(_In_reads_(4) const float* pArray) noexcept;
@@ -896,8 +896,8 @@ namespace DirectX
             XMBYTE4(XMBYTE4&&) = default;
             XMBYTE4& operator=(XMBYTE4&&) = default;
 
-            XM_CONSTEXPR XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
-            explicit XM_CONSTEXPR XMBYTE4(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMBYTE4(int8_t _x, int8_t _y, int8_t _z, int8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMBYTE4(uint32_t Packed) noexcept : v(Packed) {}
             explicit XMBYTE4(_In_reads_(4) const int8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMBYTE4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMBYTE4(_In_reads_(4) const float* pArray) noexcept;
@@ -928,8 +928,8 @@ namespace DirectX
             XMUBYTEN4(XMUBYTEN4&&) = default;
             XMUBYTEN4& operator=(XMUBYTEN4&&) = default;
 
-            XM_CONSTEXPR XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
-            explicit XM_CONSTEXPR XMUBYTEN4(uint32_t Packed) noexcept : v(Packed) {}
+            constexpr XMUBYTEN4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMUBYTEN4(uint32_t Packed) noexcept : v(Packed) {}
             explicit XMUBYTEN4(_In_reads_(4) const uint8_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMUBYTEN4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUBYTEN4(_In_reads_(4) const float* pArray) noexcept;
@@ -960,8 +960,8 @@ namespace DirectX
             XMUBYTE4(XMUBYTE4&&) = default;
             XMUBYTE4& operator=(XMUBYTE4&&) = default;
 
-            XM_CONSTEXPR XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
-            explicit XM_CONSTEXPR XMUBYTE4(uint32_t Packed)  noexcept : v(Packed) {}
+            constexpr XMUBYTE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMUBYTE4(uint32_t Packed)  noexcept : v(Packed) {}
             explicit XMUBYTE4(_In_reads_(4) const uint8_t* pArray)  noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMUBYTE4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUBYTE4(_In_reads_(4) const float* pArray) noexcept;
@@ -993,8 +993,8 @@ namespace DirectX
             XMUNIBBLE4(XMUNIBBLE4&&) = default;
             XMUNIBBLE4& operator=(XMUNIBBLE4&&) = default;
 
-            explicit XM_CONSTEXPR XMUNIBBLE4(uint16_t Packed)  noexcept : v(Packed) {}
-            XM_CONSTEXPR XMUNIBBLE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w)  noexcept : x(_x), y(_y), z(_z), w(_w) {}
+            explicit constexpr XMUNIBBLE4(uint16_t Packed)  noexcept : v(Packed) {}
+            constexpr XMUNIBBLE4(uint8_t _x, uint8_t _y, uint8_t _z, uint8_t _w)  noexcept : x(_x), y(_y), z(_z), w(_w) {}
             explicit XMUNIBBLE4(_In_reads_(4) const uint8_t* pArray)  noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
             XMUNIBBLE4(float _x, float _y, float _z, float _w) noexcept;
             explicit XMUNIBBLE4(_In_reads_(4) const float* pArray) noexcept;
@@ -1028,8 +1028,8 @@ namespace DirectX
             XMU555(XMU555&&) = default;
             XMU555& operator=(XMU555&&) = default;
 
-            explicit XM_CONSTEXPR XMU555(uint16_t Packed) noexcept : v(Packed) {}
-            XM_CONSTEXPR XMU555(uint8_t _x, uint8_t _y, uint8_t _z, bool _w) noexcept : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
+            explicit constexpr XMU555(uint16_t Packed) noexcept : v(Packed) {}
+            constexpr XMU555(uint8_t _x, uint8_t _y, uint8_t _z, bool _w) noexcept : x(_x), y(_y), z(_z), w(_w ? 0x1 : 0) {}
             XMU555(_In_reads_(3) const uint8_t* pArray, _In_ bool _w) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(_w ? 0x1 : 0) {}
             XMU555(float _x, float _y, float _z, bool _w) noexcept;
             XMU555(_In_reads_(3) const float* pArray, _In_ bool _w) noexcept;
