@@ -13,8 +13,8 @@
 #error FMA4 not supported on ARM platform
 #endif
 
-#include <ammintrin.h>
 #ifdef __GNUC__
+#include <ammintrin.h>
 #include <x86intrin.h>
 #endif
 
