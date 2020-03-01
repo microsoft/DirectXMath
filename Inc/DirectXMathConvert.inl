@@ -25,7 +25,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorIntToFloat
 (
     FXMVECTOR    VInt,
     uint32_t     DivExponent
-)
+) noexcept
 {
     assert(DivExponent < 32);
 #if defined(_XM_NO_INTRINSICS_)
@@ -59,7 +59,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToInt
 (
     FXMVECTOR    VFloat,
     uint32_t     MulExponent
-)
+) noexcept
 {
     assert(MulExponent < 32);
 #if defined(_XM_NO_INTRINSICS_)
@@ -116,7 +116,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorUIntToFloat
 (
     FXMVECTOR     VUInt,
     uint32_t      DivExponent
-)
+) noexcept
 {
     assert(DivExponent < 32);
 #if defined(_XM_NO_INTRINSICS_)
@@ -159,7 +159,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
 (
     FXMVECTOR     VFloat,
     uint32_t      MulExponent
-)
+) noexcept
 {
     assert(MulExponent < 32);
 #if defined(_XM_NO_INTRINSICS_)
@@ -228,7 +228,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
 
  //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt(const uint32_t* pSource)
+inline XMVECTOR XM_CALLCONV XMLoadInt(const uint32_t* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -248,7 +248,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt(const uint32_t* pSource)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat(const float* pSource)
+inline XMVECTOR XM_CALLCONV XMLoadFloat(const float* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -268,10 +268,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat(const float* pSource)
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt2
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt2(const uint32_t* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -292,10 +289,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt2A
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt2A(const uint32_t* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -317,10 +311,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt2A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat2
-(
-    const XMFLOAT2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat2(const XMFLOAT2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -341,10 +332,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat2A
-(
-    const XMFLOAT2A* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat2A(const XMFLOAT2A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -366,10 +354,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat2A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadSInt2
-(
-    const XMINT2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadSInt2(const XMINT2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -392,10 +377,7 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUInt2
-(
-    const XMUINT2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUInt2(const XMUINT2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -430,10 +412,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt3
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt3(const uint32_t* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -461,10 +440,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt3A
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt3A(const uint32_t* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -492,10 +468,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt3A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat3
-(
-    const XMFLOAT3* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat3(const XMFLOAT3* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -523,10 +496,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat3A
-(
-    const XMFLOAT3A* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat3A(const XMFLOAT3A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -550,10 +520,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadSInt3
-(
-    const XMINT3* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadSInt3(const XMINT3* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -581,10 +548,7 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUInt3
-(
-    const XMUINT3* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUInt3(const XMUINT3* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -622,10 +586,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt4
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt4(const uint32_t* pSource) noexcept
 {
     assert(pSource);
 
@@ -646,10 +607,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadInt4A
-(
-    const uint32_t* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadInt4A(const uint32_t* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -670,10 +628,7 @@ inline XMVECTOR XM_CALLCONV XMLoadInt4A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat4
-(
-    const XMFLOAT4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat4(const XMFLOAT4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -692,10 +647,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat4A
-(
-    const XMFLOAT4A* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat4A(const XMFLOAT4A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -715,10 +667,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat4A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadSInt4
-(
-    const XMINT4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadSInt4(const XMINT4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -741,10 +690,7 @@ inline XMVECTOR XM_CALLCONV XMLoadSInt4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUInt4
-(
-    const XMUINT4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUInt4(const XMUINT4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -777,10 +723,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUInt4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat3x3
-(
-    const XMFLOAT3X3* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat3x3(const XMFLOAT3X3* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -842,10 +785,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat3x3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat4x3
-(
-    const XMFLOAT4X3* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat4x3(const XMFLOAT4X3* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -922,10 +862,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A
-(
-    const XMFLOAT4X3A* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A(const XMFLOAT4X3A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -1003,10 +940,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat3x4
-(
-    const XMFLOAT3X4* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat3x4(const XMFLOAT3X4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1084,10 +1018,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat3x4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat3x4A
-(
-    const XMFLOAT3X4A* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat3x4A(const XMFLOAT3X4A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -1166,10 +1097,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat3x4A
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat4x4
-(
-    const XMFLOAT4X4* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat4x4(const XMFLOAT4X4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1215,10 +1143,7 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMMATRIX XM_CALLCONV XMLoadFloat4x4A
-(
-    const XMFLOAT4X4A* pSource
-)
+inline XMMATRIX XM_CALLCONV XMLoadFloat4x4A(const XMFLOAT4X4A* pSource) noexcept
 {
     assert(pSource);
     assert((reinterpret_cast<uintptr_t>(pSource) & 0xF) == 0);
@@ -1273,7 +1198,7 @@ inline void XM_CALLCONV XMStoreInt
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1291,7 +1216,7 @@ inline void XM_CALLCONV XMStoreFloat
 (
     float* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1309,7 +1234,7 @@ inline void XM_CALLCONV XMStoreInt2
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1329,7 +1254,7 @@ inline void XM_CALLCONV XMStoreInt2A
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1350,7 +1275,7 @@ inline void XM_CALLCONV XMStoreFloat2
 (
     XMFLOAT2* pDestination,
     FXMVECTOR  V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1370,7 +1295,7 @@ inline void XM_CALLCONV XMStoreFloat2A
 (
     XMFLOAT2A* pDestination,
     FXMVECTOR     V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1391,7 +1316,7 @@ inline void XM_CALLCONV XMStoreSInt2
 (
     XMINT2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1421,7 +1346,7 @@ inline void XM_CALLCONV XMStoreUInt2
 (
     XMUINT2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1460,7 +1385,7 @@ inline void XM_CALLCONV XMStoreInt3
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1484,7 +1409,7 @@ inline void XM_CALLCONV XMStoreInt3A
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1509,7 +1434,7 @@ inline void XM_CALLCONV XMStoreFloat3
 (
     XMFLOAT3* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1537,7 +1462,7 @@ inline void XM_CALLCONV XMStoreFloat3A
 (
     XMFLOAT3A* pDestination,
     FXMVECTOR     V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1565,7 +1490,7 @@ inline void XM_CALLCONV XMStoreSInt3
 (
     XMINT3* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1599,7 +1524,7 @@ inline void XM_CALLCONV XMStoreUInt3
 (
     XMUINT3* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1642,7 +1567,7 @@ inline void XM_CALLCONV XMStoreInt4
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1663,7 +1588,7 @@ inline void XM_CALLCONV XMStoreInt4A
 (
     uint32_t* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1685,7 +1610,7 @@ inline void XM_CALLCONV XMStoreFloat4
 (
     XMFLOAT4* pDestination,
     FXMVECTOR  V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1706,7 +1631,7 @@ inline void XM_CALLCONV XMStoreFloat4A
 (
     XMFLOAT4A* pDestination,
     FXMVECTOR     V
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1728,7 +1653,7 @@ inline void XM_CALLCONV XMStoreSInt4
 (
     XMINT4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1758,7 +1683,7 @@ inline void XM_CALLCONV XMStoreUInt4
 (
     XMUINT4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1797,7 +1722,7 @@ inline void XM_CALLCONV XMStoreFloat3x3
 (
     XMFLOAT3X3* pDestination,
     FXMMATRIX   M
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1844,7 +1769,7 @@ inline void XM_CALLCONV XMStoreFloat4x3
 (
     XMFLOAT4X3* pDestination,
     FXMMATRIX M
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1899,7 +1824,7 @@ inline void XM_CALLCONV XMStoreFloat4x3A
 (
     XMFLOAT4X3A* pDestination,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -1965,7 +1890,7 @@ inline void XM_CALLCONV XMStoreFloat3x4
 (
     XMFLOAT3X4* pDestination,
     FXMMATRIX M
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2024,7 +1949,7 @@ inline void XM_CALLCONV XMStoreFloat3x4A
 (
     XMFLOAT3X4A* pDestination,
     FXMMATRIX M
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -2084,7 +2009,7 @@ inline void XM_CALLCONV XMStoreFloat4x4
 (
     XMFLOAT4X4* pDestination,
     FXMMATRIX M
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2128,7 +2053,7 @@ inline void XM_CALLCONV XMStoreFloat4x4A
 (
     XMFLOAT4X4A* pDestination,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pDestination);
     assert((reinterpret_cast<uintptr_t>(pDestination) & 0xF) == 0);
@@ -2166,4 +2091,3 @@ inline void XM_CALLCONV XMStoreFloat4x4A
     _mm_store_ps(&pDestination->_41, M.r[3]);
 #endif
 }
-

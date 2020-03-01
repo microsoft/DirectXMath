@@ -17,10 +17,7 @@
 
  //------------------------------------------------------------------------------
 
-inline float XMConvertHalfToFloat
-(
-    HALF Value
-)
+inline float XMConvertHalfToFloat(HALF Value) noexcept
 {
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     __m128i V1 = _mm_cvtsi32_si128(static_cast<int>(Value));
@@ -83,7 +80,7 @@ inline float* XMConvertHalfToFloatStream
     const HALF* pInputStream,
     size_t      InputStride,
     size_t      HalfCount
-)
+) noexcept
 {
     assert(pOutputStream);
     assert(pInputStream);
@@ -386,10 +383,7 @@ inline float* XMConvertHalfToFloatStream
 
 //------------------------------------------------------------------------------
 
-inline HALF XMConvertFloatToHalf
-(
-    float Value
-)
+inline HALF XMConvertFloatToHalf(float Value) noexcept
 {
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     __m128 V1 = _mm_set_ss(Value);
@@ -452,7 +446,7 @@ inline HALF* XMConvertFloatToHalfStream
     const float* pInputStream,
     size_t       InputStride,
     size_t       FloatCount
-)
+) noexcept
 {
     assert(pOutputStream);
     assert(pInputStream);
@@ -767,10 +761,7 @@ inline HALF* XMConvertFloatToHalfStream
 #endif
 
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadColor
-(
-    const XMCOLOR* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadColor(const XMCOLOR* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -810,10 +801,7 @@ inline XMVECTOR XM_CALLCONV XMLoadColor
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadHalf2
-(
-    const XMHALF2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadHalf2(const XMHALF2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -832,10 +820,7 @@ inline XMVECTOR XM_CALLCONV XMLoadHalf2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadShortN2
-(
-    const XMSHORTN2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadShortN2(const XMSHORTN2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -874,10 +859,7 @@ inline XMVECTOR XM_CALLCONV XMLoadShortN2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadShort2
-(
-    const XMSHORT2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadShort2(const XMSHORT2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -912,10 +894,7 @@ inline XMVECTOR XM_CALLCONV XMLoadShort2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUShortN2
-(
-    const XMUSHORTN2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUShortN2(const XMUSHORTN2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -955,10 +934,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUShortN2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUShort2
-(
-    const XMUSHORT2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUShort2(const XMUSHORT2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -995,10 +971,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUShort2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadByteN2
-(
-    const XMBYTEN2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadByteN2(const XMBYTEN2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1039,10 +1012,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByteN2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadByte2
-(
-    const XMBYTE2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadByte2(const XMBYTE2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1079,10 +1049,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByte2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUByteN2
-(
-    const XMUBYTEN2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUByteN2(const XMUBYTEN2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1120,10 +1087,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByteN2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUByte2
-(
-    const XMUBYTE2* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUByte2(const XMUBYTE2* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1160,10 +1124,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByte2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadU565
-(
-    const XMU565* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadU565(const XMU565* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1199,10 +1160,7 @@ inline XMVECTOR XM_CALLCONV XMLoadU565
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat3PK
-(
-    const XMFLOAT3PK* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat3PK(const XMFLOAT3PK* pSource) noexcept
 {
     assert(pSource);
 
@@ -1317,10 +1275,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadFloat3SE
-(
-    const XMFLOAT3SE* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadFloat3SE(const XMFLOAT3SE* pSource) noexcept
 {
     assert(pSource);
 
@@ -1338,10 +1293,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3SE
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadHalf4
-(
-    const XMHALF4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadHalf4(const XMHALF4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -1360,10 +1312,7 @@ inline XMVECTOR XM_CALLCONV XMLoadHalf4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadShortN4
-(
-    const XMSHORTN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadShortN4(const XMSHORTN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1402,10 +1351,7 @@ inline XMVECTOR XM_CALLCONV XMLoadShortN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadShort4
-(
-    const XMSHORT4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadShort4(const XMSHORT4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1440,10 +1386,7 @@ inline XMVECTOR XM_CALLCONV XMLoadShort4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUShortN4
-(
-    const XMUSHORTN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUShortN4(const XMUSHORTN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1481,10 +1424,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUShortN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUShort4
-(
-    const XMUSHORT4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUShort4(const XMUSHORT4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1520,10 +1460,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUShort4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadXDecN4
-(
-    const XMXDECN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadXDecN4(const XMXDECN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1572,10 +1509,7 @@ inline XMVECTOR XM_CALLCONV XMLoadXDecN4
 // C4996: ignore deprecation warning
 
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadXDec4
-(
-    const XMXDEC4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadXDec4(const XMXDEC4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1624,10 +1558,7 @@ inline XMVECTOR XM_CALLCONV XMLoadXDec4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUDecN4
-(
-    const XMUDECN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUDecN4(const XMUDECN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1671,10 +1602,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUDecN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUDecN4_XR
-(
-    const XMUDECN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUDecN4_XR(const XMUDECN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1725,10 +1653,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUDecN4_XR
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUDec4
-(
-    const XMUDEC4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUDec4(const XMUDEC4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1771,10 +1696,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUDec4
 // C4996: ignore deprecation warning
 
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadDecN4
-(
-    const XMDECN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadDecN4(const XMDECN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1823,10 +1745,7 @@ inline XMVECTOR XM_CALLCONV XMLoadDecN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadDec4
-(
-    const XMDEC4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadDec4(const XMDEC4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1873,10 +1792,7 @@ inline XMVECTOR XM_CALLCONV XMLoadDec4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUByteN4
-(
-    const XMUBYTEN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUByteN4(const XMUBYTEN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1913,10 +1829,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByteN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUByte4
-(
-    const XMUBYTE4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUByte4(const XMUBYTE4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1952,10 +1865,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByte4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadByteN4
-(
-    const XMBYTEN4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadByteN4(const XMBYTEN4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1994,10 +1904,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByteN4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadByte4
-(
-    const XMBYTE4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadByte4(const XMBYTE4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2033,10 +1940,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByte4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadUNibble4
-(
-    const XMUNIBBLE4* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadUNibble4(const XMUNIBBLE4* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2072,10 +1976,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUNibble4
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMLoadU555
-(
-    const XMU555* pSource
-)
+inline XMVECTOR XM_CALLCONV XMLoadU555(const XMU555* pSource) noexcept
 {
     assert(pSource);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2123,7 +2024,7 @@ inline void XM_CALLCONV XMStoreColor
 (
     XMCOLOR* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2176,7 +2077,7 @@ inline void XM_CALLCONV XMStoreHalf2
 (
     XMHALF2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -2194,7 +2095,7 @@ inline void XM_CALLCONV XMStoreShortN2
 (
     XMSHORTN2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2232,7 +2133,7 @@ inline void XM_CALLCONV XMStoreShort2
 (
     XMSHORT2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2270,7 +2171,7 @@ inline void XM_CALLCONV XMStoreUShortN2
 (
     XMUSHORTN2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2314,7 +2215,7 @@ inline void XM_CALLCONV XMStoreUShort2
 (
     XMUSHORT2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2353,7 +2254,7 @@ inline void XM_CALLCONV XMStoreByteN2
 (
     XMBYTEN2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2397,7 +2298,7 @@ inline void XM_CALLCONV XMStoreByte2
 (
     XMBYTE2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2437,7 +2338,7 @@ inline void XM_CALLCONV XMStoreUByteN2
 (
     XMUBYTEN2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2483,7 +2384,7 @@ inline void XM_CALLCONV XMStoreUByte2
 (
     XMUBYTE2* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2523,7 +2424,7 @@ inline void XM_CALLCONV XMStoreU565
 (
     XMU565* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 Max = { { { 31.0f, 63.0f, 31.0f, 0.0f } } };
@@ -2576,7 +2477,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
 (
     XMFLOAT3PK* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 
@@ -2692,7 +2593,7 @@ inline void XM_CALLCONV XMStoreFloat3SE
 (
     XMFLOAT3SE* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 
@@ -2732,7 +2633,7 @@ inline void XM_CALLCONV XMStoreHalf4
 (
     XMHALF4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
@@ -2755,7 +2656,7 @@ inline void XM_CALLCONV XMStoreShortN4
 (
     XMSHORTN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2795,7 +2696,7 @@ inline void XM_CALLCONV XMStoreShort4
 (
     XMSHORT4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2835,7 +2736,7 @@ inline void XM_CALLCONV XMStoreUShortN4
 (
     XMUSHORTN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2883,7 +2784,7 @@ inline void XM_CALLCONV XMStoreUShort4
 (
     XMUSHORT4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2926,7 +2827,7 @@ inline void XM_CALLCONV XMStoreXDecN4
 (
     XMXDECN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 Min = { { { -1.0f, -1.0f, -1.0f, 0.0f } } };
@@ -2999,7 +2900,7 @@ inline void XM_CALLCONV XMStoreXDec4
 (
     XMXDEC4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 MinXDec4 = { { { -511.0f, -511.0f, -511.0f, 0.0f } } };
@@ -3069,7 +2970,7 @@ inline void XM_CALLCONV XMStoreUDecN4
 (
     XMUDECN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3137,7 +3038,7 @@ inline void XM_CALLCONV XMStoreUDecN4_XR
 (
     XMUDECN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 Scale = { { { 510.0f, 510.0f, 510.0f, 3.0f } } };
@@ -3211,7 +3112,7 @@ inline void XM_CALLCONV XMStoreUDec4
 (
     XMUDEC4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 MaxUDec4 = { { { 1023.0f, 1023.0f, 1023.0f, 3.0f } } };
@@ -3282,7 +3183,7 @@ inline void XM_CALLCONV XMStoreDecN4
 (
     XMDECN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3343,7 +3244,7 @@ inline void XM_CALLCONV XMStoreDec4
 (
     XMDEC4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 MinDec4 = { { { -511.0f, -511.0f, -511.0f, -1.0f } } };
@@ -3406,7 +3307,7 @@ inline void XM_CALLCONV XMStoreUByteN4
 (
     XMUBYTEN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3463,7 +3364,7 @@ inline void XM_CALLCONV XMStoreUByte4
 (
     XMUBYTE4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3518,7 +3419,7 @@ inline void XM_CALLCONV XMStoreByteN4
 (
     XMBYTEN4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3573,7 +3474,7 @@ inline void XM_CALLCONV XMStoreByte4
 (
     XMBYTE4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
 #if defined(_XM_NO_INTRINSICS_)
@@ -3626,7 +3527,7 @@ inline void XM_CALLCONV XMStoreUNibble4
 (
     XMUNIBBLE4* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 Max = { { { 15.0f, 15.0f, 15.0f, 15.0f } } };
@@ -3682,7 +3583,7 @@ inline void XM_CALLCONV XMStoreU555
 (
     XMU555* pDestination,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pDestination);
     static const XMVECTORF32 Max = { { { 31.0f, 31.0f, 31.0f, 1.0f } } };
@@ -3750,17 +3651,14 @@ inline XMCOLOR::XMCOLOR
     float _g,
     float _b,
     float _a
-)
+) noexcept
 {
     XMStoreColor(this, XMVectorSet(_r, _g, _b, _a));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMCOLOR::XMCOLOR
-(
-    const float* pArray
-)
+inline XMCOLOR::XMCOLOR(const float* pArray) noexcept
 {
     XMStoreColor(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -3777,7 +3675,7 @@ inline XMHALF2::XMHALF2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     x = XMConvertFloatToHalf(_x);
     y = XMConvertFloatToHalf(_y);
@@ -3785,10 +3683,7 @@ inline XMHALF2::XMHALF2
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMHALF2::XMHALF2
-(
-    const float* pArray
-)
+inline XMHALF2::XMHALF2(const float* pArray) noexcept
 {
     assert(pArray != nullptr);
     x = XMConvertFloatToHalf(pArray[0]);
@@ -3807,17 +3702,14 @@ inline XMSHORTN2::XMSHORTN2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreShortN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMSHORTN2::XMSHORTN2
-(
-    const float* pArray
-)
+inline XMSHORTN2::XMSHORTN2(const float* pArray) noexcept
 {
     XMStoreShortN2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3834,17 +3726,14 @@ inline XMSHORT2::XMSHORT2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreShort2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMSHORT2::XMSHORT2
-(
-    const float* pArray
-)
+inline XMSHORT2::XMSHORT2(const float* pArray) noexcept
 {
     XMStoreShort2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3861,17 +3750,14 @@ inline XMUSHORTN2::XMUSHORTN2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreUShortN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUSHORTN2::XMUSHORTN2
-(
-    const float* pArray
-)
+inline XMUSHORTN2::XMUSHORTN2(const float* pArray) noexcept
 {
     XMStoreUShortN2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3888,17 +3774,14 @@ inline XMUSHORT2::XMUSHORT2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreUShort2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUSHORT2::XMUSHORT2
-(
-    const float* pArray
-)
+inline XMUSHORT2::XMUSHORT2(const float* pArray) noexcept
 {
     XMStoreUShort2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3915,17 +3798,14 @@ inline XMBYTEN2::XMBYTEN2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreByteN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMBYTEN2::XMBYTEN2
-(
-    const float* pArray
-)
+inline XMBYTEN2::XMBYTEN2(const float* pArray) noexcept
 {
     XMStoreByteN2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3942,17 +3822,14 @@ inline XMBYTE2::XMBYTE2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreByte2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMBYTE2::XMBYTE2
-(
-    const float* pArray
-)
+inline XMBYTE2::XMBYTE2(const float* pArray) noexcept
 {
     XMStoreByte2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3969,17 +3846,14 @@ inline XMUBYTEN2::XMUBYTEN2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreUByteN2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUBYTEN2::XMUBYTEN2
-(
-    const float* pArray
-)
+inline XMUBYTEN2::XMUBYTEN2(const float* pArray) noexcept
 {
     XMStoreUByteN2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -3996,17 +3870,14 @@ inline XMUBYTE2::XMUBYTE2
 (
     float _x,
     float _y
-)
+) noexcept
 {
     XMStoreUByte2(this, XMVectorSet(_x, _y, 0.0f, 0.0f));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUBYTE2::XMUBYTE2
-(
-    const float* pArray
-)
+inline XMUBYTE2::XMUBYTE2(const float* pArray) noexcept
 {
     XMStoreUByte2(this, XMLoadFloat2(reinterpret_cast<const XMFLOAT2*>(pArray)));
 }
@@ -4022,16 +3893,13 @@ inline XMU565::XMU565
     float _x,
     float _y,
     float _z
-)
+) noexcept
 {
     XMStoreU565(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
 _Use_decl_annotations_
-inline XMU565::XMU565
-(
-    const float* pArray
-)
+inline XMU565::XMU565(const float* pArray) noexcept
 {
     XMStoreU565(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
 }
@@ -4047,16 +3915,13 @@ inline XMFLOAT3PK::XMFLOAT3PK
     float _x,
     float _y,
     float _z
-)
+) noexcept
 {
     XMStoreFloat3PK(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
 _Use_decl_annotations_
-inline XMFLOAT3PK::XMFLOAT3PK
-(
-    const float* pArray
-)
+inline XMFLOAT3PK::XMFLOAT3PK(const float* pArray) noexcept
 {
     XMStoreFloat3PK(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
 }
@@ -4072,16 +3937,13 @@ inline XMFLOAT3SE::XMFLOAT3SE
     float _x,
     float _y,
     float _z
-)
+) noexcept
 {
     XMStoreFloat3SE(this, XMVectorSet(_x, _y, _z, 0.0f));
 }
 
 _Use_decl_annotations_
-inline XMFLOAT3SE::XMFLOAT3SE
-(
-    const float* pArray
-)
+inline XMFLOAT3SE::XMFLOAT3SE(const float* pArray) noexcept
 {
     XMStoreFloat3SE(this, XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray)));
 }
@@ -4100,7 +3962,7 @@ inline XMHALF4::XMHALF4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     x = XMConvertFloatToHalf(_x);
     y = XMConvertFloatToHalf(_y);
@@ -4111,10 +3973,7 @@ inline XMHALF4::XMHALF4
 //------------------------------------------------------------------------------
 
 _Use_decl_annotations_
-inline XMHALF4::XMHALF4
-(
-    const float* pArray
-)
+inline XMHALF4::XMHALF4(const float* pArray) noexcept
 {
     XMConvertFloatToHalfStream(&x, sizeof(HALF), pArray, sizeof(float), 4);
 }
@@ -4133,17 +3992,14 @@ inline XMSHORTN4::XMSHORTN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreShortN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMSHORTN4::XMSHORTN4
-(
-    const float* pArray
-)
+inline XMSHORTN4::XMSHORTN4(const float* pArray) noexcept
 {
     XMStoreShortN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4162,17 +4018,14 @@ inline XMSHORT4::XMSHORT4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreShort4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMSHORT4::XMSHORT4
-(
-    const float* pArray
-)
+inline XMSHORT4::XMSHORT4(const float* pArray) noexcept
 {
     XMStoreShort4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4191,17 +4044,14 @@ inline XMUSHORTN4::XMUSHORTN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUShortN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUSHORTN4::XMUSHORTN4
-(
-    const float* pArray
-)
+inline XMUSHORTN4::XMUSHORTN4(const float* pArray) noexcept
 {
     XMStoreUShortN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4220,17 +4070,14 @@ inline XMUSHORT4::XMUSHORT4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUShort4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUSHORT4::XMUSHORT4
-(
-    const float* pArray
-)
+inline XMUSHORT4::XMUSHORT4(const float* pArray) noexcept
 {
     XMStoreUShort4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4249,17 +4096,14 @@ inline XMXDECN4::XMXDECN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreXDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMXDECN4::XMXDECN4
-(
-    const float* pArray
-)
+inline XMXDECN4::XMXDECN4(const float* pArray) noexcept
 {
     XMStoreXDecN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4282,17 +4126,14 @@ inline XMXDEC4::XMXDEC4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreXDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMXDEC4::XMXDEC4
-(
-    const float* pArray
-)
+inline XMXDEC4::XMXDEC4(const float* pArray) noexcept
 {
     XMStoreXDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4311,17 +4152,14 @@ inline XMDECN4::XMDECN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMDECN4::XMDECN4
-(
-    const float* pArray
-)
+inline XMDECN4::XMDECN4(const float* pArray) noexcept
 {
     XMStoreDecN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4340,17 +4178,14 @@ inline XMDEC4::XMDEC4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMDEC4::XMDEC4
-(
-    const float* pArray
-)
+inline XMDEC4::XMDEC4(const float* pArray) noexcept
 {
     XMStoreDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4371,17 +4206,14 @@ inline XMUDECN4::XMUDECN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUDecN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUDECN4::XMUDECN4
-(
-    const float* pArray
-)
+inline XMUDECN4::XMUDECN4(const float* pArray) noexcept
 {
     XMStoreUDecN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4400,17 +4232,14 @@ inline XMUDEC4::XMUDEC4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUDec4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUDEC4::XMUDEC4
-(
-    const float* pArray
-)
+inline XMUDEC4::XMUDEC4(const float* pArray) noexcept
 {
     XMStoreUDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4429,17 +4258,14 @@ inline XMBYTEN4::XMBYTEN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreByteN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMBYTEN4::XMBYTEN4
-(
-    const float* pArray
-)
+inline XMBYTEN4::XMBYTEN4(const float* pArray) noexcept
 {
     XMStoreByteN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4458,17 +4284,14 @@ inline XMBYTE4::XMBYTE4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreByte4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMBYTE4::XMBYTE4
-(
-    const float* pArray
-)
+inline XMBYTE4::XMBYTE4(const float* pArray) noexcept
 {
     XMStoreByte4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4487,17 +4310,14 @@ inline XMUBYTEN4::XMUBYTEN4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUByteN4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUBYTEN4::XMUBYTEN4
-(
-    const float* pArray
-)
+inline XMUBYTEN4::XMUBYTEN4(const float* pArray) noexcept
 {
     XMStoreUByteN4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4516,17 +4336,14 @@ inline XMUBYTE4::XMUBYTE4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUByte4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUBYTE4::XMUBYTE4
-(
-    const float* pArray
-)
+inline XMUBYTE4::XMUBYTE4(const float* pArray) noexcept
 {
     XMStoreUByte4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4545,17 +4362,14 @@ inline XMUNIBBLE4::XMUNIBBLE4
     float _y,
     float _z,
     float _w
-)
+) noexcept
 {
     XMStoreUNibble4(this, XMVectorSet(_x, _y, _z, _w));
 }
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
-inline XMUNIBBLE4::XMUNIBBLE4
-(
-    const float* pArray
-)
+inline XMUNIBBLE4::XMUNIBBLE4(const float* pArray) noexcept
 {
     XMStoreUNibble4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
@@ -4574,7 +4388,7 @@ inline XMU555::XMU555
     float _y,
     float _z,
     bool _w
-)
+) noexcept
 {
     XMStoreU555(this, XMVectorSet(_x, _y, _z, ((_w) ? 1.0f : 0.0f)));
 }
@@ -4585,7 +4399,7 @@ inline XMU555::XMU555
 (
     const float* pArray,
     bool _w
-)
+) noexcept
 {
     XMVECTOR V = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray));
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f)));
