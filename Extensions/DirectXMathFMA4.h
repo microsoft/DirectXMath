@@ -49,17 +49,15 @@ inline bool XMVerifyFMA4Support()
     if ( (CPUInfo[2] & 0x18000000) != 0x18000000 )
         return false;
 
+    // Check for FMA4 (16 bit of ECX register in 8000_0001 function)
+    // https://www.amd.com/system/files/TechDocs/25481.pdf (page 20)
 #ifdef __clang__
-    __cpuid(0x80000000, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+    __cpuid(0x80000001, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
-    __cpuid(CPUInfo, 0x80000000);
+    __cpuid(CPUInfo, 0x80000001);
 #endif
 
-    if ( uint32_t(CPUInfo[0]) < 0x80000001u )
-        return false;
-
-    // We check for FMA4
-    return ( CPUInfo[2] & 0x10000 );
+    return ( CPUInfo[2] & (1<<16) );
 }
 
 
