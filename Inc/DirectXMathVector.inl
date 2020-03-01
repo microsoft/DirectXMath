@@ -43,7 +43,7 @@
 
  //------------------------------------------------------------------------------
  // Return a vector with all elements equaling zero
-inline XMVECTOR XM_CALLCONV XMVectorZero()
+inline XMVECTOR XM_CALLCONV XMVectorZero() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
@@ -63,7 +63,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSet
     float y,
     float z,
     float w
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult = { { { x, y, z, w } } };
@@ -89,7 +89,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetInt
     uint32_t y,
     uint32_t z,
     uint32_t w
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult = { { { x, y, z, w } } };
@@ -106,10 +106,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetInt
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value
-inline XMVECTOR XM_CALLCONV XMVectorReplicate
-(
-    float Value
-)
+inline XMVECTOR XM_CALLCONV XMVectorReplicate(float Value) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -128,10 +125,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicate
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr
-(
-    const float* pValue
-)
+inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr(const float* pValue) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float Value = pValue[0];
@@ -152,10 +146,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value
-inline XMVECTOR XM_CALLCONV XMVectorReplicateInt
-(
-    uint32_t Value
-)
+inline XMVECTOR XM_CALLCONV XMVectorReplicateInt(uint32_t Value) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult;
@@ -175,10 +166,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicateInt
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr
-(
-    const uint32_t* pValue
-)
+inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr(const uint32_t* pValue) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t Value = pValue[0];
@@ -197,7 +185,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr
 
 //------------------------------------------------------------------------------
 // Initialize a vector with all bits set (true mask)
-inline XMVECTOR XM_CALLCONV XMVectorTrueInt()
+inline XMVECTOR XM_CALLCONV XMVectorTrueInt() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult = { { { 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU, 0xFFFFFFFFU } } };
@@ -212,7 +200,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTrueInt()
 
 //------------------------------------------------------------------------------
 // Initialize a vector with all bits clear (false mask)
-inline XMVECTOR XM_CALLCONV XMVectorFalseInt()
+inline XMVECTOR XM_CALLCONV XMVectorFalseInt() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult = { { { 0.0f, 0.0f, 0.0f, 0.0f } } };
@@ -226,10 +214,7 @@ inline XMVECTOR XM_CALLCONV XMVectorFalseInt()
 
 //------------------------------------------------------------------------------
 // Replicate the x component of the vector
-inline XMVECTOR XM_CALLCONV XMVectorSplatX
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSplatX(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -249,10 +234,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatX
 
 //------------------------------------------------------------------------------
 // Replicate the y component of the vector
-inline XMVECTOR XM_CALLCONV XMVectorSplatY
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSplatY(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -270,10 +252,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatY
 
 //------------------------------------------------------------------------------
 // Replicate the z component of the vector
-inline XMVECTOR XM_CALLCONV XMVectorSplatZ
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSplatZ(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -291,10 +270,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatZ
 
 //------------------------------------------------------------------------------
 // Replicate the w component of the vector
-inline XMVECTOR XM_CALLCONV XMVectorSplatW
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSplatW(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -312,7 +288,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatW
 
 //------------------------------------------------------------------------------
 // Return a vector of 1.0f,1.0f,1.0f,1.0f
-inline XMVECTOR XM_CALLCONV XMVectorSplatOne()
+inline XMVECTOR XM_CALLCONV XMVectorSplatOne() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult;
@@ -330,7 +306,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatOne()
 
 //------------------------------------------------------------------------------
 // Return a vector of INF,INF,INF,INF
-inline XMVECTOR XM_CALLCONV XMVectorSplatInfinity()
+inline XMVECTOR XM_CALLCONV XMVectorSplatInfinity() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult;
@@ -348,7 +324,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatInfinity()
 
 //------------------------------------------------------------------------------
 // Return a vector of Q_NAN,Q_NAN,Q_NAN,Q_NAN
-inline XMVECTOR XM_CALLCONV XMVectorSplatQNaN()
+inline XMVECTOR XM_CALLCONV XMVectorSplatQNaN() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult;
@@ -366,7 +342,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatQNaN()
 
 //------------------------------------------------------------------------------
 // Return a vector of 1.192092896e-7f,1.192092896e-7f,1.192092896e-7f,1.192092896e-7f
-inline XMVECTOR XM_CALLCONV XMVectorSplatEpsilon()
+inline XMVECTOR XM_CALLCONV XMVectorSplatEpsilon() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult;
@@ -384,7 +360,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatEpsilon()
 
 //------------------------------------------------------------------------------
 // Return a vector of -0.0f (0x80000000),-0.0f,-0.0f,-0.0f
-inline XMVECTOR XM_CALLCONV XMVectorSplatSignMask()
+inline XMVECTOR XM_CALLCONV XMVectorSplatSignMask() noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 vResult;
@@ -404,7 +380,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatSignMask()
 //------------------------------------------------------------------------------
 // Return a floating point value via an index. This is not a recommended
 // function to use due to performance loss.
-inline float XM_CALLCONV XMVectorGetByIndex(FXMVECTOR V, size_t i)
+inline float XM_CALLCONV XMVectorGetByIndex(FXMVECTOR V, size_t i) noexcept
 {
     assert(i < 4);
     _Analysis_assume_(i < 4);
@@ -419,7 +395,7 @@ inline float XM_CALLCONV XMVectorGetByIndex(FXMVECTOR V, size_t i)
 
 //------------------------------------------------------------------------------
 // Return the X component in an FPU register.
-inline float XM_CALLCONV XMVectorGetX(FXMVECTOR V)
+inline float XM_CALLCONV XMVectorGetX(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[0];
@@ -431,7 +407,7 @@ inline float XM_CALLCONV XMVectorGetX(FXMVECTOR V)
 }
 
 // Return the Y component in an FPU register.
-inline float XM_CALLCONV XMVectorGetY(FXMVECTOR V)
+inline float XM_CALLCONV XMVectorGetY(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[1];
@@ -444,7 +420,7 @@ inline float XM_CALLCONV XMVectorGetY(FXMVECTOR V)
 }
 
 // Return the Z component in an FPU register.
-inline float XM_CALLCONV XMVectorGetZ(FXMVECTOR V)
+inline float XM_CALLCONV XMVectorGetZ(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[2];
@@ -457,7 +433,7 @@ inline float XM_CALLCONV XMVectorGetZ(FXMVECTOR V)
 }
 
 // Return the W component in an FPU register.
-inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V)
+inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_f32[3];
@@ -473,7 +449,7 @@ inline float XM_CALLCONV XMVectorGetW(FXMVECTOR V)
 
 // Store a component indexed by i into a 32 bit float location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetByIndexPtr(float* f, FXMVECTOR V, size_t i)
+inline void XM_CALLCONV XMVectorGetByIndexPtr(float* f, FXMVECTOR V, size_t i) noexcept
 {
     assert(f != nullptr);
     assert(i < 4);
@@ -491,7 +467,7 @@ inline void XM_CALLCONV XMVectorGetByIndexPtr(float* f, FXMVECTOR V, size_t i)
 
 // Store the X component into a 32 bit float location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetXPtr(float* x, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetXPtr(float* x, FXMVECTOR V) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -505,7 +481,7 @@ inline void XM_CALLCONV XMVectorGetXPtr(float* x, FXMVECTOR V)
 
 // Store the Y component into a 32 bit float location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetYPtr(float* y, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetYPtr(float* y, FXMVECTOR V) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -522,7 +498,7 @@ inline void XM_CALLCONV XMVectorGetYPtr(float* y, FXMVECTOR V)
 
 // Store the Z component into a 32 bit float location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetZPtr(float* z, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetZPtr(float* z, FXMVECTOR V) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -539,7 +515,7 @@ inline void XM_CALLCONV XMVectorGetZPtr(float* z, FXMVECTOR V)
 
 // Store the W component into a 32 bit float location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetWPtr(float* w, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetWPtr(float* w, FXMVECTOR V) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -558,7 +534,7 @@ inline void XM_CALLCONV XMVectorGetWPtr(float* w, FXMVECTOR V)
 
 // Return an integer value via an index. This is not a recommended
 // function to use due to performance loss.
-inline uint32_t XM_CALLCONV XMVectorGetIntByIndex(FXMVECTOR V, size_t i)
+inline uint32_t XM_CALLCONV XMVectorGetIntByIndex(FXMVECTOR V, size_t i) noexcept
 {
     assert(i < 4);
     _Analysis_assume_(i < 4);
@@ -574,7 +550,7 @@ inline uint32_t XM_CALLCONV XMVectorGetIntByIndex(FXMVECTOR V, size_t i)
 //------------------------------------------------------------------------------
 
 // Return the X component in an integer register.
-inline uint32_t XM_CALLCONV XMVectorGetIntX(FXMVECTOR V)
+inline uint32_t XM_CALLCONV XMVectorGetIntX(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[0];
@@ -586,7 +562,7 @@ inline uint32_t XM_CALLCONV XMVectorGetIntX(FXMVECTOR V)
 }
 
 // Return the Y component in an integer register.
-inline uint32_t XM_CALLCONV XMVectorGetIntY(FXMVECTOR V)
+inline uint32_t XM_CALLCONV XMVectorGetIntY(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[1];
@@ -602,7 +578,7 @@ inline uint32_t XM_CALLCONV XMVectorGetIntY(FXMVECTOR V)
 }
 
 // Return the Z component in an integer register.
-inline uint32_t XM_CALLCONV XMVectorGetIntZ(FXMVECTOR V)
+inline uint32_t XM_CALLCONV XMVectorGetIntZ(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[2];
@@ -618,7 +594,7 @@ inline uint32_t XM_CALLCONV XMVectorGetIntZ(FXMVECTOR V)
 }
 
 // Return the W component in an integer register.
-inline uint32_t XM_CALLCONV XMVectorGetIntW(FXMVECTOR V)
+inline uint32_t XM_CALLCONV XMVectorGetIntW(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return V.vector4_u32[3];
@@ -637,7 +613,7 @@ inline uint32_t XM_CALLCONV XMVectorGetIntW(FXMVECTOR V)
 
 // Store a component indexed by i into a 32 bit integer location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetIntByIndexPtr(uint32_t* x, FXMVECTOR V, size_t i)
+inline void XM_CALLCONV XMVectorGetIntByIndexPtr(uint32_t* x, FXMVECTOR V, size_t i) noexcept
 {
     assert(x != nullptr);
     assert(i < 4);
@@ -655,7 +631,7 @@ inline void XM_CALLCONV XMVectorGetIntByIndexPtr(uint32_t* x, FXMVECTOR V, size_
 
 // Store the X component into a 32 bit integer location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetIntXPtr(uint32_t* x, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetIntXPtr(uint32_t* x, FXMVECTOR V) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -669,7 +645,7 @@ inline void XM_CALLCONV XMVectorGetIntXPtr(uint32_t* x, FXMVECTOR V)
 
 // Store the Y component into a 32 bit integer location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetIntYPtr(uint32_t* y, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetIntYPtr(uint32_t* y, FXMVECTOR V) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -687,7 +663,7 @@ inline void XM_CALLCONV XMVectorGetIntYPtr(uint32_t* y, FXMVECTOR V)
 
 // Store the Z component into a 32 bit integer locaCantion in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetIntZPtr(uint32_t* z, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetIntZPtr(uint32_t* z, FXMVECTOR V) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -705,7 +681,7 @@ inline void XM_CALLCONV XMVectorGetIntZPtr(uint32_t* z, FXMVECTOR V)
 
 // Store the W component into a 32 bit integer location in memory.
 _Use_decl_annotations_
-inline void XM_CALLCONV XMVectorGetIntWPtr(uint32_t* w, FXMVECTOR V)
+inline void XM_CALLCONV XMVectorGetIntWPtr(uint32_t* w, FXMVECTOR V) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -724,7 +700,7 @@ inline void XM_CALLCONV XMVectorGetIntWPtr(uint32_t* w, FXMVECTOR V)
 //------------------------------------------------------------------------------
 
 // Set a single indexed floating point component
-inline XMVECTOR XM_CALLCONV XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
+inline XMVECTOR XM_CALLCONV XMVectorSetByIndex(FXMVECTOR V, float f, size_t i) noexcept
 {
     assert(i < 4);
     _Analysis_assume_(i < 4);
@@ -737,7 +713,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetByIndex(FXMVECTOR V, float f, size_t i)
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a passed floating point value
-inline XMVECTOR XM_CALLCONV XMVectorSetX(FXMVECTOR V, float x)
+inline XMVECTOR XM_CALLCONV XMVectorSetX(FXMVECTOR V, float x) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 U = { { {
@@ -757,7 +733,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetX(FXMVECTOR V, float x)
 }
 
 // Sets the Y component of a vector to a passed floating point value
-inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
+inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 U = { { {
@@ -786,7 +762,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetY(FXMVECTOR V, float y)
 #endif
 }
 // Sets the Z component of a vector to a passed floating point value
-inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z)
+inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 U = { { {
@@ -816,7 +792,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetZ(FXMVECTOR V, float z)
 }
 
 // Sets the W component of a vector to a passed floating point value
-inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w)
+inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 U = { { {
@@ -849,7 +825,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w)
 
 // Sets a component of a vector to a floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, const float* f, size_t i)
+inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, const float* f, size_t i) noexcept
 {
     assert(f != nullptr);
     assert(i < 4);
@@ -864,7 +840,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, const float* f, s
 
 // Sets the X component of a vector to a floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, const float* x)
+inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, const float* x) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -886,7 +862,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, const float* x)
 
 // Sets the Y component of a vector to a floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, const float* y)
+inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, const float* y) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -914,7 +890,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, const float* y)
 
 // Sets the Z component of a vector to a floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, const float* z)
+inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, const float* z) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -942,7 +918,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, const float* z)
 
 // Sets the W component of a vector to a floating point value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetWPtr(FXMVECTOR V, const float* w)
+inline XMVECTOR XM_CALLCONV XMVectorSetWPtr(FXMVECTOR V, const float* w) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -971,7 +947,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetWPtr(FXMVECTOR V, const float* w)
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer passed by value
-inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_t i)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_t i) noexcept
 {
     assert(i < 4);
     _Analysis_assume_(i < 4);
@@ -984,7 +960,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndex(FXMVECTOR V, uint32_t x, size_
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer passed by value
-inline XMVECTOR XM_CALLCONV XMVectorSetIntX(FXMVECTOR V, uint32_t x)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntX(FXMVECTOR V, uint32_t x) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { {
@@ -1004,7 +980,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntX(FXMVECTOR V, uint32_t x)
 }
 
 // Sets the Y component of a vector to an integer passed by value
-inline XMVECTOR XM_CALLCONV XMVectorSetIntY(FXMVECTOR V, uint32_t y)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntY(FXMVECTOR V, uint32_t y) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { {
@@ -1034,7 +1010,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntY(FXMVECTOR V, uint32_t y)
 }
 
 // Sets the Z component of a vector to an integer passed by value
-inline XMVECTOR XM_CALLCONV XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntZ(FXMVECTOR V, uint32_t z) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { {
@@ -1064,7 +1040,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntZ(FXMVECTOR V, uint32_t z)
 }
 
 // Sets the W component of a vector to an integer passed by value
-inline XMVECTOR XM_CALLCONV XMVectorSetIntW(FXMVECTOR V, uint32_t w)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntW(FXMVECTOR V, uint32_t w) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { {
@@ -1097,7 +1073,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntW(FXMVECTOR V, uint32_t w)
 
 // Sets a component of a vector to an integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t* x, size_t i)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t* x, size_t i) noexcept
 {
     assert(x != nullptr);
     assert(i < 4);
@@ -1112,7 +1088,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t
 
 // Sets the X component of a vector to an integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetIntXPtr(FXMVECTOR V, const uint32_t* x)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntXPtr(FXMVECTOR V, const uint32_t* x) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1134,7 +1110,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntXPtr(FXMVECTOR V, const uint32_t* x)
 
 // Sets the Y component of a vector to an integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t* y)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t* y) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1162,7 +1138,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t* y)
 
 // Sets the Z component of a vector to an integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t* z)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t* z) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1190,7 +1166,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t* z)
 
 // Sets the W component of a vector to an integer value passed by pointer
 _Use_decl_annotations_
-inline XMVECTOR XM_CALLCONV XMVectorSetIntWPtr(FXMVECTOR V, const uint32_t* w)
+inline XMVECTOR XM_CALLCONV XMVectorSetIntWPtr(FXMVECTOR V, const uint32_t* w) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1225,7 +1201,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle
     uint32_t E1,
     uint32_t E2,
     uint32_t E3
-)
+) noexcept
 {
     assert((E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4));
     _Analysis_assume_((E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4));
@@ -1287,7 +1263,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
     uint32_t PermuteY,
     uint32_t PermuteZ,
     uint32_t PermuteW
-)
+) noexcept
 {
     assert(PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7);
     _Analysis_assume_(PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7);
@@ -1380,7 +1356,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSelectControl
     uint32_t VectorIndex1,
     uint32_t VectorIndex2,
     uint32_t VectorIndex3
-)
+) noexcept
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     // x=Index0,y=Index1,z=Index2,w=Index3
@@ -1428,7 +1404,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSelect
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR Control
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1455,7 +1431,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMergeXY
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1480,7 +1456,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMergeZW
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1501,7 +1477,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMergeZW
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2, uint32_t Elements)
+inline XMVECTOR XM_CALLCONV XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2, uint32_t Elements) noexcept
 {
     assert(Elements < 4);
     _Analysis_assume_(Elements < 4);
@@ -1510,7 +1486,7 @@ inline XMVECTOR XM_CALLCONV XMVectorShiftLeft(FXMVECTOR V1, FXMVECTOR V2, uint32
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorRotateLeft(FXMVECTOR V, uint32_t Elements)
+inline XMVECTOR XM_CALLCONV XMVectorRotateLeft(FXMVECTOR V, uint32_t Elements) noexcept
 {
     assert(Elements < 4);
     _Analysis_assume_(Elements < 4);
@@ -1519,7 +1495,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRotateLeft(FXMVECTOR V, uint32_t Elements)
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorRotateRight(FXMVECTOR V, uint32_t Elements)
+inline XMVECTOR XM_CALLCONV XMVectorRotateRight(FXMVECTOR V, uint32_t Elements) noexcept
 {
     assert(Elements < 4);
     _Analysis_assume_(Elements < 4);
@@ -1528,8 +1504,10 @@ inline XMVECTOR XM_CALLCONV XMVectorRotateRight(FXMVECTOR V, uint32_t Elements)
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorInsert(FXMVECTOR VD, FXMVECTOR VS, uint32_t VSLeftRotateElements,
-    uint32_t Select0, uint32_t Select1, uint32_t Select2, uint32_t Select3)
+inline XMVECTOR XM_CALLCONV XMVectorInsert(
+    FXMVECTOR VD, FXMVECTOR VS,
+    uint32_t VSLeftRotateElements,
+    uint32_t Select0, uint32_t Select1, uint32_t Select2, uint32_t Select3) noexcept
 {
     XMVECTOR Control = XMVectorSelectControl(Select0 & 1, Select1 & 1, Select2 & 1, Select3 & 1);
     return XMVectorSelect(VD, XMVectorRotateLeft(VS, VSLeftRotateElements), Control);
@@ -1545,7 +1523,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1572,7 +1550,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEqualR
     uint32_t* pCR,
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     assert(pCR != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1642,7 +1620,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1670,7 +1648,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEqualIntR
     uint32_t* pCR,
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     assert(pCR != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1732,7 +1710,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNearEqual
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR Epsilon
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1775,7 +1753,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNotEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1800,7 +1778,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNotEqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1826,7 +1804,7 @@ inline XMVECTOR XM_CALLCONV XMVectorGreater
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1853,7 +1831,7 @@ inline XMVECTOR XM_CALLCONV XMVectorGreaterR
     uint32_t* pCR,
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     assert(pCR != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -1920,7 +1898,7 @@ inline XMVECTOR XM_CALLCONV XMVectorGreaterOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -1947,7 +1925,7 @@ inline XMVECTOR XM_CALLCONV XMVectorGreaterOrEqualR
     uint32_t* pCR,
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     assert(pCR != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2014,7 +1992,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLess
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2039,7 +2017,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLessOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2064,7 +2042,7 @@ inline XMVECTOR XM_CALLCONV XMVectorInBounds
 (
     FXMVECTOR V,
     FXMVECTOR Bounds
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2107,7 +2085,7 @@ inline XMVECTOR XM_CALLCONV XMVectorInBoundsR
     uint32_t* pCR,
     FXMVECTOR V,
     FXMVECTOR Bounds
-)
+) noexcept
 {
     assert(pCR != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -2176,10 +2154,7 @@ inline XMVECTOR XM_CALLCONV XMVectorInBoundsR
 #pragma float_control(precise, on)
 #endif
 
-inline XMVECTOR XM_CALLCONV XMVectorIsNaN
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorIsNaN(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2208,10 +2183,7 @@ inline XMVECTOR XM_CALLCONV XMVectorIsNaN
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorIsInfinite
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorIsInfinite(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2250,7 +2222,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMin
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2275,7 +2247,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMax
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2324,10 +2296,7 @@ namespace Internal
 #pragma float_control(precise, on)
 #endif
 
-inline XMVECTOR XM_CALLCONV XMVectorRound
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorRound(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2374,10 +2343,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRound
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorTruncate
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorTruncate(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTOR Result;
@@ -2440,10 +2406,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTruncate
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorFloor
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorFloor(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -2494,10 +2457,7 @@ inline XMVECTOR XM_CALLCONV XMVectorFloor
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorCeiling
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorCeiling(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -2553,7 +2513,7 @@ inline XMVECTOR XM_CALLCONV XMVectorClamp
     FXMVECTOR V,
     FXMVECTOR Min,
     FXMVECTOR Max
-)
+) noexcept
 {
     assert(XMVector4LessOrEqual(Min, Max));
 
@@ -2579,10 +2539,7 @@ inline XMVECTOR XM_CALLCONV XMVectorClamp
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSaturate
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSaturate(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2611,7 +2568,7 @@ inline XMVECTOR XM_CALLCONV XMVectorAndInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2636,7 +2593,7 @@ inline XMVECTOR XM_CALLCONV XMVectorAndCInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2662,7 +2619,7 @@ inline XMVECTOR XM_CALLCONV XMVectorOrInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2688,7 +2645,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNorInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2717,7 +2674,7 @@ inline XMVECTOR XM_CALLCONV XMVectorXorInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2743,10 +2700,7 @@ inline XMVECTOR XM_CALLCONV XMVectorXorInt
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorNegate
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorNegate(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2775,7 +2729,7 @@ inline XMVECTOR XM_CALLCONV XMVectorAdd
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2796,10 +2750,7 @@ inline XMVECTOR XM_CALLCONV XMVectorAdd
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSum
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSum(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2838,7 +2789,7 @@ inline XMVECTOR XM_CALLCONV XMVectorAddAngles
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2897,7 +2848,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSubtract
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2922,7 +2873,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSubtractAngles
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -2981,7 +2932,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiply
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3005,7 +2956,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR V3
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3035,7 +2986,7 @@ inline XMVECTOR XM_CALLCONV XMVectorDivide
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3069,7 +3020,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR V3
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3099,7 +3050,7 @@ inline XMVECTOR XM_CALLCONV XMVectorScale
 (
     FXMVECTOR V,
     float    ScaleFactor
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3119,10 +3070,7 @@ inline XMVECTOR XM_CALLCONV XMVectorScale
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorReciprocalEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorReciprocalEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3141,10 +3089,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReciprocalEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorReciprocal
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorReciprocal(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3173,10 +3118,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReciprocal
 
 //------------------------------------------------------------------------------
 // Return an estimated square root
-inline XMVECTOR XM_CALLCONV XMVectorSqrtEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSqrtEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3205,10 +3147,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSqrtEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSqrt
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSqrt(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3243,10 +3182,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSqrt
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrtEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrtEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3265,10 +3201,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrtEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrt
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrt(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -3299,10 +3232,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrt
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorExp2
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorExp2(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -3444,10 +3374,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExp2
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorExpE
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorExpE(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -3596,10 +3523,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExpE
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorExp
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorExp(FXMVECTOR V) noexcept
 {
     return XMVectorExp2(V);
 }
@@ -3763,10 +3687,7 @@ namespace Internal
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorLog2
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorLog2(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -3933,10 +3854,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLog2
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorLogE
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorLogE(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -4105,10 +4023,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLogE
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorLog
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorLog(FXMVECTOR V) noexcept
 {
     return XMVectorLog2(V);
 }
@@ -4119,7 +4034,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPow
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -4155,10 +4070,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPow
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorAbs
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorAbs(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 vResult = { { {
@@ -4184,7 +4096,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMod
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     // V1 % V2 = V1 - V2 * truncate(V1 / V2)
 
@@ -4210,10 +4122,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMod
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorModAngles
-(
-    FXMVECTOR Angles
-)
+inline XMVECTOR XM_CALLCONV XMVectorModAngles(FXMVECTOR Angles) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -4245,10 +4154,7 @@ inline XMVECTOR XM_CALLCONV XMVectorModAngles
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSin
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSin(FXMVECTOR V) noexcept
 {
     // 11-degree minimax approximation
 
@@ -4337,10 +4243,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSin
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorCos
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorCos(FXMVECTOR V) noexcept
 {
     // 10-degree minimax approximation
 
@@ -4439,7 +4342,7 @@ inline void XM_CALLCONV XMVectorSinCos
     XMVECTOR* pSin,
     XMVECTOR* pCos,
     FXMVECTOR V
-)
+) noexcept
 {
     assert(pSin != nullptr);
     assert(pCos != nullptr);
@@ -4586,10 +4489,7 @@ inline void XM_CALLCONV XMVectorSinCos
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorTan
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorTan(FXMVECTOR V) noexcept
 {
     // Cody and Waite algorithm to compute tangent.
 
@@ -4681,10 +4581,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTan
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSinH
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSinH(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -4719,10 +4616,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSinH
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorCosH
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorCosH(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -4755,10 +4649,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCosH
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorTanH
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorTanH(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -4790,10 +4681,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTanH
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorASin
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorASin(FXMVECTOR V) noexcept
 {
     // 7-degree minimax approximation
 
@@ -4898,10 +4786,7 @@ inline XMVECTOR XM_CALLCONV XMVectorASin
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorACos
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorACos(FXMVECTOR V) noexcept
 {
     // 7-degree minimax approximation
 
@@ -5004,10 +4889,7 @@ inline XMVECTOR XM_CALLCONV XMVectorACos
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorATan
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorATan(FXMVECTOR V) noexcept
 {
     // 17-degree minimax approximation
 
@@ -5132,7 +5014,7 @@ inline XMVECTOR XM_CALLCONV XMVectorATan2
 (
     FXMVECTOR Y,
     FXMVECTOR X
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -5201,10 +5083,7 @@ inline XMVECTOR XM_CALLCONV XMVectorATan2
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorSinEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorSinEst(FXMVECTOR V) noexcept
 {
     // 7-degree minimax approximation
 
@@ -5278,10 +5157,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSinEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorCosEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorCosEst(FXMVECTOR V) noexcept
 {
     // 6-degree minimax approximation
 
@@ -5365,7 +5241,7 @@ inline void XM_CALLCONV XMVectorSinCosEst
     XMVECTOR* pSin,
     XMVECTOR* pCos,
     FXMVECTOR  V
-)
+) noexcept
 {
     assert(pSin != nullptr);
     assert(pCos != nullptr);
@@ -5482,10 +5358,7 @@ inline void XM_CALLCONV XMVectorSinCosEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorTanEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorTanEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -5523,10 +5396,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTanEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorASinEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorASinEst(FXMVECTOR V) noexcept
 {
     // 3-degree minimax approximation
 
@@ -5600,10 +5470,7 @@ inline XMVECTOR XM_CALLCONV XMVectorASinEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorACosEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorACosEst(FXMVECTOR V) noexcept
 {
     // 3-degree minimax approximation
 
@@ -5676,10 +5543,7 @@ inline XMVECTOR XM_CALLCONV XMVectorACosEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVectorATanEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVectorATanEst(FXMVECTOR V) noexcept
 {
     // 9-degree minimax approximation
 
@@ -5777,7 +5641,7 @@ inline XMVECTOR XM_CALLCONV XMVectorATan2Est
 (
     FXMVECTOR Y,
     FXMVECTOR X
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORF32 Result = { { {
@@ -5841,7 +5705,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLerp
     FXMVECTOR V0,
     FXMVECTOR V1,
     float    t
-)
+) noexcept
 {
     // V0 + t * (V1 - V0)
 
@@ -5869,7 +5733,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLerpV
     FXMVECTOR V0,
     FXMVECTOR V1,
     FXMVECTOR T
-)
+) noexcept
 {
     // V0 + T * (V1 - V0)
 
@@ -5897,7 +5761,7 @@ inline XMVECTOR XM_CALLCONV XMVectorHermite
     FXMVECTOR Position1,
     GXMVECTOR Tangent1,
     float    t
-)
+) noexcept
 {
     // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
     //          (t^3 - 2 * t^2 + t) * Tangent0 +
@@ -5964,7 +5828,7 @@ inline XMVECTOR XM_CALLCONV XMVectorHermiteV
     FXMVECTOR Position1,
     GXMVECTOR Tangent1,
     HXMVECTOR T
-)
+) noexcept
 {
     // Result = (2 * t^3 - 3 * t^2 + 1) * Position0 +
     //          (t^3 - 2 * t^2 + t) * Tangent0 +
@@ -6060,7 +5924,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRom
     FXMVECTOR Position2,
     GXMVECTOR Position3,
     float    t
-)
+) noexcept
 {
     // Result = ((-t^3 + 2 * t^2 - t) * Position0 +
     //           (3 * t^3 - 5 * t^2 + 2) * Position1 +
@@ -6128,7 +5992,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRomV
     FXMVECTOR Position2,
     GXMVECTOR Position3,
     HXMVECTOR T
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float fx = T.vector4_f32[0];
@@ -6232,7 +6096,7 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentric
     FXMVECTOR Position2,
     float    f,
     float    g
-)
+) noexcept
 {
     // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
 
@@ -6276,7 +6140,7 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentricV
     FXMVECTOR Position2,
     GXMVECTOR F,
     HXMVECTOR G
-)
+) noexcept
 {
     // Result = Position0 + f * (Position1 - Position0) + g * (Position2 - Position0)
 
@@ -6322,7 +6186,7 @@ inline bool XM_CALLCONV XMVector2Equal
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1])) != 0);
@@ -6343,7 +6207,7 @@ inline uint32_t XM_CALLCONV XMVector2EqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6396,7 +6260,7 @@ inline bool XM_CALLCONV XMVector2EqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1])) != 0);
@@ -6415,7 +6279,7 @@ inline uint32_t XM_CALLCONV XMVector2EqualIntR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6468,7 +6332,7 @@ inline bool XM_CALLCONV XMVector2NearEqual
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR Epsilon
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float dx = fabsf(V1.vector4_f32[0] - V2.vector4_f32[0]);
@@ -6499,7 +6363,7 @@ inline bool XM_CALLCONV XMVector2NotEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1])) != 0);
@@ -6519,7 +6383,7 @@ inline bool XM_CALLCONV XMVector2NotEqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1])) != 0);
@@ -6538,7 +6402,7 @@ inline bool XM_CALLCONV XMVector2Greater
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1])) != 0);
@@ -6558,7 +6422,7 @@ inline uint32_t XM_CALLCONV XMVector2GreaterR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6610,7 +6474,7 @@ inline bool XM_CALLCONV XMVector2GreaterOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1])) != 0);
@@ -6629,7 +6493,7 @@ inline uint32_t XM_CALLCONV XMVector2GreaterOrEqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6681,7 +6545,7 @@ inline bool XM_CALLCONV XMVector2Less
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1])) != 0);
@@ -6700,7 +6564,7 @@ inline bool XM_CALLCONV XMVector2LessOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1])) != 0);
@@ -6719,7 +6583,7 @@ inline bool XM_CALLCONV XMVector2InBounds
 (
     FXMVECTOR V,
     FXMVECTOR Bounds
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) &&
@@ -6758,10 +6622,7 @@ inline bool XM_CALLCONV XMVector2InBounds
 #pragma float_control(precise, on)
 #endif
 
-inline bool XM_CALLCONV XMVector2IsNaN
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector2IsNaN(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (XMISNAN(V.vector4_f32[0]) ||
@@ -6786,10 +6647,7 @@ inline bool XM_CALLCONV XMVector2IsNaN
 
 //------------------------------------------------------------------------------
 
-inline bool XM_CALLCONV XMVector2IsInfinite
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector2IsInfinite(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6822,7 +6680,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Dot
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6863,7 +6721,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Cross
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     // [ V1.x*V2.y - V1.y*V2.x, V1.x*V2.y - V1.y*V2.x ]
 
@@ -6899,20 +6757,14 @@ inline XMVECTOR XM_CALLCONV XMVector2Cross
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2LengthSq
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2LengthSq(FXMVECTOR V) noexcept
 {
     return XMVector2Dot(V, V);
 }
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -6953,10 +6805,7 @@ inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLength
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLength(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7006,10 +6855,7 @@ inline XMVECTOR XM_CALLCONV XMVector2ReciprocalLength
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2LengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2LengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7054,10 +6900,7 @@ inline XMVECTOR XM_CALLCONV XMVector2LengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2Length
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2Length(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7110,10 +6953,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Length
 // XMVector2NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
-inline XMVECTOR XM_CALLCONV XMVector2NormalizeEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2NormalizeEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7159,10 +6999,7 @@ inline XMVECTOR XM_CALLCONV XMVector2NormalizeEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2Normalize
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2Normalize(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7278,7 +7115,7 @@ inline XMVECTOR XM_CALLCONV XMVector2ClampLength
     FXMVECTOR V,
     float    LengthMin,
     float    LengthMax
-)
+) noexcept
 {
     XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
     XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
@@ -7292,7 +7129,7 @@ inline XMVECTOR XM_CALLCONV XMVector2ClampLengthV
     FXMVECTOR V,
     FXMVECTOR LengthMin,
     FXMVECTOR LengthMax
-)
+) noexcept
 {
     assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)));
     assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)));
@@ -7338,7 +7175,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Reflect
 (
     FXMVECTOR Incident,
     FXMVECTOR Normal
-)
+) noexcept
 {
     // Result = Incident - (2 * dot(Incident, Normal)) * Normal
 
@@ -7356,7 +7193,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Refract
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     float    RefractionIndex
-)
+) noexcept
 {
     XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector2RefractV(Incident, Normal, Index);
@@ -7370,7 +7207,7 @@ inline XMVECTOR XM_CALLCONV XMVector2RefractV
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     FXMVECTOR RefractionIndex
-)
+) noexcept
 {
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) +
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -7463,10 +7300,7 @@ inline XMVECTOR XM_CALLCONV XMVector2RefractV
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector2Orthogonal
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector2Orthogonal(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7498,7 +7332,7 @@ inline XMVECTOR XM_CALLCONV XMVector2AngleBetweenNormalsEst
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector2Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
@@ -7512,7 +7346,7 @@ inline XMVECTOR XM_CALLCONV XMVector2AngleBetweenNormals
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector2Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne, g_XMOne);
@@ -7526,7 +7360,7 @@ inline XMVECTOR XM_CALLCONV XMVector2AngleBetweenVectors
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     XMVECTOR L1 = XMVector2ReciprocalLength(V1);
     XMVECTOR L2 = XMVector2ReciprocalLength(V2);
@@ -7548,7 +7382,7 @@ inline XMVECTOR XM_CALLCONV XMVector2LinePointDistance
     FXMVECTOR LinePoint1,
     FXMVECTOR LinePoint2,
     FXMVECTOR Point
-)
+) noexcept
 {
     // Given a vector PointVector from LinePoint1 to Point and a vector
     // LineVector from LinePoint1 to LinePoint2, the scaled distance
@@ -7579,7 +7413,7 @@ inline XMVECTOR XM_CALLCONV XMVector2IntersectLine
     FXMVECTOR Line1Point2,
     FXMVECTOR Line2Point1,
     GXMVECTOR Line2Point2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
@@ -7655,7 +7489,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Transform
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -7693,7 +7527,7 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -7970,7 +7804,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
     XMVECTOR Y = XMVectorSplatY(V);
     XMVECTOR X = XMVectorSplatX(V);
@@ -7993,7 +7827,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -8348,7 +8182,7 @@ inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -8385,7 +8219,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -8664,7 +8498,7 @@ inline bool XM_CALLCONV XMVector3Equal
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2])) != 0);
@@ -8685,7 +8519,7 @@ inline uint32_t XM_CALLCONV XMVector3EqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -8740,7 +8574,7 @@ inline bool XM_CALLCONV XMVector3EqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2])) != 0);
@@ -8761,7 +8595,7 @@ inline uint32_t XM_CALLCONV XMVector3EqualIntR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -8817,7 +8651,7 @@ inline bool XM_CALLCONV XMVector3NearEqual
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR Epsilon
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float dx, dy, dz;
@@ -8853,7 +8687,7 @@ inline bool XM_CALLCONV XMVector3NotEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2])) != 0);
@@ -8874,7 +8708,7 @@ inline bool XM_CALLCONV XMVector3NotEqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2])) != 0);
@@ -8895,7 +8729,7 @@ inline bool XM_CALLCONV XMVector3Greater
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2])) != 0);
@@ -8916,7 +8750,7 @@ inline uint32_t XM_CALLCONV XMVector3GreaterR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -8972,7 +8806,7 @@ inline bool XM_CALLCONV XMVector3GreaterOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2])) != 0);
@@ -8993,7 +8827,7 @@ inline uint32_t XM_CALLCONV XMVector3GreaterOrEqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9050,7 +8884,7 @@ inline bool XM_CALLCONV XMVector3Less
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2])) != 0);
@@ -9071,7 +8905,7 @@ inline bool XM_CALLCONV XMVector3LessOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2])) != 0);
@@ -9092,7 +8926,7 @@ inline bool XM_CALLCONV XMVector3InBounds
 (
     FXMVECTOR V,
     FXMVECTOR Bounds
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) &&
@@ -9134,10 +8968,7 @@ inline bool XM_CALLCONV XMVector3InBounds
 #pragma float_control(precise, on)
 #endif
 
-inline bool XM_CALLCONV XMVector3IsNaN
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector3IsNaN(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9166,10 +8997,7 @@ inline bool XM_CALLCONV XMVector3IsNaN
 
 //------------------------------------------------------------------------------
 
-inline bool XM_CALLCONV XMVector3IsInfinite
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector3IsInfinite(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (XMISINF(V.vector4_f32[0]) ||
@@ -9204,7 +9032,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Dot
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float fValue = V1.vector4_f32[0] * V2.vector4_f32[0] + V1.vector4_f32[1] * V2.vector4_f32[1] + V1.vector4_f32[2] * V2.vector4_f32[2];
@@ -9251,7 +9079,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Cross
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     // [ V1.y*V2.z - V1.z*V2.y, V1.z*V2.x - V1.x*V2.z, V1.x*V2.y - V1.y*V2.x ]
 
@@ -9299,20 +9127,14 @@ inline XMVECTOR XM_CALLCONV XMVector3Cross
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3LengthSq
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3LengthSq(FXMVECTOR V) noexcept
 {
     return XMVector3Dot(V, V);
 }
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9365,10 +9187,7 @@ inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLength
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLength(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9431,10 +9250,7 @@ inline XMVECTOR XM_CALLCONV XMVector3ReciprocalLength
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3LengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3LengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9491,10 +9307,7 @@ inline XMVECTOR XM_CALLCONV XMVector3LengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3Length
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3Length(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9559,10 +9372,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Length
 // XMVector3NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
-inline XMVECTOR XM_CALLCONV XMVector3NormalizeEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3NormalizeEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -9618,10 +9428,7 @@ inline XMVECTOR XM_CALLCONV XMVector3NormalizeEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3Normalize
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3Normalize(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float fLength;
@@ -9744,7 +9551,7 @@ inline XMVECTOR XM_CALLCONV XMVector3ClampLength
     FXMVECTOR V,
     float    LengthMin,
     float    LengthMax
-)
+) noexcept
 {
     XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
     XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
@@ -9759,7 +9566,7 @@ inline XMVECTOR XM_CALLCONV XMVector3ClampLengthV
     FXMVECTOR V,
     FXMVECTOR LengthMin,
     FXMVECTOR LengthMax
-)
+) noexcept
 {
     assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)));
     assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)));
@@ -9805,7 +9612,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Reflect
 (
     FXMVECTOR Incident,
     FXMVECTOR Normal
-)
+) noexcept
 {
     // Result = Incident - (2 * dot(Incident, Normal)) * Normal
 
@@ -9823,7 +9630,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Refract
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     float    RefractionIndex
-)
+) noexcept
 {
     XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector3RefractV(Incident, Normal, Index);
@@ -9836,7 +9643,7 @@ inline XMVECTOR XM_CALLCONV XMVector3RefractV
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     FXMVECTOR RefractionIndex
-)
+) noexcept
 {
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) +
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -9938,10 +9745,7 @@ inline XMVECTOR XM_CALLCONV XMVector3RefractV
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector3Orthogonal
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector3Orthogonal(FXMVECTOR V) noexcept
 {
     XMVECTOR Zero = XMVectorZero();
     XMVECTOR Z = XMVectorSplatZ(V);
@@ -9969,7 +9773,7 @@ inline XMVECTOR XM_CALLCONV XMVector3AngleBetweenNormalsEst
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector3Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
@@ -9983,7 +9787,7 @@ inline XMVECTOR XM_CALLCONV XMVector3AngleBetweenNormals
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector3Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
@@ -9997,7 +9801,7 @@ inline XMVECTOR XM_CALLCONV XMVector3AngleBetweenVectors
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     XMVECTOR L1 = XMVector3ReciprocalLength(V1);
     XMVECTOR L2 = XMVector3ReciprocalLength(V2);
@@ -10019,7 +9823,7 @@ inline XMVECTOR XM_CALLCONV XMVector3LinePointDistance
     FXMVECTOR LinePoint1,
     FXMVECTOR LinePoint2,
     FXMVECTOR Point
-)
+) noexcept
 {
     // Given a vector PointVector from LinePoint1 to Point and a vector
     // LineVector from LinePoint1 to LinePoint2, the scaled distance
@@ -10051,7 +9855,7 @@ inline void XM_CALLCONV XMVector3ComponentsFromNormal
     XMVECTOR* pPerpendicular,
     FXMVECTOR  V,
     FXMVECTOR  Normal
-)
+) noexcept
 {
     assert(pParallel != nullptr);
     assert(pPerpendicular != nullptr);
@@ -10071,7 +9875,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Rotate
 (
     FXMVECTOR V,
     FXMVECTOR RotationQuaternion
-)
+) noexcept
 {
     XMVECTOR A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
     XMVECTOR Q = XMQuaternionConjugate(RotationQuaternion);
@@ -10086,7 +9890,7 @@ inline XMVECTOR XM_CALLCONV XMVector3InverseRotate
 (
     FXMVECTOR V,
     FXMVECTOR RotationQuaternion
-)
+) noexcept
 {
     XMVECTOR A = XMVectorSelect(g_XMSelect1110.v, V, g_XMSelect1110.v);
     XMVECTOR Result = XMQuaternionMultiply(RotationQuaternion, A);
@@ -10100,7 +9904,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Transform
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -10149,7 +9953,7 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -10502,7 +10306,7 @@ inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
     XMVECTOR Z = XMVectorSplatZ(V);
     XMVECTOR Y = XMVectorSplatY(V);
@@ -10532,7 +10336,7 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -11014,7 +10818,7 @@ inline XMVECTOR XM_CALLCONV XMVector3TransformNormal
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -11062,7 +10866,7 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -11450,7 +11254,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Project
     FXMMATRIX Projection,
     CXMMATRIX View,
     CXMMATRIX World
-)
+) noexcept
 {
     const float HalfViewportWidth = ViewportWidth * 0.5f;
     const float HalfViewportHeight = ViewportHeight * 0.5f;
@@ -11492,7 +11296,7 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
     FXMMATRIX     Projection,
     CXMMATRIX     View,
     CXMMATRIX     World
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -12033,7 +11837,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Unproject
     FXMMATRIX Projection,
     CXMMATRIX View,
     CXMMATRIX World
-)
+) noexcept
 {
     static const XMVECTORF32 D = { { { -1.0f, 1.0f, 0.0f, 0.0f } } };
 
@@ -12075,7 +11879,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
     float           ViewportMaxZ,
     FXMMATRIX       Projection,
     CXMMATRIX       View,
-    CXMMATRIX       World)
+    CXMMATRIX       World
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -12640,7 +12445,7 @@ inline bool XM_CALLCONV XMVector4Equal
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] == V2.vector4_f32[0]) && (V1.vector4_f32[1] == V2.vector4_f32[1]) && (V1.vector4_f32[2] == V2.vector4_f32[2]) && (V1.vector4_f32[3] == V2.vector4_f32[3])) != 0);
@@ -12663,7 +12468,7 @@ inline uint32_t XM_CALLCONV XMVector4EqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -12723,7 +12528,7 @@ inline bool XM_CALLCONV XMVector4EqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] == V2.vector4_u32[0]) && (V1.vector4_u32[1] == V2.vector4_u32[1]) && (V1.vector4_u32[2] == V2.vector4_u32[2]) && (V1.vector4_u32[3] == V2.vector4_u32[3])) != 0);
@@ -12746,7 +12551,7 @@ inline uint32_t XM_CALLCONV XMVector4EqualIntR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -12803,7 +12608,7 @@ inline bool XM_CALLCONV XMVector4NearEqual
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR Epsilon
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float dx, dy, dz, dw;
@@ -12840,7 +12645,7 @@ inline bool XM_CALLCONV XMVector4NotEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] != V2.vector4_f32[0]) || (V1.vector4_f32[1] != V2.vector4_f32[1]) || (V1.vector4_f32[2] != V2.vector4_f32[2]) || (V1.vector4_f32[3] != V2.vector4_f32[3])) != 0);
@@ -12863,7 +12668,7 @@ inline bool XM_CALLCONV XMVector4NotEqualInt
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_u32[0] != V2.vector4_u32[0]) || (V1.vector4_u32[1] != V2.vector4_u32[1]) || (V1.vector4_u32[2] != V2.vector4_u32[2]) || (V1.vector4_u32[3] != V2.vector4_u32[3])) != 0);
@@ -12886,7 +12691,7 @@ inline bool XM_CALLCONV XMVector4Greater
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] > V2.vector4_f32[0]) && (V1.vector4_f32[1] > V2.vector4_f32[1]) && (V1.vector4_f32[2] > V2.vector4_f32[2]) && (V1.vector4_f32[3] > V2.vector4_f32[3])) != 0);
@@ -12909,7 +12714,7 @@ inline uint32_t XM_CALLCONV XMVector4GreaterR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -12967,7 +12772,7 @@ inline bool XM_CALLCONV XMVector4GreaterOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] >= V2.vector4_f32[0]) && (V1.vector4_f32[1] >= V2.vector4_f32[1]) && (V1.vector4_f32[2] >= V2.vector4_f32[2]) && (V1.vector4_f32[3] >= V2.vector4_f32[3])) != 0);
@@ -12990,7 +12795,7 @@ inline uint32_t XM_CALLCONV XMVector4GreaterOrEqualR
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t CR = 0;
@@ -13048,7 +12853,7 @@ inline bool XM_CALLCONV XMVector4Less
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] < V2.vector4_f32[0]) && (V1.vector4_f32[1] < V2.vector4_f32[1]) && (V1.vector4_f32[2] < V2.vector4_f32[2]) && (V1.vector4_f32[3] < V2.vector4_f32[3])) != 0);
@@ -13071,7 +12876,7 @@ inline bool XM_CALLCONV XMVector4LessOrEqual
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V1.vector4_f32[0] <= V2.vector4_f32[0]) && (V1.vector4_f32[1] <= V2.vector4_f32[1]) && (V1.vector4_f32[2] <= V2.vector4_f32[2]) && (V1.vector4_f32[3] <= V2.vector4_f32[3])) != 0);
@@ -13094,7 +12899,7 @@ inline bool XM_CALLCONV XMVector4InBounds
 (
     FXMVECTOR V,
     FXMVECTOR Bounds
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (((V.vector4_f32[0] <= Bounds.vector4_f32[0] && V.vector4_f32[0] >= -Bounds.vector4_f32[0]) &&
@@ -13137,10 +12942,7 @@ inline bool XM_CALLCONV XMVector4InBounds
 #pragma float_control(precise, on)
 #endif
 
-inline bool XM_CALLCONV XMVector4IsNaN
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector4IsNaN(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     return (XMISNAN(V.vector4_f32[0]) ||
@@ -13168,10 +12970,7 @@ inline bool XM_CALLCONV XMVector4IsNaN
 
 //------------------------------------------------------------------------------
 
-inline bool XM_CALLCONV XMVector4IsInfinite
-(
-    FXMVECTOR V
-)
+inline bool XM_CALLCONV XMVector4IsInfinite(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13209,7 +13008,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Dot
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13251,7 +13050,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Cross
     FXMVECTOR V1,
     FXMVECTOR V2,
     FXMVECTOR V3
-)
+) noexcept
 {
     // [ ((v2.z*v3.w-v2.w*v3.z)*v1.y)-((v2.y*v3.w-v2.w*v3.y)*v1.z)+((v2.y*v3.z-v2.z*v3.y)*v1.w),
     //   ((v2.w*v3.z-v2.z*v3.w)*v1.x)-((v2.w*v3.x-v2.x*v3.w)*v1.z)+((v2.z*v3.x-v2.x*v3.z)*v1.w),
@@ -13396,20 +13195,14 @@ inline XMVECTOR XM_CALLCONV XMVector4Cross
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4LengthSq
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4LengthSq(FXMVECTOR V) noexcept
 {
     return XMVector4Dot(V, V);
 }
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13462,10 +13255,7 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLength
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLength(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13528,10 +13318,7 @@ inline XMVECTOR XM_CALLCONV XMVector4ReciprocalLength
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4LengthEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4LengthEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13588,10 +13375,7 @@ inline XMVECTOR XM_CALLCONV XMVector4LengthEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4Length
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4Length(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13656,10 +13440,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Length
 // XMVector4NormalizeEst uses a reciprocal estimate and
 // returns QNaN on zero and infinite vectors.
 
-inline XMVECTOR XM_CALLCONV XMVector4NormalizeEst
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4NormalizeEst(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -13715,10 +13496,7 @@ inline XMVECTOR XM_CALLCONV XMVector4NormalizeEst
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4Normalize
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4Normalize(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float fLength;
@@ -13846,7 +13624,7 @@ inline XMVECTOR XM_CALLCONV XMVector4ClampLength
     FXMVECTOR V,
     float    LengthMin,
     float    LengthMax
-)
+) noexcept
 {
     XMVECTOR ClampMax = XMVectorReplicate(LengthMax);
     XMVECTOR ClampMin = XMVectorReplicate(LengthMin);
@@ -13861,7 +13639,7 @@ inline XMVECTOR XM_CALLCONV XMVector4ClampLengthV
     FXMVECTOR V,
     FXMVECTOR LengthMin,
     FXMVECTOR LengthMax
-)
+) noexcept
 {
     assert((XMVectorGetY(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetZ(LengthMin) == XMVectorGetX(LengthMin)) && (XMVectorGetW(LengthMin) == XMVectorGetX(LengthMin)));
     assert((XMVectorGetY(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetZ(LengthMax) == XMVectorGetX(LengthMax)) && (XMVectorGetW(LengthMax) == XMVectorGetX(LengthMax)));
@@ -13907,7 +13685,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Reflect
 (
     FXMVECTOR Incident,
     FXMVECTOR Normal
-)
+) noexcept
 {
     // Result = Incident - (2 * dot(Incident, Normal)) * Normal
 
@@ -13925,7 +13703,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Refract
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     float    RefractionIndex
-)
+) noexcept
 {
     XMVECTOR Index = XMVectorReplicate(RefractionIndex);
     return XMVector4RefractV(Incident, Normal, Index);
@@ -13938,7 +13716,7 @@ inline XMVECTOR XM_CALLCONV XMVector4RefractV
     FXMVECTOR Incident,
     FXMVECTOR Normal,
     FXMVECTOR RefractionIndex
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -14043,10 +13821,7 @@ inline XMVECTOR XM_CALLCONV XMVector4RefractV
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV XMVector4Orthogonal
-(
-    FXMVECTOR V
-)
+inline XMVECTOR XM_CALLCONV XMVector4Orthogonal(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -14077,7 +13852,7 @@ inline XMVECTOR XM_CALLCONV XMVector4AngleBetweenNormalsEst
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector4Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
@@ -14091,7 +13866,7 @@ inline XMVECTOR XM_CALLCONV XMVector4AngleBetweenNormals
 (
     FXMVECTOR N1,
     FXMVECTOR N2
-)
+) noexcept
 {
     XMVECTOR Result = XMVector4Dot(N1, N2);
     Result = XMVectorClamp(Result, g_XMNegativeOne.v, g_XMOne.v);
@@ -14105,7 +13880,7 @@ inline XMVECTOR XM_CALLCONV XMVector4AngleBetweenVectors
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-)
+) noexcept
 {
     XMVECTOR L1 = XMVector4ReciprocalLength(V1);
     XMVECTOR L2 = XMVector4ReciprocalLength(V2);
@@ -14126,7 +13901,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Transform
 (
     FXMVECTOR V,
     FXMMATRIX M
-)
+) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
 
@@ -14173,7 +13948,7 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
     size_t          InputStride,
     size_t          VectorCount,
     FXMMATRIX       M
-)
+) noexcept
 {
     assert(pOutputStream != nullptr);
     assert(pInputStream != nullptr);
@@ -14458,14 +14233,14 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
 
  //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV operator+ (FXMVECTOR V)
+inline XMVECTOR XM_CALLCONV operator+ (FXMVECTOR V) noexcept
 {
     return V;
 }
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV operator- (FXMVECTOR V)
+inline XMVECTOR XM_CALLCONV operator- (FXMVECTOR V) noexcept
 {
     return XMVectorNegate(V);
 }
@@ -14476,7 +14251,7 @@ inline XMVECTOR& XM_CALLCONV operator+=
 (
     XMVECTOR& V1,
     FXMVECTOR       V2
-    )
+) noexcept
 {
     V1 = XMVectorAdd(V1, V2);
     return V1;
@@ -14488,7 +14263,7 @@ inline XMVECTOR& XM_CALLCONV operator-=
 (
     XMVECTOR& V1,
     FXMVECTOR       V2
-    )
+) noexcept
 {
     V1 = XMVectorSubtract(V1, V2);
     return V1;
@@ -14500,7 +14275,7 @@ inline XMVECTOR& XM_CALLCONV operator*=
 (
     XMVECTOR& V1,
     FXMVECTOR       V2
-    )
+) noexcept
 {
     V1 = XMVectorMultiply(V1, V2);
     return V1;
@@ -14512,7 +14287,7 @@ inline XMVECTOR& XM_CALLCONV operator/=
 (
     XMVECTOR& V1,
     FXMVECTOR       V2
-    )
+) noexcept
 {
     V1 = XMVectorDivide(V1, V2);
     return V1;
@@ -14524,7 +14299,7 @@ inline XMVECTOR& operator*=
 (
     XMVECTOR& V,
     const float S
-    )
+) noexcept
 {
     V = XMVectorScale(V, S);
     return V;
@@ -14536,7 +14311,7 @@ inline XMVECTOR& operator/=
 (
     XMVECTOR& V,
     const float S
-    )
+) noexcept
 {
     XMVECTOR vS = XMVectorReplicate(S);
     V = XMVectorDivide(V, vS);
@@ -14549,7 +14324,7 @@ inline XMVECTOR XM_CALLCONV operator+
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-    )
+) noexcept
 {
     return XMVectorAdd(V1, V2);
 }
@@ -14560,7 +14335,7 @@ inline XMVECTOR XM_CALLCONV operator-
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-    )
+) noexcept
 {
     return XMVectorSubtract(V1, V2);
 }
@@ -14571,7 +14346,7 @@ inline XMVECTOR XM_CALLCONV operator*
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-    )
+) noexcept
 {
     return XMVectorMultiply(V1, V2);
 }
@@ -14582,7 +14357,7 @@ inline XMVECTOR XM_CALLCONV operator/
 (
     FXMVECTOR V1,
     FXMVECTOR V2
-    )
+) noexcept
 {
     return XMVectorDivide(V1, V2);
 }
@@ -14593,7 +14368,7 @@ inline XMVECTOR XM_CALLCONV operator*
 (
     FXMVECTOR      V,
     const float    S
-    )
+) noexcept
 {
     return XMVectorScale(V, S);
 }
@@ -14604,7 +14379,7 @@ inline XMVECTOR XM_CALLCONV operator/
 (
     FXMVECTOR      V,
     const float    S
-    )
+) noexcept
 {
     XMVECTOR vS = XMVectorReplicate(S);
     return XMVectorDivide(V, vS);
@@ -14616,7 +14391,7 @@ inline XMVECTOR XM_CALLCONV operator*
 (
     float           S,
     FXMVECTOR       V
-    )
+) noexcept
 {
     return XMVectorScale(V, S);
 }
