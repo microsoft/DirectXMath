@@ -59,6 +59,12 @@ inline bool XMVerifyFMA4Support()
         return false;
 
     // We check for FMA4
+#ifdef __clang__
+    __cpuid(0x80000001, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#else
+    __cpuid(CPUInfo, 0x80000001);
+#endif
+
     return ( CPUInfo[2] & 0x10000 );
 }
 
