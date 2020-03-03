@@ -2091,3 +2091,4 @@ inline void XM_CALLCONV XMStoreFloat4x4A
     _mm_store_ps(&pDestination->_41, M.r[3]);
 #endif
 }
+

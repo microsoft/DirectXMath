@@ -2434,3 +2434,4 @@ inline float XMScalarACosEst(float Value) noexcept
     // acos(x) = pi - acos(-x) when x < 0
     return (nonnegative ? result : XM_PI - result);
 }
+

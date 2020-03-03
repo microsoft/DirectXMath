@@ -24,6 +24,12 @@ namespace DirectX
         // C4324: alignment padding warnings
         // C4996: deprecation warnings
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#pragma clang diagnostic ignored "-Wnested-anon-types"
+#endif
+
         //------------------------------------------------------------------------------
         // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
         // a 32 bit integer.  The normalized color is packed into 32 bits using 8 bit
@@ -1038,6 +1044,10 @@ namespace DirectX
 
             XMU555& operator= (uint16_t Packed) noexcept { v = Packed; return *this; }
         };
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #pragma warning(pop)
 

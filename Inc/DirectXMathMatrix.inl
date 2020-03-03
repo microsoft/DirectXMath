@@ -3270,3 +3270,4 @@ inline XMFLOAT4X4::XMFLOAT4X4(const float* pArray) noexcept
     m[3][2] = pArray[14];
     m[3][3] = pArray[15];
 }
+

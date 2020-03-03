@@ -731,6 +731,12 @@ namespace DirectX
         explicit XMUINT4(_In_reads_(4) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
     };
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#pragma clang diagnostic ignored "-Wnested-anon-types"
+#endif
+
     //------------------------------------------------------------------------------
     // 3x3 Matrix: 32 bit floating point components
     struct XMFLOAT3X3
@@ -936,6 +942,10 @@ namespace DirectX
     };
 
     ////////////////////////////////////////////////////////////////////////////////
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #ifdef _PREFAST_
 #pragma prefast(pop)
