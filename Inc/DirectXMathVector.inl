@@ -3303,6 +3303,16 @@ inline XMVECTOR XM_CALLCONV XMVectorExp2(FXMVECTOR V) noexcept
     __m128i itrunc = _mm_cvttps_epi32(V);
     __m128 ftrunc = _mm_cvtepi32_ps(itrunc);
     __m128 y = _mm_sub_ps(V, ftrunc);
+
+#ifdef _XM_FMA3_INTRINSICS_
+    __m128 poly = _mm_fmadd_ps(g_XMExpEst7, y, g_XMExpEst6);
+    poly = _mm_fmadd_ps(poly, y, g_XMExpEst5);
+    poly = _mm_fmadd_ps(poly, y, g_XMExpEst4);
+    poly = _mm_fmadd_ps(poly, y, g_XMExpEst3);
+    poly = _mm_fmadd_ps(poly, y, g_XMExpEst2);
+    poly = _mm_fmadd_ps(poly, y, g_XMExpEst1);
+    poly = _mm_fmadd_ps(poly, y, g_XMOne);
+#else
     __m128 poly = _mm_mul_ps(g_XMExpEst7, y);
     poly = _mm_add_ps(g_XMExpEst6, poly);
     poly = _mm_mul_ps(poly, y);
@@ -3317,6 +3327,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExp2(FXMVECTOR V) noexcept
     poly = _mm_add_ps(g_XMExpEst1, poly);
     poly = _mm_mul_ps(poly, y);
     poly = _mm_add_ps(g_XMOne, poly);
+#endif
 
     __m128i biased = _mm_add_epi32(itrunc, g_XMExponentBias);
     biased = _mm_slli_epi32(biased, 23);
@@ -3394,7 +3405,6 @@ inline XMVECTOR XM_CALLCONV XMVectorExpE(FXMVECTOR V) noexcept
     int32x4_t itrunc = vcvtq_s32_f32(Ve);
     float32x4_t ftrunc = vcvtq_f32_s32(itrunc);
     float32x4_t y = vsubq_f32(Ve, ftrunc);
-
 
     float32x4_t poly = vmlaq_f32(g_XMExpEst6, g_XMExpEst7, y);
     poly = vmlaq_f32(g_XMExpEst5, poly, y);
@@ -4115,6 +4125,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMod
     XMVECTOR vResult = XMVectorDivide(V1, V2);
     vResult = XMVectorTruncate(vResult);
     return vmlsq_f32(V1, vResult, V2);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_div_ps(V1, V2);
     vResult = XMVectorTruncate(vResult);
@@ -4145,6 +4156,7 @@ inline XMVECTOR XM_CALLCONV XMVectorModAngles(FXMVECTOR Angles) noexcept
     // Use the inline function due to complexity for rounding
     vResult = XMVectorRound(vResult);
     return vmlsq_f32(Angles, vResult, g_XMTwoPi);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Modulo the range of the given angles such that -XM_PI <= Angles < XM_PI
     XMVECTOR vResult = _mm_mul_ps(Angles, g_XMReciprocalTwoPi);
@@ -6181,7 +6193,13 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentric
     XMVECTOR R2 = vsubq_f32(Position2, Position0);
     R1 = vmlaq_n_f32(Position0, R1, f);
     return vmlaq_n_f32(R1, R2, g);
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
+    XMVECTOR R2 = _mm_sub_ps(Position2, Position0);
+    XMVECTOR SF = _mm_set_ps1(f);
+    R1 = _mm_fmadd_ps(R1, SF, Position0);
+    XMVECTOR SG = _mm_set_ps1(g);
+    return _mm_fmadd_ps(R2, SG, R1);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
     XMVECTOR SF = _mm_set_ps1(f);
@@ -6223,7 +6241,11 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentricV
     XMVECTOR R2 = vsubq_f32(Position2, Position0);
     R1 = vmlaq_f32(Position0, R1, F);
     return vmlaq_f32(R1, R2, G);
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
+    XMVECTOR R2 = _mm_sub_ps(Position2, Position0);
+    R1 = _mm_fmadd_ps(R1, F, Position0);
+    return _mm_fmadd_ps(R2, G, R1);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
     XMVECTOR R2 = _mm_sub_ps(Position2, Position0);
@@ -9197,9 +9219,12 @@ inline XMVECTOR XM_CALLCONV XMVector3Cross
     // y2,z2,x2,w2
     vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(3, 1, 0, 2));
     // Perform the right operation
+#ifdef _XM_FMA3_INTRINSICS_
+    vResult = _mm_fnmadd_ps(vTemp1, vTemp2, vResult);
+#else
     vTemp1 = _mm_mul_ps(vTemp1, vTemp2);
-    // Subract the right from left, and return answer
     vResult = _mm_sub_ps(vResult, vTemp1);
+#endif
     // Set w to zero
     return _mm_and_ps(vResult, g_XMMask3);
 #endif
@@ -9791,7 +9816,31 @@ inline XMVECTOR XM_CALLCONV XMVector3RefractV
         vResult = vmlsq_f32(vResult, R, Normal);
     }
     return vResult;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_FMA3_INTRINSICS_)
+    // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) +
+    // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
+    XMVECTOR IDotN = XMVector3Dot(Incident, Normal);
+    // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
+    XMVECTOR R = _mm_fnmadd_ps(IDotN, IDotN, g_XMOne);
+    XMVECTOR R2 = _mm_mul_ps(RefractionIndex, RefractionIndex);
+    R = _mm_fnmadd_ps(R, R2, g_XMOne);
+
+    XMVECTOR vResult = _mm_cmple_ps(R, g_XMZero);
+    if (_mm_movemask_ps(vResult) == 0x0f)
+    {
+        // Total internal reflection
+        vResult = g_XMZero;
+    }
+    else
+    {
+        // R = RefractionIndex * IDotN + sqrt(R)
+        R = _mm_sqrt_ps(R);
+        R = _mm_fmadd_ps(RefractionIndex, IDotN, R);
+        // Result = RefractionIndex * Incident - Normal * R
+        vResult = _mm_mul_ps(RefractionIndex, Incident);
+        vResult = _mm_fnmadd_ps(R, Normal, vResult);
+    }
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) +
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -13250,7 +13299,43 @@ inline XMVECTOR XM_CALLCONV XMVector4Cross
 
     vTemp1 = vcombine_f32(vdup_lane_f32(v1wz, 0), v1wz);
     return vmlaq_f32(vResult, vTerm, vTemp1);
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_FMA3_INTRINSICS_)
+    // V2zwyz * V3wzwy
+    XMVECTOR vResult = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 1, 3, 2));
+    XMVECTOR vTemp3 = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 3, 2, 3));
+    vResult = _mm_mul_ps(vResult, vTemp3);
+    // - V2wzwy * V3zwyz
+    XMVECTOR vTemp2 = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 3, 2, 3));
+    vTemp3 = XM_PERMUTE_PS(vTemp3, _MM_SHUFFLE(1, 3, 0, 1));
+    vResult = _mm_fnmadd_ps(vTemp2, vTemp3, vResult);
+     // term1 * V1yxxx
+    XMVECTOR vTemp1 = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 1));
+    vResult = _mm_mul_ps(vResult, vTemp1);
+
+    // V2ywxz * V3wxwx
+    vTemp2 = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 0, 3, 1));
+    vTemp3 = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 3, 0, 3));
+    vTemp3 = _mm_mul_ps(vTemp3, vTemp2);
+    // - V2wxwx * V3ywxz
+    vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(2, 1, 2, 1));
+    vTemp1 = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 0, 3, 1));
+    vTemp3 = _mm_fnmadd_ps(vTemp2, vTemp1, vTemp3);
+    // vResult - temp * V1zzyy
+    vTemp1 = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 2, 2));
+    vResult = _mm_fnmadd_ps(vTemp1, vTemp3, vResult);
+
+    // V2yzxy * V3zxyx
+    vTemp2 = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 0, 2, 1));
+    vTemp3 = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 1, 0, 2));
+    vTemp3 = _mm_mul_ps(vTemp3, vTemp2);
+    // - V2zxyx * V3yzxy
+    vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(2, 0, 2, 1));
+    vTemp1 = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 0, 2, 1));
+    vTemp3 = _mm_fnmadd_ps(vTemp1, vTemp2, vTemp3);
+    // vResult + term * V1wwwz
+    vTemp1 = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 3, 3, 3));
+    vResult = _mm_fmadd_ps(vTemp3, vTemp1, vResult);
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // V2zwyz * V3wzwy
     XMVECTOR vResult = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 1, 3, 2));
@@ -13891,7 +13976,30 @@ inline XMVECTOR XM_CALLCONV XMVector4RefractV
         vResult = vmlsq_f32(vResult, R, Normal);
     }
     return vResult;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR IDotN = XMVector4Dot(Incident, Normal);
+
+    // R = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
+    XMVECTOR R = _mm_fnmadd_ps(IDotN, IDotN, g_XMOne);
+    XMVECTOR R2 = _mm_mul_ps(RefractionIndex, RefractionIndex);
+    R = _mm_fnmadd_ps(R, R2, g_XMOne);
+
+    XMVECTOR vResult = _mm_cmple_ps(R, g_XMZero);
+    if (_mm_movemask_ps(vResult) == 0x0f)
+    {
+        // Total internal reflection
+        vResult = g_XMZero;
+    }
+    else
+    {
+        // R = RefractionIndex * IDotN + sqrt(R)
+        R = _mm_sqrt_ps(R);
+        R = _mm_fmadd_ps(RefractionIndex, IDotN, R);
+        // Result = RefractionIndex * Incident - Normal * R
+        vResult = _mm_mul_ps(RefractionIndex, Incident);
+        vResult = _mm_fnmadd_ps(R, Normal, vResult);
+    }
+    return vResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR IDotN = XMVector4Dot(Incident, Normal);
 

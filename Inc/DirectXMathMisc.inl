@@ -153,7 +153,12 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     Q2X = _mm_mul_ps(Q2X, Q1Shuffle);
     Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle, _MM_SHUFFLE(2, 3, 0, 1));
     // Flip the signs on y and z
+#ifdef _XM_FMA3_INTRINSICS_
+    vResult = _mm_fmadd_ps(Q2X, ControlWZYX, vResult);
+#else
     Q2X = _mm_mul_ps(Q2X, ControlWZYX);
+    vResult = _mm_add_ps(vResult, Q2X);
+#endif
     // Mul by Q1ZWXY
     Q2Y = _mm_mul_ps(Q2Y, Q1Shuffle);
     Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle, _MM_SHUFFLE(0, 1, 2, 3));
@@ -161,10 +166,13 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     Q2Y = _mm_mul_ps(Q2Y, ControlZWXY);
     // Mul by Q1YXWZ
     Q2Z = _mm_mul_ps(Q2Z, Q1Shuffle);
-    vResult = _mm_add_ps(vResult, Q2X);
     // Flip the signs on x and w
+#ifdef _XM_FMA3_INTRINSICS_
+    Q2Y = _mm_fmadd_ps(Q2Z, ControlYXWZ, Q2Y);
+#else
     Q2Z = _mm_mul_ps(Q2Z, ControlYXWZ);
     Q2Y = _mm_add_ps(Q2Y, Q2Z);
+#endif
     vResult = _mm_add_ps(vResult, Q2Y);
     return vResult;
 #endif
@@ -839,6 +847,12 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix(FXMMATRIX M) noexcept
     // x^2 + y^2 >= z^2 + w^2 equivalent to r22 <= 0
     XMVECTOR x2py2gez2pw2 = _mm_cmple_ps(r22, g_XMZero);
 
+#if defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR t0 = _mm_fmadd_ps(XMPMMP, r00, g_XMOne);
+    XMVECTOR t1 = _mm_mul_ps(XMMPMP, r11);
+    XMVECTOR t2 = _mm_fmadd_ps(XMMMPP, r22, t0);
+    XMVECTOR x2y2z2w2 = _mm_add_ps(t1, t2);
+#else
     // (+r00, -r00, -r00, +r00)
     XMVECTOR t0 = _mm_mul_ps(XMPMMP, r00);
 
@@ -852,6 +866,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix(FXMMATRIX M) noexcept
     XMVECTOR x2y2z2w2 = _mm_add_ps(t0, t1);
     x2y2z2w2 = _mm_add_ps(t2, x2y2z2w2);
     x2y2z2w2 = _mm_add_ps(x2y2z2w2, g_XMOne);
+#endif
 
     // (r01, r02, r12, r11)
     t0 = _mm_shuffle_ps(r0, r1, _MM_SHUFFLE(1, 2, 2, 1));
