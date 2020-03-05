@@ -3298,6 +3298,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExp2(FXMVECTOR V) noexcept
 
     float32x4_t vResult = vbslq_f32(isNaN, g_XMQNaN, result5);
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i itrunc = _mm_cvttps_epi32(V);
     __m128 ftrunc = _mm_cvtepi32_ps(itrunc);
@@ -3444,6 +3445,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExpE(FXMVECTOR V) noexcept
 
     float32x4_t vResult = vbslq_f32(isNaN, g_XMQNaN, result5);
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // expE(V) = exp2(vin*log2(e))
     __m128 Ve = _mm_mul_ps(g_XMLgE, V);
@@ -3762,6 +3764,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLog2(FXMVECTOR V) noexcept
     result = vbslq_f32(isPositive, result, tmp);
     result = vbslq_f32(isNaN, g_XMQNaN, result);
     return result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i rawBiased = _mm_and_si128(_mm_castps_si128(V), g_XMInfinity);
     __m128i trailing = _mm_and_si128(_mm_castps_si128(V), g_XMQNaNTest);
@@ -3929,6 +3932,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLogE(FXMVECTOR V) noexcept
     result = vbslq_f32(isPositive, result, tmp);
     result = vbslq_f32(isNaN, g_XMQNaN, result);
     return result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i rawBiased = _mm_and_si128(_mm_castps_si128(V), g_XMInfinity);
     __m128i trailing = _mm_and_si128(_mm_castps_si128(V), g_XMQNaNTest);
@@ -4198,6 +4202,40 @@ inline XMVECTOR XM_CALLCONV XMVectorSin(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, x);
     return Result;
+#elif defined(_XM_AVX2_INTRINSICS_)
+    // Force the value within the bounds of pi
+    XMVECTOR x = XMVectorModAngles(V);
+
+    // Map in [-pi/2,pi/2] with sin(y) = sin(x).
+    __m128 sign = _mm_and_ps(x, g_XMNegativeZero);
+    __m128 c = _mm_or_ps(g_XMPi, sign);  // pi when x >= 0, -pi when x < 0
+    __m128 absx = _mm_andnot_ps(sign, x);  // |x|
+    __m128 rflx = _mm_sub_ps(c, x);
+    __m128 comp = _mm_cmple_ps(absx, g_XMHalfPi);
+    __m128 select0 = _mm_and_ps(comp, x);
+    __m128 select1 = _mm_andnot_ps(comp, rflx);
+    x = _mm_or_ps(select0, select1);
+
+    __m128 x2 = _mm_mul_ps(x, x);
+
+    // Compute polynomial approximation
+    __m128 vConstantsB = _mm_broadcast_ss(g_XMSinCoefficients1.f);
+    const XMVECTOR SC0 = g_XMSinCoefficients0;
+    __m128 vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 Result = _mm_fmadd_ps(vConstantsB, x2, vConstants);
+
+    vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(2, 2, 2, 2));
+    Result = _mm_fmadd_ps(Result, x2, vConstants);
+
+    vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(1, 1, 1, 1));
+    Result = _mm_fmadd_ps(Result, x2, vConstants);
+
+    vConstants = _mm_broadcastss_ps(SC0);
+    Result = _mm_fmadd_ps(Result, x2, vConstants);
+
+    Result = _mm_fmadd_ps(Result, x2, g_XMOne);
+    Result = _mm_mul_ps(Result, x);
+    return Result;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -4288,6 +4326,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCos(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, sign);
     return Result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Map V to x in [-pi,pi].
     XMVECTOR x = XMVectorModAngles(V);
@@ -4416,6 +4455,7 @@ inline void XM_CALLCONV XMVectorSinCos
 
     Result = vmlaq_f32(g_XMOne, Result, x2);
     *pCos = vmulq_f32(Result, sign);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -4600,6 +4640,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSinH(FXMVECTOR V) noexcept
     XMVECTOR E2 = XMVectorExp(V2);
 
     return vsubq_f32(E1, E2);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = { { { 1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f } } }; // 1.0f / ln(2.0f)
 
@@ -4634,6 +4675,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCosH(FXMVECTOR V) noexcept
     XMVECTOR E1 = XMVectorExp(V1);
     XMVECTOR E2 = XMVectorExp(V2);
     return vaddq_f32(E1, E2);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = { { { 1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f } } }; // 1.0f / ln(2.0f)
 
@@ -4667,6 +4709,7 @@ inline XMVECTOR XM_CALLCONV XMVectorTanH(FXMVECTOR V) noexcept
     E = vmlaq_f32(g_XMOneHalf.v, E, g_XMOneHalf.v);
     E = XMVectorReciprocal(E);
     return vsubq_f32(g_XMOne.v, E);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = { { { 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f, 2.8853900817779268f } } }; // 2.0f / ln(2.0f)
 
@@ -4731,6 +4774,7 @@ inline XMVECTOR XM_CALLCONV XMVectorASin(FXMVECTOR V) noexcept
     t0 = vbslq_f32(nonnegative, t0, t1);
     t0 = vsubq_f32(g_XMHalfPi, t0);
     return t0;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -4835,6 +4879,7 @@ inline XMVECTOR XM_CALLCONV XMVectorACos(FXMVECTOR V) noexcept
     float32x4_t t1 = vsubq_f32(g_XMPi, t0);
     t0 = vbslq_f32(nonnegative, t0, t1);
     return t0;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -4945,6 +4990,7 @@ inline XMVECTOR XM_CALLCONV XMVectorATan(FXMVECTOR V) noexcept
     comp = vceqq_f32(sign, g_XMZero);
     Result = vbslq_f32(comp, Result, result1);
     return Result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 absV = XMVectorAbs(V);
     __m128 invV = _mm_div_ps(g_XMOne, V);
@@ -5120,6 +5166,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSinEst(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, x);
     return Result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -5195,6 +5242,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCosEst(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, sign);
     return Result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Map V to x in [-pi,pi].
     XMVECTOR x = XMVectorModAngles(V);
@@ -5301,6 +5349,7 @@ inline void XM_CALLCONV XMVectorSinCosEst
 
     Result = vmlaq_f32(g_XMOne, Result, x2);
     *pCos = vmulq_f32(Result, sign);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -5432,6 +5481,7 @@ inline XMVECTOR XM_CALLCONV XMVectorASinEst(FXMVECTOR V) noexcept
     t0 = vbslq_f32(nonnegative, t0, t1);
     t0 = vsubq_f32(g_XMHalfPi, t0);
     return t0;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -5506,6 +5556,7 @@ inline XMVECTOR XM_CALLCONV XMVectorACosEst(FXMVECTOR V) noexcept
     float32x4_t t1 = vsubq_f32(g_XMPi, t0);
     t0 = vbslq_f32(nonnegative, t0, t1);
     return t0;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -5587,6 +5638,7 @@ inline XMVECTOR XM_CALLCONV XMVectorATanEst(FXMVECTOR V) noexcept
     comp = vceqq_f32(sign, g_XMZero);
     Result = vbslq_f32(comp, Result, result1);
     return Result;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 absV = XMVectorAbs(V);
     __m128 invV = _mm_div_ps(g_XMOne, V);
@@ -5718,6 +5770,10 @@ inline XMVECTOR XM_CALLCONV XMVectorLerp
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR L = vsubq_f32(V1, V0);
     return vmlaq_n_f32(V0, L, t);
+#elif defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR L = _mm_sub_ps(V1, V0);
+    XMVECTOR S = _mm_set_ps1(t);
+    return _mm_fmadd_ps(L, S, V0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR L = _mm_sub_ps(V1, V0);
     XMVECTOR S = _mm_set_ps1(t);
@@ -5745,6 +5801,9 @@ inline XMVECTOR XM_CALLCONV XMVectorLerpV
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     XMVECTOR L = vsubq_f32(V1, V0);
     return vmlaq_f32(V0, L, T);
+#elif defined(_XM_FMA3_INTRINSICS_)
+    XMVECTOR Length = _mm_sub_ps(V1, V0);
+    return _mm_fmadd_ps(Length, T, V0);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR Length = _mm_sub_ps(V1, V0);
     XMVECTOR Result = _mm_mul_ps(Length, T);
@@ -5799,6 +5858,7 @@ inline XMVECTOR XM_CALLCONV XMVectorHermite
     vResult = vmlaq_n_f32(vResult, Position1, p1);
     vResult = vmlaq_n_f32(vResult, Tangent1, t1);
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -5878,6 +5938,7 @@ inline XMVECTOR XM_CALLCONV XMVectorHermiteV
     // Mul the w constant to Tangent1
     vResult = vmlaq_lane_f32(vResult, Tangent1, vget_high_f32(T3), 1); // T3[3]
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 CatMulT2 = { { { -3.0f, -2.0f, 3.0f, -1.0f } } };
     static const XMVECTORF32 CatMulT3 = { { { 2.0f, 1.0f, -2.0f, 1.0f } } };
@@ -5963,6 +6024,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRom
     XMVECTOR P2 = vmlaq_n_f32(P3, Position2, p2);
     P0 = vaddq_f32(P0, P2);
     return P0;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -6050,6 +6112,7 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRomV
     // Multiply by 0.5f and exit
     vResult = vmulq_f32(vResult, g_XMOneHalf);
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Catmul2 = { { { 2.0f, 2.0f, 2.0f, 2.0f } } };
     static const XMVECTORF32 Catmul3 = { { { 3.0f, 3.0f, 3.0f, 3.0f } } };
@@ -6118,6 +6181,7 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentric
     XMVECTOR R2 = vsubq_f32(Position2, Position0);
     R1 = vmlaq_n_f32(Position0, R1, f);
     return vmlaq_n_f32(R1, R2, g);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
     XMVECTOR SF = _mm_set_ps1(f);
@@ -6159,6 +6223,7 @@ inline XMVECTOR XM_CALLCONV XMVectorBaryCentricV
     XMVECTOR R2 = vsubq_f32(Position2, Position0);
     R1 = vmlaq_f32(Position0, R1, F);
     return vmlaq_f32(R1, R2, G);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR R1 = _mm_sub_ps(Position1, Position0);
     XMVECTOR R2 = _mm_sub_ps(Position2, Position0);
@@ -9726,6 +9791,7 @@ inline XMVECTOR XM_CALLCONV XMVector3RefractV
         vResult = vmlsq_f32(vResult, R, Normal);
     }
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Result = RefractionIndex * Incident - Normal * (RefractionIndex * dot(Incident, Normal) +
     // sqrt(1 - RefractionIndex * RefractionIndex * (1 - dot(Incident, Normal) * dot(Incident, Normal))))
@@ -13184,6 +13250,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Cross
 
     vTemp1 = vcombine_f32(vdup_lane_f32(v1wz, 0), v1wz);
     return vmlaq_f32(vResult, vTerm, vTemp1);
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // V2zwyz * V3wzwy
     XMVECTOR vResult = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 1, 3, 2));
@@ -13824,6 +13891,7 @@ inline XMVECTOR XM_CALLCONV XMVector4RefractV
         vResult = vmlsq_f32(vResult, R, Normal);
     }
     return vResult;
+    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR IDotN = XMVector4Dot(Incident, Normal);
 
