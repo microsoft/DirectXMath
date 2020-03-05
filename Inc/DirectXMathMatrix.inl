@@ -313,8 +313,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 1, 1, 1));
     a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(1, 1, 1, 1));
     b0 = _mm256_permute2f128_ps(u0, u0, 0x11);
-    __m256 c2 = _mm256_mul_ps(a0, b0);
-    __m256 c3 = _mm256_mul_ps(a1, b0);
+    __m256 c2 = _mm256_fmadd_ps(a0, b0, c0);
+    __m256 c3 = _mm256_fmadd_ps(a1, b0, c1);
 
     a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(2, 2, 2, 2));
     a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(2, 2, 2, 2));
@@ -325,16 +325,11 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply
     a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(3, 3, 3, 3));
     a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(3, 3, 3, 3));
     b1 = _mm256_permute2f128_ps(u1, u1, 0x11);
-    __m256 c6 = _mm256_mul_ps(a0, b1);
-    __m256 c7 = _mm256_mul_ps(a1, b1);
+    __m256 c6 = _mm256_fmadd_ps(a0, b1, c4);
+    __m256 c7 = _mm256_fmadd_ps(a1, b1, c5);
 
-    c0 = _mm256_add_ps(c0, c2);
-    c4 = _mm256_add_ps(c4, c6);
-    c1 = _mm256_add_ps(c1, c3);
-    c5 = _mm256_add_ps(c5, c7);
-
-    t0 = _mm256_add_ps(c0, c4);
-    t1 = _mm256_add_ps(c1, c5);
+    t0 = _mm256_add_ps(c2, c6);
+    t1 = _mm256_add_ps(c3, c7);
 
     XMMATRIX mResult;
     mResult.r[0] = _mm256_castps256_ps128(t0);
