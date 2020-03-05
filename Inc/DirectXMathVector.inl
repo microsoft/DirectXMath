@@ -16,18 +16,18 @@
 
 #if defined(_XM_SSE_INTRINSICS_)
 
-#define XM3UNPACK3INTO4(l1,l2,l3) \
-    XMVECTOR V3 = _mm_shuffle_ps(l2,l3,_MM_SHUFFLE(0,0,3,2));\
-    XMVECTOR V2 = _mm_shuffle_ps(l2,l1,_MM_SHUFFLE(3,3,1,0));\
-    V2 = XM_PERMUTE_PS(V2,_MM_SHUFFLE(1,1,0,2));\
-    XMVECTOR V4 = _mm_castsi128_ps( _mm_srli_si128(_mm_castps_si128(L3),32/8) );
+#define XM3UNPACK3INTO4(l1, l2, l3) \
+    XMVECTOR V3 = _mm_shuffle_ps(l2, l3, _MM_SHUFFLE(0, 0, 3, 2));\
+    XMVECTOR V2 = _mm_shuffle_ps(l2, l1, _MM_SHUFFLE(3, 3, 1, 0));\
+    V2 = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 0, 2));\
+    XMVECTOR V4 = _mm_castsi128_ps(_mm_srli_si128(_mm_castps_si128(L3), 32 / 8))
 
 #define XM3PACK4INTO3(v2x) \
-    v2x = _mm_shuffle_ps(V2,V3,_MM_SHUFFLE(1,0,2,1));\
-    V2 = _mm_shuffle_ps(V2,V1,_MM_SHUFFLE(2,2,0,0));\
-    V1 = _mm_shuffle_ps(V1,V2,_MM_SHUFFLE(0,2,1,0));\
-    V3 = _mm_shuffle_ps(V3,V4,_MM_SHUFFLE(0,0,2,2));\
-    V3 = _mm_shuffle_ps(V3,V4,_MM_SHUFFLE(2,1,2,0));\
+    v2x = _mm_shuffle_ps(V2, V3, _MM_SHUFFLE(1, 0, 2, 1));\
+    V2 = _mm_shuffle_ps(V2, V1, _MM_SHUFFLE(2, 2, 0, 0));\
+    V1 = _mm_shuffle_ps(V1, V2, _MM_SHUFFLE(0, 2, 1, 0));\
+    V3 = _mm_shuffle_ps(V3, V4, _MM_SHUFFLE(0, 0, 2, 2));\
+    V3 = _mm_shuffle_ps(V3, V4, _MM_SHUFFLE(2, 1, 2, 0))
 
 #endif
 
@@ -10107,10 +10107,10 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                    // Result 1
+                    XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -10179,10 +10179,10 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                    // Result 1
+                    XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -10525,10 +10525,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -10592,8 +10592,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         V4 = _mm_div_ps(vTemp, W);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -10611,10 +10611,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -10678,8 +10678,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         V4 = _mm_div_ps(vTemp, W);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -10698,10 +10698,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                    // Result 1
+                    XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11014,10 +11014,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11061,8 +11061,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
                         V4 = _mm_add_ps(vTemp, vTemp3);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -11080,10 +11080,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11127,8 +11127,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
                         V4 = _mm_add_ps(vTemp, vTemp3);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -11147,10 +11147,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                    // Result 1
+                    XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11506,10 +11506,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11581,8 +11581,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         V4 = _mm_add_ps(vTemp, Offset);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -11600,10 +11600,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                        // Result 1
+                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -11675,8 +11675,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         V4 = _mm_add_ps(vTemp, Offset);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -11695,10 +11695,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
+                    // Result 1
+                    XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
@@ -12112,10 +12112,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            V1 = _mm_mul_ps(V1, Scale);
+                        // Result 1
+                        V1 = _mm_mul_ps(V1, Scale);
                         V1 = _mm_add_ps(V1, Offset);
 
                         XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
@@ -12187,8 +12187,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V4 = _mm_div_ps(vTemp, W);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), V1);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -12206,10 +12206,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
-                        XM3UNPACK3INTO4(V1, L2, L3)
+                        XM3UNPACK3INTO4(V1, L2, L3);
 
-                            // Result 1
-                            V1 = _mm_mul_ps(V1, Scale);
+                        // Result 1
+                        V1 = _mm_mul_ps(V1, Scale);
                         V1 = _mm_add_ps(V1, Offset);
 
                         XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
@@ -12281,8 +12281,8 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V4 = _mm_div_ps(vTemp, W);
 
                         // Pack and store the vectors
-                        XM3PACK4INTO3(vTemp)
-                            _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
+                        XM3PACK4INTO3(vTemp);
+                        _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), V1);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 16), vTemp);
                         _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector + 32), V3);
                         pOutputVector += sizeof(XMFLOAT3) * 4;
@@ -12301,10 +12301,10 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
-                    XM3UNPACK3INTO4(V1, L2, L3)
+                    XM3UNPACK3INTO4(V1, L2, L3);
 
-                        // Result 1
-                        V1 = _mm_mul_ps(V1, Scale);
+                    // Result 1
+                    V1 = _mm_mul_ps(V1, Scale);
                     V1 = _mm_add_ps(V1, Offset);
 
                     XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
