@@ -3081,12 +3081,7 @@ inline void XM_CALLCONV XMStoreUDecN4_XR
     static const XMVECTORF32 Shift = { { { 1.0f, 1024.0f * 0.5f, 1024.0f * 1024.0f, 1024.0f * 1024.0f * 1024.0f * 0.5f } } };
     static const XMVECTORU32 MaskUDecN4 = { { { 0x3FF, 0x3FF << (10 - 1), 0x3FF << 20, 0x3 << (30 - 1) } } };
     // Scale & bias
-#ifdef _XM_FMA3_INTRINSICS_
-    XMVECTOR vResult = _mm_fmadd_ps(V, Scale, Bias);
-#else
-    XMVECTOR vResult = _mm_mul_ps(V, Scale);
-    vResult = _mm_add_ps(vResult, Bias);
-#endif
+    XMVECTOR vResult = XM_FMADD_PS(V, Scale, Bias);
     // Clamp to bounds
     vResult = _mm_max_ps(vResult, g_XMZero);
     vResult = _mm_min_ps(vResult, C);

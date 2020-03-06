@@ -151,17 +151,25 @@
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
 #if defined(_XM_NO_MOVNT_)
-#define XM_STREAM_PS( p, a ) _mm_store_ps( p, a )
+#define XM_STREAM_PS( p, a ) _mm_store_ps((p), (a))
 #define XM_SFENCE()
 #else
-#define XM_STREAM_PS( p, a ) _mm_stream_ps( p, a )
+#define XM_STREAM_PS( p, a ) _mm_stream_ps((p), (a))
 #define XM_SFENCE() _mm_sfence()
 #endif
 
-#if defined(_XM_AVX_INTRINSICS_) && defined(_XM_FAVOR_INTEL_)
-#define XM_PERMUTE_PS( v, c ) _mm_permute_ps( v, c )
+#if defined(_XM_FMA3_INTRINSICS_)
+#define XM_FMADD_PS( a, b, c ) _mm_fmadd_ps((a), (b), (c))
+#define XM_FNMADD_PS( a, b, c ) _mm_fnmadd_ps((a), (b), (c))
 #else
-#define XM_PERMUTE_PS( v, c ) _mm_shuffle_ps( v, v, c )
+#define XM_FMADD_PS( a, b, c ) _mm_add_ps(_mm_mul_ps((a), (b)), (c))
+#define XM_FNMADD_PS( a, b, c ) _mm_sub_ps((c), _mm_mul_ps((a), (b)))
+#endif
+
+#if defined(_XM_AVX_INTRINSICS_) && defined(_XM_FAVOR_INTEL_)
+#define XM_PERMUTE_PS( v, c ) _mm_permute_ps((v), c )
+#else
+#define XM_PERMUTE_PS( v, c ) _mm_shuffle_ps((v), (v), c )
 #endif
 
 #endif // _XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
