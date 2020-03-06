@@ -4244,7 +4244,6 @@ inline XMVECTOR XM_CALLCONV XMVectorCos(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, sign);
     return Result;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Map V to x in [-pi,pi].
     XMVECTOR x = XMVectorModAngles(V);
@@ -4266,26 +4265,21 @@ inline XMVECTOR XM_CALLCONV XMVectorCos(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR CC1 = g_XMCosCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(CC1, _MM_SHUFFLE(0, 0, 0, 0));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
+    __m128 vConstantsB = XM_PERMUTE_PS(CC1, _MM_SHUFFLE(0, 0, 0, 0));
     const XMVECTOR CC0 = g_XMCosCoefficients0;
-    vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(3, 3, 3, 3));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, sign);
     return Result;
 #endif
@@ -4373,7 +4367,6 @@ inline void XM_CALLCONV XMVectorSinCos
 
     Result = vmlaq_f32(g_XMOne, Result, x2);
     *pCos = vmulq_f32(Result, sign);
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -4395,51 +4388,41 @@ inline void XM_CALLCONV XMVectorSinCos
 
     // Compute polynomial approximation of sine
     const XMVECTOR SC1 = g_XMSinCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(SC1, _MM_SHUFFLE(0, 0, 0, 0));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
+    __m128 vConstantsB = XM_PERMUTE_PS(SC1, _MM_SHUFFLE(0, 0, 0, 0));
     const XMVECTOR SC0 = g_XMSinCoefficients0;
-    vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(3, 3, 3, 3));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(SC0, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, x);
     *pSin = Result;
 
     // Compute polynomial approximation of cosine
     const XMVECTOR CC1 = g_XMCosCoefficients1;
-    vConstants = XM_PERMUTE_PS(CC1, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_mul_ps(vConstants, x2);
-
+    vConstantsB = XM_PERMUTE_PS(CC1, _MM_SHUFFLE(0, 0, 0, 0));
     const XMVECTOR CC0 = g_XMCosCoefficients0;
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(3, 3, 3, 3));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CC0, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, sign);
     *pCos = Result;
 #endif
@@ -4562,8 +4545,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSinH(FXMVECTOR V) noexcept
     static const XMVECTORF32 Scale = { { { 1.442695040888963f, 1.442695040888963f, 1.442695040888963f, 1.442695040888963f } } }; // 1.0f / ln(2.0f)
 
     XMVECTOR V1 = XM_FMADD_PS(V, Scale, g_XMNegativeOne);
-    XMVECTOR V2 = _mm_mul_ps(V, Scale);
-    V2 = _mm_sub_ps(g_XMNegativeOne, V2);
+    XMVECTOR V2 = XM_FNMADD_PS(V, Scale, g_XMNegativeOne);
     XMVECTOR E1 = XMVectorExp(V1);
     XMVECTOR E2 = XMVectorExp(V2);
 
@@ -4685,7 +4667,6 @@ inline XMVECTOR XM_CALLCONV XMVectorASin(FXMVECTOR V) noexcept
     t0 = vbslq_f32(nonnegative, t0, t1);
     t0 = vsubq_f32(g_XMHalfPi, t0);
     return t0;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -4698,36 +4679,28 @@ inline XMVECTOR XM_CALLCONV XMVectorASin(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR AC1 = g_XMArcCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 t0 = _mm_mul_ps(vConstants, x);
-
-    vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    __m128 vConstantsB = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 t0 = XM_FMADD_PS(vConstantsB, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     const XMVECTOR AC0 = g_XMArcCoefficients0;
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(3, 3, 3, 3));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
     __m128 t1 = _mm_sub_ps(g_XMPi, t0);
@@ -4790,7 +4763,6 @@ inline XMVECTOR XM_CALLCONV XMVectorACos(FXMVECTOR V) noexcept
     float32x4_t t1 = vsubq_f32(g_XMPi, t0);
     t0 = vbslq_f32(nonnegative, t0, t1);
     return t0;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -4803,36 +4775,28 @@ inline XMVECTOR XM_CALLCONV XMVectorACos(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR AC1 = g_XMArcCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 t0 = _mm_mul_ps(vConstants, x);
-
-    vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    __m128 vConstantsB = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 t0 = XM_FMADD_PS(vConstantsB, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC1, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     const XMVECTOR AC0 = g_XMArcCoefficients0;
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(3, 3, 3, 3));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AC0, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
     __m128 t1 = _mm_sub_ps(g_XMPi, t0);
@@ -4901,7 +4865,6 @@ inline XMVECTOR XM_CALLCONV XMVectorATan(FXMVECTOR V) noexcept
     comp = vceqq_f32(sign, g_XMZero);
     Result = vbslq_f32(comp, Result, result1);
     return Result;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 absV = XMVectorAbs(V);
     __m128 invV = _mm_div_ps(g_XMOne, V);
@@ -4921,38 +4884,31 @@ inline XMVECTOR XM_CALLCONV XMVectorATan(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR TC1 = g_XMATanCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
-    vConstants = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstantsB = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(TC1, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     const XMVECTOR TC0 = g_XMATanCoefficients0;
     vConstants = XM_PERMUTE_PS(TC0, _MM_SHUFFLE(3, 3, 3, 3));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(TC0, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(TC0, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(TC0, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
+
     Result = _mm_mul_ps(Result, x);
     __m128 result1 = _mm_mul_ps(sign, g_XMHalfPi);
     result1 = _mm_sub_ps(result1, Result);
@@ -5077,7 +5033,6 @@ inline XMVECTOR XM_CALLCONV XMVectorSinEst(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, x);
     return Result;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -5096,18 +5051,13 @@ inline XMVECTOR XM_CALLCONV XMVectorSinEst(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR SEC = g_XMSinCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
-    vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstantsB = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, x);
     return Result;
 #endif
@@ -5153,7 +5103,6 @@ inline XMVECTOR XM_CALLCONV XMVectorCosEst(FXMVECTOR V) noexcept
     Result = vmlaq_f32(g_XMOne, Result, x2);
     Result = vmulq_f32(Result, sign);
     return Result;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Map V to x in [-pi,pi].
     XMVECTOR x = XMVectorModAngles(V);
@@ -5175,18 +5124,13 @@ inline XMVECTOR XM_CALLCONV XMVectorCosEst(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR CEC = g_XMCosCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
-    vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstantsB = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, sign);
     return Result;
 #endif
@@ -5260,7 +5204,6 @@ inline void XM_CALLCONV XMVectorSinCosEst
 
     Result = vmlaq_f32(g_XMOne, Result, x2);
     *pCos = vmulq_f32(Result, sign);
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     // Force the value within the bounds of pi
     XMVECTOR x = XMVectorModAngles(V);
@@ -5282,35 +5225,25 @@ inline void XM_CALLCONV XMVectorSinCosEst
 
     // Compute polynomial approximation for sine
     const XMVECTOR SEC = g_XMSinCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
-    vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstantsB = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(SEC, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, x);
     *pSin = Result;
 
     // Compute polynomial approximation for cosine
     const XMVECTOR CEC = g_XMCosCoefficients1;
-    vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(3, 3, 3, 3));
-    Result = _mm_mul_ps(vConstants, x2);
-
+    vConstantsB = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(3, 3, 3, 3));
     vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(CEC, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-
-    Result = _mm_add_ps(Result, g_XMOne);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
+    Result = XM_FMADD_PS(Result, x2, g_XMOne);
     Result = _mm_mul_ps(Result, sign);
     *pCos = Result;
 #endif
@@ -5392,7 +5325,6 @@ inline XMVECTOR XM_CALLCONV XMVectorASinEst(FXMVECTOR V) noexcept
     t0 = vbslq_f32(nonnegative, t0, t1);
     t0 = vsubq_f32(g_XMHalfPi, t0);
     return t0;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -5405,19 +5337,15 @@ inline XMVECTOR XM_CALLCONV XMVectorASinEst(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMArcEstCoefficients;
-    XMVECTOR vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 t0 = _mm_mul_ps(vConstants, x);
-
-    vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    __m128 vConstantsB = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 t0 = XM_FMADD_PS(vConstantsB, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
     __m128 t1 = _mm_sub_ps(g_XMPi, t0);
@@ -5467,7 +5395,6 @@ inline XMVECTOR XM_CALLCONV XMVectorACosEst(FXMVECTOR V) noexcept
     float32x4_t t1 = vsubq_f32(g_XMPi, t0);
     t0 = vbslq_f32(nonnegative, t0, t1);
     return t0;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 nonnegative = _mm_cmpge_ps(V, g_XMZero);
     __m128 mvalue = _mm_sub_ps(g_XMZero, V);
@@ -5480,19 +5407,15 @@ inline XMVECTOR XM_CALLCONV XMVectorACosEst(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMArcEstCoefficients;
-    XMVECTOR vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 t0 = _mm_mul_ps(vConstants, x);
-
-    vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    __m128 vConstantsB = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 t0 = XM_FMADD_PS(vConstantsB, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(1, 1, 1, 1));
-    t0 = _mm_add_ps(t0, vConstants);
-    t0 = _mm_mul_ps(t0, x);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(0, 0, 0, 0));
-    t0 = _mm_add_ps(t0, vConstants);
+    t0 = XM_FMADD_PS(t0, x, vConstants);
     t0 = _mm_mul_ps(t0, root);
 
     __m128 t1 = _mm_sub_ps(g_XMPi, t0);
@@ -5549,7 +5472,6 @@ inline XMVECTOR XM_CALLCONV XMVectorATanEst(FXMVECTOR V) noexcept
     comp = vceqq_f32(sign, g_XMZero);
     Result = vbslq_f32(comp, Result, result1);
     return Result;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128 absV = XMVectorAbs(V);
     __m128 invV = _mm_div_ps(g_XMOne, V);
@@ -5569,23 +5491,17 @@ inline XMVECTOR XM_CALLCONV XMVectorATanEst(FXMVECTOR V) noexcept
 
     // Compute polynomial approximation
     const XMVECTOR AEC = g_XMATanEstCoefficients1;
-    XMVECTOR vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
-    __m128 Result = _mm_mul_ps(vConstants, x2);
-
-    vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    __m128 vConstantsB = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(3, 3, 3, 3));
+    __m128 vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(2, 2, 2, 2));
+    __m128 Result = XM_FMADD_PS(vConstantsB, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(1, 1, 1, 1));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
+    Result = XM_FMADD_PS(Result, x2, vConstants);
 
     vConstants = XM_PERMUTE_PS(AEC, _MM_SHUFFLE(0, 0, 0, 0));
-    Result = _mm_add_ps(Result, vConstants);
-    Result = _mm_mul_ps(Result, x2);
-
+    Result = XM_FMADD_PS(Result, x2, vConstants);
     // ATanEstCoefficients0 is already splatted
-    Result = _mm_add_ps(Result, g_XMATanEstCoefficients0);
+    Result = XM_FMADD_PS(Result, x2, g_XMATanEstCoefficients0);
     Result = _mm_mul_ps(Result, x);
     __m128 result1 = _mm_mul_ps(sign, g_XMHalfPi);
     result1 = _mm_sub_ps(result1, Result);
@@ -5760,7 +5676,6 @@ inline XMVECTOR XM_CALLCONV XMVectorHermite
     vResult = vmlaq_n_f32(vResult, Position1, p1);
     vResult = vmlaq_n_f32(vResult, Tangent1, t1);
     return vResult;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -5771,12 +5686,9 @@ inline XMVECTOR XM_CALLCONV XMVectorHermite
     XMVECTOR T1 = _mm_set_ps1(t3 - t2);
 
     XMVECTOR vResult = _mm_mul_ps(P0, Position0);
-    XMVECTOR vTemp = _mm_mul_ps(T0, Tangent0);
-    vResult = _mm_add_ps(vResult, vTemp);
-    vTemp = _mm_mul_ps(P1, Position1);
-    vResult = _mm_add_ps(vResult, vTemp);
-    vTemp = _mm_mul_ps(T1, Tangent1);
-    vResult = _mm_add_ps(vResult, vTemp);
+    vResult = XM_FMADD_PS(Tangent0, T0, vResult);
+    vResult = XM_FMADD_PS(Position1, P1, vResult);
+    vResult = XM_FMADD_PS(Tangent1, T1, vResult);
     return vResult;
 #endif
 }
@@ -5840,7 +5752,6 @@ inline XMVECTOR XM_CALLCONV XMVectorHermiteV
     // Mul the w constant to Tangent1
     vResult = vmlaq_lane_f32(vResult, Tangent1, vget_high_f32(T3), 1); // T3[3]
     return vResult;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 CatMulT2 = { { { -3.0f, -2.0f, 3.0f, -1.0f } } };
     static const XMVECTORF32 CatMulT3 = { { { 2.0f, 1.0f, -2.0f, 1.0f } } };
@@ -5850,9 +5761,8 @@ inline XMVECTOR XM_CALLCONV XMVectorHermiteV
     // Mul by the constants against t^2
     T2 = _mm_mul_ps(T2, CatMulT2);
     // Mul by the constants against t^3
-    T3 = _mm_mul_ps(T3, CatMulT3);
+    T3 = XM_FMADD_PS(T3, CatMulT3, T2);
     // T3 now has the pre-result.
-    T3 = _mm_add_ps(T3, T2);
     // I need to add t.y only
     T2 = _mm_and_ps(T, g_XMMaskY);
     T3 = _mm_add_ps(T3, T2);
@@ -5864,16 +5774,13 @@ inline XMVECTOR XM_CALLCONV XMVectorHermiteV
     vResult = _mm_mul_ps(vResult, Position0);
     // Mul the y constant to Tangent0
     T2 = XM_PERMUTE_PS(T3, _MM_SHUFFLE(1, 1, 1, 1));
-    T2 = _mm_mul_ps(T2, Tangent0);
-    vResult = _mm_add_ps(vResult, T2);
+    vResult = XM_FMADD_PS(T2, Tangent0, vResult);
     // Mul the z constant to Position1
     T2 = XM_PERMUTE_PS(T3, _MM_SHUFFLE(2, 2, 2, 2));
-    T2 = _mm_mul_ps(T2, Position1);
-    vResult = _mm_add_ps(vResult, T2);
+    vResult = XM_FMADD_PS(T2, Position1, vResult);
     // Mul the w constant to Tangent1
     T3 = XM_PERMUTE_PS(T3, _MM_SHUFFLE(3, 3, 3, 3));
-    T3 = _mm_mul_ps(T3, Tangent1);
-    vResult = _mm_add_ps(vResult, T3);
+    vResult = XM_FMADD_PS(T3, Tangent1, vResult);
     return vResult;
 #endif
 }
@@ -5926,7 +5833,6 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRom
     XMVECTOR P2 = vmlaq_n_f32(P3, Position2, p2);
     P0 = vaddq_f32(P0, P2);
     return P0;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     float t2 = t * t;
     float t3 = t * t2;
@@ -5936,12 +5842,10 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRom
     XMVECTOR P2 = _mm_set_ps1((-3.0f * t3 + 4.0f * t2 + t) * 0.5f);
     XMVECTOR P3 = _mm_set_ps1((t3 - t2) * 0.5f);
 
-    P0 = _mm_mul_ps(P0, Position0);
-    P1 = _mm_mul_ps(P1, Position1);
-    P2 = _mm_mul_ps(P2, Position2);
-    P3 = _mm_mul_ps(P3, Position3);
-    P0 = _mm_add_ps(P0, P1);
-    P2 = _mm_add_ps(P2, P3);
+    P1 = _mm_mul_ps(Position1, P1);
+    P0 = XM_FMADD_PS(Position0, P0, P1);
+    P3 = _mm_mul_ps(Position3, P3);
+    P2 = XM_FMADD_PS(Position2, P2, P3);
     P0 = _mm_add_ps(P0, P2);
     return P0;
 #endif
@@ -6014,7 +5918,6 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRomV
     // Multiply by 0.5f and exit
     vResult = vmulq_f32(vResult, g_XMOneHalf);
     return vResult;
-    // TODO - #elif defined(_XM_AVX2_INTRINSICS_)
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Catmul2 = { { { 2.0f, 2.0f, 2.0f, 2.0f } } };
     static const XMVECTORF32 Catmul3 = { { { 3.0f, 3.0f, 3.0f, 3.0f } } };
@@ -6030,22 +5933,17 @@ inline XMVECTOR XM_CALLCONV XMVectorCatmullRomV
     vResult = _mm_mul_ps(vResult, Position0);
     // Perform the Position1 term and add
     XMVECTOR vTemp = _mm_mul_ps(T3, Catmul3);
-    XMVECTOR vTemp2 = _mm_mul_ps(T2, Catmul5);
-    vTemp = _mm_sub_ps(vTemp, vTemp2);
+    vTemp = XM_FNMADD_PS(T2, Catmul5, vTemp);
     vTemp = _mm_add_ps(vTemp, Catmul2);
-    vTemp = _mm_mul_ps(vTemp, Position1);
-    vResult = _mm_add_ps(vResult, vTemp);
+    vResult = XM_FMADD_PS(vTemp, Position1, vResult);
     // Perform the Position2 term and add
     vTemp = _mm_mul_ps(T2, Catmul4);
-    vTemp2 = _mm_mul_ps(T3, Catmul3);
-    vTemp = _mm_sub_ps(vTemp, vTemp2);
+    vTemp = XM_FNMADD_PS(T3, Catmul3, vTemp);
     vTemp = _mm_add_ps(vTemp, T);
-    vTemp = _mm_mul_ps(vTemp, Position2);
-    vResult = _mm_add_ps(vResult, vTemp);
+    vResult = XM_FMADD_PS(vTemp, Position2, vResult);
     // Position3 is the last term
     T3 = _mm_sub_ps(T3, T2);
-    T3 = _mm_mul_ps(T3, Position3);
-    vResult = _mm_add_ps(vResult, T3);
+    vResult = XM_FMADD_PS(T3, Position3, vResult);
     // Multiply by 0.5f and exit
     vResult = _mm_mul_ps(vResult, g_XMOneHalf);
     return vResult;
@@ -7237,21 +7135,17 @@ inline XMVECTOR XM_CALLCONV XMVector2RefractV
     // Get the 2D Dot product of Incident-Normal
     XMVECTOR IDotN = XMVector2Dot(Incident, Normal);
     // vTemp = 1.0f - RefractionIndex * RefractionIndex * (1.0f - IDotN * IDotN)
-    XMVECTOR vTemp = _mm_mul_ps(IDotN, IDotN);
-    vTemp = _mm_sub_ps(g_XMOne, vTemp);
+    XMVECTOR vTemp = XM_FNMADD_PS(IDotN, IDotN, g_XMOne);
     vTemp = _mm_mul_ps(vTemp, RefractionIndex);
-    vTemp = _mm_mul_ps(vTemp, RefractionIndex);
-    vTemp = _mm_sub_ps(g_XMOne, vTemp);
+    vTemp = XM_FNMADD_PS(vTemp, RefractionIndex, g_XMOne);
     // If any terms are <=0, sqrt() will fail, punt to zero
     XMVECTOR vMask = _mm_cmpgt_ps(vTemp, g_XMZero);
     // R = RefractionIndex * IDotN + sqrt(R)
     vTemp = _mm_sqrt_ps(vTemp);
-    XMVECTOR vResult = _mm_mul_ps(RefractionIndex, IDotN);
-    vTemp = _mm_add_ps(vTemp, vResult);
+    vTemp = XM_FMADD_PS(RefractionIndex, IDotN, vTemp);
     // Result = RefractionIndex * Incident - Normal * R
-    vResult = _mm_mul_ps(RefractionIndex, Incident);
-    vTemp = _mm_mul_ps(vTemp, Normal);
-    vResult = _mm_sub_ps(vResult, vTemp);
+    XMVECTOR vResult = _mm_mul_ps(RefractionIndex, Incident);
+    vResult = XM_FNMADD_PS(vTemp, Normal, vResult);
     vResult = _mm_and_ps(vResult, vMask);
     return vResult;
 #endif
@@ -7432,8 +7326,7 @@ inline XMVECTOR XM_CALLCONV XMVector2IntersectLine
     vFail = _mm_or_ps(vFail, vFailMask);
     // Intersection point = Line1Point1 + V1 * (C2 / C1)
     XMVECTOR vResult = _mm_div_ps(C2, C1);
-    vResult = _mm_mul_ps(vResult, V1);
-    vResult = _mm_add_ps(vResult, Line1Point1);
+    vResult = XM_FMADD_PS(vResult, V1, Line1Point1);
     // Use result, or failure value
     vResult = _mm_and_ps(vResult, vResultMask);
     vResultMask = _mm_andnot_ps(vResultMask, vFail);
@@ -7627,9 +7520,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                     XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                    XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7638,9 +7530,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                     Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                     X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
-                    vTemp = _mm_mul_ps(Y, row1);
+                    vTemp = XM_FMADD_PS(Y, row1, row3);
                     vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7660,9 +7551,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                     XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                    XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7671,9 +7561,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                     Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                     X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
-                    vTemp = _mm_mul_ps(Y, row1);
+                    vTemp = XM_FMADD_PS(Y, row1, row3);
                     vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7698,9 +7587,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                 XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                 XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                 XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                vTemp = _mm_add_ps(vTemp, row3);
                 vTemp = _mm_add_ps(vTemp, vTemp2);
 
                 XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7718,9 +7606,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
                 XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                 XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                 XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                vTemp = _mm_add_ps(vTemp, row3);
                 vTemp = _mm_add_ps(vTemp, vTemp2);
 
                 _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7739,9 +7626,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
 
-            XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+            XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
             XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, row3);
             vTemp = _mm_add_ps(vTemp, vTemp2);
 
             _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -7959,9 +7845,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                         XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                        XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                         XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
 
                         XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7972,9 +7857,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                         Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                         X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
-                        vTemp = _mm_mul_ps(Y, row1);
+                        vTemp = XM_FMADD_PS(Y, row1, row3);
                         vTemp2 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8001,9 +7885,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                         XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                        XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                         XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
 
                         XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8014,9 +7897,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                         Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                         X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
-                        vTemp = _mm_mul_ps(Y, row1);
+                        vTemp = XM_FMADD_PS(Y, row1, row3);
                         vTemp2 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8044,9 +7926,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                     XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+                    XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8060,9 +7941,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
                     Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                     X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
-                    vTemp = _mm_mul_ps(Y, row1);
+                    vTemp = XM_FMADD_PS(Y, row1, row3);
                     vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
 
                     W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8089,9 +7969,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
             XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-            XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+            XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
             XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, row3);
             vTemp = _mm_add_ps(vTemp, vTemp2);
 
             XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8113,9 +7992,8 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStream
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
 
-            XMVECTOR vTemp = _mm_mul_ps(Y, row1);
+            XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
             XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, row3);
             vTemp = _mm_add_ps(vTemp, vTemp2);
 
             XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
@@ -8305,16 +8183,14 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
                         XMVECTOR vTemp = _mm_mul_ps(Y, row1);
-                        XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                        XMVECTOR V1 = _mm_add_ps(vTemp, vTemp2);
+                        XMVECTOR V1 = XM_FMADD_PS(X, row0, vTemp);
 
                         // Result 2
                         Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                         X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
                         vTemp = _mm_mul_ps(Y, row1);
-                        vTemp2 = _mm_mul_ps(X, row0);
-                        XMVECTOR V2 = _mm_add_ps(vTemp, vTemp2);
+                        XMVECTOR V2 = XM_FMADD_PS(X, row0, vTemp);
 
                         vTemp = _mm_movelh_ps(V1, V2);
 
@@ -8337,16 +8213,14 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
                         XMVECTOR vTemp = _mm_mul_ps(Y, row1);
-                        XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                        XMVECTOR V1 = _mm_add_ps(vTemp, vTemp2);
+                        XMVECTOR V1 = XM_FMADD_PS(X, row0, vTemp);
 
                         // Result 2
                         Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 3, 3, 3));
                         X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
                         vTemp = _mm_mul_ps(Y, row1);
-                        vTemp2 = _mm_mul_ps(X, row0);
-                        XMVECTOR V2 = _mm_add_ps(vTemp, vTemp2);
+                        XMVECTOR V2 = XM_FMADD_PS(X, row0, vTemp);
 
                         vTemp = _mm_movelh_ps(V1, V2);
 
@@ -8370,8 +8244,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                     XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
                     XMVECTOR vTemp = _mm_mul_ps(Y, row1);
-                    XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, vTemp2);
+                    vTemp = XM_FMADD_PS(X, row0, vTemp);
 
                     _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
@@ -8381,8 +8254,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
                     X = XM_PERMUTE_PS(V, _MM_SHUFFLE(2, 2, 2, 2));
 
                     vTemp = _mm_mul_ps(Y, row1);
-                    vTemp2 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, vTemp2);
+                    vTemp = XM_FMADD_PS(X, row0, vTemp);
 
                     _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
                     pOutputVector += OutputStride;
@@ -8405,8 +8277,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
             XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
             XMVECTOR vTemp = _mm_mul_ps(Y, row1);
-            XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, vTemp2);
+            vTemp = XM_FMADD_PS(X, row0, vTemp);
 
             _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
@@ -8424,8 +8295,7 @@ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStream
             XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
 
             XMVECTOR vTemp = _mm_mul_ps(Y, row1);
-            XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, vTemp2);
+            vTemp = XM_FMADD_PS(X, row0, vTemp);
 
             _mm_store_sd(reinterpret_cast<double*>(pOutputVector), _mm_castps_pd(vTemp));
             pOutputVector += OutputStride;
@@ -10061,10 +9931,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+                    XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
                     XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10075,10 +9944,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10089,10 +9957,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10103,10 +9970,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10133,10 +9999,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+                    XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
                     XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10147,10 +10012,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10161,10 +10025,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10175,10 +10038,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
                     Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
                     _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
@@ -10202,10 +10064,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
             XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-            XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+            XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
             XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
             XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, row3);
             vTemp = _mm_add_ps(vTemp, vTemp2);
             vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10225,10 +10086,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream
             XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-            XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+            XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
             XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
             XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-            vTemp = _mm_add_ps(vTemp, row3);
             vTemp = _mm_add_ps(vTemp, vTemp2);
             vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10479,10 +10339,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10495,10 +10354,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10511,10 +10369,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10527,10 +10384,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10565,10 +10421,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10581,10 +10436,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10597,10 +10451,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10613,10 +10466,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, row2);
+                        vTemp = XM_FMADD_PS(Z, row2, row3);
                         vTemp2 = _mm_mul_ps(Y, row1);
                         vTemp3 = _mm_mul_ps(X, row0);
-                        vTemp = _mm_add_ps(vTemp, row3);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10652,10 +10504,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+                    XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
                     XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
                     XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10670,10 +10521,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                     Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10688,10 +10538,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                     Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10706,10 +10555,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
                     Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, row2);
+                    vTemp = XM_FMADD_PS(Z, row2, row3);
                     vTemp2 = _mm_mul_ps(Y, row1);
                     vTemp3 = _mm_mul_ps(X, row0);
-                    vTemp = _mm_add_ps(vTemp, row3);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -10734,10 +10582,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStream
         XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-        XMVECTOR vTemp = _mm_mul_ps(Z, row2);
+        XMVECTOR vTemp = XM_FMADD_PS(Z, row2, row3);
         XMVECTOR vTemp2 = _mm_mul_ps(Y, row1);
         XMVECTOR vTemp3 = _mm_mul_ps(X, row0);
-        vTemp = _mm_add_ps(vTemp, row3);
         vTemp = _mm_add_ps(vTemp, vTemp2);
         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -11458,72 +11305,60 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V1 = _mm_add_ps(vTemp, Offset);
+                        V1 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 2
                         Z = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V2 = _mm_add_ps(vTemp, Offset);
+                        V2 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 3
                         Z = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V3 = _mm_add_ps(vTemp, Offset);
+                        V3 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 4
                         Z = XM_PERMUTE_PS(V4, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V4 = _mm_add_ps(vTemp, Offset);
+                        V4 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Pack and store the vectors
                         XM3PACK4INTO3(vTemp);
@@ -11552,72 +11387,60 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V1 = _mm_add_ps(vTemp, Offset);
+                        V1 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 2
                         Z = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V2 = _mm_add_ps(vTemp, Offset);
+                        V2 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 3
                         Z = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V3 = _mm_add_ps(vTemp, Offset);
+                        V3 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Result 4
                         Z = XM_PERMUTE_PS(V4, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
                         W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                         vTemp = _mm_div_ps(vTemp, W);
-
-                        vTemp = _mm_mul_ps(vTemp, Scale);
-                        V4 = _mm_add_ps(vTemp, Offset);
+                        V4 = XM_FMADD_PS(vTemp, Scale, Offset);
 
                         // Pack and store the vectors
                         XM3PACK4INTO3(vTemp);
@@ -11647,18 +11470,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
                     XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                     vTemp = _mm_div_ps(vTemp, W);
-
-                    vTemp = _mm_mul_ps(vTemp, Scale);
-                    vTemp = _mm_add_ps(vTemp, Offset);
+                    vTemp = XM_FMADD_PS(vTemp, Scale, Offset);
 
                     XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
                     pOutputVector += OutputStride;
@@ -11668,18 +11488,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                     Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
                     W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                     vTemp = _mm_div_ps(vTemp, W);
-
-                    vTemp = _mm_mul_ps(vTemp, Scale);
-                    vTemp = _mm_add_ps(vTemp, Offset);
+                    vTemp = XM_FMADD_PS(vTemp, Scale, Offset);
 
                     XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
                     pOutputVector += OutputStride;
@@ -11689,18 +11506,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                     Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
                     W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                     vTemp = _mm_div_ps(vTemp, W);
-
-                    vTemp = _mm_mul_ps(vTemp, Scale);
-                    vTemp = _mm_add_ps(vTemp, Offset);
+                    vTemp = XM_FMADD_PS(vTemp, Scale, Offset);
 
                     XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
                     pOutputVector += OutputStride;
@@ -11710,18 +11524,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
                     Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
                     W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
                     vTemp = _mm_div_ps(vTemp, W);
-
-                    vTemp = _mm_mul_ps(vTemp, Scale);
-                    vTemp = _mm_add_ps(vTemp, Offset);
+                    vTemp = XM_FMADD_PS(vTemp, Scale, Offset);
 
                     XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
                     pOutputVector += OutputStride;
@@ -11741,18 +11552,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream
         XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
         vTemp = _mm_add_ps(vTemp, vTemp2);
         vTemp = _mm_add_ps(vTemp, vTemp3);
 
         XMVECTOR W = XM_PERMUTE_PS(vTemp, _MM_SHUFFLE(3, 3, 3, 3));
         vTemp = _mm_div_ps(vTemp, W);
-
-        vTemp = _mm_mul_ps(vTemp, Scale);
-        vTemp = _mm_add_ps(vTemp, Offset);
+        vTemp = XM_FMADD_PS(vTemp, Scale, Offset);
 
         XMStoreFloat3(reinterpret_cast<XMFLOAT3*>(pOutputVector), vTemp);
         pOutputVector += OutputStride;
@@ -12060,17 +11868,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         XM3UNPACK3INTO4(V1, L2, L3);
 
                         // Result 1
-                        V1 = _mm_mul_ps(V1, Scale);
-                        V1 = _mm_add_ps(V1, Offset);
+                        V1 = XM_FMADD_PS(V1, Scale, Offset);
 
                         XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12078,17 +11884,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V1 = _mm_div_ps(vTemp, W);
 
                         // Result 2
-                        V2 = _mm_mul_ps(V2, Scale);
-                        V2 = _mm_add_ps(V2, Offset);
+                        V2 = XM_FMADD_PS(V2, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12096,17 +11900,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V2 = _mm_div_ps(vTemp, W);
 
                         // Result 3
-                        V3 = _mm_mul_ps(V3, Scale);
-                        V3 = _mm_add_ps(V3, Offset);
+                        V3 = XM_FMADD_PS(V3, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12114,17 +11916,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V3 = _mm_div_ps(vTemp, W);
 
                         // Result 4
-                        V4 = _mm_mul_ps(V4, Scale);
-                        V4 = _mm_add_ps(V4, Offset);
+                        V4 = XM_FMADD_PS(V4, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V4, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12154,17 +11954,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         XM3UNPACK3INTO4(V1, L2, L3);
 
                         // Result 1
-                        V1 = _mm_mul_ps(V1, Scale);
-                        V1 = _mm_add_ps(V1, Offset);
+                        V1 = XM_FMADD_PS(V1, Scale, Offset);
 
                         XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                         XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                         XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12172,17 +11970,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V1 = _mm_div_ps(vTemp, W);
 
                         // Result 2
-                        V2 = _mm_mul_ps(V2, Scale);
-                        V2 = _mm_add_ps(V2, Offset);
+                        V2 = XM_FMADD_PS(V2, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12190,17 +11986,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V2 = _mm_div_ps(vTemp, W);
 
                         // Result 3
-                        V3 = _mm_mul_ps(V3, Scale);
-                        V3 = _mm_add_ps(V3, Offset);
+                        V3 = XM_FMADD_PS(V3, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12208,17 +12002,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                         V3 = _mm_div_ps(vTemp, W);
 
                         // Result 4
-                        V4 = _mm_mul_ps(V4, Scale);
-                        V4 = _mm_add_ps(V4, Offset);
+                        V4 = XM_FMADD_PS(V4, Scale, Offset);
 
                         Z = XM_PERMUTE_PS(V4, _MM_SHUFFLE(2, 2, 2, 2));
                         Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                         X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                        vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                        vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                         vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                         vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                         vTemp = _mm_add_ps(vTemp, vTemp2);
                         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12249,17 +12041,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                     XM3UNPACK3INTO4(V1, L2, L3);
 
                     // Result 1
-                    V1 = _mm_mul_ps(V1, Scale);
-                    V1 = _mm_add_ps(V1, Offset);
+                    V1 = XM_FMADD_PS(V1, Scale, Offset);
 
                     XMVECTOR Z = XM_PERMUTE_PS(V1, _MM_SHUFFLE(2, 2, 2, 2));
                     XMVECTOR Y = XM_PERMUTE_PS(V1, _MM_SHUFFLE(1, 1, 1, 1));
                     XMVECTOR X = XM_PERMUTE_PS(V1, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12270,17 +12060,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                     pOutputVector += OutputStride;
 
                     // Result 2
-                    V2 = _mm_mul_ps(V2, Scale);
-                    V2 = _mm_add_ps(V2, Offset);
+                    V2 = XM_FMADD_PS(V2, Scale, Offset);
 
                     Z = XM_PERMUTE_PS(V2, _MM_SHUFFLE(2, 2, 2, 2));
                     Y = XM_PERMUTE_PS(V2, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V2, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12291,17 +12079,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                     pOutputVector += OutputStride;
 
                     // Result 3
-                    V3 = _mm_mul_ps(V3, Scale);
-                    V3 = _mm_add_ps(V3, Offset);
+                    V3 = XM_FMADD_PS(V3, Scale, Offset);
 
                     Z = XM_PERMUTE_PS(V3, _MM_SHUFFLE(2, 2, 2, 2));
                     Y = XM_PERMUTE_PS(V3, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V3, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12312,17 +12098,15 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
                     pOutputVector += OutputStride;
 
                     // Result 4
-                    V4 = _mm_mul_ps(V4, Scale);
-                    V4 = _mm_add_ps(V4, Offset);
+                    V4 = XM_FMADD_PS(V4, Scale, Offset);
 
                     Z = XM_PERMUTE_PS(V4, _MM_SHUFFLE(2, 2, 2, 2));
                     Y = XM_PERMUTE_PS(V4, _MM_SHUFFLE(1, 1, 1, 1));
                     X = XM_PERMUTE_PS(V4, _MM_SHUFFLE(0, 0, 0, 0));
 
-                    vTemp = _mm_mul_ps(Z, Transform.r[2]);
+                    vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
                     vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
                     vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-                    vTemp = _mm_add_ps(vTemp, Transform.r[3]);
                     vTemp = _mm_add_ps(vTemp, vTemp2);
                     vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -12350,10 +12134,9 @@ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream
         XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
         XMVECTOR X = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
 
-        XMVECTOR vTemp = _mm_mul_ps(Z, Transform.r[2]);
+        XMVECTOR vTemp = XM_FMADD_PS(Z, Transform.r[2], Transform.r[3]);
         XMVECTOR vTemp2 = _mm_mul_ps(Y, Transform.r[1]);
         XMVECTOR vTemp3 = _mm_mul_ps(X, Transform.r[0]);
-        vTemp = _mm_add_ps(vTemp, Transform.r[3]);
         vTemp = _mm_add_ps(vTemp, vTemp2);
         vTemp = _mm_add_ps(vTemp, vTemp3);
 
@@ -14053,12 +13836,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
 
                 vTempX = _mm_mul_ps(vTempX, row0);
                 vTempY = _mm_mul_ps(vTempY, row1);
-                vTempZ = _mm_mul_ps(vTempZ, row2);
-                vTempW = _mm_mul_ps(vTempW, row3);
-
-                vTempX = _mm_add_ps(vTempX, vTempY);
-                vTempZ = _mm_add_ps(vTempZ, vTempW);
-                vTempX = _mm_add_ps(vTempX, vTempZ);
+                vTempZ = XM_FMADD_PS(vTempZ, row2, vTempX);
+                vTempW = XM_FMADD_PS(vTempW, row3, vTempY);
+                vTempX = _mm_add_ps(vTempZ, vTempW);
 
                 XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTempX);
                 pOutputVector += OutputStride;
@@ -14079,12 +13859,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
 
                 vTempX = _mm_mul_ps(vTempX, row0);
                 vTempY = _mm_mul_ps(vTempY, row1);
-                vTempZ = _mm_mul_ps(vTempZ, row2);
-                vTempW = _mm_mul_ps(vTempW, row3);
-
-                vTempX = _mm_add_ps(vTempX, vTempY);
-                vTempZ = _mm_add_ps(vTempZ, vTempW);
-                vTempX = _mm_add_ps(vTempX, vTempZ);
+                vTempZ = XM_FMADD_PS(vTempZ, row2, vTempX);
+                vTempW = XM_FMADD_PS(vTempW, row3, vTempY);
+                vTempX = _mm_add_ps(vTempZ, vTempW);
 
                 XM_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTempX);
                 pOutputVector += OutputStride;
@@ -14108,12 +13885,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
 
                 vTempX = _mm_mul_ps(vTempX, row0);
                 vTempY = _mm_mul_ps(vTempY, row1);
-                vTempZ = _mm_mul_ps(vTempZ, row2);
-                vTempW = _mm_mul_ps(vTempW, row3);
-
-                vTempX = _mm_add_ps(vTempX, vTempY);
-                vTempZ = _mm_add_ps(vTempZ, vTempW);
-                vTempX = _mm_add_ps(vTempX, vTempZ);
+                vTempZ = XM_FMADD_PS(vTempZ, row2, vTempX);
+                vTempW = XM_FMADD_PS(vTempW, row3, vTempY);
+                vTempX = _mm_add_ps(vTempZ, vTempW);
 
                 _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTempX);
                 pOutputVector += OutputStride;
@@ -14134,12 +13908,9 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
 
                 vTempX = _mm_mul_ps(vTempX, row0);
                 vTempY = _mm_mul_ps(vTempY, row1);
-                vTempZ = _mm_mul_ps(vTempZ, row2);
-                vTempW = _mm_mul_ps(vTempW, row3);
-
-                vTempX = _mm_add_ps(vTempX, vTempY);
-                vTempZ = _mm_add_ps(vTempZ, vTempW);
-                vTempX = _mm_add_ps(vTempX, vTempZ);
+                vTempZ = XM_FMADD_PS(vTempZ, row2, vTempX);
+                vTempW = XM_FMADD_PS(vTempW, row3, vTempY);
+                vTempX = _mm_add_ps(vTempZ, vTempW);
 
                 _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTempX);
                 pOutputVector += OutputStride;

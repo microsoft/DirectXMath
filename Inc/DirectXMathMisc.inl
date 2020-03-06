@@ -1410,8 +1410,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     XMVECTOR vSaturation = _mm_set_ps1(fSaturation);
     // vResult = ((vColor-vLuminance)*vSaturation)+vLuminance;
     XMVECTOR vResult = _mm_sub_ps(vColor, vLuminance);
-    vResult = _mm_mul_ps(vResult, vSaturation);
-    vResult = _mm_add_ps(vResult, vLuminance);
+    vResult = XM_FMADD_PS(vResult, vSaturation, vLuminance);
     // Retain w from the source color
     vLuminance = _mm_shuffle_ps(vResult, vColor, _MM_SHUFFLE(3, 2, 2, 2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult, vLuminance, _MM_SHUFFLE(3, 0, 1, 0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
@@ -1444,8 +1443,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustContrast
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vScale = _mm_set_ps1(fContrast);           // Splat the scale
     XMVECTOR vResult = _mm_sub_ps(vColor, g_XMOneHalf);  // Subtract 0.5f from the source (Saving source)
-    vResult = _mm_mul_ps(vResult, vScale);               // Mul by scale
-    vResult = _mm_add_ps(vResult, g_XMOneHalf);          // Add 0.5f
+    vResult = XM_FMADD_PS(vResult, vScale, g_XMOneHalf);
 // Retain w from the source color
     vScale = _mm_shuffle_ps(vResult, vColor, _MM_SHUFFLE(3, 2, 2, 2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult, vScale, _MM_SHUFFLE(3, 0, 1, 0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
