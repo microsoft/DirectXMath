@@ -1831,7 +1831,7 @@ namespace DirectX
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<1, 1, 3, 3>(FXMVECTOR V) noexcept { return _mm_movehdup_ps(V); }
 #endif
 
-#if defined(_XM_AVX2_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_AVX2_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_) && defined(_XM_FAVOR_INTEL_)
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0, 0, 0, 0>(FXMVECTOR V) noexcept { return _mm_broadcastss_ps(V); }
 #endif
 

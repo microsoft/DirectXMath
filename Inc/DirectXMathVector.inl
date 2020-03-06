@@ -225,7 +225,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSplatX(FXMVECTOR V) noexcept
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vdupq_lane_f32(vget_low_f32(V), 0);
-#elif defined(_XM_AVX2_INTRINSICS_)
+#elif defined(_XM_AVX2_INTRINSICS_) && defined(_XM_FAVOR_INTEL_)
     return _mm_broadcastss_ps(V);
 #elif defined(_XM_SSE_INTRINSICS_)
     return XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
