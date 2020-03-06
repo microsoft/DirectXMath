@@ -868,6 +868,22 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
 
 //------------------------------------------------------------------------------
 
+inline XMMATRIX XM_CALLCONV XMMatrixVectorTensorProduct
+(
+    FXMVECTOR V1,
+    FXMVECTOR V2
+) noexcept
+{
+    XMMATRIX mResult;
+    mResult.r[0] = XMVectorMultiply(XMVectorSwizzle<0, 0, 0, 0>(V1), V2);
+    mResult.r[1] = XMVectorMultiply(XMVectorSwizzle<1, 1, 1, 1>(V1), V2);
+    mResult.r[2] = XMVectorMultiply(XMVectorSwizzle<2, 2, 2, 2>(V1), V2);
+    mResult.r[3] = XMVectorMultiply(XMVectorSwizzle<3, 3, 3, 3>(V1), V2);
+    return mResult;
+}
+
+//------------------------------------------------------------------------------
+
 inline XMVECTOR XM_CALLCONV XMMatrixDeterminant(FXMMATRIX M) noexcept
 {
     static const XMVECTORF32 Sign = { { { 1.0f, -1.0f, 1.0f, -1.0f } } };
