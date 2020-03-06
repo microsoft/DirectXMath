@@ -519,6 +519,60 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     mResult.r[2] = T1.val[0];
     mResult.r[3] = T1.val[1];
     return mResult;
+#elif defined(_XM_AVX2_INTRINSICS_)
+    __m256 t0 = _mm256_castps128_ps256(M1.r[0]);
+    t0 = _mm256_insertf128_ps(t0, M1.r[1], 1);
+    __m256 t1 = _mm256_castps128_ps256(M1.r[2]);
+    t1 = _mm256_insertf128_ps(t1, M1.r[3], 1);
+
+    __m256 u0 = _mm256_castps128_ps256(M2.r[0]);
+    u0 = _mm256_insertf128_ps(u0, M2.r[1], 1);
+    __m256 u1 = _mm256_castps128_ps256(M2.r[2]);
+    u1 = _mm256_insertf128_ps(u1, M2.r[3], 1);
+
+    __m256 a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(0, 0, 0, 0));
+    __m256 a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(0, 0, 0, 0));
+    __m256 b0 = _mm256_permute2f128_ps(u0, u0, 0x00);
+    __m256 c0 = _mm256_mul_ps(a0, b0);
+    __m256 c1 = _mm256_mul_ps(a1, b0);
+
+    a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(1, 1, 1, 1));
+    a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(1, 1, 1, 1));
+    b0 = _mm256_permute2f128_ps(u0, u0, 0x11);
+    __m256 c2 = _mm256_fmadd_ps(a0, b0, c0);
+    __m256 c3 = _mm256_fmadd_ps(a1, b0, c1);
+
+    a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(2, 2, 2, 2));
+    a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(2, 2, 2, 2));
+    __m256 b1 = _mm256_permute2f128_ps(u1, u1, 0x00);
+    __m256 c4 = _mm256_mul_ps(a0, b1);
+    __m256 c5 = _mm256_mul_ps(a1, b1);
+
+    a0 = _mm256_shuffle_ps(t0, t0, _MM_SHUFFLE(3, 3, 3, 3));
+    a1 = _mm256_shuffle_ps(t1, t1, _MM_SHUFFLE(3, 3, 3, 3));
+    b1 = _mm256_permute2f128_ps(u1, u1, 0x11);
+    __m256 c6 = _mm256_fmadd_ps(a0, b1, c4);
+    __m256 c7 = _mm256_fmadd_ps(a1, b1, c5);
+
+    t0 = _mm256_add_ps(c2, c6);
+    t1 = _mm256_add_ps(c3, c7);
+
+    // Transpose result
+    __m256 vTemp = _mm256_unpacklo_ps(t0, t1);
+    __m256 vTemp2 = _mm256_unpackhi_ps(t0, t1);
+    __m256 vTemp3 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
+    __m256 vTemp4 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
+    vTemp = _mm256_unpacklo_ps(vTemp3, vTemp4);
+    vTemp2 = _mm256_unpackhi_ps(vTemp3, vTemp4);
+    t0 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
+    t1 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
+
+    XMMATRIX mResult;
+    mResult.r[0] = _mm256_castps256_ps128(t0);
+    mResult.r[1] = _mm256_extractf128_ps(t0, 1);
+    mResult.r[2] = _mm256_castps256_ps128(t1);
+    mResult.r[3] = _mm256_extractf128_ps(t1, 1);
+    return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the component X,Y,Z then W
 #if defined(_XM_AVX_INTRINSICS_)
@@ -606,6 +660,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
     vX = _mm_add_ps(vX, vY);
     XMVECTOR r3 = vX;
 
+    // Transpose result
     // x.x,x.y,y.x,y.y
     XMVECTOR vTemp1 = _mm_shuffle_ps(r0, r1, _MM_SHUFFLE(1, 0, 1, 0));
     // x.z,x.w,y.z,y.w
@@ -667,6 +722,27 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranspose(FXMMATRIX M) noexcept
     mResult.r[2] = T1.val[0];
     mResult.r[3] = T1.val[1];
     return mResult;
+#elif defined(_XM_AVX2_INTRINSICS_)
+    __m256 t0 = _mm256_castps128_ps256(M.r[0]);
+    t0 = _mm256_insertf128_ps(t0, M.r[1], 1);
+    __m256 t1 = _mm256_castps128_ps256(M.r[2]);
+    t1 = _mm256_insertf128_ps(t1, M.r[3], 1);
+
+    __m256 vTemp = _mm256_unpacklo_ps(t0, t1);
+    __m256 vTemp2 = _mm256_unpackhi_ps(t0, t1);
+    __m256 vTemp3 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
+    __m256 vTemp4 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
+    vTemp = _mm256_unpacklo_ps(vTemp3, vTemp4);
+    vTemp2 = _mm256_unpackhi_ps(vTemp3, vTemp4);
+    t0 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x20);
+    t1 = _mm256_permute2f128_ps(vTemp, vTemp2, 0x31);
+
+    XMMATRIX mResult;
+    mResult.r[0] = _mm256_castps256_ps128(t0);
+    mResult.r[1] = _mm256_extractf128_ps(t0, 1);
+    mResult.r[2] = _mm256_castps256_ps128(t1);
+    mResult.r[3] = _mm256_extractf128_ps(t1, 1);
+    return mResult;
 #elif defined(_XM_SSE_INTRINSICS_)
     // x.x,x.y,y.x,y.y
     XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
@@ -676,8 +752,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixTranspose(FXMMATRIX M) noexcept
     XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
     // z.z,z.w,w.z,w.w
     XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
-    XMMATRIX mResult;
 
+    XMMATRIX mResult;
     // x.x,y.x,z.x,w.x
     mResult.r[0] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
     // x.y,y.y,z.y,w.y
