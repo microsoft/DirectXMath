@@ -153,7 +153,7 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     Q2X = _mm_mul_ps(Q2X, Q1Shuffle);
     Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle, _MM_SHUFFLE(2, 3, 0, 1));
     // Flip the signs on y and z
-    Q2X = _mm_mul_ps(Q2X, ControlWZYX);
+    vResult = XM_FMADD_PS(Q2X, ControlWZYX, vResult);
     // Mul by Q1ZWXY
     Q2Y = _mm_mul_ps(Q2Y, Q1Shuffle);
     Q1Shuffle = XM_PERMUTE_PS(Q1Shuffle, _MM_SHUFFLE(0, 1, 2, 3));
@@ -161,10 +161,8 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     Q2Y = _mm_mul_ps(Q2Y, ControlZWXY);
     // Mul by Q1YXWZ
     Q2Z = _mm_mul_ps(Q2Z, Q1Shuffle);
-    vResult = _mm_add_ps(vResult, Q2X);
     // Flip the signs on x and w
-    Q2Z = _mm_mul_ps(Q2Z, ControlYXWZ);
-    Q2Y = _mm_add_ps(Q2Y, Q2Z);
+    Q2Y = XM_FMADD_PS(Q2Z, ControlYXWZ, Q2Y);
     vResult = _mm_add_ps(vResult, Q2Y);
     return vResult;
 #endif
@@ -839,19 +837,11 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix(FXMMATRIX M) noexcept
     // x^2 + y^2 >= z^2 + w^2 equivalent to r22 <= 0
     XMVECTOR x2py2gez2pw2 = _mm_cmple_ps(r22, g_XMZero);
 
-    // (+r00, -r00, -r00, +r00)
-    XMVECTOR t0 = _mm_mul_ps(XMPMMP, r00);
-
-    // (-r11, +r11, -r11, +r11)
-    XMVECTOR t1 = _mm_mul_ps(XMMPMP, r11);
-
-    // (-r22, -r22, +r22, +r22)
-    XMVECTOR t2 = _mm_mul_ps(XMMMPP, r22);
-
     // (4*x^2, 4*y^2, 4*z^2, 4*w^2)
-    XMVECTOR x2y2z2w2 = _mm_add_ps(t0, t1);
-    x2y2z2w2 = _mm_add_ps(t2, x2y2z2w2);
-    x2y2z2w2 = _mm_add_ps(x2y2z2w2, g_XMOne);
+    XMVECTOR t0 = XM_FMADD_PS(XMPMMP, r00, g_XMOne);
+    XMVECTOR t1 = _mm_mul_ps(XMMPMP, r11);
+    XMVECTOR t2 = XM_FMADD_PS(XMMMPP, r22, t0);
+    XMVECTOR x2y2z2w2 = _mm_add_ps(t1, t2);
 
     // (r01, r02, r12, r11)
     t0 = _mm_shuffle_ps(r0, r1, _MM_SHUFFLE(1, 2, 2, 1));
@@ -1420,8 +1410,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation
     XMVECTOR vSaturation = _mm_set_ps1(fSaturation);
     // vResult = ((vColor-vLuminance)*vSaturation)+vLuminance;
     XMVECTOR vResult = _mm_sub_ps(vColor, vLuminance);
-    vResult = _mm_mul_ps(vResult, vSaturation);
-    vResult = _mm_add_ps(vResult, vLuminance);
+    vResult = XM_FMADD_PS(vResult, vSaturation, vLuminance);
     // Retain w from the source color
     vLuminance = _mm_shuffle_ps(vResult, vColor, _MM_SHUFFLE(3, 2, 2, 2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult, vLuminance, _MM_SHUFFLE(3, 0, 1, 0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
@@ -1454,8 +1443,7 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustContrast
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vScale = _mm_set_ps1(fContrast);           // Splat the scale
     XMVECTOR vResult = _mm_sub_ps(vColor, g_XMOneHalf);  // Subtract 0.5f from the source (Saving source)
-    vResult = _mm_mul_ps(vResult, vScale);               // Mul by scale
-    vResult = _mm_add_ps(vResult, g_XMOneHalf);          // Add 0.5f
+    vResult = XM_FMADD_PS(vResult, vScale, g_XMOneHalf);
 // Retain w from the source color
     vScale = _mm_shuffle_ps(vResult, vColor, _MM_SHUFFLE(3, 2, 2, 2));   // x = vResult.z,y = vResult.z,z = vColor.z,w=vColor.w
     vResult = _mm_shuffle_ps(vResult, vScale, _MM_SHUFFLE(3, 0, 1, 0));  // x = vResult.x,y = vResult.y,z = vResult.z,w=vColor.w
