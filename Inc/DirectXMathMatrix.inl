@@ -869,7 +869,18 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMMATRIX MT = XMMatrixTranspose(M);
+    // Transpose matrix
+    XMVECTOR vTemp1 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(1, 0, 1, 0));
+    XMVECTOR vTemp3 = _mm_shuffle_ps(M.r[0], M.r[1], _MM_SHUFFLE(3, 2, 3, 2));
+    XMVECTOR vTemp2 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(1, 0, 1, 0));
+    XMVECTOR vTemp4 = _mm_shuffle_ps(M.r[2], M.r[3], _MM_SHUFFLE(3, 2, 3, 2));
+
+    XMMATRIX MT;
+    MT.r[0] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(2, 0, 2, 0));
+    MT.r[1] = _mm_shuffle_ps(vTemp1, vTemp2, _MM_SHUFFLE(3, 1, 3, 1));
+    MT.r[2] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(2, 0, 2, 0));
+    MT.r[3] = _mm_shuffle_ps(vTemp3, vTemp4, _MM_SHUFFLE(3, 1, 3, 1));
+
     XMVECTOR V00 = XM_PERMUTE_PS(MT.r[2], _MM_SHUFFLE(1, 1, 0, 0));
     XMVECTOR V10 = XM_PERMUTE_PS(MT.r[3], _MM_SHUFFLE(3, 2, 3, 2));
     XMVECTOR V01 = XM_PERMUTE_PS(MT.r[0], _MM_SHUFFLE(1, 1, 0, 0));
@@ -972,7 +983,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     C2 = XM_PERMUTE_PS(C2, _MM_SHUFFLE(3, 1, 2, 0));
     C4 = XM_PERMUTE_PS(C4, _MM_SHUFFLE(3, 1, 2, 0));
     C6 = XM_PERMUTE_PS(C6, _MM_SHUFFLE(3, 1, 2, 0));
-    // Get the determinate
+    // Get the determinant
     XMVECTOR vTemp = XMVector4Dot(C0, MT.r[0]);
     if (pDeterminant != nullptr)
         *pDeterminant = vTemp;
@@ -3406,4 +3417,3 @@ inline XMFLOAT4X4::XMFLOAT4X4(const float* pArray) noexcept
     m[3][2] = pArray[14];
     m[3][3] = pArray[15];
 }
-
