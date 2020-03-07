@@ -7495,6 +7495,149 @@ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream
     }
 
     return pOutputStream;
+#elif defined(_XM_AVX2_INTRINSICS_)
+    auto pInputVector = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
+
+    size_t i = 0;
+    size_t four = VectorCount >> 2;
+    if (four > 0)
+    {
+        __m256 row0 = _mm256_broadcast_ps(&M.r[0]);
+        __m256 row1 = _mm256_broadcast_ps(&M.r[1]);
+        __m256 row3 = _mm256_broadcast_ps(&M.r[3]);
+
+        if (InputStride == sizeof(XMFLOAT2))
+        {
+            if (OutputStride == sizeof(XMFLOAT4))
+            {
+                if (!(reinterpret_cast<uintptr_t>(pOutputStream) & 0x1F))
+                {
+                    // Packed input, aligned & packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        pInputVector += sizeof(XMFLOAT2) * 4;
+
+                        __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
+                        __m256 X2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
+                        __m256 Y1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
+                        __m256 X1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
+
+                        __m256 vTempB = _mm256_fmadd_ps(Y1, row1, row3);
+                        __m256 vTempB2 = _mm256_fmadd_ps(Y2, row1, row3);
+                        __m256 vTempA = _mm256_mul_ps(X1, row0);
+                        __m256 vTempA2 = _mm256_mul_ps(X2, row0);
+                        vTempA = _mm256_add_ps(vTempA, vTempB);
+                        vTempA2 = _mm256_add_ps(vTempA2, vTempB2);
+
+                        X1 = _mm256_insertf128_ps(vTempA, _mm256_castps256_ps128(vTempA2), 1);
+                        XM256_STREAM_PS(reinterpret_cast<float*>(pOutputVector), X1);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
+
+                        X2 = _mm256_insertf128_ps(vTempA2, _mm256_extractf128_ps(vTempA, 1), 0);
+                        XM256_STREAM_PS(reinterpret_cast<float*>(pOutputVector), X2);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
+
+                        i += 4;
+                    }
+                }
+                else
+                {
+                    // Packed input, packed output
+                    for (size_t j = 0; j < four; ++j)
+                    {
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        pInputVector += sizeof(XMFLOAT2) * 4;
+
+                        __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
+                        __m256 X2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
+                        __m256 Y1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
+                        __m256 X1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
+
+                        __m256 vTempB = _mm256_fmadd_ps(Y1, row1, row3);
+                        __m256 vTempB2 = _mm256_fmadd_ps(Y2, row1, row3);
+                        __m256 vTempA = _mm256_mul_ps(X1, row0);
+                        __m256 vTempA2 = _mm256_mul_ps(X2, row0);
+                        vTempA = _mm256_add_ps(vTempA, vTempB);
+                        vTempA2 = _mm256_add_ps(vTempA2, vTempB2);
+
+                        X1 = _mm256_insertf128_ps(vTempA, _mm256_castps256_ps128(vTempA2), 1);
+                        _mm256_storeu_ps(reinterpret_cast<float*>(pOutputVector), X1);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
+
+                        X2 = _mm256_insertf128_ps(vTempA2, _mm256_extractf128_ps(vTempA, 1), 0);
+                        _mm256_storeu_ps(reinterpret_cast<float*>(pOutputVector), X2);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
+
+                        i += 4;
+                    }
+                }
+            }
+            else
+            {
+                // Packed input, unpacked output
+                for (size_t j = 0; j < four; ++j)
+                {
+                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    pInputVector += sizeof(XMFLOAT2) * 4;
+
+                    __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
+                    __m256 X2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
+                    __m256 Y1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
+                    __m256 X1 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
+
+                    __m256 vTempB = _mm256_fmadd_ps(Y1, row1, row3);
+                    __m256 vTempB2 = _mm256_fmadd_ps(Y2, row1, row3);
+                    __m256 vTempA = _mm256_mul_ps(X1, row0);
+                    __m256 vTempA2 = _mm256_mul_ps(X2, row0);
+                    vTempA = _mm256_add_ps(vTempA, vTempB);
+                    vTempA2 = _mm256_add_ps(vTempA2, vTempB2);
+
+                    _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), _mm256_castps256_ps128(vTempA));
+                    pOutputVector += OutputStride;
+
+                    _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), _mm256_castps256_ps128(vTempA2));
+                    pOutputVector += OutputStride;
+
+                    _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), _mm256_extractf128_ps(vTempA, 1));
+                    pOutputVector += OutputStride;
+
+                    _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), _mm256_extractf128_ps(vTempA2, 1));
+                    pOutputVector += OutputStride;
+
+                    i += 4;
+                }
+            }
+        }
+    }
+
+    if (i < VectorCount)
+    {
+        const XMVECTOR row0 = M.r[0];
+        const XMVECTOR row1 = M.r[1];
+        const XMVECTOR row3 = M.r[3];
+
+        for (; i < VectorCount; i++)
+        {
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            pInputVector += InputStride;
+
+            XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
+            XMVECTOR X = XM_PERMUTE_PS(xy, _MM_SHUFFLE(0, 0, 0, 0));
+
+            XMVECTOR vTemp = XM_FMADD_PS(Y, row1, row3);
+            XMVECTOR vTemp2 = _mm_mul_ps(X, row0);
+            vTemp = _mm_add_ps(vTemp, vTemp2);
+
+            _mm_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTemp);
+            pOutputVector += OutputStride;
+        }
+    }
+
+    XM_SFENCE();
+
+    return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
     auto pInputVector = reinterpret_cast<const uint8_t*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
