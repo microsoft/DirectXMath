@@ -152,9 +152,11 @@
 
 #if defined(_XM_NO_MOVNT_)
 #define XM_STREAM_PS( p, a ) _mm_store_ps((p), (a))
+#define XM256_STREAM_PS( p, a ) _mm256_store_ps((p), (a))
 #define XM_SFENCE()
 #else
 #define XM_STREAM_PS( p, a ) _mm_stream_ps((p), (a))
+#define XM256_STREAM_PS( p, a ) _mm256_stream_ps((p), (a))
 #define XM_SFENCE() _mm_sfence()
 #endif
 

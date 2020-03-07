@@ -13827,27 +13827,55 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
         {
             if (OutputStride == sizeof(XMFLOAT4))
             {
-                // Packed input, packed output
-                for (size_t j = 0; j < two; ++j)
+                if (!(reinterpret_cast<uintptr_t>(pOutputStream) & 0x1F))
                 {
-                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    pInputVector += sizeof(XMFLOAT4) * 2;
+                    // Packed input, aligned & packed output
+                    for (size_t j = 0; j < two; ++j)
+                    {
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        pInputVector += sizeof(XMFLOAT4) * 2;
 
-                    __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
-                    __m256 vTempY = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
-                    __m256 vTempZ = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
-                    __m256 vTempW = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
+                        __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
+                        __m256 vTempY = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
+                        __m256 vTempZ = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
+                        __m256 vTempW = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
 
-                    vTempX = _mm256_mul_ps(vTempX, row0);
-                    vTempY = _mm256_mul_ps(vTempY, row1);
-                    vTempZ = _mm256_fmadd_ps(vTempZ, row2, vTempX);
-                    vTempW = _mm256_fmadd_ps(vTempW, row3, vTempY);
-                    vTempX = _mm256_add_ps(vTempZ, vTempW);
+                        vTempX = _mm256_mul_ps(vTempX, row0);
+                        vTempY = _mm256_mul_ps(vTempY, row1);
+                        vTempZ = _mm256_fmadd_ps(vTempZ, row2, vTempX);
+                        vTempW = _mm256_fmadd_ps(vTempW, row3, vTempY);
+                        vTempX = _mm256_add_ps(vTempZ, vTempW);
 
-                    _mm256_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTempX);
-                    pOutputVector += sizeof(XMFLOAT4) * 2;
+                        XM256_STREAM_PS(reinterpret_cast<float*>(pOutputVector), vTempX);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
 
-                    i += 2;
+                        i += 2;
+                    }
+                }
+                else
+                {
+                    // Packed input, packed output
+                    for (size_t j = 0; j < two; ++j)
+                    {
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        pInputVector += sizeof(XMFLOAT4) * 2;
+
+                        __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
+                        __m256 vTempY = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(1, 1, 1, 1));
+                        __m256 vTempZ = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(2, 2, 2, 2));
+                        __m256 vTempW = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
+
+                        vTempX = _mm256_mul_ps(vTempX, row0);
+                        vTempY = _mm256_mul_ps(vTempY, row1);
+                        vTempZ = _mm256_fmadd_ps(vTempZ, row2, vTempX);
+                        vTempW = _mm256_fmadd_ps(vTempW, row3, vTempY);
+                        vTempX = _mm256_add_ps(vTempZ, vTempW);
+
+                        _mm256_storeu_ps(reinterpret_cast<float*>(pOutputVector), vTempX);
+                        pOutputVector += sizeof(XMFLOAT4) * 2;
+
+                        i += 2;
+                    }
                 }
             }
             else
@@ -13907,6 +13935,8 @@ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream
             pOutputVector += OutputStride;
         }
     }
+
+    XM_SFENCE();
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
