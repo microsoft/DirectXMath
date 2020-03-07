@@ -899,12 +899,9 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     V02 = _mm_shuffle_ps(MT.r[2], MT.r[0], _MM_SHUFFLE(3, 1, 3, 1));
     V12 = _mm_shuffle_ps(MT.r[3], MT.r[1], _MM_SHUFFLE(2, 0, 2, 0));
 
-    V00 = _mm_mul_ps(V00, V10);
-    V01 = _mm_mul_ps(V01, V11);
-    V02 = _mm_mul_ps(V02, V12);
-    D0 = _mm_sub_ps(D0, V00);
-    D1 = _mm_sub_ps(D1, V01);
-    D2 = _mm_sub_ps(D2, V02);
+    D0 = XM_FNMADD_PS(V00, V10, D0);
+    D1 = XM_FNMADD_PS(V01, V11, D1);
+    D2 = XM_FNMADD_PS(V02, V12, D2);
     // V11 = D0Y,D0W,D2Y,D2Y
     V11 = _mm_shuffle_ps(D0, D2, _MM_SHUFFLE(1, 1, 3, 1));
     V00 = XM_PERMUTE_PS(MT.r[1], _MM_SHUFFLE(1, 0, 2, 1));
@@ -936,14 +933,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
     V03 = XM_PERMUTE_PS(MT.r[2], _MM_SHUFFLE(1, 3, 2, 3));
     V13 = _mm_shuffle_ps(D1, V13, _MM_SHUFFLE(0, 2, 1, 2));
 
-    V00 = _mm_mul_ps(V00, V10);
-    V01 = _mm_mul_ps(V01, V11);
-    V02 = _mm_mul_ps(V02, V12);
-    V03 = _mm_mul_ps(V03, V13);
-    C0 = _mm_sub_ps(C0, V00);
-    C2 = _mm_sub_ps(C2, V01);
-    C4 = _mm_sub_ps(C4, V02);
-    C6 = _mm_sub_ps(C6, V03);
+    C0 = XM_FNMADD_PS(V00, V10, C0);
+    C2 = XM_FNMADD_PS(V01, V11, C2);
+    C4 = XM_FNMADD_PS(V02, V12, C4);
+    C6 = XM_FNMADD_PS(V03, V13, C6);
 
     V00 = XM_PERMUTE_PS(MT.r[1], _MM_SHUFFLE(0, 3, 0, 3));
     // V10 = D0Z,D0Z,D2X,D2Y
@@ -3417,3 +3410,4 @@ inline XMFLOAT4X4::XMFLOAT4X4(const float* pArray) noexcept
     m[3][2] = pArray[14];
     m[3][3] = pArray[15];
 }
+
