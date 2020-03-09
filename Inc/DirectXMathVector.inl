@@ -2153,7 +2153,7 @@ inline XMVECTOR XM_CALLCONV XMVectorInBoundsR
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -2181,7 +2181,7 @@ inline XMVECTOR XM_CALLCONV XMVectorIsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
@@ -2295,7 +2295,7 @@ namespace Internal
     }
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -2341,7 +2341,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRound(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
@@ -6482,7 +6482,7 @@ inline bool XM_CALLCONV XMVector2InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -6506,7 +6506,7 @@ inline bool XM_CALLCONV XMVector2IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
@@ -9234,7 +9234,7 @@ inline bool XM_CALLCONV XMVector3InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -9262,7 +9262,7 @@ inline bool XM_CALLCONV XMVector3IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
@@ -13114,7 +13114,7 @@ inline bool XM_CALLCONV XMVector4InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -13141,7 +13141,7 @@ inline bool XM_CALLCONV XMVector4IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
