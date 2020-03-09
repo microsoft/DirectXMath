@@ -49,9 +49,15 @@ These components are designed to work without requiring any content from the leg
 
   + XDSP.h - Digital Signal Processing helper functions
 
-# Documentation
+## Documentation
 
-Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en-us/windows/desktop/dxmath/directxmath-portal).
+Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en-us/windows/desktop/dxmath/directxmath-portal). Additional information can be found on the [project wiki](https://github.com/microsoft/DirectXMath/wiki).
+
+## Compiler support
+
+Officially the library is supported with Microsoft Visual C++ and clang/LLVM. It should also compile with the Intel C++ compiler, GCC, and MinGW compilers.
+
+To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://github.com/dotnet/corert/blob/master/src/Native/inc/unix/sal.h).
 
 ## Notices
 
