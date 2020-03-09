@@ -1164,7 +1164,7 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK(const XMFLOAT3PK* pSource) noexcept
 {
     assert(pSource);
 
-    __declspec(align(16)) uint32_t Result[4];
+    XM_ALIGNED_DATA(16) uint32_t Result[4];
     uint32_t Mantissa;
     uint32_t Exponent;
 
@@ -2481,7 +2481,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
 {
     assert(pDestination);
 
-    __declspec(align(16)) uint32_t IValue[4];
+    XM_ALIGNED_DATA(16) uint32_t IValue[4];
     XMStoreFloat3A(reinterpret_cast<XMFLOAT3A*>(&IValue), V);
 
     uint32_t Result[3];

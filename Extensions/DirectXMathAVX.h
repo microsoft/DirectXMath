@@ -28,7 +28,7 @@ inline bool XMVerifyAVXSupport()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid( CPUInfo, 0 );
@@ -37,7 +37,7 @@ inline bool XMVerifyAVXSupport()
     if ( CPUInfo[0] < 1  )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 1 );
