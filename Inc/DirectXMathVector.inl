@@ -1297,7 +1297,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
 #elif defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    XM_ALIGNED_DATA(16) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128(reinterpret_cast<const __m128i*>(&elem[0]));
 
     __m128i vSelect = _mm_cmpgt_epi32(vControl, three);
@@ -1733,8 +1733,12 @@ inline XMVECTOR XM_CALLCONV XMVectorNearEqual
     return Control.v;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTOR vDelta = vsubq_f32(V1, V2);
+    float32x4_t vDelta = vsubq_f32(V1, V2);
+#ifdef _MSC_VER
     return vacleq_f32(vDelta, Epsilon);
+#else
+    return vcleq_f32(vabsq_f32(vDelta), Epsilon);
+#endif
 #elif defined(_XM_SSE_INTRINSICS_)
     // Get the difference
     XMVECTOR vDelta = _mm_sub_ps(V1, V2);
@@ -2149,7 +2153,7 @@ inline XMVECTOR XM_CALLCONV XMVectorInBoundsR
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -2177,7 +2181,7 @@ inline XMVECTOR XM_CALLCONV XMVectorIsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(pop)
 #endif
 
@@ -2291,7 +2295,7 @@ namespace Internal
     }
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -2337,7 +2341,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRound(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(pop)
 #endif
 
@@ -4020,8 +4024,8 @@ inline XMVECTOR XM_CALLCONV XMVectorPow
         } } };
     return vResult.v;
 #elif defined(_XM_SSE_INTRINSICS_)
-    __declspec(align(16)) float a[4];
-    __declspec(align(16)) float b[4];
+    XM_ALIGNED_DATA(16) float a[4];
+    XM_ALIGNED_DATA(16) float b[4];
     _mm_store_ps(a, V1);
     _mm_store_ps(b, V2);
     XMVECTOR vResult = _mm_setr_ps(
@@ -6198,7 +6202,11 @@ inline bool XM_CALLCONV XMVector2NearEqual
         (dy <= Epsilon.vector4_f32[1]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x2_t vDelta = vsub_f32(vget_low_u32(V1), vget_low_u32(V2));
+#ifdef _MSC_VER
     uint32x2_t vTemp = vacle_f32(vDelta, vget_low_u32(Epsilon));
+#else
+    uint32x2_t vTemp = vcle_f32(vabs_f32(vDelta), vget_low_u32(Epsilon));
+#endif
     uint64_t r = vget_lane_u64(vTemp, 0);
     return (r == 0xFFFFFFFFFFFFFFFFU);
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -6474,7 +6482,7 @@ inline bool XM_CALLCONV XMVector2InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -6498,7 +6506,7 @@ inline bool XM_CALLCONV XMVector2IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(pop)
 #endif
 
@@ -8923,7 +8931,11 @@ inline bool XM_CALLCONV XMVector3NearEqual
         (dz <= Epsilon.vector4_f32[2])) != 0);
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vDelta = vsubq_f32(V1, V2);
+#ifdef _MSC_VER
     uint32x4_t vResult = vacleq_f32(vDelta, Epsilon);
+#else
+    uint32x4_t vResult = vcleq_f32(vabsq_f32(vDelta), Epsilon);
+#endif
     uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
     uint16x4x2_t vTemp2 = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return ((vget_lane_u32(vTemp2.val[1], 1) & 0xFFFFFFU) == 0xFFFFFFU);
@@ -9222,7 +9234,7 @@ inline bool XM_CALLCONV XMVector3InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -9250,7 +9262,7 @@ inline bool XM_CALLCONV XMVector3IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(pop)
 #endif
 
@@ -12784,7 +12796,11 @@ inline bool XM_CALLCONV XMVector4NearEqual
         (dw <= Epsilon.vector4_f32[3])) != 0);
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vDelta = vsubq_f32(V1, V2);
+#ifdef _MSC_VER
     uint32x4_t vResult = vacleq_f32(vDelta, Epsilon);
+#else
+    uint32x4_t vResult = vcleq_f32(vabsq_f32(vDelta), Epsilon);
+#endif
     uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vResult), vget_high_u8(vResult));
     uint16x4x2_t vTemp2 = vzip_u16(vTemp.val[0], vTemp.val[1]);
     return (vget_lane_u32(vTemp2.val[1], 1) == 0xFFFFFFFFU);
@@ -13098,7 +13114,7 @@ inline bool XM_CALLCONV XMVector4InBounds
 
 //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -13125,7 +13141,7 @@ inline bool XM_CALLCONV XMVector4IsNaN(FXMVECTOR V) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER)
 #pragma float_control(pop)
 #endif
 

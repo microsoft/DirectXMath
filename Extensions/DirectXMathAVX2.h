@@ -29,7 +29,7 @@ inline bool XMVerifyAVX2Support()
 
     // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
     int CPUInfo[4] = {-1};
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 0);
@@ -38,7 +38,7 @@ inline bool XMVerifyAVX2Support()
     if ( CPUInfo[0] < 7  )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 1);
@@ -48,7 +48,7 @@ inline bool XMVerifyAVX2Support()
     if ( (CPUInfo[2] & 0x38081001) != 0x38081001 )
         return false;
 
-#ifdef __clang__
+#if defined(__clang__) || defined(__GNUC__)
     __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuidex(CPUInfo, 7, 0);
@@ -124,7 +124,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute( FXMVECTOR V1, FXMVECTOR V2, uint32_
 
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    XM_ALIGNED_DATA(16) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
     
     __m128i vSelect = _mm_cmpgt_epi32( vControl, three );

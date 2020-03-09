@@ -25,12 +25,18 @@
 
 #if _XM_VECTORCALL_
 #define XM_CALLCONV __vectorcall
+#elif defined(__GNUC__)
+#define XM_CALLCONV
 #else
 #define XM_CALLCONV __fastcall
 #endif
 
 #ifndef XM_DEPRECATED
+#ifdef __GNUC__
+#define XM_DEPRECATED __attribute__ ((deprecated))
+#else
 #define XM_DEPRECATED __declspec(deprecated("This is deprecated and will be removed in a future version."))
+#endif
 #endif
 
 #if !defined(_XM_AVX2_INTRINSICS_) && defined(__AVX2__) && !defined(_XM_NO_INTRINSICS_)
@@ -83,7 +89,7 @@
 #endif
 #endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
-#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && defined(__clang__)
+#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && (defined(__clang__) || defined(__GNUC__))
 #define _XM_NO_XMVECTOR_OVERLOADS_
 #endif
 
@@ -104,7 +110,7 @@
 #pragma warning(pop)
 #endif
 
-#if defined(__clang__) && (__x86_64__ || __i386__)
+#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 
@@ -141,6 +147,14 @@
 // C4005/4668: Old header issue
 #include <stdint.h>
 #pragma warning(pop)
+
+#ifdef __GNUC__
+#define XM_ALIGNED_DATA(x) __attribute__ ((aligned(x)))
+#define XM_ALIGNED_STRUCT(x) struct __attribute__ ((aligned(x)))
+#else
+#define XM_ALIGNED_DATA(x) __declspec(align(x))
+#define XM_ALIGNED_STRUCT(x) __declspec(align(x)) struct
+#endif
 
 /****************************************************************************
  *
@@ -352,7 +366,7 @@ namespace DirectX
 
     //------------------------------------------------------------------------------
     // Conversion types for constants
-    __declspec(align(16)) struct XMVECTORF32
+    XM_ALIGNED_STRUCT(16) XMVECTORF32
     {
         union
         {
@@ -368,7 +382,7 @@ namespace DirectX
 #endif
     };
 
-    __declspec(align(16)) struct XMVECTORI32
+    XM_ALIGNED_STRUCT(16) XMVECTORI32
     {
         union
         {
@@ -383,7 +397,7 @@ namespace DirectX
 #endif
     };
 
-    __declspec(align(16)) struct XMVECTORU8
+    XM_ALIGNED_STRUCT(16) XMVECTORU8
     {
         union
         {
@@ -398,7 +412,7 @@ namespace DirectX
 #endif
     };
 
-    __declspec(align(16)) struct XMVECTORU32
+    XM_ALIGNED_STRUCT(16) XMVECTORU32
     {
         union
         {
@@ -456,7 +470,7 @@ namespace DirectX
 #ifdef _XM_NO_INTRINSICS_
     struct XMMATRIX
 #else
-    __declspec(align(16)) struct XMMATRIX
+    XM_ALIGNED_STRUCT(16) XMMATRIX
 #endif
     {
 #ifdef _XM_NO_INTRINSICS_
@@ -539,7 +553,7 @@ namespace DirectX
     };
 
     // 2D Vector; 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT2A : public XMFLOAT2
+    XM_ALIGNED_STRUCT(16) XMFLOAT2A : public XMFLOAT2
     {
         XMFLOAT2A() = default;
 
@@ -611,7 +625,7 @@ namespace DirectX
     };
 
     // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT3A : public XMFLOAT3
+    XM_ALIGNED_STRUCT(16) XMFLOAT3A : public XMFLOAT3
     {
         XMFLOAT3A() = default;
 
@@ -686,7 +700,7 @@ namespace DirectX
     };
 
     // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT4A : public XMFLOAT4
+    XM_ALIGNED_STRUCT(16) XMFLOAT4A : public XMFLOAT4
     {
         XMFLOAT4A() = default;
 
@@ -822,7 +836,7 @@ namespace DirectX
     };
 
     // 4x3 Row-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT4X3A : public XMFLOAT4X3
+    XM_ALIGNED_STRUCT(16) XMFLOAT4X3A : public XMFLOAT4X3
     {
         XMFLOAT4X3A() = default;
 
@@ -877,7 +891,7 @@ namespace DirectX
     };
 
     // 3x4 Column-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT3X4A : public XMFLOAT3X4
+    XM_ALIGNED_STRUCT(16) XMFLOAT3X4A : public XMFLOAT3X4
     {
         XMFLOAT3X4A() = default;
 
@@ -933,7 +947,7 @@ namespace DirectX
     };
 
     // 4x4 Matrix: 32 bit floating point components aligned on a 16 byte boundary
-    __declspec(align(16)) struct XMFLOAT4X4A : public XMFLOAT4X4
+    XM_ALIGNED_STRUCT(16) XMFLOAT4X4A : public XMFLOAT4X4
     {
         XMFLOAT4X4A() = default;
 
@@ -1919,7 +1933,11 @@ namespace DirectX
      // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
+#if defined(__GNUC__)
+#define XMGLOBALCONST extern const __attribute__((weak))
+#else
 #define XMGLOBALCONST extern const __declspec(selectany)
+#endif
 #endif
 
     XMGLOBALCONST XMVECTORF32 g_XMSinCoefficients0 = { { { -0.16666667f, +0.0083333310f, -0.00019840874f, +2.7525562e-06f } } };
