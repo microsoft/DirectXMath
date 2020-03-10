@@ -1111,9 +1111,19 @@ namespace DirectX
 #pragma warning(disable : 4996)
         // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
         XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadDecN4(_In_ const XMDECN4* pSource) noexcept;
         XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadDec4(_In_ const XMDEC4* pSource) noexcept;
         XMVECTOR    XM_DEPRECATED XM_CALLCONV XMLoadXDec4(_In_ const XMXDEC4* pSource) noexcept;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #pragma warning(pop)
 
         /****************************************************************************
@@ -1158,9 +1168,19 @@ namespace DirectX
 #pragma warning(disable : 4996)
         // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
         void    XM_DEPRECATED XM_CALLCONV XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V) noexcept;
         void    XM_DEPRECATED XM_CALLCONV XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
         void    XM_DEPRECATED XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #pragma warning(pop)
 
         /****************************************************************************

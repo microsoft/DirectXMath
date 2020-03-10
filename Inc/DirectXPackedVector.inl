@@ -1508,6 +1508,11 @@ inline XMVECTOR XM_CALLCONV XMLoadXDecN4(const XMXDECN4* pSource) noexcept
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV XMLoadXDec4(const XMXDEC4* pSource) noexcept
 {
@@ -1553,6 +1558,10 @@ inline XMVECTOR XM_CALLCONV XMLoadXDec4(const XMXDEC4* pSource) noexcept
     return vTemp;
 #endif
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma warning(pop)
 
@@ -1695,6 +1704,11 @@ inline XMVECTOR XM_CALLCONV XMLoadUDec4(const XMUDEC4* pSource) noexcept
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV XMLoadDecN4(const XMDECN4* pSource) noexcept
 {
@@ -1787,6 +1801,10 @@ inline XMVECTOR XM_CALLCONV XMLoadDec4(const XMDEC4* pSource) noexcept
     return vTemp;
 #endif
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma warning(pop)
 
@@ -2895,6 +2913,11 @@ inline void XM_CALLCONV XMStoreXDecN4
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreXDec4
 (
@@ -2961,6 +2984,10 @@ inline void XM_CALLCONV XMStoreXDec4
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
 #endif
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma warning(pop)
 
@@ -3177,6 +3204,11 @@ inline void XM_CALLCONV XMStoreUDec4
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
 _Use_decl_annotations_
 inline void XM_CALLCONV XMStoreDecN4
 (
@@ -3297,6 +3329,10 @@ inline void XM_CALLCONV XMStoreDec4
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
 #endif
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma warning(pop)
 
@@ -4117,6 +4153,11 @@ inline XMXDECN4::XMXDECN4(const float* pArray) noexcept
 #pragma warning(disable : 4996)
  // C4996: ignore deprecation warning
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#endif
+
  //------------------------------------------------------------------------------
 
 inline XMXDEC4::XMXDEC4
@@ -4188,6 +4229,10 @@ inline XMDEC4::XMDEC4(const float* pArray) noexcept
 {
     XMStoreDec4(this, XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray)));
 }
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 
 #pragma warning(pop)
 
