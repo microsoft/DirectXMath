@@ -13,9 +13,12 @@
 #error FMA4 not supported on ARM platform
 #endif
 
+#include <DirectXMath.h>
 #include <ammintrin.h>
 
-#include <DirectXMath.h>
+#ifdef __GNUC__
+#include <x86intrin.h>
+#endif
 
 namespace DirectX
 {

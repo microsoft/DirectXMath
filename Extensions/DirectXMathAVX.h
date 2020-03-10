@@ -94,7 +94,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute( FXMVECTOR V1, FXMVECTOR V2, uint32_
 
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
-    __declspec(align(16)) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
+    XM_ALIGNED_DATA(16) unsigned int elem[4] = { PermuteX, PermuteY, PermuteZ, PermuteW };
     __m128i vControl = _mm_load_si128( reinterpret_cast<const __m128i *>(&elem[0]) );
     
     __m128i vSelect = _mm_cmpgt_epi32( vControl, three );

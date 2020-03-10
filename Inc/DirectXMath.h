@@ -1933,7 +1933,7 @@ namespace DirectX
      // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
-#if defined(__GNUC__)
+#if defined(__GNUC__) && !defined(__MINGW32__)
 #define XMGLOBALCONST extern const __attribute__((weak))
 #else
 #define XMGLOBALCONST extern const __declspec(selectany)
