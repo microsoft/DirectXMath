@@ -63,9 +63,9 @@ namespace DirectX
             XMCOLOR(float _r, float _g, float _b, float _a) noexcept;
             explicit XMCOLOR(_In_reads_(4) const float* pArray) noexcept;
 
-            operator uint32_t () const { return c; }
+            operator uint32_t () const noexcept { return c; }
 
-            XMCOLOR& operator= (const uint32_t Color) { c = Color; return *this; }
+            XMCOLOR& operator= (const uint32_t Color) noexcept { c = Color; return *this; }
         };
 
         //------------------------------------------------------------------------------

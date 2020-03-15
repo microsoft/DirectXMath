@@ -1660,8 +1660,8 @@ namespace DirectX
 #undef XMMax
 #endif
 
-    template<class T> inline T XMMin(T a, T b) { return (a < b) ? a : b; }
-    template<class T> inline T XMMax(T a, T b) { return (a > b) ? a : b; }
+    template<class T> inline T XMMin(T a, T b) noexcept { return (a < b) ? a : b; }
+    template<class T> inline T XMMax(T a, T b) noexcept { return (a > b) ? a : b; }
 
     //------------------------------------------------------------------------------
 
