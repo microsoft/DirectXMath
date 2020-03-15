@@ -2618,8 +2618,8 @@ inline void XM_CALLCONV XMStoreFloat3SE
     XMFLOAT3A tmp;
     XMStoreFloat3A(&tmp, V);
 
-    static const float maxf9 = float(0x1FF << 7);
-    static const float minf9 = float(1.f / (1 << 16));
+    static constexpr float maxf9 = float(0x1FF << 7);
+    static constexpr float minf9 = float(1.f / (1 << 16));
 
     float x = (tmp.x >= 0.f) ? ((tmp.x > maxf9) ? maxf9 : tmp.x) : 0.f;
     float y = (tmp.y >= 0.f) ? ((tmp.y > maxf9) ? maxf9 : tmp.y) : 0.f;

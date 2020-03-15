@@ -1730,12 +1730,12 @@ namespace DirectX
         static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-        const uint32_t Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
+        constexpr uint32_t Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
 
-        const bool WhichX = PermuteX > 3;
-        const bool WhichY = PermuteY > 3;
-        const bool WhichZ = PermuteZ > 3;
-        const bool WhichW = PermuteW > 3;
+        constexpr bool WhichX = PermuteX > 3;
+        constexpr bool WhichY = PermuteY > 3;
+        constexpr bool WhichZ = PermuteZ > 3;
+        constexpr bool WhichW = PermuteW > 3;
 
         return Internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
 #else
@@ -1746,8 +1746,8 @@ namespace DirectX
     }
 
     // Special-case permute templates
-    template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0, 1, 2, 3>(FXMVECTOR V1, FXMVECTOR) noexcept { return V1; }
-    template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<4, 5, 6, 7>(FXMVECTOR, FXMVECTOR V2) noexcept { return V2; }
+    template<> inline constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<0, 1, 2, 3>(FXMVECTOR V1, FXMVECTOR) noexcept { return V1; }
+    template<> inline constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<4, 5, 6, 7>(FXMVECTOR, FXMVECTOR V2) noexcept { return V2; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0, 1, 4, 5>(FXMVECTOR V1, FXMVECTOR V2) noexcept { return _mm_movelh_ps(V1, V2); }
@@ -1835,7 +1835,7 @@ namespace DirectX
     }
 
     // Specialized swizzles
-    template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0, 1, 2, 3>(FXMVECTOR V) noexcept { return V; }
+    template<> inline constexpr XMVECTOR XM_CALLCONV XMVectorSwizzle<0, 1, 2, 3>(FXMVECTOR V) noexcept { return V; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0, 1, 0, 1>(FXMVECTOR V) noexcept { return _mm_movelh_ps(V, V); }
