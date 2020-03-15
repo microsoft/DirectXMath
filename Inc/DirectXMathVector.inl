@@ -2275,7 +2275,7 @@ inline XMVECTOR XM_CALLCONV XMVectorMax
 namespace Internal
 {
     // Round to nearest (even) a.k.a. banker's rounding
-    inline float round_to_nearest(float x)
+    inline float round_to_nearest(float x) noexcept
     {
         float i = floorf(x);
         x -= i;
@@ -3519,7 +3519,7 @@ inline XMVECTOR XM_CALLCONV XMVectorExp(FXMVECTOR V) noexcept
 
 namespace Internal
 {
-    inline __m128i multi_sll_epi32(__m128i value, __m128i count)
+    inline __m128i multi_sll_epi32(__m128i value, __m128i count) noexcept
     {
         __m128i v = _mm_shuffle_epi32(value, _MM_SHUFFLE(0, 0, 0, 0));
         __m128i c = _mm_shuffle_epi32(count, _MM_SHUFFLE(0, 0, 0, 0));
@@ -3550,7 +3550,7 @@ namespace Internal
         return _mm_castps_si128(result);
     }
 
-    inline __m128i multi_srl_epi32(__m128i value, __m128i count)
+    inline __m128i multi_srl_epi32(__m128i value, __m128i count) noexcept
     {
         __m128i v = _mm_shuffle_epi32(value, _MM_SHUFFLE(0, 0, 0, 0));
         __m128i c = _mm_shuffle_epi32(count, _MM_SHUFFLE(0, 0, 0, 0));
@@ -3581,7 +3581,7 @@ namespace Internal
         return _mm_castps_si128(result);
     }
 
-    inline __m128i GetLeadingBit(const __m128i value)
+    inline __m128i GetLeadingBit(const __m128i value) noexcept
     {
         static const XMVECTORI32 g_XM0000FFFF = { { { 0x0000FFFF, 0x0000FFFF, 0x0000FFFF, 0x0000FFFF } } };
         static const XMVECTORI32 g_XM000000FF = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
@@ -3625,7 +3625,7 @@ namespace Internal
 
 namespace Internal
 {
-    inline int32x4_t GetLeadingBit(const int32x4_t value)
+    inline int32x4_t GetLeadingBit(const int32x4_t value) noexcept
     {
         static const XMVECTORI32 g_XM0000FFFF = { { { 0x0000FFFF, 0x0000FFFF, 0x0000FFFF, 0x0000FFFF } } };
         static const XMVECTORI32 g_XM000000FF = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
