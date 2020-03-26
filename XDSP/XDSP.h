@@ -16,11 +16,11 @@
 
 #pragma once
 
-#include <assert.h>
+#include <cassert>
 #include <DirectXMath.h>
 
-#include <stdint.h>
-#include <string.h>
+#include <cstdint>
+#include <cstring>
 
 #pragma warning(push)
 #pragma warning(disable: 6001 6262)
