@@ -96,8 +96,8 @@
 #pragma warning(push)
 #pragma warning(disable:4514 4820)
 // C4514/4820: Off by default noise
-#include <math.h>
-#include <float.h>
+#include <cmath>
+#include <cfloat>
 #pragma warning(pop)
 
 #ifndef _XM_NO_INTRINSICS_
@@ -140,12 +140,12 @@
 #endif // !_XM_NO_INTRINSICS_
 
 #include "sal.h"
-#include <assert.h>
+#include <cassert>
 
 #pragma warning(push)
 #pragma warning(disable : 4005 4668)
 // C4005/4668: Old header issue
-#include <stdint.h>
+#include <cstdint>
 #pragma warning(pop)
 
 #ifdef __GNUC__

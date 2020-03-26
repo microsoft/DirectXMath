@@ -19,7 +19,7 @@
 #endif
 
 #include "DirectXSH.h"
-#include <assert.h>
+#include <cassert>
 
 using namespace DirectX;
 

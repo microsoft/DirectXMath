@@ -23,7 +23,7 @@
 
 #include <DirectXPackedVector.h>
 
-#include <assert.h>
+#include <cassert>
 #include <memory>
 #include <malloc.h>
 
