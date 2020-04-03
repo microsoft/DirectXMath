@@ -423,7 +423,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
             // The number is too small to be represented as a normalized half.
             // Convert it to a denormalized value.
             uint32_t Shift = 113U - (IValue >> 23U);
-            IValue = (0x800000U | (IValue & 0x7FFFFFU)) >> Shift;
+            IValue = (Shift < 32) ? (0x800000U | (IValue & 0x7FFFFFU)) >> Shift : 0;
         }
         else
         {
@@ -2541,7 +2541,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
                 // The number is too small to be represented as a normalized float11
                 // Convert it to a denormalized value.
                 uint32_t Shift = 113U - (I >> 23U);
-                I = (0x800000U | (I & 0x7FFFFFU)) >> Shift;
+                I = (Shift < 32) ? (0x800000U | (I & 0x7FFFFFU)) >> Shift : 0;
             }
             else
             {
@@ -2588,7 +2588,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
             // The number is too small to be represented as a normalized float10
             // Convert it to a denormalized value.
             uint32_t Shift = 113U - (I >> 23U);
-            I = (0x800000U | (I & 0x7FFFFFU)) >> Shift;
+            I = (Shift < 32) ? (0x800000U | (I & 0x7FFFFFU)) >> Shift : 0;
         }
         else
         {
