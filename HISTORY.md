@@ -6,6 +6,15 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### April 2020 (3.15)
+* Added XMMatrixVectorTensorProduct for creating a matrix from two vectors
+* Use of m256 registers and FMA3 with /arch:AVX2 for stream and some matrix functions
+* Optimized load/stores for SSE2 float2 & float3 functions
+* Optimized some instruction choices for better AMD CPU support
+* Improved conformance for clang/LLVM, GCC, and MinGW compilers
+* Code review (constexpr / noexcept usage)
+* Retired VS 2015 support
+
 ### August 2019 (3.14)
 * Added float control around IsNan functions to resolve issue with VS 2019 with ``/fp:fast``
 * XMVerifyCPUSupport updated for clang/LLVM cpuid implementation on x86/x64
