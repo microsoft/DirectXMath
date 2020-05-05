@@ -89,6 +89,10 @@
 #endif
 #endif // !_XM_ARM_NEON_INTRINSICS_ && !_XM_SSE_INTRINSICS_ && !_XM_NO_INTRINSICS_
 
+#if defined(_XM_SSE_INTRINSICS_) && defined(_MSC_VER) && (_MSC_VER >= 1920) && !defined(__clang__) && !defined(_XM_SVML_INTRINSICS_) && !defined(_XM_DISABLE_INTEL_SVML_)
+#define _XM_SVML_INTRINSICS_
+#endif
+
 #if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && (defined(__clang__) || defined(__GNUC__))
 #define _XM_NO_XMVECTOR_OVERLOADS_
 #endif
