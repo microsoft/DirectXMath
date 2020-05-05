@@ -4049,7 +4049,6 @@ inline XMVECTOR XM_CALLCONV XMVectorLogE(FXMVECTOR V) noexcept
 #endif
 }
 
-
 //------------------------------------------------------------------------------
 
 inline XMVECTOR XM_CALLCONV XMVectorLog(FXMVECTOR V) noexcept
