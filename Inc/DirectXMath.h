@@ -1223,9 +1223,11 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMVectorReciprocalSqrtEst(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorReciprocalSqrt(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorExp2(FXMVECTOR V) noexcept;
+    XMVECTOR    XM_CALLCONV     XMVectorExp10(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorExpE(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorExp(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorLog2(FXMVECTOR V) noexcept;
+    XMVECTOR    XM_CALLCONV     XMVectorLog10(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorLogE(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorLog(FXMVECTOR V) noexcept;
     XMVECTOR    XM_CALLCONV     XMVectorPow(FXMVECTOR V1, FXMVECTOR V2) noexcept;
@@ -2074,6 +2076,8 @@ namespace DirectX
     XMGLOBALCONST XMVECTORF32 g_XMLogEst7 = { { { -0.010578f, -0.010578f, -0.010578f, -0.010578f } } };
     XMGLOBALCONST XMVECTORF32 g_XMLgE = { { { +1.442695f, +1.442695f, +1.442695f, +1.442695f } } };
     XMGLOBALCONST XMVECTORF32 g_XMInvLgE = { { { +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f, +6.93147182e-1f } } };
+    XMGLOBALCONST XMVECTORF32 g_XMLg10 = { { { +3.321928f, +3.321928f, +3.321928f, +3.321928f } } };
+    XMGLOBALCONST XMVECTORF32 g_XMInvLg10 = { { { +3.010299956e-1f, +3.010299956e-1f, +3.010299956e-1f, +3.010299956e-1f } } };
     XMGLOBALCONST XMVECTORF32 g_UByteMax = { { { 255.0f, 255.0f, 255.0f, 255.0f } } };
     XMGLOBALCONST XMVECTORF32 g_ByteMin = { { { -127.0f, -127.0f, -127.0f, -127.0f } } };
     XMGLOBALCONST XMVECTORF32 g_ByteMax = { { { 127.0f, 127.0f, 127.0f, 127.0f } } };
