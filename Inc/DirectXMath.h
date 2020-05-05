@@ -79,6 +79,10 @@
 #define _XM_SSE_INTRINSICS_
 #endif
 
+#if defined(_XM_SSE_INTRINSICS_) && defined(_MSC_VER) && (_MSC_VER >= 1920) && !defined(_NO_XM_SVML_INTRINSICS_)
+#define _XM_SVML_INTRINSICS_
+#endif
+
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 #if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64)
 #define _XM_SSE_INTRINSICS_
