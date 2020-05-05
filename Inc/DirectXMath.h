@@ -380,9 +380,13 @@ namespace DirectX
 
         inline operator XMVECTOR() const noexcept { return v; }
         inline operator const float* () const noexcept { return f; }
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
+#ifdef _XM_NO_INTRINSICS_
+#elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+        inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
+        inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
 #endif
     };
 
@@ -395,9 +399,13 @@ namespace DirectX
         };
 
         inline operator XMVECTOR() const noexcept { return v; }
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
+#ifdef _XM_NO_INTRINSICS_
+#elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+        inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
+        inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
 #endif
     };
 
@@ -425,9 +433,13 @@ namespace DirectX
         };
 
         inline operator XMVECTOR() const noexcept { return v; }
-#if !defined(_XM_NO_INTRINSICS_) && defined(_XM_SSE_INTRINSICS_)
+#ifdef _XM_NO_INTRINSICS_
+#elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+        inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
+        inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
 #endif
     };
 
@@ -2166,7 +2178,7 @@ namespace DirectX
         // Convert DivExponent into 1.0f/(1<<DivExponent)
         uint32_t uScale = 0x3F800000U - (DivExponent << 23);
         // Splat the scalar value (It's really a float)
-        vScale = vdupq_n_u32(uScale);
+        vScale = vreinterpretq_s32_u32(vdupq_n_u32(uScale));
         // Multiply by the reciprocal (Perform a right shift by DivExponent)
         vResult = vmulq_f32(vResult, reinterpret_cast<const float32x4_t*>(&vScale)[0]);
         return vResult;
