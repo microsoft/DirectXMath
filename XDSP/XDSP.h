@@ -447,7 +447,7 @@ namespace XDSP
         // initialize unity table for recursive FFT lengths: uLength, uLength/4, uLength/16... > 16
         do
         {
-            float flStep = 6.283185307f / uLength; // 2PI / FFT length
+            float flStep = 6.283185307f / float(uLength); // 2PI / FFT length
             uLength >>= 2;
 
             // pUnityTable[0 to uLength*4-1] contains real components for current FFT length
@@ -550,7 +550,7 @@ namespace XDSP
         _Analysis_assume_(uLength >= 4);
         assert(ISPOWEROF2(uLength));
 
-        float flOneOverLength = 1.0f / uLength;
+        float flOneOverLength = 1.0f / float(uLength);
 
         // result = sqrtf((real/uLength)^2 + (imaginary/uLength)^2) * 2
         XMVECTOR vOneOverLength = XMVectorReplicate( flOneOverLength );
@@ -756,8 +756,8 @@ namespace XDSP
 
         const size_t uLength = size_t(1) << uLog2Length;
 
-        const XMVECTOR vRnp = XMVectorReplicate(1.0f/uLength);
-        const XMVECTOR vRnm = XMVectorReplicate(-1.0f/uLength);
+        const XMVECTOR vRnp = XMVectorReplicate(1.0f / float(uLength));
+        const XMVECTOR vRnm = XMVectorReplicate(-1.0f / float(uLength));
         for (size_t u=0; u < uChannelCount*(uLength>>2); u++)
         {
             vRealTemp[u]      = XMVectorMultiply(pReal[u], vRnp);
