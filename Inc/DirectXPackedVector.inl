@@ -387,7 +387,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
 {
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     __m128 V1 = _mm_set_ss(Value);
-    __m128i V2 = _mm_cvtps_ph(V1, 0);
+    __m128i V2 = _mm_cvtps_ph(V1, _MM_FROUND_TO_NEAREST_INT);
     return static_cast<HALF>(_mm_cvtsi128_si32(V2));
 #elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_)
     float32x4_t vFloat = vdupq_n_f32(Value);
@@ -477,7 +477,7 @@ inline HALF* XMConvertFloatToHalfStream
                         __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
                         pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph(FV, 0);
+                        __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                         _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
                         pHalf += OutputStride * 4;
@@ -492,7 +492,7 @@ inline HALF* XMConvertFloatToHalfStream
                         __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
                         pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph(FV, 0);
+                        __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                         _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
                         pHalf += OutputStride * 4;
@@ -510,7 +510,7 @@ inline HALF* XMConvertFloatToHalfStream
                         __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
                         pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph(FV, 0);
+                        __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                         *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
                         pHalf += OutputStride;
@@ -531,7 +531,7 @@ inline HALF* XMConvertFloatToHalfStream
                         __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
                         pFloat += InputStride * 4;
 
-                        __m128i HV = _mm_cvtps_ph(FV, 0);
+                        __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                         *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
                         pHalf += OutputStride;
@@ -567,7 +567,7 @@ inline HALF* XMConvertFloatToHalfStream
                 __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
                 FV = _mm_blend_ps(FV, FT, 0xC);
 
-                __m128i HV = _mm_cvtps_ph(FV, 0);
+                __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                 _mm_storel_epi64(reinterpret_cast<__m128i*>(pHalf), HV);
                 pHalf += OutputStride * 4;
@@ -595,7 +595,7 @@ inline HALF* XMConvertFloatToHalfStream
                 __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
                 FV = _mm_blend_ps(FV, FT, 0xC);
 
-                __m128i HV = _mm_cvtps_ph(FV, 0);
+                __m128i HV = _mm_cvtps_ph(FV, _MM_FROUND_TO_NEAREST_INT);
 
                 *reinterpret_cast<HALF*>(pHalf) = static_cast<HALF>(_mm_extract_epi16(HV, 0));
                 pHalf += OutputStride;
@@ -2099,7 +2099,7 @@ inline void XM_CALLCONV XMStoreHalf2
 {
     assert(pDestination);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    __m128i V1 = _mm_cvtps_ph(V, 0);
+    __m128i V1 = _mm_cvtps_ph(V, _MM_FROUND_TO_NEAREST_INT);
     _mm_store_ss(reinterpret_cast<float*>(pDestination), _mm_castsi128_ps(V1));
 #else
     pDestination->x = XMConvertFloatToHalf(XMVectorGetX(V));
@@ -2655,7 +2655,7 @@ inline void XM_CALLCONV XMStoreHalf4
 {
     assert(pDestination);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    __m128i V1 = _mm_cvtps_ph(V, 0);
+    __m128i V1 = _mm_cvtps_ph(V, _MM_FROUND_TO_NEAREST_INT);
     _mm_storel_epi64(reinterpret_cast<__m128i*>(pDestination), V1);
 #else
     XMFLOAT4A t;
