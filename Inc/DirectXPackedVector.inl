@@ -400,7 +400,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
     uint32_t Sign = (IValue & 0x80000000U) >> 16U;
     IValue = IValue & 0x7FFFFFFFU;      // Hack off the sign
 
-    if (IValue > 0x477FE000U)
+    if (IValue > 0x477FE000U /*e+15*/ )
     {
         // The number is too large to be represented as a half.  Saturate to infinity.
         if (((IValue & 0x7F800000) == 0x7F800000) && ((IValue & 0x7FFFFF) != 0))
@@ -412,13 +412,13 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
             Result = 0x7C00U; // INF
         }
     }
-    else if (!IValue)
+    else if (IValue < 0x33800000U /*e-24*/ )
     {
         Result = 0;
     }
     else
     {
-        if (IValue < 0x38800000U)
+        if (IValue < 0x38800000U /*e-14*/ )
         {
             // The number is too small to be represented as a normalized half.
             // Convert it to a denormalized value.
