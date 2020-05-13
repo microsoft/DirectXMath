@@ -400,17 +400,15 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
     uint32_t Sign = (IValue & 0x80000000U) >> 16U;
     IValue = IValue & 0x7FFFFFFFU;      // Hack off the sign
 
-    if (IValue > 0x477FE000U /*e+15*/ )
+    if (IValue >= 0x7F800000)
+    {
+        // The number is too large to be represented as a half. Return infinity or NaN
+        Result = 0x7C00U | ((IValue > 0x7F800000) ? (0x200 | ((IValue >> 13U) & 0x3FFU)) : 0U);
+    }
+    else if (IValue > 0x477FE000U /*e+15*/ )
     {
         // The number is too large to be represented as a half.  Saturate to infinity.
-        if (((IValue & 0x7F800000) == 0x7F800000) && ((IValue & 0x7FFFFF) != 0))
-        {
-            Result = 0x7FFF; // NAN
-        }
-        else
-        {
-            Result = 0x7C00U; // INF
-        }
+        Result = 0x7C00U;
     }
     else if (IValue < 0x33800000U /*e-24*/ )
     {
@@ -422,16 +420,16 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
         {
             // The number is too small to be represented as a normalized half.
             // Convert it to a denormalized value.
-            uint32_t Shift = 113U - (IValue >> 23U);
-            IValue = (0x800000U | (IValue & 0x7FFFFFU)) >> Shift;
+            uint32_t Shift = 125U - (IValue >> 23U);
+            IValue = 0x800000U | (IValue & 0x7FFFFFU);
+            Result = (IValue >> (Shift + 1)) | ((IValue >> Shift) & 1U);
         }
         else
         {
             // Rebias the exponent to represent the value as a normalized half.
             IValue += 0xC8000000U;
+            Result = ((IValue + 0x0FFFU + ((IValue >> 13U) & 1U)) >> 13U) & 0x7FFFU;
         }
-
-        Result = ((IValue + 0x0FFFU + ((IValue >> 13U) & 1U)) >> 13U) & 0x7FFFU;
     }
     return static_cast<HALF>(Result | Sign);
 #endif // !_XM_F16C_INTRINSICS_
