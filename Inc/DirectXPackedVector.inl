@@ -416,7 +416,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
         IValue += 0xC8000000U;
         Result = ((IValue + 0x0FFFU + ((IValue >> 13U) & 1U)) >> 13U) & 0x7FFFU;
     }
-    else if (IValue >= 0x33000000U /*e-25*/ )
+    else if (IValue > 0x33000000U /*e-25*/ )
     {
         // The number is too small to be represented as a normalized half.
         // Convert it to a denormalized value.
