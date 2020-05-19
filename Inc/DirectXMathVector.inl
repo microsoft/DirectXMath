@@ -3233,15 +3233,13 @@ inline XMVECTOR XM_CALLCONV XMVectorReciprocalSqrt(FXMVECTOR V) noexcept
 inline XMVECTOR XM_CALLCONV XMVectorExp2(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
-
     XMVECTORF32 Result = { { {
             exp2f(V.vector4_f32[0]),
             exp2f(V.vector4_f32[1]),
             exp2f(V.vector4_f32[2]),
             exp2f(V.vector4_f32[3])
         } } };
-    return Result;
-
+    return Result.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     int32x4_t itrunc = vcvtq_s32_f32(V);
     float32x4_t ftrunc = vcvtq_f32_s32(itrunc);
@@ -3584,7 +3582,6 @@ namespace Internal
 inline XMVECTOR XM_CALLCONV XMVectorLog2(FXMVECTOR V) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
-
     XMVECTORF32 Result = { { {
             log2f(V.vector4_f32[0]),
             log2f(V.vector4_f32[1]),
@@ -3592,7 +3589,6 @@ inline XMVECTOR XM_CALLCONV XMVectorLog2(FXMVECTOR V) noexcept
             log2f(V.vector4_f32[3])
         } } };
     return Result.v;
-
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     int32x4_t rawBiased = vandq_s32(V, g_XMInfinity);
     int32x4_t trailing = vandq_s32(V, g_XMQNaNTest);

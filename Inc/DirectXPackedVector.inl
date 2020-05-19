@@ -3460,7 +3460,7 @@ inline void XM_CALLCONV XMStoreByteN4
 #if defined(_XM_NO_INTRINSICS_)
 
     XMVECTOR N = XMVectorClamp(V, g_XMNegativeOne.v, g_XMOne.v);
-    N = XMVectorMultiply(V, g_ByteMax);
+    N = XMVectorMultiply(N, g_ByteMax);
     N = XMVectorTruncate(N);
 
     XMFLOAT4A tmp;
