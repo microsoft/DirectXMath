@@ -71,7 +71,7 @@ namespace DirectX
         //------------------------------------------------------------------------------
         // 16 bit floating point number consisting of a sign bit, a 5 bit biased
         // exponent, and a 10 bit mantissa
-        typedef uint16_t HALF;
+        using HALF = uint16_t;
 
         //------------------------------------------------------------------------------
         // 2D Vector; 16 bit floating point components
