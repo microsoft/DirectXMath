@@ -2504,10 +2504,10 @@ inline void XM_CALLCONV XMStoreFloat3PK
         if ((I & 0x7F800000) == 0x7F800000)
         {
             // INF or NAN
-            Result[j] = 0x7c0;
+            Result[j] = 0x7C0U;
             if ((I & 0x7FFFFF) != 0)
             {
-                Result[j] = 0x7c0 | (((I >> 17) | (I >> 11) | (I >> 6) | (I)) & 0x3f);
+                Result[j] = 0x7FFU;
             }
             else if (Sign)
             {
@@ -2515,7 +2515,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
                 Result[j] = 0;
             }
         }
-        else if (Sign)
+        else if (Sign || I < 0x35800000)
         {
             // 3PK is positive only, so clamp to zero
             Result[j] = 0;
@@ -2523,7 +2523,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
         else if (I > 0x477E0000U)
         {
             // The number is too large to be represented as a float11, set to max
-            Result[j] = 0x7BF;
+            Result[j] = 0x7BFU;
         }
         else
         {
@@ -2551,12 +2551,12 @@ inline void XM_CALLCONV XMStoreFloat3PK
     if ((I & 0x7F800000) == 0x7F800000)
     {
         // INF or NAN
-        Result[2] = 0x3e0;
+        Result[2] = 0x3E0U;
         if (I & 0x7FFFFF)
         {
-            Result[2] = 0x3e0 | (((I >> 18) | (I >> 13) | (I >> 3) | (I)) & 0x1f);
+            Result[2] = 0x3FFU;
         }
-        else if (Sign)
+        else if (Sign || I < 0x36000000)
         {
             // -INF is clamped to 0 since 3PK is positive only
             Result[2] = 0;
@@ -2570,7 +2570,7 @@ inline void XM_CALLCONV XMStoreFloat3PK
     else if (I > 0x477C0000U)
     {
         // The number is too large to be represented as a float10, set to max
-        Result[2] = 0x3df;
+        Result[2] = 0x3DFU;
     }
     else
     {
