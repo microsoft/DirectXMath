@@ -200,12 +200,10 @@ inline bool XM_CALLCONV XMMatrixIsIdentity(FXMMATRIX M) noexcept
     uint32x4_t ymask = vceqq_f32(M.r[1], g_XMIdentityR1);
     uint32x4_t zmask = vceqq_f32(M.r[2], g_XMIdentityR2);
     uint32x4_t wmask = vceqq_f32(M.r[3], g_XMIdentityR3);
-    xmask = vorrq_u32(xmask, zmask);
-    ymask = vorrq_u32(ymask, wmask);
-    xmask = vorrq_u32(xmask, ymask);
-    uint8x8x2_t vTemp = vzip_u8(
-        vget_low_u8(vreinterpretq_u8_u32(xmask)),
-        vget_high_u8(vreinterpretq_u8_u32(xmask)));
+    xmask = vandq_u32(xmask, zmask);
+    ymask = vandq_u32(ymask, wmask);
+    xmask = vandq_u32(xmask, ymask);
+    uint8x8x2_t vTemp = vzip_u8(vget_low_u8(vreinterpretq_u8_u32(xmask)), vget_high_u8(vreinterpretq_u8_u32(xmask)));
     uint16x4x2_t vTemp2 = vzip_u16(vreinterpret_u16_u8(vTemp.val[0]), vreinterpret_u16_u8(vTemp.val[1]));
     uint32_t r = vget_lane_u32(vreinterpret_u32_u16(vTemp2.val[1]), 1);
     return (r == 0xFFFFFFFFU);

@@ -3762,11 +3762,11 @@ inline XMVECTOR XM_CALLCONV XMVectorLog10(FXMVECTOR V) noexcept
     int32x4_t exponentSub = vsubq_s32(g_XMSubnormalExponent, shift);
     int32x4_t trailingSub = vshlq_s32(trailing, shift);
     trailingSub = vandq_s32(trailingSub, g_XMQNaNTest);
-    float32x4_t e = vbslq_f32(isExponentZero, vreinterpretq_f32_s32(exponentSub), vreinterpretq_f32_s32(exponentNor));
-    float32x4_t t = vbslq_f32(isExponentZero, vreinterpretq_f32_s32(trailingSub), vreinterpretq_f32_s32(trailingNor));
+    int32x4_t e = vbslq_s32(isExponentZero, exponentSub, exponentNor);
+    int32x4_t t = vbslq_s32(isExponentZero, trailingSub, trailingNor);
 
     // Compute the approximation.
-    int32x4_t tmp = vorrq_s32(g_XMOne, vreinterpretq_s32_f32(t));
+    int32x4_t tmp = vorrq_s32(g_XMOne, t);
     float32x4_t y = vsubq_f32(vreinterpretq_f32_s32(tmp), g_XMOne);
 
     float32x4_t log2 = vmlaq_f32(g_XMLogEst6, g_XMLogEst7, y);
@@ -3776,7 +3776,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLog10(FXMVECTOR V) noexcept
     log2 = vmlaq_f32(g_XMLogEst2, log2, y);
     log2 = vmlaq_f32(g_XMLogEst1, log2, y);
     log2 = vmlaq_f32(g_XMLogEst0, log2, y);
-    log2 = vmlaq_f32(e, log2, y);
+    log2 = vmlaq_f32(vcvtq_f32_s32(e), log2, y);
 
     log2 = vmulq_f32(g_XMInvLg10, log2);
 
@@ -3926,11 +3926,11 @@ inline XMVECTOR XM_CALLCONV XMVectorLogE(FXMVECTOR V) noexcept
     int32x4_t exponentSub = vsubq_s32(g_XMSubnormalExponent, shift);
     int32x4_t trailingSub = vshlq_s32(trailing, shift);
     trailingSub = vandq_s32(trailingSub, g_XMQNaNTest);
-    float32x4_t  e = vbslq_f32(isExponentZero, vreinterpretq_f32_s32(exponentSub), vreinterpretq_f32_s32(exponentNor));
-    float32x4_t t = vbslq_f32(isExponentZero, vreinterpretq_f32_s32(trailingSub), vreinterpretq_f32_s32(trailingNor));
+    int32x4_t e = vbslq_s32(isExponentZero, exponentSub, exponentNor);
+    int32x4_t t = vbslq_s32(isExponentZero, trailingSub, trailingNor);
 
     // Compute the approximation.
-    int32x4_t tmp = vorrq_s32(g_XMOne, vreinterpretq_s32_f32(t));
+    int32x4_t tmp = vorrq_s32(g_XMOne, t);
     float32x4_t y = vsubq_f32(vreinterpretq_f32_s32(tmp), g_XMOne);
 
     float32x4_t log2 = vmlaq_f32(g_XMLogEst6, g_XMLogEst7, y);
@@ -3940,7 +3940,7 @@ inline XMVECTOR XM_CALLCONV XMVectorLogE(FXMVECTOR V) noexcept
     log2 = vmlaq_f32(g_XMLogEst2, log2, y);
     log2 = vmlaq_f32(g_XMLogEst1, log2, y);
     log2 = vmlaq_f32(g_XMLogEst0, log2, y);
-    log2 = vmlaq_f32(e, log2, y);
+    log2 = vmlaq_f32(vcvtq_f32_s32(e), log2, y);
 
     log2 = vmulq_f32(g_XMInvLgE, log2);
 
