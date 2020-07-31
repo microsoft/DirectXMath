@@ -196,7 +196,7 @@
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
-#if defined(__clang__)
+#if defined(__clang__) || defined(__GNUC__)
 #define XM_PREFETCH( a ) __builtin_prefetch(a)
 #elif defined(_MSC_VER)
 #define XM_PREFETCH( a ) __prefetch(a)
