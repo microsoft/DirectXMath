@@ -14816,3 +14816,4 @@ inline XMVECTOR XM_CALLCONV operator*
 #undef XM3UNPACK3INTO4
 #undef XM3PACK4INTO3
 #endif
+

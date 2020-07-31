@@ -4435,3 +4435,4 @@ inline XMU555::XMU555
     XMVECTOR V = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(pArray));
     XMStoreU555(this, XMVectorSetW(V, ((_w) ? 1.0f : 0.0f)));
 }
+
