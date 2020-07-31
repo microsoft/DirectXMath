@@ -1633,7 +1633,7 @@ inline XMVECTOR XM_CALLCONV XMVectorEqualInt
     return Control.v;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vreinterpretq_f32_u32(vceqq_u32(vreinterpretq_u32_f32(V1), vreinterpretq_u32_f32(V2)));
+    return vreinterpretq_f32_u32(vceqq_s32(vreinterpretq_s32_f32(V1), vreinterpretq_s32_f32(V2)));
 #elif defined(_XM_SSE_INTRINSICS_)
     __m128i V = _mm_cmpeq_epi32(_mm_castps_si128(V1), _mm_castps_si128(V2));
     return _mm_castsi128_ps(V);
@@ -2317,10 +2317,10 @@ inline XMVECTOR XM_CALLCONV XMVectorRound(FXMVECTOR V) noexcept
 #if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__
     return vrndnq_f32(V);
 #else
-    uint32x4_t sign = vandq_u32(vreinterpretq_f32_u32(V), g_XMNegativeZero);
-    uint32x4_t sMagic = vorrq_u32(g_XMNoFraction, sign);
-    float32x4_t R1 = vaddq_f32(V, vreinterpretq_u32_f32(sMagic));
-    R1 = vsubq_f32(R1, vreinterpretq_u32_f32(sMagic));
+    uint32x4_t sign = vandq_u32(vreinterpretq_u32_f32(V), g_XMNegativeZero);
+    float32x4_t sMagic = vreinterpretq_f32_u32(vorrq_u32(g_XMNoFraction, sign));
+    float32x4_t R1 = vaddq_f32(V, sMagic);
+    R1 = vsubq_f32(R1, sMagic);
     float32x4_t R2 = vabsq_f32(V);
     uint32x4_t mask = vcleq_f32(R2, g_XMNoFraction);
     return vbslq_f32(mask, R1, V);
@@ -3542,7 +3542,7 @@ namespace Internal
         int32x4_t b = vshrq_n_s32(vreinterpretq_s32_u32(c), 31);    // b = (c ? 1 : 0)
         int32x4_t r = vshlq_n_s32(b, 4);                            // r = (b << 4)
         r = vnegq_s32(r);
-        int32x4_t v = vshlq_s32(v, r);                              // v = (v >> r)
+        int32x4_t v = vshlq_s32(value, r);                          // v = (v >> r)
 
         c = vcgtq_s32(v, g_XM000000FF);                             // c = (v > 0xFF)
         b = vshrq_n_s32(vreinterpretq_s32_u32(c), 31);              // b = (c ? 1 : 0)
