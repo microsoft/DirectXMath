@@ -23,7 +23,7 @@ inline float XMConvertHalfToFloat(HALF Value) noexcept
     __m128i V1 = _mm_cvtsi32_si128(static_cast<int>(Value));
     __m128 V2 = _mm_cvtph_ps(V1);
     return _mm_cvtss_f32(V2);
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     uint16x4_t vHalf = vdup_n_u16(Value);
     float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
     return vgetq_lane_f32(vFloat, 0);
@@ -255,7 +255,7 @@ inline float* XMConvertHalfToFloatStream
     XM_SFENCE();
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     auto pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     auto pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -389,7 +389,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
     __m128 V1 = _mm_set_ss(Value);
     __m128i V2 = _mm_cvtps_ph(V1, _MM_FROUND_TO_NEAREST_INT);
     return static_cast<HALF>(_mm_extract_epi16(V2, 0));
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     float32x4_t vFloat = vdupq_n_f32(Value);
     float16x4_t vHalf = vcvt_f16_f32(vFloat);
     return vget_lane_u16(vreinterpret_u16_f16(vHalf), 0);
@@ -609,7 +609,7 @@ inline HALF* XMConvertFloatToHalfStream
     }
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_)
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     auto pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
     auto pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -1091,9 +1091,9 @@ inline XMVECTOR XM_CALLCONV XMLoadUByte2(const XMUBYTE2* pSource) noexcept
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     uint16x4_t vInt8 = vld1_dup_u16(reinterpret_cast<const uint16_t*>(pSource));
-    uint16x8_t vInt16 = vmovl_u8(vreinterpret_u8_u32(vInt8));
+    uint16x8_t vInt16 = vmovl_u8(vreinterpret_u8_u16(vInt8));
     uint32x4_t vInt = vmovl_u16(vget_low_u16(vInt16));
-    vInt = vandq_s32(vInt, g_XMMaskXY);
+    vInt = vandq_u32(vInt, g_XMMaskXY);
     return vcvtq_f32_u32(vInt);
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 Scale = { { { 1.0f, 1.0f / 256.0f, 0, 0 } } };
@@ -1317,9 +1317,9 @@ inline XMVECTOR XM_CALLCONV XMLoadShortN4(const XMSHORTN4* pSource) noexcept
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     int16x4_t vInt = vld1_s16(reinterpret_cast<const int16_t*>(pSource));
     int32x4_t V = vmovl_s16(vInt);
-    V = vcvtq_f32_s32(V);
-    V = vmulq_n_f32(V, 1.0f / 32767.0f);
-    return vmaxq_f32(V, vdupq_n_f32(-1.f));
+    float32x4_t vResult = vcvtq_f32_s32(V);
+    vResult = vmulq_n_f32(vResult, 1.0f / 32767.0f);
+    return vmaxq_f32(vResult, vdupq_n_f32(-1.f));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the color in all four entries (x,z,y,w)
     __m128d vIntd = _mm_load1_pd(reinterpret_cast<const double*>(&pSource->x));
@@ -1391,8 +1391,8 @@ inline XMVECTOR XM_CALLCONV XMLoadUShortN4(const XMUSHORTN4* pSource) noexcept
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     uint16x4_t vInt = vld1_u16(reinterpret_cast<const uint16_t*>(pSource));
     uint32x4_t V = vmovl_u16(vInt);
-    V = vcvtq_f32_u32(V);
-    return vmulq_n_f32(V, 1.0f / 65535.0f);
+    float32x4_t vResult = vcvtq_f32_u32(V);
+    return vmulq_n_f32(vResult, 1.0f / 65535.0f);
 #elif defined(_XM_SSE_INTRINSICS_)
     static const XMVECTORF32 FixupY16W16 = { { { 1.0f / 65535.0f, 1.0f / 65535.0f, 1.0f / (65535.0f * 65536.0f), 1.0f / (65535.0f * 65536.0f) } } };
     static const XMVECTORF32 FixaddY16W16 = { { { 0, 0, 32768.0f * 65536.0f, 32768.0f * 65536.0f } } };
@@ -1626,7 +1626,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUDecN4_XR(const XMUDECN4* pSource) noexcept
     uint32x4_t vInt = vld1q_dup_u32(reinterpret_cast<const uint32_t*>(pSource));
     vInt = vandq_u32(vInt, g_XMMaskDec4);
     int32x4_t vTemp = vsubq_s32(vreinterpretq_s32_u32(vInt), XRBias);
-    vTemp = veorq_u32(vTemp, g_XMFlipW);
+    vTemp = veorq_s32(vTemp, g_XMFlipW);
     float32x4_t R = vcvtq_f32_s32(vTemp);
     R = vaddq_f32(R, g_XMAddUDec4);
     return vmulq_f32(R, XRMul);
@@ -2686,8 +2686,7 @@ inline void XM_CALLCONV XMStoreShortN4
     float32x4_t vResult = vmaxq_f32(V, vdupq_n_f32(-1.f));
     vResult = vminq_f32(vResult, vdupq_n_f32(1.0f));
     vResult = vmulq_n_f32(vResult, 32767.0f);
-    vResult = vcvtq_s32_f32(vResult);
-    int16x4_t vInt = vmovn_s32(vResult);
+    int16x4_t vInt = vmovn_s32(vcvtq_s32_f32(vResult));
     vst1_s16(reinterpret_cast<int16_t*>(pDestination), vInt);
 #elif defined(_XM_SSE_INTRINSICS_)
     XMVECTOR vResult = _mm_max_ps(V, g_XMNegativeOne);
@@ -2724,8 +2723,7 @@ inline void XM_CALLCONV XMStoreShort4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmaxq_f32(V, g_ShortMin);
     vResult = vminq_f32(vResult, g_ShortMax);
-    vResult = vcvtq_s32_f32(vResult);
-    int16x4_t vInt = vmovn_s32(vResult);
+    int16x4_t vInt = vmovn_s32(vcvtq_s32_f32(vResult));
     vst1_s16(reinterpret_cast<int16_t*>(pDestination), vInt);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Bounds check
@@ -2767,8 +2765,7 @@ inline void XM_CALLCONV XMStoreUShortN4
     vResult = vminq_f32(vResult, vdupq_n_f32(1.0f));
     vResult = vmulq_n_f32(vResult, 65535.0f);
     vResult = vaddq_f32(vResult, g_XMOneHalf);
-    vResult = vcvtq_u32_f32(vResult);
-    uint16x4_t vInt = vmovn_u32(vResult);
+    uint16x4_t vInt = vmovn_u32(vcvtq_u32_f32(vResult));
     vst1_u16(reinterpret_cast<uint16_t*>(pDestination), vInt);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Bounds check
@@ -2812,8 +2809,7 @@ inline void XM_CALLCONV XMStoreUShort4
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmaxq_f32(V, vdupq_n_f32(0));
     vResult = vminq_f32(vResult, g_UShortMax);
-    vResult = vcvtq_u32_f32(vResult);
-    uint16x4_t vInt = vmovn_u32(vResult);
+    uint16x4_t vInt = vmovn_u32(vcvtq_u32_f32(vResult));
     vst1_u16(reinterpret_cast<uint16_t*>(pDestination), vInt);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Bounds check
@@ -2947,7 +2943,7 @@ inline void XM_CALLCONV XMStoreXDec4
     vTemp = vorr_u32(vTemp, vTemp2);
     // Perform a single bit left shift on y|w
     vTemp2 = vdup_lane_u32(vTemp, 1);
-    vTemp2 = vadd_s32(vTemp2, vTemp2);
+    vTemp2 = vadd_u32(vTemp2, vTemp2);
     vTemp = vorr_u32(vTemp, vTemp2);
     vst1_lane_u32(&pDestination->v, vTemp, 0);
 #elif defined(_XM_SSE_INTRINSICS_)
@@ -3640,7 +3636,7 @@ inline void XM_CALLCONV XMStoreU555
     vTemp = vorr_u32(vTemp, vTemp2);
     // Perform a single bit left shift on y|w
     vTemp2 = vdup_lane_u32(vTemp, 1);
-    vTemp2 = vadd_s32(vTemp2, vTemp2);
+    vTemp2 = vadd_u32(vTemp2, vTemp2);
     vTemp = vorr_u32(vTemp, vTemp2);
     vst1_lane_u16(&pDestination->v, vreinterpret_u16_u32(vTemp), 0);
 #elif defined(_XM_SSE_INTRINSICS_)

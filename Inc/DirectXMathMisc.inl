@@ -120,12 +120,12 @@ inline XMVECTOR XM_CALLCONV XMQuaternionMultiply
     vResult = vmlaq_f32(vResult, Q2X, ControlWZYX);
 
     // Mul by Q1ZWXY
-    vTemp = vrev64q_u32(vTemp);
+    vTemp = vreinterpretq_f32_u32(vrev64q_u32(vreinterpretq_u32_f32(vTemp)));
     Q2Y = vmulq_f32(Q2Y, vTemp);
     vResult = vmlaq_f32(vResult, Q2Y, ControlZWXY);
 
     // Mul by Q1YXWZ
-    vTemp = vrev64q_u32(vTemp);
+    vTemp = vreinterpretq_f32_u32(vrev64q_u32(vreinterpretq_u32_f32(vTemp)));
     vTemp = vcombine_f32(vget_high_f32(vTemp), vget_low_f32(vTemp));
     Q2Z = vmulq_f32(Q2Z, vTemp);
     vResult = vmlaq_f32(vResult, Q2Z, ControlYXWZ);
@@ -728,74 +728,74 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationMatrix(FXMMATRIX M) noexcept
     static const XMVECTORU32 Select0110 = { { { XM_SELECT_0, XM_SELECT_1, XM_SELECT_1, XM_SELECT_0 } } };
     static const XMVECTORU32 Select0010 = { { { XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 } } };
 
-    XMVECTOR r0 = M.r[0];
-    XMVECTOR r1 = M.r[1];
-    XMVECTOR r2 = M.r[2];
+    float32x4_t r0 = M.r[0];
+    float32x4_t r1 = M.r[1];
+    float32x4_t r2 = M.r[2];
 
-    XMVECTOR r00 = vdupq_lane_f32(vget_low_f32(r0), 0);
-    XMVECTOR r11 = vdupq_lane_f32(vget_low_f32(r1), 1);
-    XMVECTOR r22 = vdupq_lane_f32(vget_high_f32(r2), 0);
+    float32x4_t r00 = vdupq_lane_f32(vget_low_f32(r0), 0);
+    float32x4_t r11 = vdupq_lane_f32(vget_low_f32(r1), 1);
+    float32x4_t r22 = vdupq_lane_f32(vget_high_f32(r2), 0);
 
     // x^2 >= y^2 equivalent to r11 - r00 <= 0
-    XMVECTOR r11mr00 = vsubq_f32(r11, r00);
-    XMVECTOR x2gey2 = vcleq_f32(r11mr00, g_XMZero);
+    float32x4_t r11mr00 = vsubq_f32(r11, r00);
+    uint32x4_t x2gey2 = vcleq_f32(r11mr00, g_XMZero);
 
     // z^2 >= w^2 equivalent to r11 + r00 <= 0
-    XMVECTOR r11pr00 = vaddq_f32(r11, r00);
-    XMVECTOR z2gew2 = vcleq_f32(r11pr00, g_XMZero);
+    float32x4_t r11pr00 = vaddq_f32(r11, r00);
+    uint32x4_t z2gew2 = vcleq_f32(r11pr00, g_XMZero);
 
     // x^2 + y^2 >= z^2 + w^2 equivalent to r22 <= 0
-    XMVECTOR x2py2gez2pw2 = vcleq_f32(r22, g_XMZero);
+    uint32x4_t x2py2gez2pw2 = vcleq_f32(r22, g_XMZero);
 
     // (4*x^2, 4*y^2, 4*z^2, 4*w^2)
-    XMVECTOR t0 = vmulq_f32(XMPMMP, r00);
-    XMVECTOR x2y2z2w2 = vmlaq_f32(t0, XMMPMP, r11);
+    float32x4_t t0 = vmulq_f32(XMPMMP, r00);
+    float32x4_t x2y2z2w2 = vmlaq_f32(t0, XMMPMP, r11);
     x2y2z2w2 = vmlaq_f32(x2y2z2w2, XMMMPP, r22);
     x2y2z2w2 = vaddq_f32(x2y2z2w2, g_XMOne);
 
     // (r01, r02, r12, r11)
     t0 = vextq_f32(r0, r0, 1);
-    XMVECTOR t1 = vextq_f32(r1, r1, 1);
+    float32x4_t t1 = vextq_f32(r1, r1, 1);
     t0 = vcombine_f32(vget_low_f32(t0), vrev64_f32(vget_low_f32(t1)));
 
     // (r10, r20, r21, r10)
     t1 = vextq_f32(r2, r2, 3);
-    XMVECTOR r10 = vdupq_lane_f32(vget_low_f32(r1), 0);
+    float32x4_t r10 = vdupq_lane_f32(vget_low_f32(r1), 0);
     t1 = vbslq_f32(Select0110, t1, r10);
 
     // (4*x*y, 4*x*z, 4*y*z, unused)
-    XMVECTOR xyxzyz = vaddq_f32(t0, t1);
+    float32x4_t xyxzyz = vaddq_f32(t0, t1);
 
     // (r21, r20, r10, r10)
     t0 = vcombine_f32(vrev64_f32(vget_low_f32(r2)), vget_low_f32(r10));
 
     // (r12, r02, r01, r12)
-    XMVECTOR t2 = vcombine_f32(vrev64_f32(vget_high_f32(r0)), vrev64_f32(vget_low_f32(r0)));
-    XMVECTOR t3 = vdupq_lane_f32(vget_high_f32(r1), 0);
+    float32x4_t t2 = vcombine_f32(vrev64_f32(vget_high_f32(r0)), vrev64_f32(vget_low_f32(r0)));
+    float32x4_t t3 = vdupq_lane_f32(vget_high_f32(r1), 0);
     t1 = vbslq_f32(Select0110, t2, t3);
 
     // (4*x*w, 4*y*w, 4*z*w, unused)
-    XMVECTOR xwywzw = vsubq_f32(t0, t1);
+    float32x4_t xwywzw = vsubq_f32(t0, t1);
     xwywzw = vmulq_f32(XMMPMP, xwywzw);
 
     // (4*x*x, 4*x*y, 4*x*z, 4*x*w)
     t0 = vextq_f32(xyxzyz, xyxzyz, 3);
     t1 = vbslq_f32(Select0110, t0, x2y2z2w2);
     t2 = vdupq_lane_f32(vget_low_f32(xwywzw), 0);
-    XMVECTOR tensor0 = vbslq_f32(g_XMSelect1110, t1, t2);
+    float32x4_t tensor0 = vbslq_f32(g_XMSelect1110, t1, t2);
 
     // (4*y*x, 4*y*y, 4*y*z, 4*y*w)
     t0 = vbslq_f32(g_XMSelect1011, xyxzyz, x2y2z2w2);
     t1 = vdupq_lane_f32(vget_low_f32(xwywzw), 1);
-    XMVECTOR tensor1 = vbslq_f32(g_XMSelect1110, t0, t1);
+    float32x4_t tensor1 = vbslq_f32(g_XMSelect1110, t0, t1);
 
     // (4*z*x, 4*z*y, 4*z*z, 4*z*w)
     t0 = vextq_f32(xyxzyz, xyxzyz, 1);
     t1 = vcombine_f32(vget_low_f32(t0), vrev64_f32(vget_high_f32(xwywzw)));
-    XMVECTOR tensor2 = vbslq_f32(Select0010, x2y2z2w2, t1);
+    float32x4_t tensor2 = vbslq_f32(Select0010, x2y2z2w2, t1);
 
     // (4*w*x, 4*w*y, 4*w*z, 4*w*w)
-    XMVECTOR tensor3 = vbslq_f32(g_XMSelect1110, xwywzw, x2y2z2w2);
+    float32x4_t tensor3 = vbslq_f32(g_XMSelect1110, xwywzw, x2y2z2w2);
 
     // Select the row of the tensor-product matrix that has the largest
     // magnitude.
@@ -1358,8 +1358,8 @@ inline XMVECTOR XM_CALLCONV XMColorNegative(FXMVECTOR vColor) noexcept
         } } };
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    XMVECTOR vTemp = veorq_u32(vColor, g_XMNegate3);
-    return vaddq_f32(vTemp, g_XMOne3);
+    uint32x4_t vTemp = veorq_u32(vreinterpretq_u32_f32(vColor), g_XMNegate3);
+    return vaddq_f32(vreinterpretq_f32_u32(vTemp), g_XMOne3);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Negate only x,y and z.
     XMVECTOR vTemp = _mm_xor_ps(vColor, g_XMNegate3);
