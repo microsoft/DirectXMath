@@ -1633,6 +1633,9 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMColorRGBToYUV_HD(FXMVECTOR rgb) noexcept;
     XMVECTOR    XM_CALLCONV     XMColorYUVToRGB_HD(FXMVECTOR yuv) noexcept;
 
+    XMVECTOR    XM_CALLCONV     XMColorRGBToYUV_UHD(FXMVECTOR rgb) noexcept;
+    XMVECTOR    XM_CALLCONV     XMColorYUVToRGB_UHD(FXMVECTOR yuv) noexcept;
+
     XMVECTOR    XM_CALLCONV     XMColorRGBToXYZ(FXMVECTOR rgb) noexcept;
     XMVECTOR    XM_CALLCONV     XMColorXYZToRGB(FXMVECTOR xyz) noexcept;
 
