@@ -351,8 +351,8 @@ namespace DirectX
     typedef const XMVECTOR& FXMVECTOR;
 #endif
 
-    // Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and x64 vector call; by reference otherwise
-#if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || (_XM_VECTORCALL_ && !defined(_M_IX86) ) || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
+    // Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and vector call; by reference otherwise
+#if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
     typedef const XMVECTOR GXMVECTOR;
 #else
     typedef const XMVECTOR& GXMVECTOR;
