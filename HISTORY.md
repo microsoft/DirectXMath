@@ -6,13 +6,26 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### August 2020 (3.16)
+* Added ``XMVectorLog10`` / ``XMVectorExp10``
+* Added ``XMColorRGBToYUV_UHD`` / ``XMColorYUVToRGB_UHD`` for Rec. 2020 YUV
+* Added optional ``rhcoords`` parameter for BoundingFrustum ``CreateFromMatrix``
+* Added use of Intel&reg; Short Vector Matrix Library (SVML) supported by VS 2019
+  * Opt-in with ``_XM_SVML_INTRINSICS_``; opt-out with ``_XM_DISABLE_INTEL_SVML_``
+* Fixed denorm handling for ``XMConvertFloatToHalf``
+* Fixed flush (too small for denorm) handling for ``XMStoreFloat3PK``
+* Fixed clamping bug in ``XMStoreByteN4``
+* Cleaned up ARM-NEON intrinsics type issues for improved portability on GNUC
+* Fixed ``GXMVECTOR`` for x86 ``__vectorcall``
+* Code review
+
 ### April 2020 (3.15)
-* Added XMMatrixVectorTensorProduct for creating a matrix from two vectors
-* Use of m256 registers and FMA3 with /arch:AVX2 for stream and some matrix functions
+* Added ``XMMatrixVectorTensorProduct`` for creating a matrix from two vectors
+* Use of m256 registers and FMA3 with ``/arch:AVX2`` for stream and some matrix functions
 * Optimized load/stores for SSE2 float2 & float3 functions
 * Optimized some instruction choices for better AMD CPU support
 * Improved conformance for clang/LLVM, GCC, and MinGW compilers
-* Code review (constexpr / noexcept usage)
+* Code review (``constexpr`` / ``noexcept`` usage)
 * Retired VS 2015 support
 
 ### August 2019 (3.14)
