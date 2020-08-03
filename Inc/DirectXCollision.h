@@ -258,7 +258,7 @@ namespace DirectX
             : Origin(_Origin), Orientation(_Orientation),
             RightSlope(_RightSlope), LeftSlope(_LeftSlope), TopSlope(_TopSlope), BottomSlope(_BottomSlope),
             Near(_Near), Far(_Far) {}
-        BoundingFrustum(_In_ CXMMATRIX Projection) noexcept;
+        BoundingFrustum(_In_ CXMMATRIX Projection, bool rhcoords = false) noexcept;
 
         // Methods
         void    XM_CALLCONV     Transform(_Out_ BoundingFrustum& Out, _In_ FXMMATRIX M) const noexcept;
@@ -298,7 +298,7 @@ namespace DirectX
         // Create 6 Planes representation of Frustum
 
     // Static methods
-        static void     XM_CALLCONV     CreateFromMatrix(_Out_ BoundingFrustum& Out, _In_ FXMMATRIX Projection) noexcept;
+        static void     XM_CALLCONV     CreateFromMatrix(_Out_ BoundingFrustum& Out, _In_ FXMMATRIX Projection, bool rhcoords = false) noexcept;
     };
 
     //-----------------------------------------------------------------------------

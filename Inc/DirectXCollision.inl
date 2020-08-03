@@ -2818,9 +2818,9 @@ inline void BoundingOrientedBox::CreateFromPoints(BoundingOrientedBox& Out, size
  ****************************************************************************/
 
 _Use_decl_annotations_
-inline BoundingFrustum::BoundingFrustum(CXMMATRIX Projection) noexcept
+inline BoundingFrustum::BoundingFrustum(CXMMATRIX Projection, bool rhcoords) noexcept
 {
-    CreateFromMatrix(*this, Projection);
+    CreateFromMatrix(*this, Projection, rhcoords);
 }
 
 
@@ -4252,7 +4252,7 @@ inline void BoundingFrustum::GetPlanes(XMVECTOR* NearPlane, XMVECTOR* FarPlane, 
 // constructed frustum to be incorrect.
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_
-inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix(BoundingFrustum& Out, FXMMATRIX Projection) noexcept
+inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix(BoundingFrustum& Out, FXMMATRIX Projection, bool rhcoords) noexcept
 {
     // Corners of the projection frustum in homogenous space.
     static XMVECTORF32 HomogenousPoints[6] =
@@ -4296,8 +4296,16 @@ inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix(BoundingFrustum& Out, 
     Points[4] = XMVectorMultiply(Points[4], XMVectorReciprocal(XMVectorSplatW(Points[4])));
     Points[5] = XMVectorMultiply(Points[5], XMVectorReciprocal(XMVectorSplatW(Points[5])));
 
-    Out.Near = XMVectorGetZ(Points[4]);
-    Out.Far = XMVectorGetZ(Points[5]);
+    if (rhcoords)
+    {
+        Out.Near = XMVectorGetZ(Points[5]);
+        Out.Far = XMVectorGetZ(Points[4]);
+    }
+    else
+    {
+        Out.Near = XMVectorGetZ(Points[4]);
+        Out.Far = XMVectorGetZ(Points[5]);
+    }
 }
 
 
