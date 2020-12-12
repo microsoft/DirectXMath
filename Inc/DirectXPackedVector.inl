@@ -23,7 +23,7 @@ inline float XMConvertHalfToFloat(HALF Value) noexcept
     __m128i V1 = _mm_cvtsi32_si128(static_cast<int>(Value));
     __m128 V2 = _mm_cvtph_ps(V1);
     return _mm_cvtss_f32(V2);
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     uint16x4_t vHalf = vdup_n_u16(Value);
     float32x4_t vFloat = vcvt_f32_f16(vreinterpret_f16_u16(vHalf));
     return vgetq_lane_f32(vFloat, 0);
@@ -255,7 +255,7 @@ inline float* XMConvertHalfToFloatStream
     XM_SFENCE();
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) ||__aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     auto pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
     auto pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
@@ -389,7 +389,7 @@ inline HALF XMConvertFloatToHalf(float Value) noexcept
     __m128 V1 = _mm_set_ss(Value);
     __m128i V2 = _mm_cvtps_ph(V1, _MM_FROUND_TO_NEAREST_INT);
     return static_cast<HALF>(_mm_extract_epi16(V2, 0));
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     float32x4_t vFloat = vdupq_n_f32(Value);
     float16x4_t vHalf = vcvt_f16_f32(vFloat);
     return vget_lane_u16(vreinterpret_u16_f16(vHalf), 0);
@@ -609,7 +609,7 @@ inline HALF* XMConvertFloatToHalfStream
     }
 
     return pOutputStream;
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
+#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__) && !defined(_XM_NO_INTRINSICS_) && (!defined(__GNUC__) || (__ARM_FP & 2))
     auto pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
     auto pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
 

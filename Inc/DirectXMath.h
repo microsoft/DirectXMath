@@ -19,7 +19,7 @@
 #error DirectX Math requires Visual C++ 2017 or later.
 #endif
 
-#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
+#if defined(_MSC_VER) && !defined(_M_ARM) && !defined(_M_ARM64) && !defined(_M_HYBRID_X86_ARM64) && !defined(_M_ARM64EC) && (!_MANAGED) && (!_M_CEE) && (!defined(_M_IX86_FP) || (_M_IX86_FP > 1)) && !defined(_XM_NO_INTRINSICS_) && !defined(_XM_VECTORCALL_)
 #define _XM_VECTORCALL_ 1
 #endif
 
@@ -80,9 +80,9 @@
 #endif
 
 #if !defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-#if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64)
+#if (defined(_M_IX86) || defined(_M_X64) || __i386__ || __x86_64__) && !defined(_M_HYBRID_X86_ARM64) && !defined(_M_ARM64EC)
 #define _XM_SSE_INTRINSICS_
-#elif defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __arm__ || __aarch64__
+#elif defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __arm__ || __aarch64__
 #define _XM_ARM_NEON_INTRINSICS_
 #elif !defined(_XM_NO_INTRINSICS_)
 #error DirectX Math does not support this target
@@ -135,7 +135,7 @@
 #endif
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#if defined(_MSC_VER) && !defined(__clang__) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64))
+#if defined(_MSC_VER) && !defined(__clang__) && (defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC))
 #include <arm64_neon.h>
 #else
 #include <arm_neon.h>
@@ -352,14 +352,14 @@ namespace DirectX
 #endif
 
     // Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and vector call; by reference otherwise
-#if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
     typedef const XMVECTOR GXMVECTOR;
 #else
     typedef const XMVECTOR& GXMVECTOR;
 #endif
 
     // Fix-up for (5th & 6th) XMVECTOR parameter to pass in-register for ARM64 and vector call; by reference otherwise
-#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
     typedef const XMVECTOR HXMVECTOR;
 #else
     typedef const XMVECTOR& HXMVECTOR;
@@ -478,7 +478,7 @@ namespace DirectX
     struct XMMATRIX;
 
     // Fix-up for (1st) XMMATRIX parameter to pass in-register for ARM64 and vector call; by reference otherwise
-#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
+#if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
     typedef const XMMATRIX FXMMATRIX;
 #else
     typedef const XMMATRIX& FXMMATRIX;

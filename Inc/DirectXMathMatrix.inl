@@ -3173,7 +3173,7 @@ inline XMMATRIX& XMMATRIX::operator/= (float S) noexcept
     r[3] = XMVectorDivide(r[3], vS);
     return *this;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__
     float32x4_t vS = vdupq_n_f32(S);
     r[0] = vdivq_f32(r[0], vS);
     r[1] = vdivq_f32(r[1], vS);
@@ -3260,7 +3260,7 @@ inline XMMATRIX XMMATRIX::operator/ (float S) const noexcept
     R.r[3] = XMVectorDivide(r[3], vS);
     return R;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || __aarch64__
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__
     float32x4_t vS = vdupq_n_f32(S);
     XMMATRIX R;
     R.r[0] = vdivq_f32(r[0], vS);
