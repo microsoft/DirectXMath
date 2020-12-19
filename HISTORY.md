@@ -6,7 +6,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
-### August 2020 (3.16)
+### December 2020 (3.16)
 * Added ``XMVectorLog10`` / ``XMVectorExp10``
 * Added ``XMColorRGBToYUV_UHD`` / ``XMColorYUVToRGB_UHD`` for Rec. 2020 YUV
 * Added optional ``rhcoords`` parameter for BoundingFrustum ``CreateFromMatrix``
