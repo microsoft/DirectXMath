@@ -28,13 +28,15 @@ add_library(${PROJECT_NAME} INTERFACE)
 
 target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:include/${PROJECT_NAME}>)
 
 #--- Package
 include(CMakePackageConfigHelpers)
 
+string(TOLOWER ${PROJECT_NAME} PACKAGE_NAME)
+
 write_basic_package_version_file(
-  ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}-config-version.cmake
+  ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config-version.cmake
   VERSION ${DIRECTXMATH_VERSION}
   COMPATIBILITY AnyNewerVersion)
 
@@ -45,7 +47,7 @@ install(TARGETS ${PROJECT_NAME}
   RUNTIME DESTINATION bin)
 
 configure_package_config_file(${CMAKE_CURRENT_SOURCE_DIR}/.nuget/${PROJECT_NAME}-config.cmake.in
-  ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}-config.cmake
+  ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config.cmake
   INSTALL_DESTINATION cmake/})
 
 install(EXPORT ${PROJECT_NAME}-targets
@@ -54,10 +56,10 @@ install(EXPORT ${PROJECT_NAME}-targets
   DESTINATION cmake/)
 
 install(FILES ${LIBRARY_HEADERS}
-  DESTINATION include)
+  DESTINATION include/${PROJECT_NAME})
 
 install(
   FILES
-    ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}-config.cmake
-    ${PROJECT_BINARY_DIR}/cmake/${PROJECT_NAME}-config-version.cmake
+    ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config.cmake
+    ${PROJECT_BINARY_DIR}/cmake/${PACKAGE_NAME}-config-version.cmake
   DESTINATION cmake/)
