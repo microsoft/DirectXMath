@@ -152,7 +152,10 @@
 #include <stdint.h>
 #pragma warning(pop)
 
-#ifdef __GNUC__
+#if __cplusplus >= 201703L
+#define XM_ALIGNED_DATA(x) alignas(x)
+#define XM_ALIGNED_STRUCT(x) struct alignas(x)
+#elif defined(__GNUC__)
 #define XM_ALIGNED_DATA(x) __attribute__ ((aligned(x)))
 #define XM_ALIGNED_STRUCT(x) struct __attribute__ ((aligned(x)))
 #else
