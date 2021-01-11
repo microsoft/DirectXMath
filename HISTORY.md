@@ -6,6 +6,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### January 2021 (3.16b)
+* Hot-fixes to resolve build breaks for clang/LLVM and GCC on ARM64
+* ``XM_ALIGNED_DATA`` and ``XM_ALIGNED_STRUCT`` macros updated to use C++17 ``alignas`` when available
+
 ### December 2020 (3.16)
 * Added ``XMVectorLog10`` / ``XMVectorExp10``
 * Added ``XMColorRGBToYUV_UHD`` / ``XMColorYUVToRGB_UHD`` for Rec. 2020 YUV
