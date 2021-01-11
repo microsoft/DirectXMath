@@ -644,13 +644,13 @@ inline HALF* XMConvertFloatToHalfStream
 
                     uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
 
-                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 0);
+                    vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 0);
                     pHalf += OutputStride;
-                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 1);
+                    vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 1);
                     pHalf += OutputStride;
-                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 2);
+                    vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 2);
                     pHalf += OutputStride;
-                    vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 3);
+                    vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 3);
                     pHalf += OutputStride;
                     i += 4;
                 }
@@ -701,13 +701,13 @@ inline HALF* XMConvertFloatToHalfStream
 
                 uint16x4_t vHalf = vreinterpret_u16_f16(vcvt_f16_f32(vFloat));
 
-                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 0);
+                vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 0);
                 pHalf += OutputStride;
-                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 1);
+                vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 1);
                 pHalf += OutputStride;
-                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 2);
+                vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 2);
                 pHalf += OutputStride;
-                vst1_lane_u16(reinterpret_cast<float*>(pHalf), vHalf, 3);
+                vst1_lane_u16(reinterpret_cast<uint16_t*>(pHalf), vHalf, 3);
                 pHalf += OutputStride;
                 i += 4;
             }
