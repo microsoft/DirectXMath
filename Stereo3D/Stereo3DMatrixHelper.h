@@ -1,7 +1,7 @@
 //-------------------------------------------------------------------------------------
 // Stereo3DMatrixHelper.h -- SIMD C++ Math helper for Stereo 3D matrices
 //
-// Copyright (c) Microsoft Corporation. All rights reserved.
+// Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //-------------------------------------------------------------------------------------
 
