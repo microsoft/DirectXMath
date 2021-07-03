@@ -94,9 +94,9 @@ namespace XDSP
         using namespace DirectX;
 
         // sign constants for radix-4 butterflies
-        static const XMVECTORF32 vDFT4SignBits1 = { 1.0f, -1.0f, 1.0f, -1.0f };
-        static const XMVECTORF32 vDFT4SignBits2 = { 1.0f, 1.0f, -1.0f, -1.0f };
-        static const XMVECTORF32 vDFT4SignBits3 = { 1.0f, -1.0f, -1.0f, 1.0f };
+		static const XMVECTORF32 vDFT4SignBits1 = { { { 1.0f, -1.0f, 1.0f, -1.0f } } };
+        static const XMVECTORF32 vDFT4SignBits2 = { { { 1.0f, 1.0f, -1.0f, -1.0f } } };
+        static const XMVECTORF32 vDFT4SignBits3 = { { { 1.0f, -1.0f, -1.0f, 1.0f } } };
 
         // calculating Temp
         // [r1X| r1X|r1Y| r1Y] + [r1Z|-r1Z|r1W|-r1W]
@@ -264,10 +264,10 @@ namespace XDSP
         assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
         assert(ISPOWEROF2(uCount));
 
-        static const XMVECTORF32 wr1 = { 1.0f, 0.70710677f, 0.0f, -0.70710677f };
-        static const XMVECTORF32 wi1 = { 0.0f, -0.70710677f, -1.0f, -0.70710677f };
-        static const XMVECTORF32 wr2 = { -1.0f, -0.70710677f, 0.0f, 0.70710677f };
-        static const XMVECTORF32 wi2 = { 0.0f, 0.70710677f, 1.0f, 0.70710677f };
+		static const XMVECTORF32 wr1 = { { { 1.0f, 0.70710677f, 0.0f, -0.70710677f } } };
+        static const XMVECTORF32 wi1 = { { { 0.0f, -0.70710677f, -1.0f, -0.70710677f } } };
+        static const XMVECTORF32 wr2 = { { { -1.0f, -0.70710677f, 0.0f, 0.70710677f } } };
+        static const XMVECTORF32 wi2 = { { { 0.0f, 0.70710677f, 1.0f, 0.70710677f } } };
 
         for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
         {
@@ -315,17 +315,17 @@ namespace XDSP
         assert(ISPOWEROF2(uCount));
 
         static const XMVECTORF32 aUnityTableReal[4] = {
-            { 1.0f, 1.0f, 1.0f, 1.0f },
-            { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f },
-            { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f },
-            { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f }
+			{ { { 1.0f, 1.0f, 1.0f, 1.0f } } },
+            { { { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f } } },
+            { { { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f } } },
+            { { { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f } } }
         };
         static const XMVECTORF32 aUnityTableImaginary[4] =
         {
-            { -0.0f, -0.0f, -0.0f, -0.0f },
-            { -0.0f, -0.38268343f, -0.70710677f, -0.92387950f },
-            { -0.0f, -0.70710677f, -1.0f, -0.70710677f },
-            { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f }
+            { { { -0.0f, -0.0f, -0.0f, -0.0f } } },
+            { { { -0.0f, -0.38268343f, -0.70710677f, -0.92387950f } } },
+            { { { -0.0f, -0.70710677f, -1.0f, -0.70710677f } } },
+            { { { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f } } }
         };
 
         for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
@@ -448,7 +448,7 @@ namespace XDSP
         // initialize unity table for recursive FFT lengths: uLength, uLength/4, uLength/16... > 16
         // pUnityTable[0 to uLength*4-1] contains real components for current FFT length
         // pUnityTable[uLength*4 to uLength*8-1] contains imaginary components for current FFT length
-        static const XMVECTORF32 vXM0123 = { 0.0f, 1.0f, 2.0f, 3.0f };
+		static const XMVECTORF32 vXM0123 = { { { 0.0f, 1.0f, 2.0f, 3.0f } } };
         uLength >>= 2;
         XMVECTOR vlStep = XMVectorReplicate( XM_PIDIV2 / float(uLength) );
         do
