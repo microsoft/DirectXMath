@@ -461,7 +461,7 @@ namespace XDSP
                 XMVECTOR viJP, vlS;
 
                 pUnityTable[j] = g_XMOne;
-                pUnityTable[j + uLength * 4] = g_XMZero;
+                pUnityTable[j + uLength * 4] = XMVectorZero();
 
                 vlS = XMVectorMultiply(vJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
@@ -554,22 +554,25 @@ namespace XDSP
         else
         {
             // odd powers of two
-            const size_t uRev7 = (uLog2Length - 3);
-            const size_t uRev32 = 32 - uRev7;
+            const size_t uRev7 = (size_t) 1 << (uLog2Length - 3);
+            const size_t uRev32 = 32 - (uLog2Length - 3);
             for (size_t uIndex = 0; uIndex < uLength; ++uIndex)
             {
                 XMFLOAT4A f4a;
                 XMStoreFloat4A(&f4a, pInput[uIndex]);
                 const size_t n = (uIndex >> 1);
-                const size_t uAddr = (((size_t) cSwizzleTable[n & 0xff] << 24) |
+                size_t uAddr = ((((size_t) cSwizzleTable[n & 0xff] << 24) |
                     ((size_t) cSwizzleTable[(n >> 8) & 0xff] << 16) |
                     ((size_t) cSwizzleTable[(n >> 16) & 0xff] << 8) |
-                    ((size_t) cSwizzleTable[(n >> 24)])) >> uRev32;
-                const size_t uRes7 = (uIndex & 1) * 4;
-                pfOutput[uAddr | (uRes7 << uRev7)] = f4a.x;
-                pfOutput[uAddr | ((uRes7 + 1) << uRev7)] = f4a.y;
-                pfOutput[uAddr | ((uRes7 + 2) << uRev7)] = f4a.z;
-                pfOutput[uAddr | ((uRes7 + 3) << uRev7)] = f4a.w;
+                    ((size_t) cSwizzleTable[(n >> 24)])) >> uRev32) |
+                    ((uIndex & 1) * uRev7 * 4);
+                pfOutput[uAddr] = f4a.x;
+                uAddr += uRev7;
+                pfOutput[uAddr] = f4a.y;
+                uAddr += uRev7;
+                pfOutput[uAddr] = f4a.z;
+                uAddr += uRev7;
+                pfOutput[uAddr] = f4a.w;
             }
         }
     }
