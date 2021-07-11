@@ -33,7 +33,7 @@ namespace XDSP
     using CXMVECTOR = DirectX::CXMVECTOR;
     using XMFLOAT4A = DirectX::XMFLOAT4A;
 
-    inline bool ISPOWEROF2(size_t n) { return ( ((n)&((n)-1)) == 0 && (n) != 0 ); }
+    inline bool ISPOWEROF2(size_t n) { return (((n)&((n)-1)) == 0 && (n) != 0); }
 
     // Parallel multiplication of four complex numbers, assuming real and imaginary values are stored in separate vectors.
     inline void XM_CALLCONV vmulComplex(
@@ -101,11 +101,11 @@ namespace XDSP
         // calculating Temp
         // [r1X| r1X|r1Y| r1Y] + [r1Z|-r1Z|r1W|-r1W]
         // [i1X| i1X|i1Y| i1Y] + [i1Z|-i1Z|i1W|-i1W]
-        const XMVECTOR r1L = XMVectorSwizzle<0, 0, 1, 1>( r1 );
-        const XMVECTOR r1H = XMVectorSwizzle<2, 2, 3, 3>( r1 );
+        const XMVECTOR r1L = XMVectorSwizzle<0, 0, 1, 1>(r1);
+        const XMVECTOR r1H = XMVectorSwizzle<2, 2, 3, 3>(r1);
 
-        const XMVECTOR i1L = XMVectorSwizzle<0, 0, 1, 1>( i1 );
-        const XMVECTOR i1H = XMVectorSwizzle<2, 2, 3, 3>( i1 );
+        const XMVECTOR i1L = XMVectorSwizzle<0, 0, 1, 1>(i1);
+        const XMVECTOR i1H = XMVectorSwizzle<2, 2, 3, 3>(i1);
 
         const XMVECTOR rTemp = XMVectorMultiplyAdd(r1H, vDFT4SignBits1, r1L);
         const XMVECTOR iTemp = XMVectorMultiplyAdd(i1H, vDFT4SignBits1, i1L);
@@ -450,7 +450,7 @@ namespace XDSP
         // pUnityTable[uLength*4 to uLength*8-1] contains imaginary components for current FFT length
         static const XMVECTORF32 vXM0123 = { { { 0.0f, 1.0f, 2.0f, 3.0f } } };
         uLength >>= 2;
-        XMVECTOR vlStep = XMVectorReplicate( XM_PIDIV2 / float(uLength) );
+        XMVECTOR vlStep = XMVectorReplicate(XM_PIDIV2 / float(uLength));
         do
         {
             uLength >>= 2;
@@ -541,10 +541,10 @@ namespace XDSP
                 XMFLOAT4A f4a;
                 XMStoreFloat4A(&f4a, pInput[uIndex]);
                 const size_t n = uIndex * 4;
-                const size_t uAddr = ((size_t) cSwizzleTable[n & 0xff] << 24) |
-                    ((size_t) cSwizzleTable[(n >> 8) & 0xff] << 16) |
-                    ((size_t) cSwizzleTable[(n >> 16) & 0xff] << 8) |
-                    ((size_t) cSwizzleTable[(n >> 24)]);
+                const size_t uAddr = (static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 24)]));
                 pfOutput[uAddr >> uRev32] = f4a.x;
                 pfOutput[(0x40000000 | uAddr) >> uRev32] = f4a.y;
                 pfOutput[(0x80000000 | uAddr) >> uRev32] = f4a.z;
@@ -554,17 +554,17 @@ namespace XDSP
         else
         {
             // odd powers of two
-            const size_t uRev7 = (size_t) 1 << (uLog2Length - 3);
+            const size_t uRev7 = size_t(1) << (uLog2Length - 3);
             const size_t uRev32 = 32 - (uLog2Length - 3);
             for (size_t uIndex = 0; uIndex < uLength; ++uIndex)
             {
                 XMFLOAT4A f4a;
                 XMStoreFloat4A(&f4a, pInput[uIndex]);
                 const size_t n = (uIndex >> 1);
-                size_t uAddr = ((((size_t) cSwizzleTable[n & 0xff] << 24) |
-                    ((size_t) cSwizzleTable[(n >> 8) & 0xff] << 16) |
-                    ((size_t) cSwizzleTable[(n >> 16) & 0xff] << 8) |
-                    ((size_t) cSwizzleTable[(n >> 24)])) >> uRev32) |
+                size_t uAddr = (((static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) |
+                    (static_cast<size_t>(cSwizzleTable[(n >> 24)]))) >> uRev32) |
                     ((uIndex & 1) * uRev7 * 4);
                 pfOutput[uAddr] = f4a.x;
                 uAddr += uRev7;
@@ -734,7 +734,7 @@ namespace XDSP
             memcpy_s(vRealTemp, sizeof(vRealTemp), pReal, (uLength >> 2) * sizeof(XMVECTOR));
         }
 
-        memset( vImaginaryTemp, 0, (uChannelCount * (uLength >> 2)) * sizeof(XMVECTOR) );
+        memset(vImaginaryTemp, 0, (uChannelCount * (uLength >> 2)) * sizeof(XMVECTOR));
 
         if (uLength > 16)
         {
