@@ -271,7 +271,11 @@ namespace DirectX
     constexpr uint32_t XM_CRMASK_CR6FALSE = 0x00000020;
     constexpr uint32_t XM_CRMASK_CR6BOUNDS = XM_CRMASK_CR6FALSE;
 
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __arm__ || __aarch64__
+    constexpr size_t XM_CACHE_LINE_SIZE = 128;
+#else
     constexpr size_t XM_CACHE_LINE_SIZE = 64;
+#endif
 
 
     /****************************************************************************
