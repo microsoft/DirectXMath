@@ -985,7 +985,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByteN2(const XMBYTEN2* pSource) noexcept
     static const XMVECTORF32 Scale = { { { 1.0f / 127.0f, 1.0f / (127.0f * 256.0f), 0, 0 } } };
     static const XMVECTORU32 Mask = { { { 0xFF, 0xFF00, 0, 0 } } };
     // Splat the color in all four entries (x,z,y,w)
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vTemp = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask
     vTemp = _mm_and_ps(vTemp, Mask);
@@ -1025,7 +1025,7 @@ inline XMVECTOR XM_CALLCONV XMLoadByte2(const XMBYTE2* pSource) noexcept
     static const XMVECTORF32 Scale = { { { 1.0f, 1.0f / 256.0f, 1.0f / 65536.0f, 1.0f / (65536.0f * 256.0f) } } };
     static const XMVECTORU32 Mask = { { { 0xFF, 0xFF00, 0, 0 } } };
     // Splat the color in all four entries (x,z,y,w)
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vTemp = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask
     vTemp = _mm_and_ps(vTemp, Mask);
@@ -1064,7 +1064,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByteN2(const XMUBYTEN2* pSource) noexcept
     static const XMVECTORF32 Scale = { { { 1.0f / 255.0f, 1.0f / (255.0f * 256.0f), 0, 0 } } };
     static const XMVECTORU32 Mask = { { { 0xFF, 0xFF00, 0, 0 } } };
     // Splat the color in all four entries (x,z,y,w)
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vTemp = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask
     vTemp = _mm_and_ps(vTemp, Mask);
@@ -1102,7 +1102,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUByte2(const XMUBYTE2* pSource) noexcept
     static const XMVECTORF32 Scale = { { { 1.0f, 1.0f / 256.0f, 0, 0 } } };
     static const XMVECTORU32 Mask = { { { 0xFF, 0xFF00, 0, 0 } } };
     // Splat the color in all four entries (x,z,y,w)
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vTemp = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask
     vTemp = _mm_and_ps(vTemp, Mask);
@@ -1142,7 +1142,7 @@ inline XMVECTOR XM_CALLCONV XMLoadU565(const XMU565* pSource) noexcept
     static const XMVECTORI32 U565And = { { { 0x1F, 0x3F << 5, 0x1F << 11, 0 } } };
     static const XMVECTORF32 U565Mul = { { { 1.0f, 1.0f / 32.0f, 1.0f / 2048.f, 0 } } };
     // Get the 16 bit value and splat it
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult, U565And);
@@ -1977,7 +1977,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUNibble4(const XMUNIBBLE4* pSource) noexcept
     static const XMVECTORI32 UNibble4And = { { { 0xF, 0xF0, 0xF00, 0xF000 } } };
     static const XMVECTORF32 UNibble4Mul = { { { 1.0f, 1.0f / 16.f, 1.0f / 256.f, 1.0f / 4096.f } } };
     // Get the 16 bit value and splat it
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0,0,0,0));
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult, UNibble4And);
@@ -2014,7 +2014,7 @@ inline XMVECTOR XM_CALLCONV XMLoadU555(const XMU555* pSource) noexcept
     static const XMVECTORI32 U555And = { { { 0x1F, 0x1F << 5, 0x1F << 10, 0x8000 } } };
     static const XMVECTORF32 U555Mul = { { { 1.0f, 1.0f / 32.f, 1.0f / 1024.f, 1.0f / 32768.f } } };
     // Get the 16bit value and splat it
-    __m128i vInt = _mm_loadu_si16(&pSource->v);
+    __m128i vInt = XM_LOADU_SI16(&pSource->v);
     XMVECTOR vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult, U555And);
