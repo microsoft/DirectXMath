@@ -588,16 +588,7 @@ namespace DirectX
     // 2D Vector; 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT2A : public XMFLOAT2
     {
-        XMFLOAT2A() = default;
-
-        XMFLOAT2A(const XMFLOAT2A&) = default;
-        XMFLOAT2A& operator=(const XMFLOAT2A&) = default;
-
-        XMFLOAT2A(XMFLOAT2A&&) = default;
-        XMFLOAT2A& operator=(XMFLOAT2A&&) = default;
-
-        constexpr XMFLOAT2A(float _x, float _y) noexcept : XMFLOAT2(_x, _y) {}
-        explicit XMFLOAT2A(_In_reads_(2) const float* pArray) noexcept : XMFLOAT2(pArray) {}
+        using XMFLOAT2::XMFLOAT2;
     };
 
     //------------------------------------------------------------------------------
@@ -660,16 +651,7 @@ namespace DirectX
     // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT3A : public XMFLOAT3
     {
-        XMFLOAT3A() = default;
-
-        XMFLOAT3A(const XMFLOAT3A&) = default;
-        XMFLOAT3A& operator=(const XMFLOAT3A&) = default;
-
-        XMFLOAT3A(XMFLOAT3A&&) = default;
-        XMFLOAT3A& operator=(XMFLOAT3A&&) = default;
-
-        constexpr XMFLOAT3A(float _x, float _y, float _z) noexcept : XMFLOAT3(_x, _y, _z) {}
-        explicit XMFLOAT3A(_In_reads_(3) const float* pArray) noexcept : XMFLOAT3(pArray) {}
+        using XMFLOAT3::XMFLOAT3;
     };
 
     //------------------------------------------------------------------------------
@@ -735,16 +717,7 @@ namespace DirectX
     // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT4A : public XMFLOAT4
     {
-        XMFLOAT4A() = default;
-
-        XMFLOAT4A(const XMFLOAT4A&) = default;
-        XMFLOAT4A& operator=(const XMFLOAT4A&) = default;
-
-        XMFLOAT4A(XMFLOAT4A&&) = default;
-        XMFLOAT4A& operator=(XMFLOAT4A&&) = default;
-
-        constexpr XMFLOAT4A(float _x, float _y, float _z, float _w) noexcept : XMFLOAT4(_x, _y, _z, _w) {}
-        explicit XMFLOAT4A(_In_reads_(4) const float* pArray) noexcept : XMFLOAT4(pArray) {}
+        using XMFLOAT4::XMFLOAT4;
     };
 
     //------------------------------------------------------------------------------
@@ -871,20 +844,7 @@ namespace DirectX
     // 4x3 Row-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT4X3A : public XMFLOAT4X3
     {
-        XMFLOAT4X3A() = default;
-
-        XMFLOAT4X3A(const XMFLOAT4X3A&) = default;
-        XMFLOAT4X3A& operator=(const XMFLOAT4X3A&) = default;
-
-        XMFLOAT4X3A(XMFLOAT4X3A&&) = default;
-        XMFLOAT4X3A& operator=(XMFLOAT4X3A&&) = default;
-
-        constexpr XMFLOAT4X3A(float m00, float m01, float m02,
-            float m10, float m11, float m12,
-            float m20, float m21, float m22,
-            float m30, float m31, float m32)  noexcept :
-            XMFLOAT4X3(m00, m01, m02, m10, m11, m12, m20, m21, m22, m30, m31, m32) {}
-        explicit XMFLOAT4X3A(_In_reads_(12) const float* pArray)  noexcept : XMFLOAT4X3(pArray) {}
+        using XMFLOAT4X3::XMFLOAT4X3;
     };
 
     //------------------------------------------------------------------------------
@@ -926,19 +886,7 @@ namespace DirectX
     // 3x4 Column-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT3X4A : public XMFLOAT3X4
     {
-        XMFLOAT3X4A() = default;
-
-        XMFLOAT3X4A(const XMFLOAT3X4A&) = default;
-        XMFLOAT3X4A& operator=(const XMFLOAT3X4A&) = default;
-
-        XMFLOAT3X4A(XMFLOAT3X4A&&) = default;
-        XMFLOAT3X4A& operator=(XMFLOAT3X4A&&) = default;
-
-        constexpr XMFLOAT3X4A(float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23)  noexcept :
-            XMFLOAT3X4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23) {}
-        explicit XMFLOAT3X4A(_In_reads_(12) const float* pArray) noexcept : XMFLOAT3X4(pArray) {}
+        using XMFLOAT3X4::XMFLOAT3X4;
     };
 
     //------------------------------------------------------------------------------
@@ -982,20 +930,7 @@ namespace DirectX
     // 4x4 Matrix: 32 bit floating point components aligned on a 16 byte boundary
     XM_ALIGNED_STRUCT(16) XMFLOAT4X4A : public XMFLOAT4X4
     {
-        XMFLOAT4X4A() = default;
-
-        XMFLOAT4X4A(const XMFLOAT4X4A&) = default;
-        XMFLOAT4X4A& operator=(const XMFLOAT4X4A&) = default;
-
-        XMFLOAT4X4A(XMFLOAT4X4A&&) = default;
-        XMFLOAT4X4A& operator=(XMFLOAT4X4A&&) = default;
-
-        constexpr XMFLOAT4X4A(float m00, float m01, float m02, float m03,
-            float m10, float m11, float m12, float m13,
-            float m20, float m21, float m22, float m23,
-            float m30, float m31, float m32, float m33) noexcept
-            : XMFLOAT4X4(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22, m23, m30, m31, m32, m33) {}
-        explicit XMFLOAT4X4A(_In_reads_(16) const float* pArray) noexcept : XMFLOAT4X4(pArray) {}
+        using XMFLOAT4X4::XMFLOAT4X4;
     };
 
     ////////////////////////////////////////////////////////////////////////////////
