@@ -55,7 +55,7 @@ Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en
 
 ## Compiler support
 
-Officially the library is supported with Microsoft Visual C++ and clang/LLVM. It should also compile with the Intel C++ compiler, GCC, and MinGW compilers.
+Officially the library is supported with Microsoft Visual C++ 2017 or later, clang/LLVM v9 or later, and GCC 9 or later. It should also compile with the Intel C++ and MinGW compilers.
 
 To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://github.com/dotnet/corert/blob/master/src/Native/inc/unix/sal.h).
 
@@ -76,3 +76,19 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 ## Trademarks
 
 This project may contain trademarks or logos for projects, products, or services. Authorized use of Microsoft trademarks or logos is subject to and must follow [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks/usage/general). Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship. Any use of third-party trademarks or logos are subject to those third-party's policies.
+
+## Credits
+
+The xboxmath library was originated by Matt Bronder with contributions from Sakphong Chanbai and David Hefner for the Xbox 360.
+
+The xnamath library for the DirectX SDK and Xbox XDK was the work of Chuck Walbourn and Becky Heineman based on xboxmath, with contributions from Jeremy Gup, Dan Haffner, Matt Lee, Casey Meekhof, Rich Sauer, Jason Strayer, and Xiaoyue Zheng.
+
+The DirectXMath library for the Windows SDK and Xbox One XDK is the work of Chuck Walbourn based on xnamath, with contributions from Darren Anderson, Matt Lee, Aaron Rodriguez Hernandez, Yuichi Ito, Reza Nourai, Rich Sauer, and Jason Strayer.
+
+Thanks to Dave Eberly for his contributions particularly in improving the transcendental functions.
+
+Thanks to Bruce Dawson for his help with the rounding functions.
+
+Thanks to Andrew Farrier for the fixes to ``XMVerifyCPUSupport`` to properly support clang.
+
+Thanks to Scott Matloff for his help in getting the library updated to use Intel SVML for VS 2019.
