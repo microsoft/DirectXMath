@@ -65,6 +65,12 @@ All content and source code for this package are subject to the terms of the [MI
 
 For the latest version of DirectXMath, bug reports, etc. please visit the project site on [GitHub](https://github.com/microsoft/DirectXMath).
 
+## Support
+
+For questions, consider using [Stack Overflow](https://stackoverflow.com/questions/tagged/directxmath) with the *directxmath* tag, or the [DirectX Discord Server](https://discord.gg/directx) in the *dx12-developers* or *dx9-dx11-developers* channel.
+
+For bug reports and feature requests, please use GitHub [issues](https://github.com/microsoft/DirectXMath/issues) for this project.
+
 ## Contributing
 
 This project welcomes contributions and suggestions. Most contributions require you to agree to a Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
