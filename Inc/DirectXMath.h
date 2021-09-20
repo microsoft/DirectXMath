@@ -300,20 +300,20 @@ namespace DirectX
 #undef XMComparisonAnyOutOfBounds
 #endif
 
-     // Unit conversion
+    // Unit conversion
 
-    inline constexpr float XMConvertToRadians(float fDegrees) noexcept { return fDegrees * (XM_PI / 180.0f); }
-    inline constexpr float XMConvertToDegrees(float fRadians) noexcept { return fRadians * (180.0f / XM_PI); }
+    constexpr float XMConvertToRadians(float fDegrees) noexcept { return fDegrees * (XM_PI / 180.0f); }
+    constexpr float XMConvertToDegrees(float fRadians) noexcept { return fRadians * (180.0f / XM_PI); }
 
     // Condition register evaluation proceeding a recording (R) comparison
 
-    inline constexpr bool XMComparisonAllTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) == XM_CRMASK_CR6TRUE); }
-    inline constexpr bool XMComparisonAnyTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) != XM_CRMASK_CR6FALSE); }
-    inline constexpr bool XMComparisonAllFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) == XM_CRMASK_CR6FALSE); }
-    inline constexpr bool XMComparisonAnyFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) != XM_CRMASK_CR6TRUE); }
-    inline constexpr bool XMComparisonMixed(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6) == 0); }
-    inline constexpr bool XMComparisonAllInBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) == XM_CRMASK_CR6BOUNDS); }
-    inline constexpr bool XMComparisonAnyOutOfBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) != XM_CRMASK_CR6BOUNDS); }
+    constexpr bool XMComparisonAllTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) == XM_CRMASK_CR6TRUE); }
+    constexpr bool XMComparisonAnyTrue(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) != XM_CRMASK_CR6FALSE); }
+    constexpr bool XMComparisonAllFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6FALSE) == XM_CRMASK_CR6FALSE); }
+    constexpr bool XMComparisonAnyFalse(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6TRUE) != XM_CRMASK_CR6TRUE); }
+    constexpr bool XMComparisonMixed(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6) == 0); }
+    constexpr bool XMComparisonAllInBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) == XM_CRMASK_CR6BOUNDS); }
+    constexpr bool XMComparisonAnyOutOfBounds(uint32_t CR) noexcept { return (((CR)&XM_CRMASK_CR6BOUNDS) != XM_CRMASK_CR6BOUNDS); }
 
 
     /****************************************************************************
@@ -1719,8 +1719,8 @@ namespace DirectX
     }
 
     // Special-case permute templates
-    template<> inline constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<0, 1, 2, 3>(FXMVECTOR V1, FXMVECTOR) noexcept { return V1; }
-    template<> inline constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<4, 5, 6, 7>(FXMVECTOR, FXMVECTOR V2) noexcept { return V2; }
+    template<> constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<0, 1, 2, 3>(FXMVECTOR V1, FXMVECTOR) noexcept { return V1; }
+    template<> constexpr XMVECTOR XM_CALLCONV     XMVectorPermute<4, 5, 6, 7>(FXMVECTOR, FXMVECTOR V2) noexcept { return V2; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorPermute<0, 1, 4, 5>(FXMVECTOR V1, FXMVECTOR V2) noexcept { return _mm_movelh_ps(V1, V2); }
@@ -1808,7 +1808,7 @@ namespace DirectX
     }
 
     // Specialized swizzles
-    template<> inline constexpr XMVECTOR XM_CALLCONV XMVectorSwizzle<0, 1, 2, 3>(FXMVECTOR V) noexcept { return V; }
+    template<> constexpr XMVECTOR XM_CALLCONV XMVectorSwizzle<0, 1, 2, 3>(FXMVECTOR V) noexcept { return V; }
 
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     template<> inline XMVECTOR      XM_CALLCONV     XMVectorSwizzle<0, 1, 0, 1>(FXMVECTOR V) noexcept { return _mm_movelh_ps(V, V); }
