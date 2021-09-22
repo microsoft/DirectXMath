@@ -484,8 +484,7 @@ namespace XDSP
             }
             vlStep = XMVectorMultiply(vlStep, g_XMFour);
             pUnityTable += uLength * 8;
-        }
-        while (uLength > 4);
+        } while (uLength > 4);
     }
 
     //----------------------------------------------------------------------------------
