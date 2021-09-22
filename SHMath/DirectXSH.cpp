@@ -104,7 +104,7 @@ namespace
     const float SHEvalHemisphereLight_fSqrtPi = sqrtf(XM_PI);
     const float SHEvalHemisphereLight_fSqrtPi3 = sqrtf(XM_PI / 3.0f);
 
-    typedef float REAL;
+    using REAL = float;
 #define CONSTANT(x) (x ## f)
 
     // routine generated programmatically for evaluating SH basis for degree 1
