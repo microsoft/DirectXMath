@@ -359,27 +359,27 @@ namespace DirectX
 
     // Fix-up for (1st-3rd) XMVECTOR parameters that are pass-in-register for x86, ARM, ARM64, and vector call; by reference otherwise
 #if ( defined(_M_IX86) || defined(_M_ARM) || defined(_M_ARM64) || _XM_VECTORCALL_ || __i386__ || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
-    using FXMVECTOR = const XMVECTOR;
+    typedef const XMVECTOR FXMVECTOR;
 #else
-    using FXMVECTOR = const XMVECTOR&;
+    typedef const XMVECTOR& FXMVECTOR;
 #endif
 
     // Fix-up for (4th) XMVECTOR parameter to pass in-register for ARM, ARM64, and vector call; by reference otherwise
 #if ( defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __arm__ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
-    using GXMVECTOR = const XMVECTOR;
+    typedef const XMVECTOR GXMVECTOR;
 #else
-    using GXMVECTOR = const XMVECTOR&;
+    typedef const XMVECTOR& GXMVECTOR;
 #endif
 
     // Fix-up for (5th & 6th) XMVECTOR parameter to pass in-register for ARM64 and vector call; by reference otherwise
 #if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
-    using HXMVECTOR = const XMVECTOR;
+    typedef const XMVECTOR HXMVECTOR;
 #else
-    using HXMVECTOR = const XMVECTOR&;
+    typedef const XMVECTOR& HXMVECTOR;
 #endif
 
     // Fix-up for (7th+) XMVECTOR parameters to pass by reference
-    using CXMVECTOR = const XMVECTOR&;
+    typedef const XMVECTOR& CXMVECTOR;
 
     //------------------------------------------------------------------------------
     // Conversion types for constants
@@ -492,13 +492,13 @@ namespace DirectX
 
     // Fix-up for (1st) XMMATRIX parameter to pass in-register for ARM64 and vector call; by reference otherwise
 #if ( defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || _XM_VECTORCALL_ || __aarch64__ ) && !defined(_XM_NO_INTRINSICS_)
-    using FXMMATRIX = const XMMATRIX;
+    typedef const XMMATRIX FXMMATRIX;
 #else
-    using FXMMATRIX = const XMMATRIX&;
+    typedef const XMMATRIX& FXMMATRIX;
 #endif
 
     // Fix-up for (2nd+) XMMATRIX parameters to pass by reference
-    using CXMMATRIX = const XMMATRIX&;
+    typedef const XMMATRIX& CXMMATRIX;
 
 #ifdef _XM_NO_INTRINSICS_
     struct XMMATRIX
