@@ -1,4 +1,4 @@
-![DirectX Logo](https://github.com/Microsoft/DirectXMath/wiki/X_jpg.jpg)
+![DirectX Logo](https://raw.githubusercontent.com/wiki/Microsoft/DirectXMath/X_jpg.jpg)
 
 # DirectXMath
 

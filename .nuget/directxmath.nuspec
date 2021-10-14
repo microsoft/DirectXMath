@@ -10,7 +10,9 @@
         <description>The DirectXMath API provides SIMD-friendly C++ types and functions for common linear algebra and graphics math operations common to DirectX applications. The library provides optimized versions for Windows 32-bit (x86), Windows 64-bit (x64), and Windows on ARM through SSE2 and ARM-NEON intrinsics support in the Visual Studio compiler.</description>
         <releaseNotes>Matches the December 2020 release.</releaseNotes>
         <projectUrl>http://go.microsoft.com/fwlink/?LinkID=615560</projectUrl>
+        <repository type="git" url="https://github.com/microsoft/DirectXMath" />
         <icon>images\icon.jpg</icon>
+        <readme>docs\README.md</readme>
         <license type="expression">MIT</license>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <copyright>© Microsoft Corporation.</copyright>
@@ -19,7 +21,7 @@
 
     <files>
 
-        <file target="docs" src="Readme.*" />
+        <file target="docs" src="*.md" />
 
         <file target="include" src="Inc\*" />
 
