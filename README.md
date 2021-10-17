@@ -57,7 +57,18 @@ Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en
 
 Officially the library is supported with Microsoft Visual C++ 2017 or later, clang/LLVM v9 or later, and GCC 9 or later. It should also compile with the Intel C++ and MinGW compilers.
 
+When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
+
 To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://github.com/dotnet/corert/blob/master/src/Native/inc/unix/sal.h).
+
+With GCC, the SAL annotation preprocessor symbols can conflict with the GNU implementation of the Standard C++ Library. The workaround is to include the system headers before including DirectXMath:
+
+```
+#include <algorithm>
+#include <utility>
+
+#include <DirectXMath.h>
+```
 
 ## Notices
 
