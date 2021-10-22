@@ -97,12 +97,14 @@
 #define _XM_NO_XMVECTOR_OVERLOADS_
 #endif
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4514 4820)
 // C4514/4820: Off by default noise
 #include <math.h>
 #include <float.h>
 #pragma warning(pop)
+#endif
 
 #ifndef _XM_NO_INTRINSICS_
 
@@ -143,14 +145,42 @@
 #endif
 #endif // !_XM_NO_INTRINSICS_
 
+#ifdef DXM_NO_SAL
+#ifdef __ATTR_SAL
+#warning sal.h has already been included, cannot employ DXM_NO_SAL
+#else
+#define _XM_NO_SAL_
+#endif
+#endif // DXM_NO_SAL
+
+#ifdef _XM_NO_SAL_
+
+#define _In_
+#define _In_reads_(size)
+#define _In_reads_bytes_(size)
+#define _Out_
+#define _Out_opt_
+#define _Out_writes_(size)
+#define _Out_writes_bytes_(size)
+#define _Use_decl_annotations_
+#define _Analysis_assume_(expr)
+#define _Success_(expr)
+
+#else
+
 #include "sal.h"
+
+#endif
+
 #include <assert.h>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4005 4668)
 // C4005/4668: Old header issue
 #include <stdint.h>
 #pragma warning(pop)
+#endif
 
 #if __cplusplus >= 201703L
 #define XM_ALIGNED_DATA(x) alignas(x)
@@ -322,12 +352,14 @@ namespace DirectX
      *
      ****************************************************************************/
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4201 4365 4324 4820)
      // C4068: ignore unknown pragmas
      // C4201: nonstandard extension used : nameless struct/union
      // C4365: Off by default noise
      // C4324/4820: padding warnings
+#endif
 
 #ifdef _PREFAST_
 #pragma prefast(push)
@@ -943,7 +975,9 @@ namespace DirectX
 #pragma prefast(pop)
 #endif
 
+#ifdef _MSC_VER    
 #pragma warning(pop)
+#endif
 
 /****************************************************************************
  *
@@ -2062,12 +2096,14 @@ namespace DirectX
      *
      ****************************************************************************/
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 4640 6001 6101)
      // C4068/4616: ignore unknown pragmas
      // C4214/4204: nonstandard extension used
      // C4365/4640: Off by default noise
      // C6001/6101: False positives
+#endif
 
 #ifdef _PREFAST_
 #pragma prefast(push)
@@ -2184,7 +2220,26 @@ namespace DirectX
 #pragma prefast(pop)
 #endif
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
+#ifdef _XM_NO_SAL_
+
+#undef _In_
+#undef _In_reads_
+#undef _In_reads_bytes_
+#undef _Out_
+#undef _Out_opt_
+#undef _Out_writes_
+#undef _Out_writes_bytes_
+#undef _Use_decl_annotations_
+#undef _Analysis_assume_
+#undef _Success_
+
+#undef _XM_NO_SAL_
+
+#endif
+    
 } // namespace DirectX
 
