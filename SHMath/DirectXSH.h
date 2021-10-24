@@ -15,8 +15,8 @@
 
 namespace DirectX
 {
-	const size_t XM_SH_MINORDER = 2;
-	const size_t XM_SH_MAXORDER = 6;
+	constexpr size_t XM_SH_MINORDER = 2;
+	constexpr size_t XM_SH_MAXORDER = 6;
 
 	float* XM_CALLCONV XMSHEvalDirection(_Out_writes_(order*order) float *result, _In_ size_t order, _In_ FXMVECTOR dir) noexcept;
 
