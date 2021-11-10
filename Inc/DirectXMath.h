@@ -93,7 +93,9 @@
 #define _XM_SVML_INTRINSICS_
 #endif
 
-#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && (defined(__clang__) || defined(__GNUC__))
+#if !defined(_XM_NO_XMVECTOR_OVERLOADS_) && \
+    (defined(__clang__) || (defined(__GNUC__) && __GNUC__ < 9)) && \
+    !defined(_XM_FORCE_VECTOR_OVERLOADS_)
 #define _XM_NO_XMVECTOR_OVERLOADS_
 #endif
 
