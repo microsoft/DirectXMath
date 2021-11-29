@@ -338,6 +338,7 @@ namespace DirectX
      // C4365: Off by default noise
      // C4324/4820: padding warnings
 #endif
+
 #ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
@@ -947,11 +948,9 @@ namespace DirectX
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
-
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
@@ -2192,11 +2191,9 @@ namespace DirectX
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
-
 #ifdef _MSC_VER    
 #pragma warning(pop)
 #endif

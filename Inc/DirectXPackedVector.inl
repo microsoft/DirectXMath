@@ -1500,9 +1500,11 @@ inline XMVECTOR XM_CALLCONV XMLoadXDecN4(const XMXDECN4* pSource) noexcept
 }
 
 //------------------------------------------------------------------------------
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -1558,8 +1560,9 @@ inline XMVECTOR XM_CALLCONV XMLoadXDec4(const XMXDEC4* pSource) noexcept
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -1696,9 +1699,11 @@ inline XMVECTOR XM_CALLCONV XMLoadUDec4(const XMUDEC4* pSource) noexcept
 }
 
 //------------------------------------------------------------------------------
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -1801,8 +1806,9 @@ inline XMVECTOR XM_CALLCONV XMLoadDec4(const XMDEC4* pSource) noexcept
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -2903,9 +2909,11 @@ inline void XM_CALLCONV XMStoreXDecN4
 }
 
 //------------------------------------------------------------------------------
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -2982,8 +2990,9 @@ inline void XM_CALLCONV XMStoreXDec4
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -3194,9 +3203,11 @@ inline void XM_CALLCONV XMStoreUDec4
 }
 
 //------------------------------------------------------------------------------
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
 // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -3327,8 +3338,9 @@ inline void XM_CALLCONV XMStoreDec4
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 //------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -4142,10 +4154,11 @@ inline XMXDECN4::XMXDECN4(const float* pArray) noexcept
  * XMXDEC4 operators
  *
  ****************************************************************************/
-
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
  // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -4227,8 +4240,9 @@ inline XMDEC4::XMDEC4(const float* pArray) noexcept
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
 /****************************************************************************
  *

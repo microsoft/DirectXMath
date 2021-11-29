@@ -7,9 +7,11 @@
 // http://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4619 4456 )
 // C4619 #pragma warning warnings
 // C4456 declaration hides previous local declaration
+#endif
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wold-style-cast"

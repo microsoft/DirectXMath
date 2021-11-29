@@ -22,8 +22,10 @@
 #include <cstdint>
 #include <cstring>
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable: 6001 6262)
+#endif
 
 namespace XDSP
 {
@@ -586,7 +588,9 @@ namespace XDSP
     //  pInputImaginary - [in]  input buffer (imaginary components), must have at least uLength/4 elements
     //  uLength         - [in]  FFT length in samples, must be a power of 2 >= 4
     //----------------------------------------------------------------------------------
+#ifdef _MSC_VER
 #pragma warning(suppress: 6101)
+#endif
     inline void FFTPolar(
         _Out_writes_(uLength / 4) XMVECTOR* __restrict pOutput,
         _In_reads_(uLength / 4) const XMVECTOR* __restrict pInputReal,
@@ -862,4 +866,6 @@ namespace XDSP
 
 } // namespace XDSP
 
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif

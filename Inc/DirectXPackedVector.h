@@ -16,13 +16,14 @@ namespace DirectX
 
     namespace PackedVector
     {
-
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4201 4365 4324 4996)
         // C4201: nonstandard extension used
         // C4365: Off by default noise
         // C4324: alignment padding warnings
         // C4996: deprecation warnings
+#endif
 
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -1048,9 +1049,9 @@ namespace DirectX
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
-
+#endif
 
         /****************************************************************************
          *
@@ -1107,9 +1108,11 @@ namespace DirectX
         XMVECTOR    XM_CALLCONV     XMLoadUNibble4(_In_ const XMUNIBBLE4* pSource) noexcept;
         XMVECTOR    XM_CALLCONV     XMLoadU555(_In_ const XMU555* pSource) noexcept;
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
         // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -1123,8 +1126,9 @@ namespace DirectX
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
         /****************************************************************************
          *
@@ -1164,9 +1168,11 @@ namespace DirectX
         void    XM_CALLCONV     XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V) noexcept;
         void    XM_CALLCONV     XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V) noexcept;
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4996)
         // C4996: ignore deprecation warning
+#endif
 
 #ifdef __GNUC__
 #pragma GCC diagnostic push
@@ -1180,21 +1186,23 @@ namespace DirectX
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
+#endif
 
         /****************************************************************************
          *
          * Implementation
          *
          ****************************************************************************/
-
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 6001 6101)
          // C4068/4616: ignore unknown pragmas
          // C4214/4204: nonstandard extension used
          // C4365: Off by default noise
          // C6001/6101: False positives
+#endif
 
 #ifdef _PREFAST_
 #pragma prefast(push)
@@ -1207,9 +1215,9 @@ namespace DirectX
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
-
+#ifdef _MSC_VER
 #pragma warning(pop)
-
+#endif
     } // namespace PackedVector
 
 } // namespace DirectX

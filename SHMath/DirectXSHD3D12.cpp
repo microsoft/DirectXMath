@@ -7,12 +7,14 @@
 // http://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
+#ifdef _MSC_VER
 #pragma warning( disable : 4616 4619 4061 4265 4626 5039 )
 // C4616/C4619 #pragma warning warnings
 // C4061 numerator 'identifier' in switch of enum 'enumeration' is not explicitly handled by a case label
 // C4265 class has virtual functions, but destructor is not virtual
 // C4626 assignment operator was implicitly defined as deleted
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
+#endif
 
 #include <d3d12.h>
 
@@ -86,8 +88,10 @@ namespace
         }\
         return false;
 
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 6101)
+#endif
     _Success_(return)
         bool _LoadScanline(
             _Out_writes_(count) DirectX::XMVECTOR* pDestination,
@@ -162,8 +166,9 @@ namespace
             return false;
         }
     }
+#ifdef _MSC_VER
 #pragma warning(pop)
-
+#endif
 } // namespace anonymous
 
 //-------------------------------------------------------------------------------------
