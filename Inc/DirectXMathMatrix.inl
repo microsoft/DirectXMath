@@ -1779,8 +1779,42 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationAxis
 
 inline XMMATRIX XM_CALLCONV XMMatrixRotationQuaternion(FXMVECTOR Quaternion) noexcept
 {
-#if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
+#if defined(_XM_NO_INTRINSICS_)
 
+    float qx = Quaternion.vector4_f32[0];
+    float qxx = qx * qx;
+
+    float qy = Quaternion.vector4_f32[1];
+    float qyy = qy * qy;
+
+    float qz = Quaternion.vector4_f32[2];
+    float qzz = qz * qz;
+
+    float qw = Quaternion.vector4_f32[3];
+
+    XMMATRIX M;
+    M.m[0][0] = 1.f - 2.f * qyy - 2.f * qzz;
+    M.m[0][1] = 2.f * qx * qy + 2.f * qz * qw;
+    M.m[0][2] = 2.f * qx * qz - 2.f * qy * qw;
+    M.m[0][3] = 0.f;
+
+    M.m[1][0] = 2.f * qx * qy - 2.f * qz * qw;
+    M.m[1][1] = 1.f - 2.f * qxx - 2.f * qzz;
+    M.m[1][2] = 2.f * qy * qz + 2.f * qx * qw;
+    M.m[1][3] = 0.f;
+
+    M.m[2][0] = 2.f * qx * qz + 2.f * qy * qw;
+    M.m[2][1] = 2.f * qy * qz - 2.f * qx * qw;
+    M.m[2][2] = 1.f - 2.f * qxx - 2.f * qyy;
+    M.m[2][3] = 0.f;
+
+    M.m[3][0] = 0.f;
+    M.m[3][1] = 0.f;
+    M.m[3][2] = 0.f;
+    M.m[3][3] = 1.0f;
+    return M;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 Constant1110 = { { { 1.0f, 1.0f, 1.0f, 0.0f } } };
 
     XMVECTOR Q0 = XMVectorAdd(Quaternion, Quaternion);
