@@ -1559,11 +1559,15 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMPlaneNormalize(FXMVECTOR P) noexcept;
     XMVECTOR    XM_CALLCONV     XMPlaneIntersectLine(FXMVECTOR P, FXMVECTOR LinePoint1, FXMVECTOR LinePoint2) noexcept;
     void        XM_CALLCONV     XMPlaneIntersectPlane(_Out_ XMVECTOR* pLinePoint1, _Out_ XMVECTOR* pLinePoint2, _In_ FXMVECTOR P1, _In_ FXMVECTOR P2) noexcept;
-    XMVECTOR    XM_CALLCONV     XMPlaneTransform(FXMVECTOR P, FXMMATRIX M) noexcept;
-    XMFLOAT4* XM_CALLCONV     XMPlaneTransformStream(_Out_writes_bytes_(sizeof(XMFLOAT4) + OutputStride * (PlaneCount - 1)) XMFLOAT4* pOutputStream,
+
+    // Transforms a plane given an inverse transpose matrix
+    XMVECTOR    XM_CALLCONV     XMPlaneTransform(FXMVECTOR P, FXMMATRIX ITM) noexcept;
+
+    // Transforms an array of planes given an inverse transpose matrix
+    XMFLOAT4*   XM_CALLCONV     XMPlaneTransformStream(_Out_writes_bytes_(sizeof(XMFLOAT4) + OutputStride * (PlaneCount - 1)) XMFLOAT4* pOutputStream,
         _In_ size_t OutputStride,
         _In_reads_bytes_(sizeof(XMFLOAT4) + InputStride * (PlaneCount - 1)) const XMFLOAT4* pInputStream,
-        _In_ size_t InputStride, _In_ size_t PlaneCount, _In_ FXMMATRIX M) noexcept;
+        _In_ size_t InputStride, _In_ size_t PlaneCount, _In_ FXMMATRIX ITM) noexcept;
 
     XMVECTOR    XM_CALLCONV     XMPlaneFromPointNormal(FXMVECTOR Point, FXMVECTOR Normal) noexcept;
     XMVECTOR    XM_CALLCONV     XMPlaneFromPoints(FXMVECTOR Point1, FXMVECTOR Point2, FXMVECTOR Point3) noexcept;

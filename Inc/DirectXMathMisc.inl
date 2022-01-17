@@ -1217,7 +1217,7 @@ inline void XM_CALLCONV XMPlaneIntersectPlane
 inline XMVECTOR XM_CALLCONV XMPlaneTransform
 (
     FXMVECTOR P,
-    FXMMATRIX M
+    FXMMATRIX ITM
 ) noexcept
 {
     XMVECTOR W = XMVectorSplatW(P);
@@ -1225,10 +1225,10 @@ inline XMVECTOR XM_CALLCONV XMPlaneTransform
     XMVECTOR Y = XMVectorSplatY(P);
     XMVECTOR X = XMVectorSplatX(P);
 
-    XMVECTOR Result = XMVectorMultiply(W, M.r[3]);
-    Result = XMVectorMultiplyAdd(Z, M.r[2], Result);
-    Result = XMVectorMultiplyAdd(Y, M.r[1], Result);
-    Result = XMVectorMultiplyAdd(X, M.r[0], Result);
+    XMVECTOR Result = XMVectorMultiply(W, ITM.r[3]);
+    Result = XMVectorMultiplyAdd(Z, ITM.r[2], Result);
+    Result = XMVectorMultiplyAdd(Y, ITM.r[1], Result);
+    Result = XMVectorMultiplyAdd(X, ITM.r[0], Result);
     return Result;
 }
 
@@ -1236,12 +1236,12 @@ inline XMVECTOR XM_CALLCONV XMPlaneTransform
 _Use_decl_annotations_
 inline XMFLOAT4* XM_CALLCONV XMPlaneTransformStream
 (
-    XMFLOAT4* pOutputStream,
+    XMFLOAT4*       pOutputStream,
     size_t          OutputStride,
     const XMFLOAT4* pInputStream,
     size_t          InputStride,
     size_t          PlaneCount,
-    FXMMATRIX       M
+    FXMMATRIX       ITM
 ) noexcept
 {
     return XMVector4TransformStream(pOutputStream,
@@ -1249,7 +1249,7 @@ inline XMFLOAT4* XM_CALLCONV XMPlaneTransformStream
         pInputStream,
         InputStride,
         PlaneCount,
-        M);
+        ITM);
 }
 
 //------------------------------------------------------------------------------
