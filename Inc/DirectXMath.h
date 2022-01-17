@@ -1458,8 +1458,13 @@ namespace DirectX
     XMMATRIX    XM_CALLCONV     XMMatrixRotationX(float Angle) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixRotationY(float Angle) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixRotationZ(float Angle) noexcept;
+
+    // Rotates about y-axis (Yaw), then x-axis (Pitch), then z-axis (Roll)
     XMMATRIX    XM_CALLCONV     XMMatrixRotationRollPitchYaw(float Pitch, float Yaw, float Roll) noexcept;
+
+    // Rotates about y-axis (Angles.y), then x-axis (Angles.x), then z-axis (Angles.z)
     XMMATRIX    XM_CALLCONV     XMMatrixRotationRollPitchYawFromVector(FXMVECTOR Angles) noexcept;
+
     XMMATRIX    XM_CALLCONV     XMMatrixRotationNormal(FXMVECTOR NormalAxis, float Angle) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixRotationAxis(FXMVECTOR Axis, float Angle) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixRotationQuaternion(FXMVECTOR Quaternion) noexcept;
@@ -1521,8 +1526,13 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMQuaternionBaryCentricV(FXMVECTOR Q0, FXMVECTOR Q1, FXMVECTOR Q2, GXMVECTOR F, HXMVECTOR G) noexcept;
 
     XMVECTOR    XM_CALLCONV     XMQuaternionIdentity() noexcept;
+
+    // Rotates about y-axis (Yaw), then x-axis (Pitch), then z-axis (Roll)
     XMVECTOR    XM_CALLCONV     XMQuaternionRotationRollPitchYaw(float Pitch, float Yaw, float Roll) noexcept;
+
+    // Rotates about y-axis (Angles.y), then x-axis (Angles.x), then z-axis (Angles.z)
     XMVECTOR    XM_CALLCONV     XMQuaternionRotationRollPitchYawFromVector(FXMVECTOR Angles) noexcept;
+
     XMVECTOR    XM_CALLCONV     XMQuaternionRotationNormal(FXMVECTOR NormalAxis, float Angle) noexcept;
     XMVECTOR    XM_CALLCONV     XMQuaternionRotationAxis(FXMVECTOR Axis, float Angle) noexcept;
     XMVECTOR    XM_CALLCONV     XMQuaternionRotationMatrix(FXMMATRIX M) noexcept;
