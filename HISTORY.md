@@ -6,6 +6,16 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### January 2022 (3.17)
+* Added ColorsLinear namespace to DirectXColors.h with linear versions of .NET colors
+* Optimized the ``XMMatrixRotationRollPitchYaw(FromVector)`` functions
+* Fixed overread problem for 16bpp GPU types Load functions:
+  * ``XMUNIBBLE4``, ``XMU555``, ``XMU565``, ``XMBYTEN2``, ``XMBYTE2``, ``XMUBYTEN2``, ``XMUBYTE2``
+* ``XM_CACHE_LINE_SIZE`` updated for ARM/ARM64 targets to 128 bytes
+* A few comments added to improve IntelliSense experience
+* Conformance improvements for GNU compiler
+* Minor code cleanup
+
 ### January 2021 (3.16b)
 * Hot-fixes to resolve build breaks for clang/LLVM and GCC on ARM64
 * ``XM_ALIGNED_DATA`` and ``XM_ALIGNED_STRUCT`` macros updated to use C++17 ``alignas`` when available

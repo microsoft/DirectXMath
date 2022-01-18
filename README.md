@@ -6,11 +6,11 @@ https://github.com/Microsoft/DirectXMath
 
 Copyright (c) Microsoft Corporation.
 
-**January 2021**
+**January 2022**
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 
-This code is designed to build with Visual Studio 2017, Visual Studio 2019, or clang/LLVM for Windows. It is recommended that you make use of the latest updates (VS 2017 15.9, or VS 2019 16.4 or later).
+This code is designed to build with Visual Studio 2017, Visual Studio 2019, Visual Studio 2022, or clang/LLVM for Windows. It is recommended that you make use of the latest updates (VS 2017 15.9; VS 2019 16.7 or later).
 
 These components are designed to work without requiring any content from the legacy DirectX SDK. For details, see [Where is the DirectX SDK?](https://aka.ms/dxsdk).
 
@@ -22,7 +22,7 @@ These components are designed to work without requiring any content from the leg
 
     * DirectXMath.h - Core library
     * DirectXPackedVector.h - Load/Store functions and types for working with various compressed GPU formats
-    * DirectXColors.h - .NET-style Color defines in sRGB color space
+    * DirectXColors.h - .NET-style Color defines in sRGB and linear color space
     * DirectXCollision.h - Bounding volume collision library
 
 * ``Extentions\``
