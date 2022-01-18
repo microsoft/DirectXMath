@@ -89,7 +89,7 @@ namespace DirectX
             _In_ GXMVECTOR Plane3, _In_ HXMVECTOR Plane4, _In_ HXMVECTOR Plane5) const noexcept;
         // Test sphere against six planes (see BoundingFrustum::GetPlanes)
 
-    // Static methods
+        // Static methods
         static void CreateMerged(_Out_ BoundingSphere& Out, _In_ const BoundingSphere& S1, _In_ const BoundingSphere& S2) noexcept;
 
         static void CreateFromBoundingBox(_Out_ BoundingSphere& Out, _In_ const BoundingBox& box) noexcept;
@@ -106,7 +106,7 @@ namespace DirectX
     //-------------------------------------------------------------------------------------
     struct BoundingBox
     {
-        static const size_t CORNER_COUNT = 8;
+        static constexpr size_t CORNER_COUNT = 8;
 
         XMFLOAT3 Center;            // Center of the box.
         XMFLOAT3 Extents;           // Distance from the center to each side.
@@ -155,7 +155,7 @@ namespace DirectX
             _In_ GXMVECTOR Plane3, _In_ HXMVECTOR Plane4, _In_ HXMVECTOR Plane5) const noexcept;
         // Test box against six planes (see BoundingFrustum::GetPlanes)
 
-    // Static methods
+        // Static methods
         static void CreateMerged(_Out_ BoundingBox& Out, _In_ const BoundingBox& b1, _In_ const BoundingBox& b2) noexcept;
 
         static void CreateFromSphere(_Out_ BoundingBox& Out, _In_ const BoundingSphere& sh) noexcept;
@@ -170,7 +170,7 @@ namespace DirectX
     //-------------------------------------------------------------------------------------
     struct BoundingOrientedBox
     {
-        static const size_t CORNER_COUNT = 8;
+        static constexpr size_t CORNER_COUNT = 8;
 
         XMFLOAT3 Center;            // Center of the box.
         XMFLOAT3 Extents;           // Distance from the center to each side.
@@ -220,7 +220,7 @@ namespace DirectX
             _In_ GXMVECTOR Plane3, _In_ HXMVECTOR Plane4, _In_ HXMVECTOR Plane5) const noexcept;
         // Test OrientedBox against six planes (see BoundingFrustum::GetPlanes)
 
-    // Static methods
+        // Static methods
         static void CreateFromBoundingBox(_Out_ BoundingOrientedBox& Out, _In_ const BoundingBox& box) noexcept;
 
         static void CreateFromPoints(_Out_ BoundingOrientedBox& Out, _In_ size_t Count,
@@ -232,7 +232,7 @@ namespace DirectX
     //-------------------------------------------------------------------------------------
     struct BoundingFrustum
     {
-        static const size_t CORNER_COUNT = 8;
+        static constexpr size_t CORNER_COUNT = 8;
 
         XMFLOAT3 Origin;            // Origin of the frustum (and projection).
         XMFLOAT4 Orientation;       // Quaternion representing rotation.
@@ -299,7 +299,7 @@ namespace DirectX
             _Out_opt_ XMVECTOR* LeftPlane, _Out_opt_ XMVECTOR* TopPlane, _Out_opt_ XMVECTOR* BottomPlane) const noexcept;
         // Create 6 Planes representation of Frustum
 
-    // Static methods
+        // Static methods
         static void     XM_CALLCONV     CreateFromMatrix(_Out_ BoundingFrustum& Out, _In_ FXMMATRIX Projection, bool rhcoords = false) noexcept;
     };
 
