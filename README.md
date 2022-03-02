@@ -72,7 +72,7 @@ With GCC, the SAL annotation preprocessor symbols can conflict with the GNU impl
 
 ## Notices
 
-All content and source code for this package are subject to the terms of the [MIT License](http://opensource.org/licenses/MIT).
+All content and source code for this package are subject to the terms of the [MIT License](https://github.com/microsoft/DirectXMath/blob/main/LICENSE).
 
 For the latest version of DirectXMath, bug reports, etc. please visit the project site on [GitHub](https://github.com/microsoft/DirectXMath).
 
