@@ -171,6 +171,10 @@
 #define XM_ALIGNED_STRUCT(x) __declspec(align(x)) struct
 #endif
 
+#if (__cplusplus >= 202002L)
+#include <compare>
+#endif
+
 /****************************************************************************
  *
  * Conditional intrinsics
