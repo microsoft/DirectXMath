@@ -93,7 +93,7 @@ namespace
 #pragma warning(disable : 6101)
 #endif
     _Success_(return)
-        bool _LoadScanline(
+        bool LoadScanline(
             _Out_writes_(count) DirectX::XMVECTOR* pDestination,
             size_t count,
             _In_reads_bytes_(size) LPCVOID pSource,
@@ -204,7 +204,7 @@ HRESULT DirectX::SHProjectCubeMap(
     case DXGI_FORMAT_R16G16_FLOAT:
     case DXGI_FORMAT_R32_FLOAT:
     case DXGI_FORMAT_R16_FLOAT:
-        // See _LoadScanline to support more pixel formats
+        // See LoadScanline to support more pixel formats
         break;
 
     default:
@@ -252,7 +252,7 @@ HRESULT DirectX::SHProjectCubeMap(
         for (UINT y = 0; y < desc.Height; ++y)
         {
             XMVECTOR* ptr = scanline.get();
-            if (!_LoadScanline(ptr, static_cast<size_t>(desc.Width), pSrc, static_cast<size_t>(cubeMap[face].RowPitch), desc.Format))
+            if (!LoadScanline(ptr, static_cast<size_t>(desc.Width), pSrc, static_cast<size_t>(cubeMap[face].RowPitch), desc.Format))
             {
                 return E_FAIL;
             }

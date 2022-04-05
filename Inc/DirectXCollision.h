@@ -185,8 +185,8 @@ namespace DirectX
         BoundingOrientedBox(BoundingOrientedBox&&) = default;
         BoundingOrientedBox& operator=(BoundingOrientedBox&&) = default;
 
-        constexpr BoundingOrientedBox(_In_ const XMFLOAT3& _Center, _In_ const XMFLOAT3& _Extents, _In_ const XMFLOAT4& _Orientation) noexcept
-            : Center(_Center), Extents(_Extents), Orientation(_Orientation) {}
+        constexpr BoundingOrientedBox(_In_ const XMFLOAT3& center, _In_ const XMFLOAT3& extents, _In_ const XMFLOAT4& orientation) noexcept
+            : Center(center), Extents(extents), Orientation(orientation) {}
 
         // Methods
         void    XM_CALLCONV     Transform(_Out_ BoundingOrientedBox& Out, _In_ FXMMATRIX M) const noexcept;
@@ -254,12 +254,12 @@ namespace DirectX
         BoundingFrustum(BoundingFrustum&&) = default;
         BoundingFrustum& operator=(BoundingFrustum&&) = default;
 
-        constexpr BoundingFrustum(_In_ const XMFLOAT3& _Origin, _In_ const XMFLOAT4& _Orientation,
-            _In_ float _RightSlope, _In_ float _LeftSlope, _In_ float _TopSlope, _In_ float _BottomSlope,
-            _In_ float _Near, _In_ float _Far) noexcept
-            : Origin(_Origin), Orientation(_Orientation),
-            RightSlope(_RightSlope), LeftSlope(_LeftSlope), TopSlope(_TopSlope), BottomSlope(_BottomSlope),
-            Near(_Near), Far(_Far) {}
+        constexpr BoundingFrustum(_In_ const XMFLOAT3& origin, _In_ const XMFLOAT4& orientation,
+            _In_ float rightSlope, _In_ float leftSlope, _In_ float topSlope, _In_ float bottomSlope,
+            _In_ float nearPlane, _In_ float farPlane) noexcept
+            : Origin(origin), Orientation(orientation),
+            RightSlope(rightSlope), LeftSlope(leftSlope), TopSlope(topSlope), BottomSlope(bottomSlope),
+            Near(nearPlane), Far(farPlane) {}
         BoundingFrustum(_In_ CXMMATRIX Projection, bool rhcoords = false) noexcept;
 
         // Methods
