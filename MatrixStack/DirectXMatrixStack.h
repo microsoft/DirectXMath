@@ -16,7 +16,7 @@
 #include <memory>
 #include <new>
 
-#ifdef WIN32
+#ifdef _WIN32
 #include <malloc.h>
 #endif
 
@@ -204,7 +204,7 @@ namespace DirectX
         {
             void operator()(void* p) noexcept
             {
-#ifdef WIN32
+#ifdef _WIN32
                 _aligned_free(p);
 #else
                 free(p);
@@ -214,7 +214,7 @@ namespace DirectX
 
         void Allocate(size_t newSize)
         {
-#ifdef WIN32
+#ifdef _WIN32
             void* ptr = _aligned_malloc(newSize * sizeof(XMMATRIX), 16);
 #else
             // This C++17 Standard Library function is currently NOT
