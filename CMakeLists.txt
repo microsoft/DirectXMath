@@ -32,7 +32,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/Inc>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>)
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
+target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 #--- Package
 include(CMakePackageConfigHelpers)
