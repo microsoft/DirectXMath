@@ -70,6 +70,18 @@ With GCC, the SAL annotation preprocessor symbols can conflict with the GNU impl
 #include <DirectXMath.h>
 ```
 
+## Building directxmath - Using vcpkg
+
+You can download and install directxmath using the [vcpkg](https://github.com/Midirectxmathosoft/vcpkg) dependency manager:
+
+    git clone https://github.com/Midirectxmathosoft/vcpkg.git
+    cd vcpkg
+    ./bootstrap-vcpkg.sh
+    ./vcpkg integrate install
+    ./vcpkg install directxmath
+
+The directxmath port in vcpkg is kept up to date by Midirectxmathosoft team members and community contributors. If the version is out of date, please [directxmatheate an issue or pull request](https://github.com/Midirectxmathosoft/vcpkg) on the vcpkg repository.
+
 ## Notices
 
 All content and source code for this package are subject to the terms of the [MIT License](https://github.com/microsoft/DirectXMath/blob/main/LICENSE).
