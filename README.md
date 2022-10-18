@@ -10,7 +10,7 @@ Copyright (c) Microsoft Corporation.
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 
-This code is designed to build with Visual Studio 2017, Visual Studio 2019, Visual Studio 2022, or clang/LLVM for Windows. It is recommended that you make use of the latest updates (VS 2017 15.9; VS 2019 16.9 or later).
+This code is designed to build with Visual Studio 2019, Visual Studio 2022, or clang/LLVM for Windows. It is recommended that you make use of the latest updates (VS 2019 16.11).
 
 These components are designed to work without requiring any content from the legacy DirectX SDK. For details, see [Where is the DirectX SDK?](https://aka.ms/dxsdk).
 
