@@ -1734,7 +1734,7 @@ inline XMVECTOR XM_CALLCONV XMVectorNearEqual
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vDelta = vsubq_f32(V1, V2);
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER) && !defined(__clang__) && !defined(_ARM64_DISTINCT_NEON_TYPES)
     return vacleq_f32(vDelta, Epsilon);
 #else
     return vreinterpretq_f32_u32(vcleq_f32(vabsq_f32(vDelta), Epsilon));
@@ -6328,7 +6328,7 @@ inline bool XM_CALLCONV XMVector2NearEqual
         (dy <= Epsilon.vector4_f32[1]));
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x2_t vDelta = vsub_f32(vget_low_f32(V1), vget_low_f32(V2));
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER) && !defined(__clang__) && !defined(_ARM64_DISTINCT_NEON_TYPES)
     uint32x2_t vTemp = vacle_f32(vDelta, vget_low_u32(Epsilon));
 #else
     uint32x2_t vTemp = vcle_f32(vabs_f32(vDelta), vget_low_f32(Epsilon));
@@ -9057,7 +9057,7 @@ inline bool XM_CALLCONV XMVector3NearEqual
         (dz <= Epsilon.vector4_f32[2])) != 0);
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vDelta = vsubq_f32(V1, V2);
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER) && !defined(__clang__) && !defined(_ARM64_DISTINCT_NEON_TYPES)
     uint32x4_t vResult = vacleq_f32(vDelta, Epsilon);
 #else
     uint32x4_t vResult = vcleq_f32(vabsq_f32(vDelta), Epsilon);
@@ -12924,7 +12924,7 @@ inline bool XM_CALLCONV XMVector4NearEqual
         (dw <= Epsilon.vector4_f32[3])) != 0);
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vDelta = vsubq_f32(V1, V2);
-#if defined(_MSC_VER) && !defined(__clang__)
+#if defined(_MSC_VER) && !defined(__clang__) && !defined(_ARM64_DISTINCT_NEON_TYPES)
     uint32x4_t vResult = vacleq_f32(vDelta, Epsilon);
 #else
     uint32x4_t vResult = vcleq_f32(vabsq_f32(vDelta), Epsilon);
