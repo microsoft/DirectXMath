@@ -2515,10 +2515,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH
     XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp, vValues);
-    // CosFov / SinFov,0,0,0
+    // Height / AspectRatio,0,0,0
     XMMATRIX M;
     M.r[0] = vTemp;
-    // 0,Height / AspectRatio,0,0
+    // 0,Height,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp, g_XMMaskY);
     M.r[1] = vTemp;
@@ -2615,10 +2615,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
     XMVECTOR vTemp = _mm_setzero_ps();
     // Copy x only
     vTemp = _mm_move_ss(vTemp, vValues);
-    // CosFov / SinFov,0,0,0
+    // Height / AspectRatio,0,0,0
     XMMATRIX M;
     M.r[0] = vTemp;
-    // 0,Height / AspectRatio,0,0
+    // 0,Height,0,0
     vTemp = vValues;
     vTemp = _mm_and_ps(vTemp, g_XMMaskY);
     M.r[1] = vTemp;
