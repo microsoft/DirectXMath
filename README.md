@@ -6,7 +6,7 @@ https://github.com/Microsoft/DirectXMath
 
 Copyright (c) Microsoft Corporation.
 
-**May 2022**
+**November 2022**
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 
@@ -55,7 +55,7 @@ Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en
 
 ## Compiler support
 
-Officially the library is supported with Microsoft Visual C++ 2017 or later, clang/LLVM v9 or later, and GCC 9 or later. It should also compile with the Intel C++ and MinGW compilers.
+Officially the library is supported with Microsoft Visual C++ 2019 or later, clang/LLVM v12 or later, and GCC 9 or later. It should also compile with the Intel C++ and MinGW compilers.
 
 When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
 
