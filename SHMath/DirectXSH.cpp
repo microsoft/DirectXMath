@@ -8,9 +8,10 @@
 //-------------------------------------------------------------------------------------
 
 #ifdef _MSC_VER
-#pragma warning( disable : 4619 4456 )
+#pragma warning( disable : 4619 4456 5264)
 // C4619 #pragma warning warnings
 // C4456 declaration hides previous local declaration
+// C5264 'const' variable is not used
 #endif
 
 #ifdef __clang__
