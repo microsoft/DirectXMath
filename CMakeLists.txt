@@ -1,7 +1,7 @@
 # Copyright (c) Microsoft Corporation.
 # Licensed under the MIT License.
 
-cmake_minimum_required (VERSION 3.14)
+cmake_minimum_required (VERSION 3.20)
 
 set(DIRECTXMATH_VERSION 3.1.8)
 
@@ -10,6 +10,8 @@ project(DirectXMath
   DESCRIPTION "DirectXMath SIMD C++ math library"
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
+
+option(BUILD_TESTING "Build test suite (if present)" ON)
 
 include(GNUInstallDirs)
 
@@ -67,3 +69,23 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/${PACKAGE_NAME}-config-version.cmake
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
+
+#--- Test suite
+if (DEFINED VCPKG_TARGET_ARCHITECTURE)
+    set(DXMATH_ARCHITECTURE ${VCPKG_TARGET_ARCHITECTURE})
+elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Ww][Ii][Nn]32$")
+    set(DXMATH_ARCHITECTURE x86)
+elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Xx]64$")
+    set(DXMATH_ARCHITECTURE x64)
+elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]$")
+    set(DXMATH_ARCHITECTURE arm)
+elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
+    set(DXMATH_ARCHITECTURE arm64)
+elseif(NOT DXMATH_ARCHITECTURE)
+    set(DXMATH_ARCHITECTURE "x64")
+endif()
+
+if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+  enable_testing()
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
+endif()
