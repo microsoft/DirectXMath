@@ -11,8 +11,6 @@ project(DirectXMath
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
 
-option(BUILD_TESTING "Build test suite (if present)" ON)
-
 include(GNUInstallDirs)
 
 #--- Library
@@ -85,6 +83,7 @@ elseif(NOT DXMATH_ARCHITECTURE)
     set(DXMATH_ARCHITECTURE "x64")
 endif()
 
+include(CTest)
 if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
   enable_testing()
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
