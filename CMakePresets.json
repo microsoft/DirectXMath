@@ -150,101 +150,12 @@
     { "name": "arm64-Debug"  , "description": "MSVC for ARM64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "MSVC" ] },
     { "name": "arm64-Release", "description": "MSVC for ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC" ] },
 
-    { "name": "x64-Debug-AVX"   , "description": "MSVC for x64 (Debug) - AVX", "inherits": [ "base", "x64", "Debug", "AVX", "MSVC" ] },
-    { "name": "x64-Release-AVX" , "description": "MSVC for x64 (Release) - AVX", "inherits": [ "base", "x64", "Release", "AVX", "MSVC" ] },
-    { "name": "x86-Debug-AVX"   , "description": "MSVC for x86 (Debug) - AVX", "inherits": [ "base", "x86", "Debug", "AVX", "MSVC" ] },
-    { "name": "x86-Release-AVX" , "description": "MSVC for x86 (Release) - AVX", "inherits": [ "base", "x86", "Release", "AVX", "MSVC" ] },
-
-    { "name": "x64-Debug-AVX2"   , "description": "MSVC for x64 (Debug) - AVX2", "inherits": [ "base", "x64", "Debug", "AVX2", "MSVC" ] },
-    { "name": "x64-Release-AVX2" , "description": "MSVC for x64 (Release) - AVX2", "inherits": [ "base", "x64", "Release", "AVX2", "MSVC" ] },
-    { "name": "x86-Debug-AVX2"   , "description": "MSVC for x86 (Debug) - AVX2", "inherits": [ "base", "x86", "Debug", "AVX2", "MSVC" ] },
-    { "name": "x86-Release-AVX2" , "description": "MSVC for x86 (Release) - AVX2", "inherits": [ "base", "x86", "Release", "AVX2", "MSVC" ] },
-
-    { "name": "x64-Debug-NI"    , "description": "MSVC for x64 (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI", "MSVC" ] },
-    { "name": "x64-Release-NI"  , "description": "MSVC for x64 (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI", "MSVC" ] },
-    { "name": "x86-Debug-NI"    , "description": "MSVC for x86 (Debug) - no intrinsics", "inherits": [ "base", "x86", "Debug", "NI", "MSVC" ] },
-    { "name": "x86-Release-NI"  , "description": "MSVC for x86 (Release) - no intrinsics", "inherits": [ "base", "x86", "Release", "NI", "MSVC" ] },
-    { "name": "arm64-Debug-NI"  , "description": "MSVC for ARM64 (Debug) - no intrinsics", "inherits": [ "base", "ARM64", "Debug", "NI", "MSVC" ] },
-    { "name": "arm64-Release-NI", "description": "MSVC for ARM64 (Release) - no intrinsics", "inherits": [ "base", "ARM64", "Release", "NI", "MSVC" ] },
-
-    { "name": "x64-Debug-OneCore"    , "description": "OneCore x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "MSVC", "OneCore" ] },
-    { "name": "x64-Release-OneCore"  , "description": "OneCore x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "MSVC", "OneCore" ] },
-    { "name": "x86-Debug-OneCore"    , "description": "OneCore x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "MSVC", "OneCore" ] },
-    { "name": "x86-Release-OneCore"  , "description": "OneCore x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "MSVC", "OneCore" ] },
-    { "name": "arm-Debug-OneCore"    , "description": "OneCore ARM (Debug) - ARM-NEON", "inherits": [ "base", "ARM", "Debug", "MSVC", "OneCore" ] },
-    { "name": "arm-Release-OneCore"  , "description": "OneCore ARM (Release) - ARM-NEON", "inherits": [ "base", "ARM", "Release", "MSVC", "OneCore" ] },
-    { "name": "arm64-Debug-OneCore"  , "description": "OneCore ARM64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "MSVC", "OneCore" ] },
-    { "name": "arm64-Release-OneCore", "description": "OneCore ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC", "OneCore" ] },
-
-    { "name": "x64-Debug-XboxOne"    , "description": "Xbox One (Debug)", "inherits": [ "base", "x64", "Debug", "F16C", "MSVC", "OneCore" ] },
-    { "name": "x64-Release-XboxOne"  , "description": "Xbox One (Release)", "inherits": [ "base", "x64", "Release", "F16C", "MSVC", "OneCore" ] },
-
-    { "name": "x64-Debug-Scarlett"   , "description": "Xbox Series X|S (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "AVX2", "MSVC", "OneCore" ] },
-    { "name": "x64-Release-Scarlett" , "description": "Xbox Series X|S (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "AVX2", "MSVC", "OneCore" ] },
-
     { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "Clang" ] },
     { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "Clang" ] },
     { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
     { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
     { "name": "arm64-Debug-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
-    { "name": "arm64-Release-Clang", "description": "Clang/LLVM for AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
-
-    { "name": "x64-Debug-AVX-Clang"   , "description": "Clang/LLVM for x64 (Debug) - AVX", "inherits": [ "base", "x64", "Debug", "AVX", "Clang" ] },
-    { "name": "x64-Release-AVX-Clang" , "description": "Clang/LLVM for x64 (Release) - AVX", "inherits": [ "base", "x64", "Release", "AVX", "Clang" ] },
-    { "name": "x86-Debug-AVX-Clang"   , "description": "Clang/LLVM for x86 (Debug) - AVX", "inherits": [ "base", "x86", "Debug", "AVX", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "x86-Release-AVX-Clang" , "description": "Clang/LLVM for x86 (Release) - AVX", "inherits": [ "base", "x86", "Release", "AVX", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-
-    { "name": "x64-Debug-AVX2-Clang"  , "description": "Clang/LLVM for x64 (Debug) - AVX2", "inherits": [ "base", "x64", "Debug", "AVX2", "Clang" ] },
-    { "name": "x64-Release-AVX2-Clang", "description": "Clang/LLVM for x64 (Release) - AVX2", "inherits": [ "base", "x64", "Release", "AVX2", "Clang" ] },
-    { "name": "x86-Debug-AVX2-Clang"  , "description": "Clang/LLVM for x86 (Debug) - AVX2", "inherits": [ "base", "x86", "Debug", "AVX2", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "x86-Release-AVX2-Clang", "description": "Clang/LLVM for x86 (Release) - AVX2", "inherits": [ "base", "x86", "Release", "AVX2", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-
-    { "name": "x64-Debug-NI-Clang"    , "description": "Clang/LLVM for x64 (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI", "Clang" ] },
-    { "name": "x64-Release-NI-Clang"  , "description": "Clang/LLVM for x64 (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI", "Clang" ] },
-    { "name": "x86-Debug-NI-Clang"    , "description": "Clang/LLVM for x86 (Debug) - no intrinsics", "inherits": [ "base", "x86", "Debug", "NI", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "x86-Release-NI-Clang"  , "description": "Clang/LLVM for x86 (Release) - no intrinsics", "inherits": [ "base", "x86", "Release", "NI", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "arm64-Debug-NI-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) - no intrinsics", "inherits": [ "base", "ARM64", "Debug", "NI", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
-    { "name": "arm64-Release-NI-Clang", "description": "Clang/LLVM for AArch64 (Release) - no intrinsics", "inherits": [ "base", "ARM64", "Release", "NI", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
-
-    { "name": "x64-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "Intel" ] },
-    { "name": "x64-Release-ICC"   , "description": "Intel Classic Compiler (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "Intel" ] },
-    { "name": "x64-Debug-NI-ICC"  , "description": "Intel Classic Compiler (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI", "Intel" ] },
-    { "name": "x64-Release-NI-ICC", "description": "Intel Classic Compiler (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI", "Intel" ] },
-
-    { "name": "x86-Debug-ICC"     , "description": "Intel Classic Compiler (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "Intel" ] },
-    { "name": "x86-Release-ICC"   , "description": "Intel Classic Compiler (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "Intel" ] },
-    { "name": "x86-Debug-NI-ICC"  , "description": "Intel Classic Compiler (Debug) - no intrinsics", "inherits": [ "base", "x86", "Debug", "NI", "Intel" ] },
-    { "name": "x86-Release-NI-ICC", "description": "Intel Classic Compiler (Release) - no intrinsics", "inherits": [ "base", "x86", "Release", "NI", "Intel" ] },
-
-    { "name": "x64-Debug-ICX"     , "description": "Intel oneAPI Compiler (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "IntelLLVM" ] },
-    { "name": "x64-Release-ICX"   , "description": "Intel oneAPI Compiler (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "IntelLLVM" ] },
-    { "name": "x64-Debug-NI-ICX"  , "description": "Intel oneAPI Compiler (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI", "IntelLLVM" ] },
-    { "name": "x64-Release-NI-ICX", "description": "Intel oneAPI Compiler (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI", "IntelLLVM" ] },
-
-    { "name": "x86-Debug-ICX"     , "description": "Intel oneAPI Compiler (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "IntelLLVM" ] },
-    { "name": "x86-Release-ICX"   , "description": "Intel oneAPI Compiler (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "IntelLLVM" ] },
-    { "name": "x86-Debug-NI-ICX"  , "description": "Intel oneAPI Compiler (Debug) - no intrinsics", "inherits": [ "base", "x86", "Debug", "NI", "IntelLLVM" ] },
-    { "name": "x86-Release-NI-ICX", "description": "Intel oneAPI Compiler (Release) - no intrinsics", "inherits": [ "base", "x86", "Release", "NI", "IntelLLVM" ] },
-
-    { "name": "x64-Debug-MinGW"     , "description": "MinG-W64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
-    { "name": "x64-Release-MinGW"   , "description": "MinG-W64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
-    { "name": "x64-Debug-NI-MinGW"  , "description": "MinG-W64 (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
-    { "name": "x64-Release-NI-MinGW", "description": "MinG-W64 (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw64/bin" } },
-
-    { "name": "x86-Debug-MinGW"     , "description": "MinG-W32 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } },
-    { "name": "x86-Release-MinGW"   , "description": "MinG-W32 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } },
-    { "name": "x86-Debug-NI-MinGW"  , "description": "MinG-W32 (Debug) - no intrinsics", "inherits": [ "base", "x86", "Debug", "NI", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } },
-    { "name": "x86-Release-NI-MinGW", "description": "MinG-W32 (Release) - no intrinsics", "inherits": [ "base", "x86", "Release", "NI", "GNUC" ], "environment": { "PATH": "$penv{PATH};c:/mingw32/bin" } },
-
-    { "name": "x64-Debug-WSL"     , "description": "WSL x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug" ] },
-    { "name": "x64-Release-WSL"   , "description": "WSL x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release" ] },
-    { "name": "x64-Debug-NI-WSL"  , "description": "WSL x64 (Debug) - no intrinsics", "inherits": [ "base", "x64", "Debug", "NI" ] },
-    { "name": "x64-Release-NI-WSL", "description": "WSL x64 (Release) - no intrinsics", "inherits": [ "base", "x64", "Release", "NI" ] },
-
-    { "name": "arm64-Debug-WSL"     , "description": "WSL AArch64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug" ] },
-    { "name": "arm64-Release-WSL"   , "description": "WSL AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release" ] },
-    { "name": "arm64-Debug-NI-WSL"  , "description": "WSL AArch64 (Debug) - no intrinsics", "inherits": [ "base", "ARM64", "Debug", "NI" ] },
-    { "name": "arm64-Release-NI-WSL", "description": "WSL AArch64 (Release) - no intrinsics", "inherits": [ "base", "ARM64", "Release", "NI" ] }
+    { "name": "arm64-Release-Clang", "description": "Clang/LLVM for AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } }
   ],
   "testPresets": [
     { "name": "x64-Debug"    , "configurePreset": "x64-Debug" },
