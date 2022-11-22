@@ -17,12 +17,71 @@
         "value": "x64",
         "strategy": "external"
       },
+      "cacheVariables": { "DXMATH_ARCHITECTURE": "x64" },
+      "hidden": true
+    },
+    {
+      "name": "x86",
+      "architecture": {
+        "value": "x86",
+        "strategy": "external"
+      },
+      "cacheVariables": { "DXMATH_ARCHITECTURE": "x86" },
+      "hidden": true
+    },
+    {
+      "name": "ARM",
+      "architecture": {
+        "value": "arm",
+        "strategy": "external"
+      },
+      "cacheVariables": { "DXMATH_ARCHITECTURE": "arm" },
+      "hidden": true
+    },
+    {
+      "name": "ARM64",
+      "architecture": {
+        "value": "arm64",
+        "strategy": "external"
+      },
+      "cacheVariables": { "DXMATH_ARCHITECTURE": "arm64" },
       "hidden": true
     },
 
     {
       "name": "Debug",
       "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "hidden": true
+    },
+    {
+      "name": "Release",
+      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" },
+      "hidden": true
+    },
+
+    {
+      "name": "OneCore",
+      "cacheVariables": { "BUILD_FOR_ONECORE": true },
+      "hidden": true
+    },
+    {
+      "name": "AVX",
+      "cacheVariables": { "BUILD_AVX_TEST": true },
+      "hidden": true
+    },
+    {
+      "name": "AVX2",
+      "cacheVariables": { "BUILD_AVX2_TEST": true },
+      "hidden": true
+    },
+    {
+      "name": "F16C",
+      "cacheVariables": { "BUILD_F16C_TEST": true },
+      "hidden": true
+    },
+    {
+      "name": "NI",
+      "cacheVariables": { "BUILD_NO_INTRINSICS": true },
       "hidden": true
     },
 
@@ -37,7 +96,80 @@
         "strategy": "external"
       }
     },
+    {
+      "name": "Clang",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "clang-cl.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "GNUC",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "g++.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "Intel",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "icl.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
+    {
+      "name": "IntelLLVM",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_CXX_COMPILER": "icx.exe"
+      },
+      "toolset": {
+        "value": "host=x64",
+        "strategy": "external"
+      }
+    },
 
-    { "name": "x64-Debug"    , "description": "MSVC for x64 (Debug) for Windows 8", "inherits": [ "base", "x64", "Debug", "MSVC" ] }
+    { "name": "x64-Debug"    , "description": "MSVC for x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "MSVC" ] },
+    { "name": "x64-Release"  , "description": "MSVC for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "MSVC" ] },
+    { "name": "x86-Debug"    , "description": "MSVC for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
+    { "name": "x86-Release"  , "description": "MSVC for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "MSVC" ] },
+    { "name": "arm-Debug"    , "description": "MSVC for ARM (Debug) - ARM-NEON", "inherits": [ "base", "ARM", "Debug", "MSVC" ] },
+    { "name": "arm-Release"  , "description": "MSVC for ARM (Release) - ARM-NEON", "inherits": [ "base", "ARM", "Release", "MSVC" ] },
+    { "name": "arm64-Debug"  , "description": "MSVC for ARM64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "MSVC" ] },
+    { "name": "arm64-Release", "description": "MSVC for ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC" ] },
+
+    { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "Clang" ] },
+    { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "Clang" ] },
+    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
+    { "name": "arm64-Debug-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
+    { "name": "arm64-Release-Clang", "description": "Clang/LLVM for AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } }
+  ],
+  "testPresets": [
+    { "name": "x64-Debug"    , "configurePreset": "x64-Debug" },
+    { "name": "x64-Release"  , "configurePreset": "x64-Release" },
+    { "name": "x86-Debug"    , "configurePreset": "x86-Debug" },
+    { "name": "x86-Release"  , "configurePreset": "x86-Release" },
+    { "name": "arm64-Debug"  , "configurePreset": "arm64-Debug" },
+    { "name": "arm64-Release", "configurePreset": "arm64-Release" },
+
+    { "name": "x64-Debug-Clang"    , "configurePreset": "x64-Debug-Clang" },
+    { "name": "x64-Release-Clang"  , "configurePreset": "x64-Release-Clang" },
+    { "name": "x86-Debug-Clang"    , "configurePreset": "x86-Debug-Clang" },
+    { "name": "x86-Release-Clang"  , "configurePreset": "x86-Release-Clang" },
+    { "name": "arm64-Debug-Clang"  , "configurePreset": "arm64-Debug-Clang" },
+    { "name": "arm64-Release-Clang", "configurePreset": "arm64-Release-Clang" }
   ]
 }
