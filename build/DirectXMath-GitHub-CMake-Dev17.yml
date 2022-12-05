@@ -111,7 +111,7 @@ jobs:
     displayName: 'CMake (ClangCl): Build ARM64 Debug'
     inputs:
       cwd: ''
-      cmakeArgs: --build out5 -v --config ARM64 Debug
+      cmakeArgs: --build out5 -v --config Debug
   - task: CMake@1
     displayName: 'CMake (ClangCl): Build ARM64 Release'
     inputs:

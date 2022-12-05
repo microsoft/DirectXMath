@@ -26,7 +26,6 @@ pool:
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
-  DEST_DIR: $(DESTDIR)
 
 jobs:
 - job: BUILD_WSL
@@ -50,8 +49,8 @@ jobs:
       targetType: inline
       script: |
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(DEST_DIR)usr/local/include/sal.h
-        $fileHash = Get-FileHash -Algorithm SHA512 $(DEST_DIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(Build.SourcesDirectory)/Inc/sal.h
+        $fileHash = Get-FileHash -Algorithm SHA512 $(Build.SourcesDirectory)/Inc/sal.h | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $filehash
         if ($fileHash -ne "1643571673195d9eb892d2f2ac76eac7113ef7aa0ca116d79f3e4d3dc9df8a31600a9668b7e7678dfbe5a76906f9e0734ef8d6db0903ccc68fc742dd8238d8b0") {
