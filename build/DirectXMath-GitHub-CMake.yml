@@ -24,12 +24,10 @@ name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 variables:
   VS_GENERATOR: 'Visual Studio 16 2019'
   WIN10_SDK: '10.0.19041.0'
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 pool:
   vmImage: windows-2019
-
-variables:
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 jobs:
 - job: CMAKE_BUILD

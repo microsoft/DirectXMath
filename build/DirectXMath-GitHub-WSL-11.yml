@@ -26,6 +26,7 @@ pool:
 
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+  DEST_DIR: $(DESTDIR)
 
 jobs:
 - job: BUILD_WSL

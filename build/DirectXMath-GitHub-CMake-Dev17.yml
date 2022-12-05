@@ -25,12 +25,10 @@ variables:
   VS_GENERATOR: 'Visual Studio 17 2022'
   WIN10_SDK: '10.0.19041.0'
   WIN11_SDK: '10.0.22000.0'
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 pool:
   vmImage: windows-2022
-
-variables:
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 jobs:
 - job: CMAKE_BUILD
