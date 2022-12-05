@@ -1,0 +1,64 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+# Builds the math3 test suite for Windows Subsystem for Linux (WSL)
+
+schedules:
+- cron: "0 3 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+    trigger: none
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+pool:
+  vmImage: ubuntu-22.04
+
+variables:
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+
+jobs:
+- job: BUILD_WSL
+  displayName: 'Windows Subsystem for Linux (WSL)'
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CmdLine@2
+    displayName: Fetch tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+  - task: CMake@1
+    displayName: DirectXMath Tests
+    inputs:
+      cwd: Tests
+      cmakeArgs: .
+  - task: PowerShell@2
+    displayName: Fetch SAL.H
+    inputs:
+      targetType: inline
+      script: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(DEST_DIR)usr/local/include/sal.h
+        $fileHash = Get-FileHash -Algorithm SHA512 $(DEST_DIR)usr/local/include/sal.h | ForEach { $_.Hash} | Out-String
+        $filehash = $fileHash.Trim()
+        Write-Host "##[debug]SHA512: " $filehash
+        if ($fileHash -ne "1643571673195d9eb892d2f2ac76eac7113ef7aa0ca116d79f3e4d3dc9df8a31600a9668b7e7678dfbe5a76906f9e0734ef8d6db0903ccc68fc742dd8238d8b0") {
+            Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
+        }
+
+  - task: CMake@1
+    displayName: DirectXMath Tests Build
+    inputs:
+      cwd: Tests
+      cmakeArgs: --build . -v

@@ -1,0 +1,105 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+# Builds the library and test suite using CMake.
+
+schedules:
+- cron: "0 0 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+    trigger: none
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+variables:
+  VS_GENERATOR: 'Visual Studio 16 2019'
+  WIN10_SDK: '10.0.19041.0'
+
+pool:
+  vmImage: windows-2019
+
+variables:
+  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+
+jobs:
+- job: CMAKE_BUILD
+  displayName: CMake using VS Generator
+  cancelTimeoutInMinutes: 1
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+  - task: CmdLine@2
+    displayName: Fetch Tests
+    inputs:
+      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+  - task: CMake@1
+    displayName: CMake (MSVC x64)
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake (Build x64)
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out -v
+  - task: CMake@1
+    displayName: CMake Test (MSVC x64)
+    inputs:
+      cwd: Tests
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake Test (Build x64)
+    inputs:
+      cwd: Tests
+      cmakeArgs: --build out -v
+  - task: CMake@1
+    displayName: CMake (MSVC ARM64)
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake (Build ARM64)
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out2 -v
+  - task: CMake@1
+    displayName: CMake Test (MSVC ARM64)
+    inputs:
+      cwd: Tests
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake Test (Build ARM64)
+    inputs:
+      cwd: Tests
+      cmakeArgs: --build out2 -v
+  - task: CMake@1
+    displayName: CMake (ClangCl)
+    inputs:
+      cwd: ''
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake (Build)
+    inputs:
+      cwd: ''
+      cmakeArgs: --build out3 -v
+  - task: CMake@1
+    displayName: CMake Test (ClangCL)
+    inputs:
+      cwd: Tests
+      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+  - task: CMake@1
+    displayName: CMake Test (Build)
+    inputs:
+      cwd: Tests
+      cmakeArgs: --build out3 -v
