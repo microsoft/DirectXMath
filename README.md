@@ -49,6 +49,10 @@ These components are designed to work without requiring any content from the leg
 
   + XDSP.h - Digital Signal Processing helper functions
 
+* ``build\``
+
+  + Contains YAML files for the build pipelines along with some miscellaneous build files and scripts.
+
 ## Documentation
 
 Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en-us/windows/desktop/dxmath/directxmath-portal). Additional information can be found on the [project wiki](https://github.com/microsoft/DirectXMath/wiki).
