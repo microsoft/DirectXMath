@@ -44,12 +44,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MSVC x64)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
   - task: CMake@1
     displayName: CMake (Build x64)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out -v
   - task: CMake@1
     displayName: CMake Test (MSVC x64)
@@ -64,12 +64,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MSVC ARM64)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
   - task: CMake@1
     displayName: CMake (Build ARM64)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out2 -v
   - task: CMake@1
     displayName: CMake Test (MSVC ARM64)
@@ -84,12 +84,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (ClangCl)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
   - task: CMake@1
     displayName: CMake (Build)
     inputs:
-      cwd: ''
+      cwd: '$(Build.SourcesDirectory)'
       cmakeArgs: --build out3 -v
   - task: CMake@1
     displayName: CMake Test (ClangCL)
