@@ -9,7 +9,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 ### December 2022 (3.18)
 * C++20 spaceship operators for XMFLOAT2, XMFLOAT3, etc. when building with ``/std:c++20 /Zc:_cplusplus``
 * Improved conformance for ARM64 when using `/Zc:arm64-aliased-neon-types-`
-* Minor code review and CMake project updates
+* Minor code review
 * CMake project updated to require 3.20 or later
 * Added Azure Dev Ops Pipeline YAML files
 
