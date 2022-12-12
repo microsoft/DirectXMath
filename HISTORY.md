@@ -6,10 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
-### November 2022 (3.18)
+### December 2022 (3.18)
 * C++20 spaceship operators for XMFLOAT2, XMFLOAT3, etc. when building with ``/std:c++20 /Zc:_cplusplus``
 * Improved conformance for ARM64 when using `/Zc:arm64-aliased-neon-types-`
-* Minor code review and CMake project updates
+* Minor code review
+* CMake project updated to require 3.20 or later
+* Added Azure Dev Ops Pipeline YAML files
 
 ### May 2022 (3.17b)
 * Hot-fix to address ``-Wreserved-identifier`` warnings with clang v13
@@ -109,8 +111,8 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ### April 2015 (3.07)
 * Fix customer reported bugs in BoundingBox methods
-* Fix customer reported bug in XMStoreFloat3SE  
-* Fix customer reported bug in XMVectorATan2, XMVectorATan2Est  
+* Fix customer reported bug in XMStoreFloat3SE
+* Fix customer reported bug in XMVectorATan2, XMVectorATan2Est
 * Fix customer reported bug in XMVectorRound
 
 ### October 2013 (3.06)
@@ -122,14 +124,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 * Use x86/x64 ``__vectorcall`` calling-convention when available (``XM_CALLCONV``, ``HXMVECTOR``, ``FXMMATRIX`` introduced)
 * Fixed bug with XMVectorFloor and XMVectorCeiling when given whole odd numbers (i.e. 105.0)
 * Improved XMVectorRound algorithm
-* ARM-NEON optimizations for XMVectorExp2, XMVectorLog2, XMVectorExpE, and XMVectorLogE  
+* ARM-NEON optimizations for XMVectorExp2, XMVectorLog2, XMVectorExpE, and XMVectorLogE
 * ARM-NEON code paths use multiply-by-scalar intrinsics when supported
 * Additional optimizations for ARM-NEON Stream functions
 * Fixed potential warning C4723 using ``operator/`` or ``operator/=``
 
 ### March 2013 (3.04)
 * ``XMVectorExp2``, ``XMVectorLog2``, ``XMVectorExpE``, and ``XMVectorLogE`` functions added to provide base-e support in addition to the existing base-2 support
-* ``XMVectorExp`` and ``XMVectorLog`` are now aliases for XMVectorExp2 and XMVectorLog2  
+* ``XMVectorExp`` and ``XMVectorLog`` are now aliases for XMVectorExp2 and XMVectorLog2
 * Additional optimizations for Stream functions
 * XMVector3Cross now ensures w component is zero on ARM
 * XMConvertHalfToFloat and XMConvertFloatToHalf  now use IEEE 754 standard float16 behavior for INF/QNAN
