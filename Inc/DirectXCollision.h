@@ -340,14 +340,25 @@ namespace DirectX
      // C4365: Off by default noise
      // C6001: False positives
 #endif
+
 #ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
 #pragma prefast(disable : 26495, "Union initialization confuses /analyze")
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wfloat-equal"
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
 #include "DirectXCollision.inl"
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
