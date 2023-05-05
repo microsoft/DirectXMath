@@ -1210,8 +1210,17 @@ namespace DirectX
 #pragma prefast(disable : 26495, "Union initialization confuses /analyze")
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
 #include "DirectXPackedVector.inl"
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif

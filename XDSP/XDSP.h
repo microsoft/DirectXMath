@@ -27,6 +27,12 @@
 #pragma warning(disable: 6001 6262)
 #endif
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-warning-option"
+#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#endif
+
 namespace XDSP
 {
     using XMVECTOR = DirectX::XMVECTOR;
@@ -866,6 +872,9 @@ namespace XDSP
 
 } // namespace XDSP
 
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 #ifdef _MSC_VER
 #pragma warning(pop)
 #endif
