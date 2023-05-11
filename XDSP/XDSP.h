@@ -730,8 +730,8 @@ namespace XDSP
         assert(uChannelCount > 0 && uChannelCount <= 6);
         assert(uLog2Length >= 2 && uLog2Length <= 9);
 
-        XMVECTOR vRealTemp[768];
-        XMVECTOR vImaginaryTemp[768];
+        XM_ALIGNED_DATA(16) XMVECTOR vRealTemp[768];
+        XM_ALIGNED_DATA(16) XMVECTOR vImaginaryTemp[768];
         const size_t uLength = size_t(1) << uLog2Length;
 
         if (uChannelCount > 1)
@@ -813,8 +813,8 @@ namespace XDSP
         assert(uLog2Length >= 2 && uLog2Length <= 9);
         _Analysis_assume_(uLog2Length >= 2 && uLog2Length <= 9);
 
-        XMVECTOR vRealTemp[768] = {};
-        XMVECTOR vImaginaryTemp[768] = {};
+        XM_ALIGNED_DATA(16) XMVECTOR vRealTemp[768] = {};
+        XM_ALIGNED_DATA(16) XMVECTOR vImaginaryTemp[768] = {};
 
         const size_t uLength = size_t(1) << uLog2Length;
 
