@@ -42,11 +42,12 @@ resources:
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
-pool:
-  vmImage: windows-2019
-
 variables:
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
+  Codeql.Enabled: true
+
+pool:
+  vmImage: windows-2019
 
 jobs:
 - job: BUILD_DEV16
