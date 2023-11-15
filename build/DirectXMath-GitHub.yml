@@ -67,7 +67,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch Tests
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
   - task: VSBuild@1
     displayName: Build solution math3_2019.sln x86dbg
     inputs:
@@ -344,7 +344,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch Tests
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
   - task: VSBuild@1
     displayName: Build solution math3_2017.sln x86dbg
     inputs:

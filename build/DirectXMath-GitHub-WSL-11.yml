@@ -39,7 +39,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch tests
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
   - task: CMake@1
     displayName: DirectXMath Tests
     inputs:
