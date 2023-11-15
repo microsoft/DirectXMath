@@ -55,7 +55,7 @@ jobs:
   - task: CmdLine@2
     displayName: Fetch Tests
     inputs:
-      script: git clone --quiet https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
   - task: Armory@2
     displayName: Run ARMory
   - task: CMake@1
@@ -63,18 +63,19 @@ jobs:
     inputs:
       cwd: '$(Build.SourcesDirectory)/Tests/headertest'
       cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out'
-  - task: Semmle@1
-    displayName: 'Run CodeQL (Semmle) (C++)'
-    env:
-      SYSTEM_ACCESSTOKEN: $(System.AccessToken)
+  - task: CodeQL3000Init@0
     inputs:
-      sourceCodeDirectory: '$(Build.SourcesDirectory)'
-      language: 'cpp'
-      querySuite: 'Recommended'
-      timeout: '1800'
-      ram: '16384'
-      addProjectDirToScanningExclusionList: true
-      buildCommandsString: '"%ProgramFiles%\Microsoft Visual Studio\2022\Enterprise\Common7\Tools\VsMSBuildCmd.bat" && msbuild $(Build.SourcesDirectory)/Tests/headertest/out/headertest.sln /p:Configuration=Release'
+      Enabled: true
+  - task: VSBuild@1
+    displayName: 'Build C++ with CodeQL'
+    inputs:
+      solution: '$(Build.SourcesDirectory)/Tests/headertest/out/headertest.sln'
+      vsVersion: 17.0
+      platform: x64
+      configuration: Release
+      msbuildArchitecture: x64
+  - task: CodeQL3000Finalize@0
+    condition: always()
   - task: securedevelopmentteam.vss-secure-development-tools.build-task-postanalysis.PostAnalysis@2
     displayName: 'Post Analysis'
     inputs:
