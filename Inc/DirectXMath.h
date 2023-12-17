@@ -119,7 +119,11 @@
 #endif
 
 #if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
+#ifdef _WIN32
+#include <intrin.h>
+#else
 #include <cpuid.h>
+#endif
 #endif
 
 #ifdef _XM_SSE_INTRINSICS_
