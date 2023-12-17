@@ -1973,7 +1973,7 @@ inline bool XMVerifyCPUSupport() noexcept
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     int CPUInfo[4] = { -1 };
-#if )defined(__clang__) || defined(__GNUC__)) && !defined(_WIN32)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_WIN32)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuid(CPUInfo, 0);
