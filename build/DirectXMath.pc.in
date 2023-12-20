@@ -6,6 +6,5 @@ Name: @PROJECT_NAME@
 Description: @PROJECT_DESCRIPTION@
 URL: @PROJECT_HOMEPAGE_URL@
 Version: @PROJECT_VERSION@
-Requires:@DIRECTXMATH_DEP@
 Cflags: -I${includedir}
 Libs:
