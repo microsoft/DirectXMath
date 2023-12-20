@@ -75,14 +75,6 @@ join_paths(DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_I
 join_paths(DIRECTXMATH_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
 
 set(DIRECTXMATH_DEP_L "")
-if(directxmath_FOUND)
-  list(APPEND DIRECTXMATH_DEP_L "DirectX-Headers")
-endif()
-
-list(LENGTH DIRECTXMATH_DEP_L DEP_L)
-if(DEP_L)
-  string(REPLACE ";" ", " DIRECTXMATH_DEP " ${DIRECTXMATH_DEP_L}")
-endif()
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXMath.pc.in"
