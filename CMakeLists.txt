@@ -74,8 +74,6 @@ include(build/JoinPaths.cmake)
 join_paths(DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 join_paths(DIRECTXMATH_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
 
-set(DIRECTXMATH_DEP_L "")
-
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXMath.pc.in"
     "${CMAKE_CURRENT_BINARY_DIR}/DirectXMath.pc" @ONLY)
