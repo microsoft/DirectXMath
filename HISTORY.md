@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### December 2023 (3.18b)
+* Hot-fix to address ``-Wunsafe-buffer-usage`` warnings from clang v16
+* Hot-fix to address MinGW issue with ``__cpuid`` in cpuid.h vs. intrin.h
+* CMake project updates including pkg-config file generation
+
 ### December 2022 (3.18)
 * C++20 spaceship operators for XMFLOAT2, XMFLOAT3, etc. when building with ``/std:c++20 /Zc:_cplusplus``
 * Improved conformance for ARM64 when using `/Zc:arm64-aliased-neon-types-`
