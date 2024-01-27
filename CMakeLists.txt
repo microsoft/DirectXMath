@@ -140,6 +140,7 @@ elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
 elseif(NOT DXMATH_ARCHITECTURE)
     set(DXMATH_ARCHITECTURE "x64")
 endif()
+set(DXMATH_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}")
 
 #--- Test suite
 include(CTest)
