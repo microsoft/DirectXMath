@@ -24,7 +24,8 @@ set(LIBRARY_HEADERS
     Inc/DirectXMathMisc.inl
     Inc/DirectXMathVector.inl
     Inc/DirectXPackedVector.h
-    Inc/DirectXPackedVector.inl)
+    Inc/DirectXPackedVector.inl
+	${CMAKE_CURRENT_BINARY_DIR}/DirectXMathConfig.h)
 
 add_library(${PROJECT_NAME} INTERFACE)
 
@@ -33,6 +34,49 @@ target_include_directories(${PROJECT_NAME} INTERFACE
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/directxmath>)
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+
+#--- configure DirectXMathConfig.h
+
+#---------- 2 parameter __cpuid from intrin.h
+file(WRITE ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp
+"#include <intrin.h>
+int main () {
+	int CPUInfo[4] = { -1 };
+	__cpuid(CPUInfo, 0);
+	return(0);
+}")
+
+try_compile(USE_INTRIN_H_CPUID
+   ${CMAKE_BINARY_DIR}/CMakeTmp
+   ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp)
+
+if(USE_INTRIN_H_CPUID)
+   set(USE_CPUID_H_CPUID FALSE)
+   message(STATUS "Configure __cpuid:  intrin.h - 2 parameters")
+endif()
+
+if(NOT(USE_INTRIN_H_CPUID))
+#--------- 5 parameter __cpuid.h
+  file(WRITE ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp
+"#include <cpuid.h>
+int main () {
+	int CPUInfo[4] = { -1 };
+	__cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+	return(0);
+}")
+
+    try_compile(USE_CPUID_H_CPUID
+      ${CMAKE_BINARY_DIR}/CMakeTmp
+      ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp)
+
+  if(USE_CPUID_H_CPUID)
+     message(STATUS "Configure __cpuid:  cpuid.h - 5 parameters")
+  endif()
+endif()
+
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXMathConfig.h.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/DirectXMathConfig.h" @ONLY)
 
 #--- Package
 include(CMakePackageConfigHelpers)

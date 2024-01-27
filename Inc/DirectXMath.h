@@ -110,15 +110,20 @@
 
 #ifndef _XM_NO_INTRINSICS_
 
+#include <DirectXMathConfig.h>
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4987)
 // C4987: Off by default noise
+#endif
+#ifdef USE_INTRIN_H_CPUID
 #include <intrin.h>
+#endif
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
+#if (USE_CPUID_H_CPUID) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 

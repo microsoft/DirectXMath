@@ -1973,10 +1973,10 @@ inline bool XMVerifyCPUSupport() noexcept
 {
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     int CPUInfo[4] = { -1 };
-#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
-    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-#else
+#if defined(USE_INTRIN_H_CPUID)
     __cpuid(CPUInfo, 0);
+#else
+    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #endif
 
 #ifdef __AVX2__
@@ -1987,10 +1987,10 @@ inline bool XMVerifyCPUSupport() noexcept
         return false;
 #endif
 
-#if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
-    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
+#if defined(USE_INTRIN_H_CPUID)
+   __cpuid(CPUInfo, 1);
 #else
-    __cpuid(CPUInfo, 1);
+    __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);  
 #endif
 
 #if defined(__AVX2__) || defined(_XM_AVX2_INTRINSICS_)

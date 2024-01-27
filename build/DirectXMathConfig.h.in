@@ -1,0 +1,6 @@
+/* Define if this to use the 2-parameter __cpuid
+ in intrin.h. */
+#cmakedefine USE_INTRIN_H_CPUID
+/* Define if this to use the 5-parameter __cpuid
+ in cpuid.h. */
+#cmakedefine USE_CPUID_H_CPUID
