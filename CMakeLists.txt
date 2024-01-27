@@ -65,9 +65,9 @@ int main () {
 	return(0);
 }")
 
-    try_compile(USE_CPUID_H_CPUID
-      ${CMAKE_BINARY_DIR}/CMakeTmp
-      ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp)
+  try_compile(USE_CPUID_H_CPUID
+    ${CMAKE_BINARY_DIR}/CMakeTmp
+    ${CMAKE_BINARY_DIR}/CMakeTmp/testcpuid.cpp)
 
   if(USE_CPUID_H_CPUID)
      message(STATUS "Configure __cpuid:  cpuid.h - 5 parameters")

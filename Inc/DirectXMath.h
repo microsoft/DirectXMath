@@ -123,7 +123,7 @@
 #pragma warning(pop)
 #endif
 
-#if (USE_CPUID_H_CPUID) && (__x86_64__ || __i386__)
+#if defined(USE_CPUID_H_CPUID) && (__x86_64__ || __i386__)
 #include <cpuid.h>
 #endif
 
