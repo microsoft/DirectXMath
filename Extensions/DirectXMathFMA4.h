@@ -37,8 +37,6 @@ inline bool XMVerifyFMA4Support()
    __cpuid(CPUInfo, 0);
 #else
    __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-#else
-
 #endif
 
    if ( CPUInfo[0] < 1  )
