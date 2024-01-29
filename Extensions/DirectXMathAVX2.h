@@ -487,12 +487,12 @@ namespace Internal
         static XMVECTOR XM_CALLCONV Permute(FXMVECTOR v1, FXMVECTOR v2)
         {
             static const XMVECTORU32 selectMask =
-            {
+            { { {
                 WhichX ? 0xFFFFFFFF : 0,
                 WhichY ? 0xFFFFFFFF : 0,
                 WhichZ ? 0xFFFFFFFF : 0,
                 WhichW ? 0xFFFFFFFF : 0,
-            };
+            } } };
 
             XMVECTOR shuffled1 = _mm_permute_ps(v1, Shuffle);
             XMVECTOR shuffled2 = _mm_permute_ps(v2, Shuffle);
