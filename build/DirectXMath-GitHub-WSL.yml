@@ -70,7 +70,7 @@ jobs:
       targetType: inline
       script: |
         $ProgressPreference = 'SilentlyContinue'
-        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -o $(Build.SourcesDirectory)/Inc/sal.h
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/corert/master/src/Native/inc/unix/sal.h -OutFile $(Build.SourcesDirectory)/Inc/sal.h
         $fileHash = Get-FileHash -Algorithm SHA512 $(Build.SourcesDirectory)/Inc/sal.h | ForEach { $_.Hash} | Out-String
         $filehash = $fileHash.Trim()
         Write-Host "##[debug]SHA512: " $filehash
