@@ -114,11 +114,15 @@
 #pragma warning(push)
 #pragma warning(disable : 4987)
 // C4987: Off by default noise
+#endif
+#if defined(_MSC_VER) || defined(__MINGW32__)
 #include <intrin.h>
+#endif
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
-#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__)
+#if (defined(__clang__) || defined(__GNUC__)) && (__x86_64__ || __i386__) && !defined(__MINGW32__)
 #include <cpuid.h>
 #endif
 
