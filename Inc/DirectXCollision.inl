@@ -4254,8 +4254,8 @@ inline void BoundingFrustum::GetPlanes(XMVECTOR* NearPlane, XMVECTOR* FarPlane, 
 _Use_decl_annotations_
 inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix(BoundingFrustum& Out, FXMMATRIX Projection, bool rhcoords) noexcept
 {
-    // Corners of the projection frustum in homogenous space.
-    static XMVECTORF32 HomogenousPoints[6] =
+    // Corners of the projection frustum in NDC space.
+    static XMVECTORF32 NDCPoints[6] =
     {
         { { {  1.0f,  0.0f, 1.0f, 1.0f } } },   // right (at far plane)
         { { { -1.0f,  0.0f, 1.0f, 1.0f } } },   // left
@@ -4275,7 +4275,7 @@ inline void XM_CALLCONV BoundingFrustum::CreateFromMatrix(BoundingFrustum& Out, 
     for (size_t i = 0; i < 6; ++i)
     {
         // Transform point.
-        Points[i] = XMVector4Transform(HomogenousPoints[i], matInverse);
+        Points[i] = XMVector4Transform(NDCPoints[i], matInverse);
     }
 
     Out.Origin = XMFLOAT3(0.0f, 0.0f, 0.0f);
