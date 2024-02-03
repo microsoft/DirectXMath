@@ -80,6 +80,10 @@ All content and source code for this package are subject to the terms of the [MI
 
 For the latest version of DirectXMath, bug reports, etc. please visit the project site on [GitHub](https://github.com/microsoft/DirectXMath).
 
+## Release Notes
+
+* The clang/LLVM toolset currently does not respect the ``float_control`` pragma for SSE instrinsics. Therefore, the use of ``/fp:fast`` is not recommended on clang/LLVM until this issue is fixed. See [55713](https://github.com/llvm/llvm-project/issues/55713).
+
 ## Support
 
 For questions, consider using [Stack Overflow](https://stackoverflow.com/questions/tagged/directxmath) with the *directxmath* tag, or the [DirectX Discord Server](https://discord.gg/directx) in the *dx12-developers* or *dx9-dx11-developers* channel.

@@ -21,7 +21,7 @@
 
  //------------------------------------------------------------------------------
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #pragma float_control(push)
 #pragma float_control(precise, on)
 #endif
@@ -89,7 +89,7 @@ inline bool XM_CALLCONV XMMatrixIsNaN(FXMMATRIX M) noexcept
 #endif
 }
 
-#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__clang__) && !defined(__INTEL_COMPILER)
+#if !defined(_XM_NO_INTRINSICS_) && defined(_MSC_VER) && !defined(__INTEL_COMPILER)
 #pragma float_control(pop)
 #endif
 
