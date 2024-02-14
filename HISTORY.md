@@ -6,6 +6,11 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### February 2024 (3.19)
+* Fix to address MinGW issue with ``__cpuid`` in cpuid.h vs. intrin.h
+* Additional updates for clang/LLVM and GNUC
+* Minor comment updates
+
 ### December 2023 (3.18b)
 * Hot-fix to address ``-Wunsafe-buffer-usage`` warnings from clang v16
 * Hot-fix to address MinGW issue with ``__cpuid`` in cpuid.h vs. intrin.h
