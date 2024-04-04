@@ -17,15 +17,20 @@ trigger:
     include:
     - main
   paths:
-    include:
-    - CMakeLists.txt
+    exclude:
+    - '*.md'
+    - LICENSE
+    - '.nuget/*'
+
 pr:
   branches:
     include:
     - main
   paths:
-    include:
-    - CMakeLists.txt
+    exclude:
+    - '*.md'
+    - LICENSE
+    - '.nuget/*'
 
 resources:
   repositories:
