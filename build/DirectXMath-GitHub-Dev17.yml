@@ -13,13 +13,21 @@ schedules:
     - main
 
 trigger: none
-pr: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - build/DirectXMath-GitHub-Dev17.yml
 
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
+    trigger: none
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -287,4 +295,36 @@ jobs:
       vsVersion: 17.0
       platform: x86
       configuration: x87 Release
+      msbuildArchitecture: x64
+  - task: VSBuild@1
+    displayName: Build solution shmath_2022.sln x64dbg
+    inputs:
+      solution: Tests/shmath/shmath_2022.sln
+      vsVersion: 17.0
+      platform: x64
+      configuration: Debug
+      msbuildArchitecture: x64
+  - task: VSBuild@1
+    displayName: Build solution shmath_2022.sln x64rel
+    inputs:
+      solution: Tests/shmath/shmath_2022.sln
+      vsVersion: 17.0
+      platform: x64
+      configuration: Release
+      msbuildArchitecture: x64
+  - task: VSBuild@1
+    displayName: Build solution XDSPTest_2022 x64dbg
+    inputs:
+      solution: Tests/xdsp/XDSPTest_2022.sln
+      vsVersion: 17.0
+      platform: x64
+      configuration: Debug
+      msbuildArchitecture: x64
+  - task: VSBuild@1
+    displayName: Build solution XDSPTest_2022 x64rel
+    inputs:
+      solution: Tests/xdsp/XDSPTest_2022.sln
+      vsVersion: 17.0
+      platform: x64
+      configuration: Release
       msbuildArchitecture: x64

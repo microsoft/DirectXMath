@@ -18,20 +18,25 @@ trigger:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - '*.md'
     - LICENSE
+    - CMake*
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
+
 pr:
   branches:
     include:
     - main
   paths:
     exclude:
-    - README.md
-    - HISTORY.md
-    - SECURITY.md
+    - '*.md'
     - LICENSE
+    - CMake*
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
   drafts: false
 
 resources:
