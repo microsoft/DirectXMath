@@ -2644,9 +2644,9 @@ inline void XM_CALLCONV XMStoreFloat3SE
     fi.i = static_cast<int32_t>(0x83000000 - (exp << 23));
     float ScaleR = fi.f;
 
-    pDestination->xm = static_cast<uint32_t>(Internal::round_to_nearest(x * ScaleR));
-    pDestination->ym = static_cast<uint32_t>(Internal::round_to_nearest(y * ScaleR));
-    pDestination->zm = static_cast<uint32_t>(Internal::round_to_nearest(z * ScaleR));
+    pDestination->xm = static_cast<uint32_t>(MathInternal::round_to_nearest(x * ScaleR));
+    pDestination->ym = static_cast<uint32_t>(MathInternal::round_to_nearest(y * ScaleR));
+    pDestination->zm = static_cast<uint32_t>(MathInternal::round_to_nearest(z * ScaleR));
 }
 
 //------------------------------------------------------------------------------

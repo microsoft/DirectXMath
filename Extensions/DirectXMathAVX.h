@@ -135,7 +135,7 @@ inline XMVECTOR XM_CALLCONV XMVectorRotateRight(FXMVECTOR V, uint32_t Elements)
 // Permute Templates
 //-------------------------------------------------------------------------------------
 
-namespace Internal
+namespace MathInternal
 {
     // Slow path fallback for permutes that do not map to a single SSE opcode.
     template<uint32_t Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
@@ -201,7 +201,7 @@ template<uint32_t PermuteX, uint32_t PermuteY, uint32_t PermuteZ, uint32_t Permu
     const bool WhichZ = PermuteZ > 3;
     const bool WhichW = PermuteW > 3;
 
-    return AVX::Internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
+    return AVX::MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
 }
 
 // Special-case permute templates
