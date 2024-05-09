@@ -1735,7 +1735,7 @@ namespace DirectX
 #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
 
 // PermuteHelper internal template (SSE only)
-    namespace Internal
+    namespace MathInternal
     {
         // Slow path fallback for permutes that do not map to a single SSE shuffle opcode.
         template<uint32_t Shuffle, bool WhichX, bool WhichY, bool WhichZ, bool WhichW> struct PermuteHelper
@@ -1804,7 +1804,7 @@ namespace DirectX
         constexpr bool WhichZ = PermuteZ > 3;
         constexpr bool WhichW = PermuteW > 3;
 
-        return Internal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
+        return MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
 #else
 
         return XMVectorPermute(V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW);

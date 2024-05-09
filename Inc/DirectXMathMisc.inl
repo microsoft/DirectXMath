@@ -1561,7 +1561,7 @@ inline XMVECTOR XM_CALLCONV XMColorRGBToHSL(FXMVECTOR rgb) noexcept
 
 //------------------------------------------------------------------------------
 
-namespace Internal
+namespace MathInternal
 {
 
     inline XMVECTOR XM_CALLCONV XMColorHue2Clr(FXMVECTOR p, FXMVECTOR q, FXMVECTOR h) noexcept
@@ -1599,7 +1599,7 @@ namespace Internal
         return p;
     }
 
-} // namespace Internal
+} // namespace MathInternal
 
 inline XMVECTOR XM_CALLCONV XMColorHSLToRGB(FXMVECTOR hsl) noexcept
 {
@@ -1629,9 +1629,9 @@ inline XMVECTOR XM_CALLCONV XMColorHSLToRGB(FXMVECTOR hsl) noexcept
 
         XMVECTOR p = XMVectorSubtract(XMVectorMultiply(g_XMTwo, l), q);
 
-        XMVECTOR r = DirectX::Internal::XMColorHue2Clr(p, q, XMVectorAdd(h, oneThird));
-        XMVECTOR g = DirectX::Internal::XMColorHue2Clr(p, q, h);
-        XMVECTOR b = DirectX::Internal::XMColorHue2Clr(p, q, XMVectorSubtract(h, oneThird));
+        XMVECTOR r = DirectX::MathInternal::XMColorHue2Clr(p, q, XMVectorAdd(h, oneThird));
+        XMVECTOR g = DirectX::MathInternal::XMColorHue2Clr(p, q, h);
+        XMVECTOR b = DirectX::MathInternal::XMColorHue2Clr(p, q, XMVectorSubtract(h, oneThird));
 
         XMVECTOR rg = XMVectorSelect(g, r, g_XMSelect1000);
         XMVECTOR ba = XMVectorSelect(hsl, b, g_XMSelect1110);
