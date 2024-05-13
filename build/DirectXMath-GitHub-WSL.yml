@@ -45,6 +45,7 @@ pool:
   vmImage: ubuntu-20.04
 
 variables:
+  Codeql.Enabled: false
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 jobs:
