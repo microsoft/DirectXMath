@@ -48,8 +48,8 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 variables:
+  Codeql.Enabled: false
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
-  Codeql.Enabled: true
 
 pool:
   vmImage: windows-2019
