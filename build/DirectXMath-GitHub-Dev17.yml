@@ -12,22 +12,38 @@ schedules:
     include:
     - main
 
-trigger: none
+trigger:
+  branches:
+    include:
+    - main
+  paths:
+    exclude:
+    - '*.md'
+    - LICENSE
+    - CMake*
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
 
 pr:
   branches:
     include:
     - main
   paths:
-    include:
-    - build/DirectXMath-GitHub-Dev17.yml
+    exclude:
+    - '*.md'
+    - LICENSE
+    - CMake*
+    - '.nuget/*'
+    - build/*.cmake
+    - build/*.in
+  drafts: false
 
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
-    trigger: none
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
