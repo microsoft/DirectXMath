@@ -521,4 +521,4 @@ jobs:
     displayName: CMake (MSVC; arm64ec-Release) Build
     inputs:
       cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Release -v
+      cmakeArgs: --build out/build/arm64ec-Release -v
