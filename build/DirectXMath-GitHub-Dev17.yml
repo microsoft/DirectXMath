@@ -52,6 +52,7 @@ pool:
 
 variables:
   Codeql.Enabled: false
+  VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
   GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 jobs:
