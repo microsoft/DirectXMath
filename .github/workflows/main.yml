@@ -68,6 +68,13 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Clone test repository
+      uses: actions/checkout@v4
+      with:
+        repository: walbourn/directxmathtest
+        path: Tests
+        ref: main
+
     - name: 'Install Ninja'
       run: choco install ninja
 
@@ -75,13 +82,6 @@ jobs:
       with:
         arch: ${{ matrix.arch }}
 
-    - name: Clone test repository
-      uses: actions/checkout@v4
-      with:
-        repository: walbourn/directxmathtest
-        path: Tests
-        ref: main
-        
     - name: 'Configure CMake'
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: cmake --preset=${{ matrix.build_type }}
