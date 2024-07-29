@@ -33,30 +33,6 @@ jobs:
         include:
           - os: 2019
             platform: x86
-            build_type: 'SSE3 Debug'
-          - os: 2019
-            platform: x64
-            build_type: 'SSE3 Debug'
-          - os: 2022
-            platform: x86
-            build_type: 'SSE3 Debug'
-          - os: 2022
-            platform: x64
-            build_type: 'SSE3 Debug'
-          - os: 2019
-            platform: x86
-            build_type: 'SSE4 Debug'
-          - os: 2019
-            platform: x64
-            build_type: 'SSE4 Debug'
-          - os: 2022
-            platform: x86
-            build_type: 'SSE4 Debug'
-          - os: 2022
-            platform: x64
-            build_type: 'SSE4 Debug'
-          - os: 2019
-            platform: x86
             build_type: 'AVX Debug'
           - os: 2019
             platform: x64
@@ -85,30 +61,6 @@ jobs:
           - os: 2022
             platform: x86
             build_type: 'x87 Debug'
-          - os: 2019
-            platform: x86
-            build_type: 'SSE3 Release'
-          - os: 2019
-            platform: x64
-            build_type: 'SSE3 Release'
-          - os: 2022
-            platform: x86
-            build_type: 'SSE3 Release'
-          - os: 2022
-            platform: x64
-            build_type: 'SSE3 Release'
-          - os: 2019
-            platform: x86
-            build_type: 'SSE4 Release'
-          - os: 2019
-            platform: x64
-            build_type: 'SSE4 Release'
-          - os: 2022
-            platform: x86
-            build_type: 'SSE4 Release'
-          - os: 2022
-            platform: x64
-            build_type: 'SSE4 Release'
           - os: 2019
             platform: x86
             build_type: 'AVX Release'
