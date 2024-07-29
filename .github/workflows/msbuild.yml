@@ -30,6 +30,9 @@ jobs:
         vs: [2019, 2022]
         build_type: [Debug, Release, 'NI Debug', 'NI Release']
         platform: [x86, x64, ARM64]
+        exclude:
+        - vs: 2019
+          platform: ARM64
 
     steps:
     - uses: actions/checkout@v4

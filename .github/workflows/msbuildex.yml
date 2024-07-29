@@ -28,66 +28,66 @@ jobs:
 
       matrix:
         include:
-          - vs: 2019
-            platform: x86
-            build_type: 'AVX Debug'
-          - vs: 2019
-            platform: x64
-            build_type: 'AVX Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX Debug'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX Debug'
-          - vs: 2019
-            platform: x86
-            build_type: 'AVX2 Debug'
-          - vs: 2019
-            platform: x64
-            build_type: 'AVX2 Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX2 Debug'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX2 Debug'
-          - vs: 2019
-            platform: x86
-            build_type: 'x87 Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'x87 Debug'
-          - vs: 2019
-            platform: x86
-            build_type: 'AVX Release'
-          - vs: 2019
-            platform: x64
-            build_type: 'AVX Release'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX Release'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX Release'
-          - vs: 2019
-            platform: x86
-            build_type: 'AVX2 Release'
-          - vs: 2019
-            platform: x64
-            build_type: 'AVX2 Release'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX2 Release'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX2 Release'
-          - vs: 2019
-            platform: x86
-            build_type: 'x87 Release'
-          - vs: 2022
-            platform: x86
-            build_type: 'x87 Release'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX Debug'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX Debug'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX2 Debug'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX2 Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX2 Debug'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX2 Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'x87 Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'x87 Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX Release'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX Release'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX Release'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX2 Release'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX2 Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX2 Release'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX2 Release'
+        - vs: 2019
+          platform: x86
+          build_type: 'x87 Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'x87 Release'
 
     steps:
     - uses: actions/checkout@v4
