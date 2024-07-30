@@ -12,32 +12,15 @@ schedules:
     include:
     - main
 
-trigger:
-  branches:
-    include:
-    - main
-  paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - CMake*
-    - '.nuget/*'
-    - build/*.cmake
-    - build/*.in
-
+# GitHub Actions handles MSBuild for CI/PR
+trigger: none
 pr:
   branches:
     include:
     - main
   paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - CMake*
-    - '.nuget/*'
-    - build/*.cmake
-    - build/*.in
-  drafts: false
+    include:
+    - build/*-GitHub-Dev17.yml
 
 resources:
   repositories:

@@ -1,0 +1,117 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+name: 'MSBuild (Extended)'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.nuget/*'
+      - build/*
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-${{ matrix.vs }}
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX Debug'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX Debug'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX2 Debug'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX2 Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX2 Debug'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX2 Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'x87 Debug'
+        - vs: 2022
+          platform: x86
+          build_type: 'x87 Debug'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX Release'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX Release'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX Release'
+        - vs: 2019
+          platform: x86
+          build_type: 'AVX2 Release'
+        - vs: 2019
+          platform: x64
+          build_type: 'AVX2 Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'AVX2 Release'
+        - vs: 2022
+          platform: x64
+          build_type: 'AVX2 Release'
+        - vs: 2019
+          platform: x86
+          build_type: 'x87 Release'
+        - vs: 2022
+          platform: x86
+          build_type: 'x87 Release'
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Clone test repository
+      uses: actions/checkout@v4
+      with:
+        repository: walbourn/directxmathtest
+        path: Tests
+        ref: main
+
+    - name: Add MSBuild to PATH
+      uses: microsoft/setup-msbuild@v2
+
+    - name: Build math3
+      working-directory: ${{ github.workspace }}/Tests/math3
+      run: msbuild /m /p:Configuration="${{ matrix.build_type }}" /p:Platform=${{ matrix.platform }} ./math3_${{ matrix.vs }}.sln
+
+    - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+      name: Build shmath
+      working-directory: ${{ github.workspace }}/Tests/shmath
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./shmath_${{ matrix.vs }}.sln
+
+    - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+      name: Build xdsp
+      working-directory: ${{ github.workspace }}/Tests/xdsp
+      run: msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }} ./XDSPTest_${{ matrix.vs }}.sln
