@@ -14,6 +14,7 @@ on:
       - '*.md'
       - LICENSE
       - '.nuget/*'
+      - build/*.ps1
       - build/*.yml
 
 jobs:

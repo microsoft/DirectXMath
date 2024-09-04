@@ -14,7 +14,9 @@ on:
       - '*.md'
       - LICENSE
       - '.nuget/*'
+      - build/*.ps1
       - build/*.yml
+
   schedule:
     - cron: '34 20 * * 6'
 
