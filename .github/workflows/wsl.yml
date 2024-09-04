@@ -25,7 +25,8 @@ jobs:
       fail-fast: false
 
       matrix:
-        build_type: [x64-Debug-Linux, x64-Release-Linux, x64-Debug-NI-Linux, x64-Release-NI-Linux]
+        build_type: [x64-Debug-Linux, x64-Release-Linux]
+        # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC 11.4 CRT
 
     steps:
     - uses: actions/checkout@v4
