@@ -26,6 +26,7 @@ jobs:
 
       matrix:
         build_type: [x64-Debug-Linux, x64-Release-Linux]
+        gcc: [10, 11, 12]
         # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC 11.4 CRT
 
     steps:
@@ -42,8 +43,10 @@ jobs:
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}/Tests
-      run: >
-        cmake --preset=${{ matrix.build_type }}
+      run: cmake --preset=${{ matrix.build_type }}
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
 
     - name: 'Build'
       working-directory: ${{ github.workspace }}/Tests
