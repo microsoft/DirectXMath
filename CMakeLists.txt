@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-set(DIRECTXMATH_VERSION 3.1.9)
+set(DIRECTXMATH_VERSION 3.19)
 
 project(DirectXMath
   VERSION ${DIRECTXMATH_VERSION}
@@ -110,8 +110,10 @@ elseif(NOT (DEFINED DXMATH_ARCHITECTURE))
 endif()
 
 #--- Test suite
-include(CTest)
-if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
-  enable_testing()
-  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
+if(NOT WINDOWS_STORE)
+  include(CTest)
+  if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+    enable_testing()
+    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
+  endif()
 endif()

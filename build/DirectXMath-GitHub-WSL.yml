@@ -22,6 +22,7 @@ trigger:
     - LICENSE
     - '.github/*'
     - '.nuget/*'
+    - build/*.ps1
 
 pr:
   branches:
