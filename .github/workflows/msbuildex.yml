@@ -90,17 +90,17 @@ jobs:
           build_type: 'x87 Release'
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
     - name: Clone test repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
         repository: walbourn/directxmathtest
         path: Tests
         ref: main
 
     - name: Add MSBuild to PATH
-      uses: microsoft/setup-msbuild@v2
+      uses: microsoft/setup-msbuild@6fb02220983dee41ce7ae257b6f4d8f9bf5ed4ce # v2.0.0
 
     - name: Build math3
       working-directory: ${{ github.workspace }}/Tests/math3
