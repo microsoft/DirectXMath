@@ -30,16 +30,16 @@ jobs:
         # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
 
     - name: Clone test repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       with:
         repository: walbourn/directxmathtest
         path: Tests
         ref: main
 
-    - uses: seanmiddleditch/gha-setup-ninja@v5
+    - uses: seanmiddleditch/gha-setup-ninja@96bed6edff20d1dd61ecff9b75cc519d516e6401 # v5
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}/Tests
