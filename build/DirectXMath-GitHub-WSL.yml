@@ -41,6 +41,11 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxmathtest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -49,7 +54,6 @@ pool:
 
 variables:
   Codeql.Enabled: false
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 jobs:
 - job: BUILD_WSL
@@ -58,10 +62,14 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: CmdLine@2
-    displayName: Fetch tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: CMake@1
     displayName: DirectXMath Tests
     inputs:
