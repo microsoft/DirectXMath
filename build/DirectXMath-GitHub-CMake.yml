@@ -40,6 +40,11 @@ resources:
   - repository: self
     type: git
     ref: refs/heads/main
+  - repository: testRepo
+    name: walbourn/directxmathtest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -47,7 +52,6 @@ variables:
   Codeql.Enabled: false
   VS_GENERATOR: 'Visual Studio 16 2019'
   WIN10_SDK: '10.0.19041.0'
-  GITHUB_PAT: $(GITHUBPUBLICTOKEN)
 
 pool:
   vmImage: windows-2019
@@ -60,10 +64,14 @@ jobs:
   - checkout: self
     clean: true
     fetchTags: false
-  - task: CmdLine@2
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
     displayName: Fetch Tests
-    inputs:
-      script: git clone --quiet --no-tags https://%GITHUB_PAT%@github.com/walbourn/directxmathtest.git Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: CMake@1
     displayName: CMake (MSVC x64)
     inputs:
