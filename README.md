@@ -6,7 +6,7 @@ https://github.com/Microsoft/DirectXMath
 
 Copyright (c) Microsoft Corporation.
 
-**February 2024**
+**October 2024**
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 

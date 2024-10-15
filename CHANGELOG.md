@@ -6,6 +6,12 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### October 2024 (3.20)
+* Fixed close-to-zero bug in the implementation of `TriangleTests::Intersects`
+* Renamed implementation namespace from `DirectX::Internal` to `DirectX::MathInternal` to avoid some conformance issues with other libraries
+* CMake project updates including support for ARM64EC
+* Added GitHub Actions YAML files
+
 ### February 2024 (3.19)
 * Fix to address MinGW issue with ``__cpuid`` in cpuid.h vs. intrin.h
 * Additional updates for clang/LLVM and GNUC

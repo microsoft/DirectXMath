@@ -3,7 +3,7 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-set(DIRECTXMATH_VERSION 3.19)
+set(DIRECTXMATH_VERSION 3.20)
 
 project(DirectXMath
   VERSION ${DIRECTXMATH_VERSION}
