@@ -41,7 +41,7 @@ namespace XDSP
     using CXMVECTOR = DirectX::CXMVECTOR;
     using XMFLOAT4A = DirectX::XMFLOAT4A;
 
-    inline bool ISPOWEROF2(size_t n) { return (((n)&((n)-1)) == 0 && (n) != 0); }
+    constexpr bool ISPOWEROF2(size_t n) { return (((n)&((n)-1)) == 0 && (n) != 0); }
 
     // Parallel multiplication of four complex numbers, assuming real and imaginary values are stored in separate vectors.
     inline void XM_CALLCONV vmulComplex(
@@ -457,42 +457,44 @@ namespace XDSP
         // pUnityTable[0 to uLength*4-1] contains real components for current FFT length
         // pUnityTable[uLength*4 to uLength*8-1] contains imaginary components for current FFT length
         static const XMVECTORF32 vXM0123 = { { { 0.0f, 1.0f, 2.0f, 3.0f } } };
-        uLength >>= 2;
-        XMVECTOR vlStep = XMVectorReplicate(XM_PIDIV2 / float(uLength));
+
+        size_t len = uLength;
+        len >>= 2;
+        XMVECTOR vlStep = XMVectorReplicate(XM_PIDIV2 / float(len));
         do
         {
-            uLength >>= 2;
+            len >>= 2;
             XMVECTOR vJP = vXM0123;
-            for (size_t j = 0; j < uLength; ++j)
+            for (size_t j = 0; j < len; ++j)
             {
                 XMVECTOR vSin, vCos;
                 XMVECTOR viJP, vlS;
 
                 pUnityTable[j] = g_XMOne;
-                pUnityTable[j + uLength * 4] = XMVectorZero();
+                pUnityTable[j + len * 4] = XMVectorZero();
 
                 vlS = XMVectorMultiply(vJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
-                pUnityTable[j + uLength] = vCos;
-                pUnityTable[j + uLength * 5] = XMVectorMultiply(vSin, g_XMNegativeOne);
+                pUnityTable[j + len] = vCos;
+                pUnityTable[j + len * 5] = XMVectorMultiply(vSin, g_XMNegativeOne);
 
                 viJP = XMVectorAdd(vJP, vJP);
                 vlS = XMVectorMultiply(viJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
-                pUnityTable[j + uLength * 2] = vCos;
-                pUnityTable[j + uLength * 6] = XMVectorMultiply(vSin, g_XMNegativeOne);
+                pUnityTable[j + len * 2] = vCos;
+                pUnityTable[j + len * 6] = XMVectorMultiply(vSin, g_XMNegativeOne);
 
                 viJP = XMVectorAdd(viJP, vJP);
                 vlS = XMVectorMultiply(viJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
-                pUnityTable[j + uLength * 3] = vCos;
-                pUnityTable[j + uLength * 7] = XMVectorMultiply(vSin, g_XMNegativeOne);
+                pUnityTable[j + len * 3] = vCos;
+                pUnityTable[j + len * 7] = XMVectorMultiply(vSin, g_XMNegativeOne);
 
                 vJP = XMVectorAdd(vJP, g_XMFour);
             }
             vlStep = XMVectorMultiply(vlStep, g_XMFour);
-            pUnityTable += uLength * 8;
-        } while (uLength > 4);
+            pUnityTable += len * 8;
+        } while (len > 4);
     }
 
     //----------------------------------------------------------------------------------
