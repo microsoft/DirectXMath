@@ -13,7 +13,7 @@
 #error DirectX Math requires C++
 #endif
 
-#define DIRECTX_MATH_VERSION 319
+#define DIRECTX_MATH_VERSION 320
 
 #if defined(_MSC_VER) && (_MSC_VER < 1910)
 #error DirectX Math requires Visual C++ 2017 or later.
@@ -338,7 +338,7 @@ namespace DirectX
      *
      ****************************************************************************/
 
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4201 4365 4324 4820)
      // C4068: ignore unknown pragmas
@@ -2156,7 +2156,7 @@ namespace DirectX
      *
      ****************************************************************************/
 
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 4640 6001 6101)
      // C4068/4616: ignore unknown pragmas
@@ -2164,7 +2164,7 @@ namespace DirectX
      // C4365/4640: Off by default noise
      // C6001/6101: False positives
 #endif
-    
+
 #ifdef _PREFAST_
 #pragma prefast(push)
 #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
@@ -2281,7 +2281,7 @@ namespace DirectX
 #ifdef _PREFAST_
 #pragma prefast(pop)
 #endif
-#ifdef _MSC_VER    
+#ifdef _MSC_VER
 #pragma warning(pop)
 #endif
 
