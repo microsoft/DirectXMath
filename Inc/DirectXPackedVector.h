@@ -1124,9 +1124,14 @@ namespace DirectX
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-        XMVECTOR    XM_CALLCONV XM_DEPRECATED XMLoadDecN4(_In_ const XMDECN4* pSource) noexcept;
-        XMVECTOR    XM_CALLCONV XM_DEPRECATED XMLoadDec4(_In_ const XMDEC4* pSource) noexcept;
-        XMVECTOR    XM_CALLCONV XM_DEPRECATED XMLoadXDec4(_In_ const XMXDEC4* pSource) noexcept;
+        XM_DEPRECATED
+        XMVECTOR    XM_CALLCONV XMLoadDecN4(_In_ const XMDECN4* pSource) noexcept;
+
+        XM_DEPRECATED
+        XMVECTOR    XM_CALLCONV XMLoadDec4(_In_ const XMDEC4* pSource) noexcept;
+
+        XM_DEPRECATED
+        XMVECTOR    XM_CALLCONV XMLoadXDec4(_In_ const XMXDEC4* pSource) noexcept;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
@@ -1192,9 +1197,14 @@ namespace DirectX
 #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #endif
 
-        void    XM_CALLCONV XM_DEPRECATED XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V) noexcept;
-        void    XM_CALLCONV XM_DEPRECATED XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
-        void    XM_CALLCONV XM_DEPRECATED XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
+        XM_DEPRECATED
+        void    XM_CALLCONV XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V) noexcept;
+
+        XM_DEPRECATED
+        void    XM_CALLCONV XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
+
+        XM_DEPRECATED
+        void    XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
 
 #ifdef __GNUC__
 #pragma GCC diagnostic pop
