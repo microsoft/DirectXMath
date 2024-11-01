@@ -668,7 +668,7 @@ namespace DirectX
         // z, y, and x components.  The w component is stored in the
         // most significant bits and the x component in the least significant bits
         // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-        struct XM_DEPRECATED XMXDEC4
+        struct XMXDEC4
         {
             union
             {
@@ -705,7 +705,7 @@ namespace DirectX
         // integers for the z, y, and x components.  The w component is stored in the
         // most significant bits and the x component in the least significant bits
         // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-        struct XM_DEPRECATED XMDECN4
+        struct XMDECN4
         {
             union
             {
@@ -742,7 +742,7 @@ namespace DirectX
         // z, y, and x components.  The w component is stored in the
         // most significant bits and the x component in the least significant bits
         // (W2Z10Y10X10): [32] wwzzzzzz zzzzyyyy yyyyyyxx xxxxxxxx [0]
-        struct XM_DEPRECATED XMDEC4
+        struct XMDEC4
         {
             union
             {
