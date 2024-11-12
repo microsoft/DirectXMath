@@ -54,6 +54,10 @@
         "strategy": "external"
       },
       "cacheVariables": { "DXMATH_ARCHITECTURE": "arm64ec" },
+      "environment": {
+        "CFLAGS": "/arm64EC",
+        "CXXFLAGS": "/arm64EC"
+      },
       "hidden": true
     },
 
@@ -117,6 +121,22 @@
       }
     },
     {
+      "name": "Clang-X86",
+      "environment": {
+        "CFLAGS": "-m32",
+        "CXXFLAGS": "-m32"
+      },
+      "hidden": true
+    },
+    {
+      "name": "Clang-AArch64",
+      "environment": {
+        "CFLAGS": "--target=arm64-pc-windows-msvc",
+        "CXXFLAGS": "--target=arm64-pc-windows-msvc"
+      },
+      "hidden": true
+    },
+    {
       "name": "GNUC",
       "hidden": true,
       "cacheVariables": {
@@ -158,15 +178,15 @@
     { "name": "arm-Release"    , "description": "MSVC for ARM (Release) - ARM-NEON", "inherits": [ "base", "ARM", "Release", "MSVC" ] },
     { "name": "arm64-Debug"    , "description": "MSVC for ARM64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "MSVC" ] },
     { "name": "arm64-Release"  , "description": "MSVC for ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC" ] },
-    { "name": "arm64ec-Debug"  , "description": "MSVC for ARM64EC (Debug) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Debug", "MSVC" ], "environment": { "CXXFLAGS": "/arm64EC" } },
-    { "name": "arm64ec-Release", "description": "MSVC for ARM64EC (Release) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Release", "MSVC" ], "environment": { "CXXFLAGS": "/arm64EC" } },
+    { "name": "arm64ec-Debug"  , "description": "MSVC for ARM64EC (Debug) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Debug", "MSVC" ] },
+    { "name": "arm64ec-Release", "description": "MSVC for ARM64EC (Release) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Release", "MSVC" ] },
 
     { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "Clang" ] },
     { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "Clang" ] },
-    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "Clang" ], "environment": { "CXXFLAGS": "-m32" } },
-    { "name": "arm64-Debug-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } },
-    { "name": "arm64-Release-Clang", "description": "Clang/LLVM for AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "Clang" ], "environment": { "CXXFLAGS": "--target=arm64-pc-windows-msvc" } }
+    { "name": "x86-Debug-Clang"    , "description": "Clang/LLVM for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "Clang", "Clang-X86" ] },
+    { "name": "x86-Release-Clang"  , "description": "Clang/LLVM for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "Clang", "Clang-X86" ] },
+    { "name": "arm64-Debug-Clang"  , "description": "Clang/LLVM for AArch64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "Clang", "Clang-AArch64" ] },
+    { "name": "arm64-Release-Clang", "description": "Clang/LLVM for AArch64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "Clang", "Clang-AArch64" ] }
   ],
   "testPresets": [
     { "name": "x64-Debug"      , "configurePreset": "x64-Debug" },
