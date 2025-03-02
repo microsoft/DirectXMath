@@ -39,7 +39,7 @@ jobs:
         path: Tests
         ref: main
 
-    - uses: seanmiddleditch/gha-setup-ninja@96bed6edff20d1dd61ecff9b75cc519d516e6401 # v5
+    - uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}/Tests
