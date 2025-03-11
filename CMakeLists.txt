@@ -114,9 +114,9 @@ elseif(NOT (DEFINED DXMATH_ARCHITECTURE))
 endif()
 
 #--- Test suite
-if(NOT WINDOWS_STORE)
+if((NOT WINDOWS_STORE) AND (NOT (DEFINED XBOX_CONSOLE_TARGET)))
   include(CTest)
-  if(BUILD_TESTING AND WIN32 AND (NOT WINDOWS_STORE) AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
+  if(BUILD_TESTING AND (EXISTS "${CMAKE_CURRENT_LIST_DIR}/Tests/CMakeLists.txt"))
     enable_testing()
     add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/Tests)
   endif()
