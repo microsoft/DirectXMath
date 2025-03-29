@@ -15,6 +15,10 @@ project(DirectXMath
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
 
+option(BUILD_XDSP "Build XDSP math" OFF)
+
+option(BUILD_SHMATH "Build Spherical Harmonics math" OFF)
+
 include(GNUInstallDirs)
 
 #--- Library
@@ -86,31 +90,13 @@ configure_file(
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DirectXMath.pc"
         DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
-#--- Test suite
-if(DEFINED VCPKG_TARGET_ARCHITECTURE)
-    set(DXMATH_ARCHITECTURE ${VCPKG_TARGET_ARCHITECTURE})
-elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Ww][Ii][Nn]32$")
-    set(DXMATH_ARCHITECTURE x86)
-elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Xx]64$")
-    set(DXMATH_ARCHITECTURE x64)
-elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]$")
-    set(DXMATH_ARCHITECTURE arm)
-elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64$")
-    set(DXMATH_ARCHITECTURE arm64)
-elseif(CMAKE_GENERATOR_PLATFORM MATCHES "^[Aa][Rr][Mm]64EC$")
-    set(DXMATH_ARCHITECTURE arm64ec)
-elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Ww][Ii][Nn]32$")
-    set(DXMATH_ARCHITECTURE x86)
-elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Xx]64$")
-    set(DXMATH_ARCHITECTURE x64)
-elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]$")
-    set(DXMATH_ARCHITECTURE arm)
-elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64$")
-    set(DXMATH_ARCHITECTURE arm64)
-elseif(CMAKE_VS_PLATFORM_NAME_DEFAULT MATCHES "^[Aa][Rr][Mm]64EC$")
-    set(DXMATH_ARCHITECTURE arm64ec)
-elseif(NOT (DEFINED DXMATH_ARCHITECTURE))
-    set(DXMATH_ARCHITECTURE "x64")
+#--- Optional extension libraries
+if(BUILD_XDSP)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/XDSP)
+endif()
+
+if(BUILD_SHMATH)
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/SHMath)
 endif()
 
 #--- Test suite
