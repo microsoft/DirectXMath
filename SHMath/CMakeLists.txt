@@ -59,7 +59,7 @@ if(WIN32 AND BUILD_DX11)
   set(LIBRARY_SOURCES ${LIBRARY_SOURCES} DirectXSHD3D11.cpp)
 endif()
 
-if(BUILD_DX12)
+if(WIN32 AND BUILD_DX12)
   set(LIBRARY_SOURCES ${LIBRARY_SOURCES} DirectXSHD3D12.cpp)
 endif()
 
@@ -70,6 +70,20 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+
+if(MINGW)
+    find_package(directx-headers CONFIG REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectX-Headers)
+    target_compile_definitions(${PROJECT_NAME} PUBLIC USING_DIRECTX_HEADERS)
+else()
+    find_package(directx-headers CONFIG QUIET)
+endif()
+
+if(directx-headers_FOUND)
+    message(STATUS "Using DirectX-Headers package")
+    target_link_libraries(${PROJECT_NAME} PRIVATE Microsoft::DirectX-Headers)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE USING_DIRECTX_HEADERS)
+endif()
 
 #--- Package
 include(CMakePackageConfigHelpers)

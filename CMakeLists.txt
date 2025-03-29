@@ -92,10 +92,12 @@ install(FILES "${CMAKE_CURRENT_BINARY_DIR}/DirectXMath.pc"
 
 #--- Optional extension libraries
 if(BUILD_XDSP)
+  message(STATUS "Including XDSP Digital Signal Processing (DSP)")
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/XDSP)
 endif()
 
 if(BUILD_SHMATH)
+  message(STATUS "Including C++ Spherical Harmonics Math")
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/SHMath)
 endif()
 

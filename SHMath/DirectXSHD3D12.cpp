@@ -16,7 +16,11 @@
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
 #endif
 
+#ifdef USING_DIRECTX_HEADERS
+#include <directx/d3d12.h>
+#else
 #include <d3d12.h>
+#endif
 
 #include "DirectXSH.h"
 
@@ -224,7 +228,7 @@ HRESULT DirectX::SHProjectCubeMap(
 
     // index from [0,W-1], f(0) maps to -1 + 1/W, f(W-1) maps to 1 - 1/w
     // linear function x*S +B, 1st constraint means B is (-1+1/W), plug into
-    // second and solve for S: S = 2*(1-1/W)/(W-1). The old code that did 
+    // second and solve for S: S = 2*(1-1/W)/(W-1). The old code that did
     // this was incorrect - but only for computing the differential solid
     // angle, where the final value was 1.0 instead of 1-1/w...
 
