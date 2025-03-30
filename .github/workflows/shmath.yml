@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkID=615560
 
-name: 'CMake (Windows)'
+name: 'CMake (SHMath)'
 
 on:
   push:
@@ -92,4 +92,4 @@ jobs:
 
     - name: 'Build'
       working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      run: cmake --build out\build\${{ matrix.build_type }} -DBUILD_SHMATH=ON
