@@ -16,6 +16,10 @@
 // C5039 pointer or reference to potentially throwing function passed to extern C function under - EHc
 #endif
 
+#ifdef __MINGW32__
+#include <unknwn.h>
+#endif
+
 #ifdef USING_DIRECTX_HEADERS
 #include <directx/d3d12.h>
 #else

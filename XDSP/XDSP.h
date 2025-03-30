@@ -17,7 +17,7 @@
 #pragma once
 
 #include <cassert>
-#include <DirectXMath.h>
+#include "DirectXMath.h"
 
 #include <cstdint>
 #include <cstring>
