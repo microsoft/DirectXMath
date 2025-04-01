@@ -21,7 +21,7 @@ pr:
     - main
   paths:
     include:
-    - build/DirectXMath-SDL.yml
+    - '.azuredevops/pipelines/DirectXMath-SDL.yml'
 
 resources:
   repositories:

@@ -13,9 +13,9 @@ on:
     paths-ignore:
       - '*.md'
       - LICENSE
+      - '.azuredevops/*'
       - '.nuget/*'
       - build/*.ps1
-      - build/*.yml
   schedule:
     - cron: '34 18 * * 6'
 
