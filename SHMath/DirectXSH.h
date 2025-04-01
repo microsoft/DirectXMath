@@ -11,7 +11,7 @@
 
 #define DIRECTX_SHMATH_VERSION 106
 
-#include <DirectXMath.h>
+#include "DirectXMath.h"
 
 namespace DirectX
 {

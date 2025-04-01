@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkID=615560
 
-name: 'CMake (Windows)'
+name: 'CMake (SHMath)'
 
 on:
   push:
@@ -88,7 +88,7 @@ jobs:
 
     - name: 'Configure CMake'
       working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }}
+      run: cmake --preset=${{ matrix.build_type }} -DBUILD_SHMATH=ON -DBUILD_DX11=ON -DBUILD_DX12=ON
 
     - name: 'Build'
       working-directory: ${{ github.workspace }}
