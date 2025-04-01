@@ -1,0 +1,86 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+# Builds the math3 test suite for Windows Subsystem for Linux (WSL)
+
+schedules:
+- cron: "0 3 * * *"
+  displayName: 'Nightly build'
+  branches:
+    include:
+    - main
+
+trigger: none
+
+pr:
+  branches:
+    include:
+    - main
+  paths:
+    include:
+    - '.azuredevops/pipelines/DirectXMath-GitHub-WSL-13.yml'
+    - CMake*
+    - build/*.cmake
+    - build/*.in
+
+resources:
+  repositories:
+  - repository: self
+    type: git
+    ref: refs/heads/main
+    trigger: none
+  - repository: testRepo
+    name: walbourn/directxmathtest
+    type: github
+    endpoint: microsoft
+    ref: refs/heads/main
+
+name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
+
+pool:
+  vmImage: ubuntu-24.04
+
+variables:
+  Codeql.Enabled: false
+
+jobs:
+- job: BUILD_WSL
+  displayName: 'Windows Subsystem for Linux (WSL)'
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
+  - task: CMake@1
+    displayName: DirectXMath Tests
+    inputs:
+      cwd: Tests
+      cmakeArgs: .
+  - task: PowerShell@2
+    displayName: Fetch SAL.H
+    inputs:
+      targetType: inline
+      script: |
+        $ProgressPreference = 'SilentlyContinue'
+        Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/runtime/v8.0.1/src/coreclr/pal/inc/rt/sal.h -OutFile $(Build.SourcesDirectory)/Inc/sal.h
+        $fileHash = Get-FileHash -Algorithm SHA512 $(Build.SourcesDirectory)/Inc/sal.h | ForEach { $_.Hash} | Out-String
+        $filehash = $fileHash.Trim()
+        Write-Host "##[debug]SHA512: " $filehash
+        if ($fileHash -ne "0f5a80b97564217db2ba3e4624cc9eb308e19cc9911dae21d983c4ab37003f4756473297ba81b386c498514cedc1ef5a3553d7002edc09aeb6a1335df973095f") {
+            Write-Error -Message "##[error]Computed hash does not match!" -ErrorAction Stop
+        }
+
+  - task: CMake@1
+    displayName: DirectXMath Tests Build
+    inputs:
+      cwd: Tests
+      cmakeArgs: --build . -v
