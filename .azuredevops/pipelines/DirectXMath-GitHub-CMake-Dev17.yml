@@ -20,10 +20,10 @@ pr:
     - main
   paths:
     include:
+    - '.azuredevops/pipelines/DirectXMath-GitHub-CMake-Dev17.yml'
     - CMake*
     - build/*.cmake
     - build/*.in
-    - build/DirectXMath-GitHub-CMake-Dev17.yml
 
 resources:
   repositories:

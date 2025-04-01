@@ -20,7 +20,7 @@ pr:
     - main
   paths:
     include:
-    - build/DirectXMath-GitHub.yml
+    - '.azuredevops/pipelines/DirectXMath-GitHub.yml'
 
 resources:
   repositories:
