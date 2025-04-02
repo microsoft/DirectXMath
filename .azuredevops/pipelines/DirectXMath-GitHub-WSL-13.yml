@@ -12,35 +12,25 @@ schedules:
     include:
     - main
 
-trigger:
-  branches:
-    include:
-    - main
-  paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - '.github/*'
-    - '.nuget/*'
-    - build/*.ps1
+trigger: none
 
 pr:
   branches:
     include:
     - main
   paths:
-    exclude:
-    - '*.md'
-    - LICENSE
-    - '.github/*'
-    - '.nuget/*'
-  drafts: false
+    include:
+    - '.azuredevops/pipelines/DirectXMath-GitHub-WSL-13.yml'
+    - CMake*
+    - build/*.cmake
+    - build/*.in
 
 resources:
   repositories:
   - repository: self
     type: git
     ref: refs/heads/main
+    trigger: none
   - repository: testRepo
     name: walbourn/directxmathtest
     type: github
@@ -50,7 +40,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: ubuntu-20.04
+  vmImage: ubuntu-24.04
 
 variables:
   Codeql.Enabled: false
