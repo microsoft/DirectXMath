@@ -6,6 +6,10 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### April 2025 (3.20b)
+* `XM_DEPRECATED` macro uses C++14 ``[[deprecated]]`` standard attribute when supported
+* Cmake project updates with build options for XDSP and SHMath
+
 ### October 2024 (3.20)
 * Fixed close-to-zero bug in the implementation of `TriangleTests::Intersects`
 * Renamed implementation namespace from `DirectX::Internal` to `DirectX::MathInternal` to avoid some conformance issues with other libraries

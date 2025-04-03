@@ -1,0 +1,99 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+name: 'CMake (WSL -std)'
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/*'
+      - '.nuget/*'
+      - build/*.ps1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-Linux, x64-Release-Linux]
+        gcc: [12, 13, 14]
+        # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC
+
+    steps:
+    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+    - name: Clone test repository
+      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      with:
+        repository: walbourn/directxmathtest
+        path: Tests
+        ref: main
+
+    - uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
+
+    - name: 'Configure CMake (C++17)'
+      working-directory: ${{ github.workspace }}/Tests
+      run: cmake --preset=${{ matrix.build_type }}
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+
+    - name: 'Build (C++17)'
+      working-directory: ${{ github.workspace }}/Tests
+      run: cmake --build out/build/${{ matrix.build_type }}
+
+    - name: 'Clean up'
+      working-directory: ${{ github.workspace }}
+      run: rm -rf out
+
+    # Test suite requires C++17 features on Linux, so we only test the headers for C++11/C++14
+    - name: 'Configure CMake (C++11)'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX11=ON
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+
+    - name: 'Build (C++11)'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: cmake --build out/build/${{ matrix.build_type }}
+
+    - name: 'Clean up'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: rm -rf out
+
+    - name: 'Configure CMake (C++14)'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX14=ON
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+
+    - name: 'Build (C++14)'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: cmake --build out/build/${{ matrix.build_type }}
+
+    - name: 'Clean up'
+      working-directory: ${{ github.workspace }}/Tests/headertest
+      run: rm -rf out
+
+    - name: 'Configure CMake (C++20)'
+      working-directory: ${{ github.workspace }}/Tests
+      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX20=ON
+      env:
+        CC: gcc-${{ matrix.gcc }}
+        CXX: g++-${{ matrix.gcc }}
+
+    - name: 'Build (C++20)'
+      working-directory: ${{ github.workspace }}/Tests
+      run: cmake --build out/build/${{ matrix.build_type }}
