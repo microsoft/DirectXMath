@@ -73,7 +73,7 @@ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE DirectXMath)
 
-if(MINGW)
+if(MINGW AND BUILD_DX12)
     find_package(directx-headers CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectX-Headers)
     target_compile_definitions(${PROJECT_NAME} PUBLIC USING_DIRECTX_HEADERS)
