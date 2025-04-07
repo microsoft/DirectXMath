@@ -124,31 +124,31 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
   - task: CMake@1
     displayName: CMake (MinGW32) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out
   - task: CMake@1
     displayName: CMake (MinGW32) Rel
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out2 -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
   - task: CMake@1
     displayName: CMake (MinGW32) Build Rel
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out2
   - task: CMake@1
     displayName: CMake (MinGW32) Dbg NI
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out3 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -156,12 +156,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32) Build Dbg NI
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out3
   - task: CMake@1
     displayName: CMake (MinGW32; XDSP) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out4 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -169,12 +169,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32; XDSP) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out4
   - task: CMake@1
     displayName: CMake (MinGW32; SH DX11) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out5 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -182,7 +182,7 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32; SH DX11) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out5
   - task: CmdLine@2
     displayName: VCPKG install packages
@@ -192,7 +192,7 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32; SH DX12) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out6 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86 -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
         -DBUILD_SHMATH=ON -DBUILD_DX12=ON
@@ -200,7 +200,7 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW32; SH DX12) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out6
 
 - job: MINGW64_BUILD
@@ -239,31 +239,31 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
   - task: CMake@1
     displayName: CMake (MinGW-W64) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out
   - task: CMake@1
     displayName: CMake (MinGW-W64) Rel
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out2 -DCMAKE_BUILD_TYPE="RelWithDebInfo" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
   - task: CMake@1
     displayName: CMake (MinGW-W64) Build Rel
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out2
   - task: CMake@1
     displayName: CMake (MinGW-W64) Dbg NI
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out3 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -271,12 +271,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64) Build Dbg NI
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out3
   - task: CMake@1
     displayName: CMake (MinGW-W64; XDSP) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out4 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -284,12 +284,12 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64; XDSP) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out4
   - task: CMake@1
     displayName: CMake (MinGW-W64; SH DX11) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out5 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -297,7 +297,7 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64; SH DX11) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out5
   - task: CmdLine@2
     displayName: VCPKG install packages
@@ -307,7 +307,7 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64; SH DX12) Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: >
         -B out6 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x64
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
@@ -316,5 +316,5 @@ jobs:
   - task: CMake@1
     displayName: CMake (MinGW-W64; SH DX12) Build Dbg
     inputs:
-      cwd: Tests
+      cwd: .
       cmakeArgs: --build out6
