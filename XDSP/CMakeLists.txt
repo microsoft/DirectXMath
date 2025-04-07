@@ -3,15 +3,30 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-  message(FATAL_ERROR "XSDP should be built by the main CMakeLists using BUILD_XDSP")
+if(DEFINED DIRECTXMATH_VERSION)
+   set(XDSP_VERSION ${DIRECTXMATH_VERSION})
+else()
+   set(XDSP_VERSION 3.0.0)
 endif()
 
 project(XDSP
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${XDSP_VERSION}
   DESCRIPTION "XDSP Digital Signal Processing (DSP) for DirectXMath"
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
+
+if(CMAKE_VERSION VERSION_LESS 3.21)
+  get_property(not_top DIRECTORY PROPERTY PARENT_DIRECTORY)
+  if(not_top)
+    set(PROJECT_IS_TOP_LEVEL false)
+  else()
+    set(PROJECT_IS_TOP_LEVEL true)
+  endif()
+endif()
+
+if(PROJECT_IS_TOP_LEVEL)
+  message(FATAL_ERROR "XSDP should be built by the main CMakeLists using BUILD_XDSP")
+endif()
 
 #--- Library
 set(LIBRARY_HEADERS XDSP.h)
@@ -32,7 +47,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH DIRECTXMATH_PATH)
 
 write_basic_package_version_file(
   ${PACKAGE_NAME}-config-version.cmake
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${XDSP_VERSION}
   COMPATIBILITY AnyNewerVersion
   ARCH_INDEPENDENT)
 

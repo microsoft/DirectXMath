@@ -3,15 +3,30 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-  message(FATAL_ERROR "SHMath should be built by the main CMakeLists using BUILD_SHMATH")
+if(DEFINED DIRECTXMATH_VERSION)
+   set(SHMATH_VERSION ${DIRECTXMATH_VERSION})
+else()
+   set(SHMATH_VERSION 1.0.6)
 endif()
 
 project(DirectXSH
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${SHMATH_VERSION}
   DESCRIPTION "C++ Spherical Harmonics Math Library"
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
+
+if(CMAKE_VERSION VERSION_LESS 3.21)
+  get_property(not_top DIRECTORY PROPERTY PARENT_DIRECTORY)
+  if(not_top)
+    set(PROJECT_IS_TOP_LEVEL false)
+  else()
+    set(PROJECT_IS_TOP_LEVEL true)
+  endif()
+endif()
+
+if(PROJECT_IS_TOP_LEVEL)
+  message(FATAL_ERROR "SHMath should be built by the main CMakeLists using BUILD_SHMATH")
+endif()
 
 option(BUILD_DX11 "Build with DirectX11 support" OFF)
 
@@ -95,7 +110,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH DIRECTXMATH_PATH)
 
 write_basic_package_version_file(
   ${PACKAGE_NAME}-config-version.cmake
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${SHMATH_VERSION}
   COMPATIBILITY AnyNewerVersion
   ARCH_INDEPENDENT)
 
