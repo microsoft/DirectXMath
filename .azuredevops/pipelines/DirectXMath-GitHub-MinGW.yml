@@ -166,6 +166,10 @@ jobs:
         -B out4 -DCMAKE_BUILD_TYPE="Debug" -DDXMATH_ARCHITECTURE=x86
         -DCMAKE_CXX_COMPILER="g++.exe" -G "MinGW Makefiles"
         -DBUILD_XDSP=ON
+  - task: PowerShell@2
+    inputs:
+      targetType: inline
+      script: Write-Host "##vso[build.uploadlog]$env:BUILD_SOURCESDIRECTORY/Tests/out4/CMakeFiles/xdsptest.dir/includes_CXX.rsp"
   - task: CMake@1
     displayName: CMake (MinGW32; XDSP) Build Dbg
     inputs:
