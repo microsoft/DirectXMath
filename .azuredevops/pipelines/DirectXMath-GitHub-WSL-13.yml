@@ -83,4 +83,4 @@ jobs:
     displayName: DirectXMath Tests Build
     inputs:
       cwd: .
-      cmakeArgs: --build . -v
+      cmakeArgs: --build out -v
