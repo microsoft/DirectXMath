@@ -170,7 +170,7 @@ jobs:
     displayName: CMake (MinGW32; XDSP) Build Dbg
     inputs:
       cwd: Tests
-      cmakeArgs: --build out4 -v
+      cmakeArgs: --build out4
   - task: CMake@1
     displayName: CMake (MinGW32; SH DX11) Dbg
     inputs:
@@ -285,7 +285,7 @@ jobs:
     displayName: CMake (MinGW-W64; XDSP) Build Dbg
     inputs:
       cwd: Tests
-      cmakeArgs: --build out4 -v
+      cmakeArgs: --build out4
   - task: CMake@1
     displayName: CMake (MinGW-W64; SH DX11) Dbg
     inputs:
