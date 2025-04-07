@@ -63,8 +63,8 @@ jobs:
   - task: CMake@1
     displayName: DirectXMath Tests
     inputs:
-      cwd: Tests
-      cmakeArgs: .
+      cwd: .
+      cmakeArgs: -B out -DBUILD_XDSP=ON -DBUILD_SHMATH=ON
   - task: PowerShell@2
     displayName: Fetch SAL.H
     inputs:
@@ -82,5 +82,5 @@ jobs:
   - task: CMake@1
     displayName: DirectXMath Tests Build
     inputs:
-      cwd: Tests
-      cmakeArgs: --build . -v
+      cwd: .
+      cmakeArgs: --build out -v
