@@ -3,15 +3,30 @@
 
 cmake_minimum_required (VERSION 3.20)
 
-if("${CMAKE_SOURCE_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
-  message(FATAL_ERROR "SHMath should be built by the main CMakeLists using BUILD_SHMATH")
+if(DEFINED DIRECTXMATH_VERSION)
+   set(SHMATH_VERSION ${DIRECTXMATH_VERSION})
+else()
+   set(SHMATH_VERSION 1.0.6)
 endif()
 
 project(DirectXSH
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${SHMATH_VERSION}
   DESCRIPTION "C++ Spherical Harmonics Math Library"
   HOMEPAGE_URL "https://go.microsoft.com/fwlink/?LinkID=615560"
   LANGUAGES CXX)
+
+if(CMAKE_VERSION VERSION_LESS 3.21)
+  get_property(not_top DIRECTORY PROPERTY PARENT_DIRECTORY)
+  if(not_top)
+    set(PROJECT_IS_TOP_LEVEL false)
+  else()
+    set(PROJECT_IS_TOP_LEVEL true)
+  endif()
+endif()
+
+if(PROJECT_IS_TOP_LEVEL)
+  message(FATAL_ERROR "SHMath should be built by the main CMakeLists using BUILD_SHMATH")
+endif()
 
 option(BUILD_DX11 "Build with DirectX11 support" OFF)
 
@@ -73,7 +88,7 @@ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE DirectXMath)
 
-if(MINGW)
+if(MINGW AND BUILD_DX12)
     find_package(directx-headers CONFIG REQUIRED)
     target_link_libraries(${PROJECT_NAME} PUBLIC Microsoft::DirectX-Headers)
     target_compile_definitions(${PROJECT_NAME} PUBLIC USING_DIRECTX_HEADERS)
@@ -95,7 +110,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH DIRECTXMATH_PATH)
 
 write_basic_package_version_file(
   ${PACKAGE_NAME}-config-version.cmake
-  VERSION ${DIRECTXMATH_VERSION}
+  VERSION ${SHMATH_VERSION}
   COMPATIBILITY AnyNewerVersion
   ARCH_INDEPENDENT)
 
@@ -201,4 +216,14 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
         target_compile_options(${PROJECT_NAME} PRIVATE $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
     endif()
+endif()
+
+if(NOT WIN32)
+    file(DOWNLOAD
+        https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h
+        "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"
+        EXPECTED_HASH SHA512=8085f67bfa4ce01ae89461cadf72454a9552fde3f08b2dcc3de36b9830e29ce7a6192800f8a5cb2a66af9637be0017e85719826a4cfdade508ae97f319e0ee8e
+    )
+
+    target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sal")
 endif()
