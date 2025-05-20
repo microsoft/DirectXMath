@@ -46,6 +46,28 @@ jobs:
 - job: BUILD_DEV17
   displayName: 'Visual Studio 2022 (v143)'
   cancelTimeoutInMinutes: 1
+  strategy:
+    maxParallel: 6
+    matrix:
+      Release_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Release
+      Debug_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Debug
+      Release_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Release
+      Debug_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Debug
+      Release_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Release
+      Debug_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Debug
+
   steps:
   - checkout: self
     clean: true
@@ -59,276 +81,118 @@ jobs:
     fetchDepth: 1
     path: 's/Tests'
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg
+    displayName: Build solution math3_2022.sln
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: x86
-      configuration: Debug
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel
+    displayName: Build solution math3_2022.sln no-intrinsics
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: x86
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: 'NI $(BuildConfiguration)'
       msbuildArchitecture: x64
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg
+    displayName: Build solution math3_2022.sln SSE3
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: x64
-      configuration: Debug
+      platform: '$(BuildPlatform)'
+      configuration: 'SSE3 $(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel
+    displayName: Build solution math3_2022.sln SSE4
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: x64
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: 'SSE4 $(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln arm64dbg
+    displayName: Build solution math3_2022.sln AVX
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: ARM64
-      configuration: Debug
+      platform: '$(BuildPlatform)'
+      configuration: 'AVX $(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln arm64rel
+    displayName: Build solution math3_2022.sln AVX2
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: ARM64
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: 'AVX2 $(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: ne(variables['BuildPlatform'], 'ARM64')
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg sse3
+    displayName: Build solution math3_2022.sln x87
     inputs:
       solution: Tests/math3/math3_2022.sln
       vsVersion: 17.0
-      platform: x86
-      configuration: SSE3 Debug
+      platform: '$(BuildPlatform)'
+      configuration: 'x87 $(BuildConfiguration)'
       msbuildArchitecture: x64
+    condition: eq(variables['BuildPlatform'], 'x86')
+
+- job: BUILD_EXTS
+  displayName: 'Visual Studio 2022 (v143) SHMath and XDSP'
+  cancelTimeoutInMinutes: 1
+  strategy:
+    maxParallel: 2
+    matrix:
+      Release_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Release
+      Debug_arm64:
+        BuildPlatform: ARM64
+        BuildConfiguration: Debug
+      Release_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Release
+      Debug_x64:
+        BuildPlatform: x64
+        BuildConfiguration: Debug
+      Release_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Release
+      Debug_x86:
+        BuildPlatform: x86
+        BuildConfiguration: Debug
+  steps:
+  - checkout: self
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's'
+  - checkout: testRepo
+    displayName: Fetch Tests
+    clean: true
+    fetchTags: false
+    fetchDepth: 1
+    path: 's/Tests'
   - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel sse3
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: SSE3 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg sse3
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: SSE3 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel sse3
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: SSE3 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg sse4
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: SSE4 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel sse4
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: SSE4 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg sse4
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: SSE4 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel sse4
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: SSE4 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg avx
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: AVX Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel avx
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: AVX Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg avx
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: AVX Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel avx
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: AVX Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg avx2
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: AVX2 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel avx2
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: AVX2 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg avx2
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: AVX2 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel avx2
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: AVX2 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: NI Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: NI Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64dbg nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: NI Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x64rel nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: NI Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln arm64dbg nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: ARM64
-      configuration: NI Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln arm86rel nointrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: ARM64
-      configuration: NI Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86dbg x87
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: x87 Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x86rel x87
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: x86
-      configuration: x87 Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution shmath_2022.sln x64dbg
+    displayName: Build solution shmath_2022.sln
     inputs:
       solution: Tests/shmath/shmath_2022.sln
       vsVersion: 17.0
-      platform: x64
-      configuration: Debug
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
   - task: VSBuild@1
-    displayName: Build solution shmath_2022.sln x64rel
-    inputs:
-      solution: Tests/shmath/shmath_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: Release
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution XDSPTest_2022 x64dbg
+    displayName: Build solution XDSPTest_2022
     inputs:
       solution: Tests/xdsp/XDSPTest_2022.sln
       vsVersion: 17.0
-      platform: x64
-      configuration: Debug
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution XDSPTest_2022 x64rel
-    inputs:
-      solution: Tests/xdsp/XDSPTest_2022.sln
-      vsVersion: 17.0
-      platform: x64
-      configuration: Release
+      platform: '$(BuildPlatform)'
+      configuration: '$(BuildConfiguration)'
       msbuildArchitecture: x64
 
 - job: CMAKE_BUILD_X64
