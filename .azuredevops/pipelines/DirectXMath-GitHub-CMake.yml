@@ -32,7 +32,7 @@ pr:
     exclude:
     - '*.md'
     - LICENSE
-    - '.github/*'
+    - '.github/**'
     - '.nuget/*'
 
 resources:
