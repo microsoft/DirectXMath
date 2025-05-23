@@ -20,7 +20,7 @@ trigger:
     exclude:
     - '*.md'
     - LICENSE
-    - '.github/*'
+    - '.github/**'
     - '.nuget/*'
     - build/*.ps1
 
@@ -32,7 +32,7 @@ pr:
     exclude:
     - '*.md'
     - LICENSE
-    - '.github/*'
+    - '.github/**'
     - '.nuget/*'
 
 resources:
