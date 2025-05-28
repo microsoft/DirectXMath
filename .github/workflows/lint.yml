@@ -38,5 +38,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: main
-          EDITORCONFIG_FILE_NAME: .editorconfig
+          DEFAULT_BRANCH: origin/main
+          EDITORCONFIG_FILE_NAME: ${{ github.workspace }}/.editorconfig
