@@ -1724,41 +1724,41 @@ inline XMVECTOR XM_CALLCONV XMColorHSVToRGB(FXMVECTOR hsv) noexcept
     switch (ii)
     {
     case 0: // rgb = vtp
-    {
-        XMVECTOR vt = XMVectorSelect(t, v, g_XMSelect1000);
-        _rgb = XMVectorSelect(p, vt, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR vt = XMVectorSelect(t, v, g_XMSelect1000);
+            _rgb = XMVectorSelect(p, vt, g_XMSelect1100);
+        }
+        break;
     case 1: // rgb = qvp
-    {
-        XMVECTOR qv = XMVectorSelect(v, q, g_XMSelect1000);
-        _rgb = XMVectorSelect(p, qv, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR qv = XMVectorSelect(v, q, g_XMSelect1000);
+            _rgb = XMVectorSelect(p, qv, g_XMSelect1100);
+        }
+        break;
     case 2: // rgb = pvt
-    {
-        XMVECTOR pv = XMVectorSelect(v, p, g_XMSelect1000);
-        _rgb = XMVectorSelect(t, pv, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR pv = XMVectorSelect(v, p, g_XMSelect1000);
+            _rgb = XMVectorSelect(t, pv, g_XMSelect1100);
+        }
+        break;
     case 3: // rgb = pqv
-    {
-        XMVECTOR pq = XMVectorSelect(q, p, g_XMSelect1000);
-        _rgb = XMVectorSelect(v, pq, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR pq = XMVectorSelect(q, p, g_XMSelect1000);
+            _rgb = XMVectorSelect(v, pq, g_XMSelect1100);
+        }
+        break;
     case 4: // rgb = tpv
-    {
-        XMVECTOR tp = XMVectorSelect(p, t, g_XMSelect1000);
-        _rgb = XMVectorSelect(v, tp, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR tp = XMVectorSelect(p, t, g_XMSelect1000);
+            _rgb = XMVectorSelect(v, tp, g_XMSelect1100);
+        }
+        break;
     default: // rgb = vpq
-    {
-        XMVECTOR vp = XMVectorSelect(p, v, g_XMSelect1000);
-        _rgb = XMVectorSelect(q, vp, g_XMSelect1100);
-    }
-    break;
+        {
+            XMVECTOR vp = XMVectorSelect(p, v, g_XMSelect1000);
+            _rgb = XMVectorSelect(q, vp, g_XMSelect1100);
+        }
+        break;
     }
 
     return XMVectorSelect(hsv, _rgb, g_XMSelect1110);

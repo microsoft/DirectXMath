@@ -32,8 +32,9 @@ inline bool XM_CALLCONV XMMatrixIsNaN(FXMMATRIX M) noexcept
 #if defined(_XM_NO_INTRINSICS_)
     size_t i = 16;
     auto pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
-    do {
-        // Fetch value into integer unit
+    do
+    {
+    // Fetch value into integer unit
         uint32_t uTest = pWork[0];
         // Remove sign
         uTest &= 0x7FFFFFFFU;
@@ -44,7 +45,8 @@ inline bool XM_CALLCONV XMMatrixIsNaN(FXMMATRIX M) noexcept
             break;      // NaN found
         }
         ++pWork;        // Next entry
-    } while (--i);
+    }
+    while (--i);
     return (i != 0);      // i == 0 if nothing matched
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Load in registers
@@ -101,8 +103,9 @@ inline bool XM_CALLCONV XMMatrixIsInfinite(FXMMATRIX M) noexcept
 #if defined(_XM_NO_INTRINSICS_)
     size_t i = 16;
     auto pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
-    do {
-        // Fetch value into integer unit
+    do
+    {
+    // Fetch value into integer unit
         uint32_t uTest = pWork[0];
         // Remove sign
         uTest &= 0x7FFFFFFFU;
@@ -112,7 +115,8 @@ inline bool XM_CALLCONV XMMatrixIsInfinite(FXMMATRIX M) noexcept
             break;      // INF found
         }
         ++pWork;        // Next entry
-    } while (--i);
+    }
+    while (--i);
     return (i != 0);      // i == 0 if nothing matched
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     // Load in registers
@@ -3428,7 +3432,7 @@ inline XMMATRIX XM_CALLCONV operator*
 (
     float S,
     FXMMATRIX M
-) noexcept
+    ) noexcept
 {
     XMMATRIX R;
     R.r[0] = XMVectorScale(M.r[0], S);

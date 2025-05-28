@@ -48,7 +48,8 @@ inline float XMConvertHalfToFloat(HALF Value) noexcept
         {
             Exponent--;
             Mantissa <<= 1;
-        } while ((Mantissa & 0x0400) == 0);
+        }
+        while ((Mantissa & 0x0400) == 0);
 
         Mantissa &= 0x03FF;
     }
@@ -1186,7 +1187,8 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK(const XMFLOAT3PK* pSource) noexcept
             {
                 Exponent--;
                 Mantissa <<= 1;
-            } while ((Mantissa & 0x40) == 0);
+            }
+            while ((Mantissa & 0x40) == 0);
 
             Mantissa &= 0x3F;
         }
@@ -1220,7 +1222,8 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK(const XMFLOAT3PK* pSource) noexcept
             {
                 Exponent--;
                 Mantissa <<= 1;
-            } while ((Mantissa & 0x40) == 0);
+            }
+            while ((Mantissa & 0x40) == 0);
 
             Mantissa &= 0x3F;
         }
@@ -1254,7 +1257,8 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3PK(const XMFLOAT3PK* pSource) noexcept
             {
                 Exponent--;
                 Mantissa <<= 1;
-            } while ((Mantissa & 0x20) == 0);
+            }
+            while ((Mantissa & 0x20) == 0);
 
             Mantissa &= 0x1F;
         }
@@ -2000,7 +2004,7 @@ inline XMVECTOR XM_CALLCONV XMLoadUNibble4(const XMUNIBBLE4* pSource) noexcept
     static const XMVECTORF32 UNibble4Mul = { { { 1.0f, 1.0f / 16.f, 1.0f / 256.f, 1.0f / 4096.f } } };
     // Get the 16 bit value and splat it
     __m128i vInt = XM_LOADU_SI16(&pSource->v);
-    XMVECTOR vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0,0,0,0));
+    XMVECTOR vResult = XM_PERMUTE_PS(_mm_castsi128_ps(vInt), _MM_SHUFFLE(0, 0, 0, 0));
     // Mask off x, y and z
     vResult = _mm_and_ps(vResult, UNibble4And);
     // Convert to float
