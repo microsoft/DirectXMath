@@ -30,9 +30,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
 
-      - name: EditorConfig
-        uses: zbeekman/EditorConfig-Action@ad87de68f3718e100afb65800195b08ea44b7d9e # v1.1.1
+      - name: Lint Code Base
+        uses: github/super-linter@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ALWAYS_LINT_ALL_FILES: true
+          VALIDATE_ALL_CODEBASE: false
+          DEFAULT_BRANCH: origin/main
+          VALIDATE_EDITORCONFIG: true
+          EDITORCONFIG_FILE_NAME: .editorconfig
+          IGNORE_GITIGNORED_FILES: true
