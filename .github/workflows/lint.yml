@@ -6,8 +6,6 @@
 name: Code-style cleanup
 
 on:
-  push:
-    branches-ignore: [ "main" ]
   pull_request:
     branches: [ "main" ]
     paths-ignore:
@@ -27,7 +25,7 @@ jobs:
       security-events: write
       actions: read
     name: Lint
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
