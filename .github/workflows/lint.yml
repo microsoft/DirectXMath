@@ -37,8 +37,5 @@ jobs:
         uses: github/super-linter@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VALIDATE_ALL_CODEBASE: false
-          DEFAULT_BRANCH: origin/main
-          VALIDATE_EDITORCONFIG: true
-          EDITORCONFIG_FILE_NAME: .editorconfig
+          EDITORCONFIG_FILE_NAME: ../../.editorconfig
           IGNORE_GITIGNORED_FILES: true
