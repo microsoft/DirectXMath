@@ -36,7 +36,7 @@ jobs:
       - name: Lint Code Base
         uses: github/super-linter@b807e99ddd37e444d189cfd2c2ca1274d8ae8ef1 # v7
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VALIDATE_ALL_CODEBASE: false
           DEFAULT_BRANCH: main
           EDITORCONFIG_FILE_NAME: .editorconfig
