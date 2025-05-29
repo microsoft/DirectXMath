@@ -1426,10 +1426,10 @@ float DirectX::XMSHDot(
 // Computes the product of two functions represented using SH (f and g), where:
 // result[i] = int(y_i(s) * f(s) * g(s)), where y_i(s) is the ith SH basis
 // function, f(s) and g(s) are SH functions (sum_i(y_i(s)*c_i)).  The order O
-// determines the lengths of the arrays, where there should always be O^2 
+// determines the lengths of the arrays, where there should always be O^2
 // coefficients.  In general the product of two SH functions of order O generates
 // and SH function of order 2*O - 1, but we truncate the result.  This means
-// that the product commutes (f*g == g*f) but doesn't associate 
+// that the product commutes (f*g == g*f) but doesn't associate
 // (f*(g*h) != (f*g)*h.
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -4470,7 +4470,7 @@ float* DirectX::XMSHMultiply6(
 
 
 //-------------------------------------------------------------------------------------
-// Evaluates a directional light and returns spectral SH data.  The output 
+// Evaluates a directional light and returns spectral SH data.  The output
 // vector is computed so that if the intensity of R/G/B is unit the resulting
 // exit radiance of a point directly under the light on a diffuse object with
 // an albedo of 1 would be 1.0.  This will compute 3 spectral samples, resultR
@@ -4537,10 +4537,10 @@ bool XM_CALLCONV DirectX::XMSHEvalDirectionalLight(
 
 
 //------------------------------------------------------------------------------------
-// Evaluates a spherical light and returns spectral SH data.  There is no 
+// Evaluates a spherical light and returns spectral SH data.  There is no
 // normalization of the intensity of the light like there is for directional
-// lights, care has to be taken when specifiying the intensities.  This will 
-// compute 3 spectral samples, resultR has to be specified, while resultG and 
+// lights, care has to be taken when specifiying the intensities.  This will
+// compute 3 spectral samples, resultR has to be specified, while resultG and
 // resultB are optional.
 //
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb205451.aspx
@@ -4575,7 +4575,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
 
     //
     // Sphere at distance fDist, the cone angle is determined by looking at the
-    // right triangle with one side (the hypotenuse) beind the vector from the 
+    // right triangle with one side (the hypotenuse) beind the vector from the
     // origin to the center of the sphere, another side is from the origin to
     // a point on the sphere whose normal is perpendicular to the given side (this
     // is one of the points on the cone that is defined by the projection of the sphere
@@ -4590,7 +4590,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
     // no default normalization is done for this case, have to be careful how
     // you represent the coefficients...
 
-    const float fNewNorm = 1.0f;///(fSinConeAngle*fSinConeAngle); 
+    const float fNewNorm = 1.0f;///(fSinConeAngle*fSinConeAngle);
 
     ComputeCapInt(order, fConeAngle, fTmpL0);
 
@@ -4791,7 +4791,7 @@ bool XM_CALLCONV DirectX::XMSHEvalConeLight(
 // is normalized so that a point on a perfectly diffuse surface with no
 // shadowing and a normal pointed in the direction pDir would result in exit
 // radiance with a value of 1 if the top color was white and the bottom color
-// was black.  This is a very simple model where topColor represents the intensity 
+// was black.  This is a very simple model where topColor represents the intensity
 // of the "sky" and bottomColor represents the intensity of the "ground".
 //
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb204989.aspx
