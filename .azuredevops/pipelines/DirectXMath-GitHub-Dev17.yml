@@ -268,12 +268,12 @@ jobs:
           cwd: '$(Build.SourcesDirectory)'
           cmakeArgs: --build out/build/x64-Release-Clang -v
 
-    - job: CMAKE_BUILD_ARM64
-      displayName: 'CMake for ARM64 BUILD_TESTING=ON'
-      timeoutInMinutes: 60
-      workspace:
-        clean: all
-      steps:
+  - job: CMAKE_BUILD_ARM64
+    displayName: 'CMake for ARM64 BUILD_TESTING=ON'
+    timeoutInMinutes: 60
+    workspace:
+      clean: all
+    steps:
       - checkout: self
         clean: true
         fetchTags: false
