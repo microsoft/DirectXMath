@@ -39,7 +39,13 @@ jobs:
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ALL_CODEBASE: true
           LINTER_RULES_PATH: /
+          VALIDATE_CPP: true
+          VALIDATE_CHECKOV: true
+          VALIDATE_CLANG_FORMAT: false
           VALIDATE_EDITORCONFIG: true
           EDITORCONFIG_FILE_NAME: .editorconfig
-          VALIDATE_CLANG_FORMAT: false
-          VALIDATE_CPP: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_JSON: true
+          VALIDATE_MARKDOWN: true
+          VALIDATE_POWERSHELL: true
+          VALIDATE_YAML: true
