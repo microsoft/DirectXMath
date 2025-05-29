@@ -15,15 +15,14 @@ on:
       - '.nuget/*'
       - build/*.ps1
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   analyze:
     permissions:
       contents: read
-      security-events: write
-      actions: read
+      packages: read
+      statuses: write
     name: Lint
     runs-on: ubuntu-latest
 
@@ -34,9 +33,13 @@ jobs:
           fetch-depth: 0
 
       - name: Lint Code Base
-        uses: super-linter/super-linter@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
+        uses: super-linter/super-linter/slim@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          LINTER_RULES_PATH: /
-          EDITORCONFIG_FILE_NAME: .editorconfig
           IGNORE_GITIGNORED_FILES: true
+          VALIDATE_ALL_CODEBASE: true
+          LINTER_RULES_PATH: /
+          VALIDATE_EDITORCONFIG: true
+          EDITORCONFIG_FILE_NAME: .editorconfig
+          VALIDATE_CLANG_FORMAT: false
+          VALIDATE_CPP: true

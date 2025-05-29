@@ -23,6 +23,9 @@ on:
       - '.nuget/*'
       - build/*.ps1
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
