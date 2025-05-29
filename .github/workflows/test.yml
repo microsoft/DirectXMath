@@ -100,7 +100,7 @@ jobs:
 
     - name: 'Build'
       working-directory: ${{ github.workspace }}
-      run: cmake --build out\build\${{ matrix.build_type }}
+      run: cmake --build out/build/${{ matrix.build_type }}
 
     - if: (matrix.build_type == 'x64-Release') || (matrix.build_type == 'x86-Release')
       timeout-minutes: 10

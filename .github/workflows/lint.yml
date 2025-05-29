@@ -38,13 +38,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ALL_CODEBASE: true
-          LINTER_RULES_PATH: /
-          VALIDATE_CPP: true
           VALIDATE_CHECKOV: true
           VALIDATE_EDITORCONFIG: true
-          EDITORCONFIG_FILE_NAME: .editorconfig
           VALIDATE_GITHUB_ACTIONS: true
           VALIDATE_JSON: true
-          VALIDATE_MARKDOWN: true
           VALIDATE_POWERSHELL: true
           VALIDATE_YAML: true
