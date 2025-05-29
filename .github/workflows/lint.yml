@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkID=615560
 
-name: Lint (Coding-style)
+name: Lint
 
 on:
   pull_request:
@@ -35,6 +35,7 @@ jobs:
       - name: Lint Code Base
         uses: super-linter/super-linter/slim@12150456a73e248bdc94d0794898f94e23127c88 # v7.4.0
         env:
+          DEFAULT_BRANCH: origin/main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           IGNORE_GITIGNORED_FILES: true
           VALIDATE_ALL_CODEBASE: true
