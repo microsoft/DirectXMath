@@ -10,7 +10,7 @@ schedules:
     displayName: 'Nightly build'
     branches:
       include:
-      - main
+        - main
 
 # GitHub Actions handles MSBuild for CI/PR
 trigger: none
@@ -24,14 +24,14 @@ pr:
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: testRepo
-    name: walbourn/directxmathtest
-    type: github
-    endpoint: microsoft
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxmathtest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 

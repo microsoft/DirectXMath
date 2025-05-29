@@ -68,7 +68,8 @@ jobs:
         displayName: 'CMake (MSVC): Config x64'
         inputs:
           cwd: '$(Build.SourcesDirectory)'
-          cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
       - task: CMake@1
         displayName: 'CMake (MSVC): Build x64 Debug'
         inputs:
@@ -83,7 +84,8 @@ jobs:
         displayName: 'CMake (MSVC): Config x86'
         inputs:
           cwd: '$(Build.SourcesDirectory)'
-          cmakeArgs: '-G "$(VS_GENERATOR)" -A Win32 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A Win32 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
       - task: CMake@1
         displayName: 'CMake (MSVC): Build x86 Debug'
         inputs:
@@ -98,7 +100,8 @@ jobs:
         displayName: 'CMake (MSVC): Config ARM64'
         inputs:
           cwd: '$(Build.SourcesDirectory)'
-          cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A ARM64 -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
       - task: CMake@1
         displayName: 'CMake (MSVC): Build ARM64 Debug'
         inputs:
@@ -113,7 +116,8 @@ jobs:
         displayName: 'CMake (ClangCl): Config x64'
         inputs:
           cwd: '$(Build.SourcesDirectory)'
-          cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out4 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -T clangcl -B out4 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
       - task: CMake@1
         displayName: 'CMake (ClangCl): Build x64 Debug'
         inputs:
@@ -128,7 +132,8 @@ jobs:
         displayName: 'CMake (ClangCl): Config ARM64'
         inputs:
           cwd: '$(Build.SourcesDirectory)'
-          cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -T clangcl -B out5 -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A ARM64 -T clangcl -B out5 -DCMAKE_SYSTEM_VERSION=$(WIN11_SDK)
       - task: CMake@1
         displayName: 'CMake (ClangCl): Build ARM64 Debug'
         inputs:

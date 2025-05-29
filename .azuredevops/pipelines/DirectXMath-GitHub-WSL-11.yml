@@ -44,6 +44,7 @@ pool:
 
 variables:
   Codeql.Enabled: false
+  SAL_URL: https://raw.githubusercontent.com/dotnet/runtime/v8.0.1/src/coreclr/pal/inc/rt/sal.h
 
 jobs:
   - job: BUILD_WSL
@@ -71,7 +72,7 @@ jobs:
           targetType: inline
           script: |
             $ProgressPreference = 'SilentlyContinue'
-            Invoke-WebRequest -Uri https://raw.githubusercontent.com/dotnet/runtime/v8.0.1/src/coreclr/pal/inc/rt/sal.h -OutFile $(Build.SourcesDirectory)/Inc/sal.h
+            Invoke-WebRequest -Uri "$(SAL_URL)" -OutFile $(Build.SourcesDirectory)/Inc/sal.h
             $fileHash = Get-FileHash -Algorithm SHA512 $(Build.SourcesDirectory)/Inc/sal.h | ForEach { $_.Hash} | Out-String
             $filehash = $fileHash.Trim()
             Write-Host "##[debug]SHA512: " $filehash
