@@ -343,10 +343,10 @@ namespace DirectX
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4201 4365 4324 4820)
-     // C4068: ignore unknown pragmas
-     // C4201: nonstandard extension used : nameless struct/union
-     // C4365: Off by default noise
-     // C4324/4820: padding warnings
+    // C4068: ignore unknown pragmas
+    // C4201: nonstandard extension used : nameless struct/union
+    // C4365: Off by default noise
+    // C4324/4820: padding warnings
 #endif
 
 #ifdef _PREFAST_
@@ -1997,13 +1997,13 @@ namespace DirectX
      *
      ****************************************************************************/
 
-     // The purpose of the following global constants is to prevent redundant
-     // reloading of the constants when they are referenced by more than one
-     // separate inline math routine called within the same function.  Declaring
-     // a constant locally within a routine is sufficient to prevent redundant
-     // reloads of that constant when that single routine is called multiple
-     // times in a function, but if the constant is used (and declared) in a
-     // separate math routine it would be reloaded.
+    // The purpose of the following global constants is to prevent redundant
+    // reloading of the constants when they are referenced by more than one
+    // separate inline math routine called within the same function.  Declaring
+    // a constant locally within a routine is sufficient to prevent redundant
+    // reloads of that constant when that single routine is called multiple
+    // times in a function, but if the constant is used (and declared) in a
+    // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
 #if defined(__GNUC__) && !defined(__MINGW32__)
@@ -2165,10 +2165,10 @@ namespace DirectX
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 4640 6001 6101)
-     // C4068/4616: ignore unknown pragmas
-     // C4214/4204: nonstandard extension used
-     // C4365/4640: Off by default noise
-     // C6001/6101: False positives
+    // C4068/4616: ignore unknown pragmas
+    // C4214/4204: nonstandard extension used
+    // C4365/4640: Off by default noise
+    // C6001/6101: False positives
 #endif
 
 #ifdef _PREFAST_
