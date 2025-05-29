@@ -41,7 +41,6 @@ jobs:
           LINTER_RULES_PATH: /
           VALIDATE_CPP: true
           VALIDATE_CHECKOV: true
-          VALIDATE_CLANG_FORMAT: false
           VALIDATE_EDITORCONFIG: true
           EDITORCONFIG_FILE_NAME: .editorconfig
           VALIDATE_GITHUB_ACTIONS: true
