@@ -168,24 +168,24 @@ jobs:
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
 
-    - job: BUILD_LEGACY
-      displayName: 'Visual Studio 2019 (v141) Legacy'
-      strategy:
-        maxParallel: 4
-        matrix:
-          Release_x64:
-            BuildPlatform: x64
-            BuildConfiguration: Release
-          Debug_x64:
-            BuildPlatform: x64
-            BuildConfiguration: Debug
-          Release_x86:
-            BuildPlatform: x86
-            BuildConfiguration: Release
-          Debug_x86:
-            BuildPlatform: x86
-            BuildConfiguration: Debug
-      steps:
+  - job: BUILD_LEGACY
+    displayName: 'Visual Studio 2019 (v141) Legacy'
+    strategy:
+      maxParallel: 4
+      matrix:
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
       - checkout: self
         clean: true
         fetchTags: false

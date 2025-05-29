@@ -142,31 +142,31 @@ jobs:
           msbuildArchitecture: x64
         condition: eq(variables['BuildPlatform'], 'x86')
 
-    - job: BUILD_EXTS
-      displayName: 'Visual Studio 2022 (v143) SHMath and XDSP'
-      cancelTimeoutInMinutes: 1
-      strategy:
-        maxParallel: 2
-        matrix:
-          Release_arm64:
-            BuildPlatform: ARM64
-            BuildConfiguration: Release
-          Debug_arm64:
-            BuildPlatform: ARM64
-            BuildConfiguration: Debug
-          Release_x64:
-            BuildPlatform: x64
-            BuildConfiguration: Release
-          Debug_x64:
-            BuildPlatform: x64
-            BuildConfiguration: Debug
-          Release_x86:
-            BuildPlatform: x86
-            BuildConfiguration: Release
-          Debug_x86:
-            BuildPlatform: x86
-            BuildConfiguration: Debug
-      steps:
+  - job: BUILD_EXTS
+    displayName: 'Visual Studio 2022 (v143) SHMath and XDSP'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 2
+      matrix:
+        Release_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Release
+        Debug_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Debug
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
       - checkout: self
         clean: true
         fetchTags: false
