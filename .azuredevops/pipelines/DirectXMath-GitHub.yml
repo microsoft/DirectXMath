@@ -6,21 +6,21 @@
 # Builds the math3 test suite for DirectXMath.
 
 schedules:
-- cron: "0 0 * * *"
-  displayName: 'Nightly build'
-  branches:
-    include:
-    - main
+  - cron: "0 0 * * *"
+    displayName: 'Nightly build'
+    branches:
+      include:
+      - main
 
 # GitHub Actions handles MSBuild for CI/PR
 trigger: none
 pr:
   branches:
     include:
-    - main
+      - main
   paths:
     include:
-    - '.azuredevops/pipelines/DirectXMath-GitHub.yml'
+      - '.azuredevops/pipelines/DirectXMath-GitHub.yml'
 
 resources:
   repositories:
@@ -42,253 +42,253 @@ variables:
   Codeql.Enabled: true
 
 jobs:
-- job: BUILD_DEV16
-  displayName: 'Visual Studio 2019 (v142)'
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 4
-    matrix:
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln no-intrinsics
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'NI $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln SSE3
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE3 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln SSE4
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE4 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln AVX
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln AVX2
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX2 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2019.sln x87
-    inputs:
-      solution: Tests/math3/math3_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'x87 $(BuildConfiguration)'
-    condition: eq(variables['BuildPlatform'], 'x86')
+  - job: BUILD_DEV16
+    displayName: 'Visual Studio 2019 (v142)'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 4
+      matrix:
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln no-intrinsics
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'NI $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln SSE3
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE3 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln SSE4
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE4 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln AVX
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln AVX2
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX2 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2019.sln x87
+        inputs:
+          solution: Tests/math3/math3_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'x87 $(BuildConfiguration)'
+        condition: eq(variables['BuildPlatform'], 'x86')
 
-- job: BUILD_EXTS
-  displayName: 'Visual Studio 2019 (v142) SHMath and XDSP'
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 1
-    matrix:
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution shmath_2019.sln
-    inputs:
-      solution: Tests/shmath/shmath_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution XDSPTest_2019
-    inputs:
-      solution: Tests/xdsp/XDSPTest_2019.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  - job: BUILD_EXTS
+    displayName: 'Visual Studio 2019 (v142) SHMath and XDSP'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 1
+      matrix:
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution shmath_2019.sln
+        inputs:
+          solution: Tests/shmath/shmath_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution XDSPTest_2019
+        inputs:
+          solution: Tests/xdsp/XDSPTest_2019.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
 
-- job: BUILD_LEGACY
-  displayName: 'Visual Studio 2019 (v141) Legacy'
-  strategy:
-    maxParallel: 4
-    matrix:
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln no-intrinsics
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'NI $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln SSE3
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE3 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln SSE4
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE4 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln AVX
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln AVX2
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX2 $(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution math3_2017.sln x86dbg x87
-    inputs:
-      solution: Tests/math3/math3_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: 'x87 $(BuildConfiguration)'
-    condition: eq(variables['BuildPlatform'], 'x86')
+    - job: BUILD_LEGACY
+      displayName: 'Visual Studio 2019 (v141) Legacy'
+      strategy:
+        maxParallel: 4
+        matrix:
+          Release_x64:
+            BuildPlatform: x64
+            BuildConfiguration: Release
+          Debug_x64:
+            BuildPlatform: x64
+            BuildConfiguration: Debug
+          Release_x86:
+            BuildPlatform: x86
+            BuildConfiguration: Release
+          Debug_x86:
+            BuildPlatform: x86
+            BuildConfiguration: Debug
+      steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln no-intrinsics
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'NI $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln SSE3
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE3 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln SSE4
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE4 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln AVX
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln AVX2
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX2 $(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution math3_2017.sln x86dbg x87
+        inputs:
+          solution: Tests/math3/math3_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: 'x87 $(BuildConfiguration)'
+        condition: eq(variables['BuildPlatform'], 'x86')
 
-- job: BUILD_EXTS_LEGACY
-  displayName: 'Visual Studio 2019 (v141) Legacy - SHMath and XDSP'
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 1
-    matrix:
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution shmath_2017.sln
-    inputs:
-      solution: Tests/shmath/shmath_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-  - task: VSBuild@1
-    displayName: Build solution XDSPTest_2017
-    inputs:
-      solution: Tests/xdsp/XDSPTest_2017.sln
-      vsVersion: 16.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
+  - job: BUILD_EXTS_LEGACY
+    displayName: 'Visual Studio 2019 (v141) Legacy - SHMath and XDSP'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 1
+      matrix:
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution shmath_2017.sln
+        inputs:
+          solution: Tests/shmath/shmath_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+      - task: VSBuild@1
+        displayName: Build solution XDSPTest_2017
+        inputs:
+          solution: Tests/xdsp/XDSPTest_2017.sln
+          vsVersion: 16.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'

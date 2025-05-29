@@ -6,7 +6,7 @@ https://github.com/Microsoft/DirectXMath
 
 Copyright (c) Microsoft Corporation.
 
-**April 2025**
+# April 2025
 
 This package contains the DirectXMath library, an all inline SIMD C++ linear algebra library for use in games and graphics apps.
 
@@ -18,7 +18,7 @@ These components are designed to work without requiring any content from the leg
 
 * ``Inc\``
 
-  + DirectXMath Files (in the DirectX C++ namespace)
+  * DirectXMath Files (in the DirectX C++ namespace)
 
     * DirectXMath.h - Core library
     * DirectXPackedVector.h - Load/Store functions and types for working with various compressed GPU formats
@@ -27,7 +27,7 @@ These components are designed to work without requiring any content from the leg
 
 * ``Extentions\``
 
-  + Advanced instruction set variants for guarded codepaths
+  * Advanced instruction set variants for guarded codepaths
 
     * DirectXMathSSE3.h - SSE3
     * DirectXMathBE.h - Supplemental SSE3 (SSSE3)
@@ -40,18 +40,18 @@ These components are designed to work without requiring any content from the leg
 
 * ``SHMath\``
 
-  + Spherical Harmonics math functions
+  * Spherical Harmonics math functions
 
     * DirectXSH.h - Header for SHMath functions
     * DirectXSH.cpp, DirectXSHD3D11.cpp, DirectXSHD3D12.cpp - Implementation
 
 * ``XDSP\``
 
-  + XDSP.h - Digital Signal Processing helper functions
+  * XDSP.h - Digital Signal Processing helper functions
 
 * ``build\``
 
-  + Contains YAML files for the build pipelines along with some miscellaneous build files and scripts.
+  * Contains YAML files for the build pipelines along with some miscellaneous build files and scripts.
 
 ## Documentation
 

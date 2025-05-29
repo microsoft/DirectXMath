@@ -197,7 +197,6 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 * Marked most single-parameter C++ constructors with `explicit` keyword
 * Corrected range issues with SSE implementations of `XMVectorFloor` and `XMVectorCeiling`
 
-
 ### June 2010 (XNAMath 2.03)
 * Addition of ``XMVectorDivide`` to optimize SSE2 vector division operations
 * Unified handling of floating-point specials between the Windows SSE2 and no-intrinsics implementations

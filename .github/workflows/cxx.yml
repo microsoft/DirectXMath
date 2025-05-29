@@ -7,7 +7,7 @@ name: 'CMake (Windows /std)'
 
 on:
   push:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -15,7 +15,7 @@ on:
       - '.nuget/*'
       - build/*.ps1
   pull_request:
-    branches: [ "main" ]
+    branches: "main"
     paths-ignore:
       - '*.md'
       - LICENSE
@@ -59,62 +59,62 @@ jobs:
             arch: amd64_arm64
 
     steps:
-    - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-    - name: Clone test repository
-      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      with:
-        repository: walbourn/directxmathtest
-        path: Tests
-        ref: main
+      - name: Clone test repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
 
-    - name: 'Install Ninja'
-      run: choco install ninja
+      - name: 'Install Ninja'
+        run: choco install ninja
 
-    - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
-      with:
-        arch: ${{ matrix.arch }}
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
 
-    - name: 'Configure CMake (C++17)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }}
+      - name: 'Configure CMake (C++17)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }}
 
-    - name: 'Build (C++17)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out/build/${{ matrix.build_type }}
+      - name: 'Build (C++17)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
 
-    - name: 'Clean up'
-      working-directory: ${{ github.workspace }}
-      run: Remove-Item -Path out -Recurse -Force
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
 
-    - name: 'Configure CMake (C++11)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX11=ON
+      - name: 'Configure CMake (C++11)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX11=ON
 
-    - name: 'Build (C++11)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out/build/${{ matrix.build_type }}
+      - name: 'Build (C++11)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
 
-    - name: 'Clean up'
-      working-directory: ${{ github.workspace }}
-      run: Remove-Item -Path out -Recurse -Force
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
 
-    - name: 'Configure CMake (C++14)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX14=ON
+      - name: 'Configure CMake (C++14)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX14=ON
 
-    - name: 'Build (C++14)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out/build/${{ matrix.build_type }}
+      - name: 'Build (C++14)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
 
-    - name: 'Clean up'
-      working-directory: ${{ github.workspace }}
-      run: Remove-Item -Path out -Recurse -Force
+      - name: 'Clean up'
+        working-directory: ${{ github.workspace }}
+        run: Remove-Item -Path out -Recurse -Force
 
-    - name: 'Configure CMake (C++20)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX20=ON
+      - name: 'Configure CMake (C++20)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_CXX20=ON
 
-    - name: 'Build (C++20)'
-      working-directory: ${{ github.workspace }}
-      run: cmake --build out/build/${{ matrix.build_type }}
+      - name: 'Build (C++20)'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
