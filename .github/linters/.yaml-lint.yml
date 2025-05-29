@@ -1,0 +1,8 @@
+ignore-from-file: .gitignore
+
+extends: default
+
+rules:
+  document-start: disable
+  line-length:
+    max: 120

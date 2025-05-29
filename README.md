@@ -67,7 +67,7 @@ To build for non-Windows platforms, you need to provide a ``sal.h`` header in yo
 
 With GCC, the SAL annotation preprocessor symbols can conflict with the GNU implementation of the Standard C++ Library. The workaround is to include the system headers before including DirectXMath:
 
-```
+```cpp
 #include <algorithm>
 #include <iterator>
 #include <utility>
