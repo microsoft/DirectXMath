@@ -6,45 +6,45 @@
 # Builds the library and test suite using CMake using VS Generator (GitHub Actions covers Ninja).
 
 schedules:
-- cron: "0 0 * * *"
-  displayName: 'Nightly build'
-  branches:
-    include:
-    - main
+  - cron: "0 0 * * *"
+    displayName: 'Nightly build'
+    branches:
+      include:
+        - main
 
 trigger:
   branches:
     include:
-    - main
+      - main
   paths:
     exclude:
-    - '*.md'
-    - LICENSE
-    - '.github/**'
-    - '.nuget/*'
-    - build/*.ps1
+      - '*.md'
+      - LICENSE
+      - '.github/**'
+      - '.nuget/*'
+      - build/*.ps1
 
 pr:
   branches:
     include:
-    - main
+      - main
   paths:
     exclude:
-    - '*.md'
-    - LICENSE
-    - '.github/**'
-    - '.nuget/*'
+      - '*.md'
+      - LICENSE
+      - '.github/**'
+      - '.nuget/*'
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: testRepo
-    name: walbourn/directxmathtest
-    type: github
-    endpoint: microsoft
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxmathtest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -57,78 +57,84 @@ pool:
   vmImage: windows-2019
 
 jobs:
-- job: CMAKE_BUILD
-  displayName: CMake using VS Generator
-  cancelTimeoutInMinutes: 1
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: CMake@1
-    displayName: CMake (MSVC x64)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake (Build x64)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out -v
-  - task: CMake@1
-    displayName: CMake Test (MSVC x64)
-    inputs:
-      cwd: Tests
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake Test (Build x64)
-    inputs:
-      cwd: Tests
-      cmakeArgs: --build out -v
-  - task: CMake@1
-    displayName: CMake (MSVC ARM64)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake (Build ARM64)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out2 -v
-  - task: CMake@1
-    displayName: CMake Test (MSVC ARM64)
-    inputs:
-      cwd: Tests
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake Test (Build ARM64)
-    inputs:
-      cwd: Tests
-      cmakeArgs: --build out2 -v
-  - task: CMake@1
-    displayName: CMake (ClangCl)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake (Build)
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out3 -v
-  - task: CMake@1
-    displayName: CMake Test (ClangCL)
-    inputs:
-      cwd: Tests
-      cmakeArgs: '-G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)'
-  - task: CMake@1
-    displayName: CMake Test (Build)
-    inputs:
-      cwd: Tests
-      cmakeArgs: --build out3 -v
+  - job: CMAKE_BUILD
+    displayName: CMake using VS Generator
+    cancelTimeoutInMinutes: 1
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: CMake@1
+        displayName: CMake (MSVC x64)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake (Build x64)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out -v
+      - task: CMake@1
+        displayName: CMake Test (MSVC x64)
+        inputs:
+          cwd: Tests
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -B out -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake Test (Build x64)
+        inputs:
+          cwd: Tests
+          cmakeArgs: --build out -v
+      - task: CMake@1
+        displayName: CMake (MSVC ARM64)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake (Build ARM64)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out2 -v
+      - task: CMake@1
+        displayName: CMake Test (MSVC ARM64)
+        inputs:
+          cwd: Tests
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A ARM64 -B out2 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake Test (Build ARM64)
+        inputs:
+          cwd: Tests
+          cmakeArgs: --build out2 -v
+      - task: CMake@1
+        displayName: CMake (ClangCl)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake (Build)
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out3 -v
+      - task: CMake@1
+        displayName: CMake Test (ClangCL)
+        inputs:
+          cwd: Tests
+          cmakeArgs: >
+            -G "$(VS_GENERATOR)" -A x64 -T clangcl -B out3 -DCMAKE_SYSTEM_VERSION=$(WIN10_SDK)
+      - task: CMake@1
+        displayName: CMake Test (Build)
+        inputs:
+          cwd: Tests
+          cmakeArgs: --build out3 -v

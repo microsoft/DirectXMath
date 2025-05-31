@@ -343,10 +343,10 @@ namespace DirectX
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4201 4365 4324 4820)
-     // C4068: ignore unknown pragmas
-     // C4201: nonstandard extension used : nameless struct/union
-     // C4365: Off by default noise
-     // C4324/4820: padding warnings
+    // C4068: ignore unknown pragmas
+    // C4201: nonstandard extension used : nameless struct/union
+    // C4365: Off by default noise
+    // C4324/4820: padding warnings
 #endif
 
 #ifdef _PREFAST_
@@ -413,14 +413,14 @@ namespace DirectX
 
         inline operator XMVECTOR() const noexcept { return v; }
         inline operator const float* () const noexcept { return f; }
-#ifdef _XM_NO_INTRINSICS_
-#elif defined(_XM_SSE_INTRINSICS_)
+    #ifdef _XM_NO_INTRINSICS_
+    #elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
+    #elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
         inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
         inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
-#endif
+    #endif
     };
 
     XM_ALIGNED_STRUCT(16) XMVECTORI32
@@ -432,14 +432,14 @@ namespace DirectX
         };
 
         inline operator XMVECTOR() const noexcept { return v; }
-#ifdef _XM_NO_INTRINSICS_
-#elif defined(_XM_SSE_INTRINSICS_)
+    #ifdef _XM_NO_INTRINSICS_
+    #elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
+    #elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
         inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
         inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
-#endif
+    #endif
     };
 
     XM_ALIGNED_STRUCT(16) XMVECTORU8
@@ -451,14 +451,14 @@ namespace DirectX
         };
 
         inline operator XMVECTOR() const noexcept { return v; }
-#ifdef _XM_NO_INTRINSICS_
-#elif defined(_XM_SSE_INTRINSICS_)
+    #ifdef _XM_NO_INTRINSICS_
+    #elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
+    #elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
         inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
         inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
-#endif
+    #endif
     };
 
     XM_ALIGNED_STRUCT(16) XMVECTORU32
@@ -470,14 +470,14 @@ namespace DirectX
         };
 
         inline operator XMVECTOR() const noexcept { return v; }
-#ifdef _XM_NO_INTRINSICS_
-#elif defined(_XM_SSE_INTRINSICS_)
+    #ifdef _XM_NO_INTRINSICS_
+    #elif defined(_XM_SSE_INTRINSICS_)
         inline operator __m128i() const noexcept { return _mm_castps_si128(v); }
         inline operator __m128d() const noexcept { return _mm_castps_pd(v); }
-#elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
+    #elif defined(_XM_ARM_NEON_INTRINSICS_) && (defined(__GNUC__) || defined(_ARM64_DISTINCT_NEON_TYPES))
         inline operator int32x4_t() const noexcept { return vreinterpretq_s32_f32(v); }
         inline operator uint32x4_t() const noexcept { return vreinterpretq_u32_f32(v); }
-#endif
+    #endif
     };
 
     //------------------------------------------------------------------------------
@@ -522,11 +522,11 @@ namespace DirectX
 
 #ifdef _XM_NO_INTRINSICS_
     struct XMMATRIX
-#else
+    #else
     XM_ALIGNED_STRUCT(16) XMMATRIX
-#endif
+    #endif
     {
-#ifdef _XM_NO_INTRINSICS_
+    #ifdef _XM_NO_INTRINSICS_
         union
         {
             XMVECTOR r[4];
@@ -539,22 +539,22 @@ namespace DirectX
             };
             float m[4][4];
         };
-#else
+    #else
         XMVECTOR r[4];
-#endif
+    #endif
 
         XMMATRIX() = default;
 
         XMMATRIX(const XMMATRIX&) = default;
 
-#if defined(_MSC_VER) && (_MSC_FULL_VER < 191426431)
+    #if defined(_MSC_VER) && (_MSC_FULL_VER < 191426431)
         XMMATRIX& operator= (const XMMATRIX& M) noexcept { r[0] = M.r[0]; r[1] = M.r[1]; r[2] = M.r[2]; r[3] = M.r[3]; return *this; }
-#else
+    #else
         XMMATRIX& operator=(const XMMATRIX&) = default;
 
         XMMATRIX(XMMATRIX&&) = default;
         XMMATRIX& operator=(XMMATRIX&&) = default;
-#endif
+    #endif
 
         constexpr XMMATRIX(FXMVECTOR R0, FXMVECTOR R1, FXMVECTOR R2, CXMVECTOR R3) noexcept : r{ R0,R1,R2,R3 } {}
         XMMATRIX(float m00, float m01, float m02, float m03,
@@ -563,10 +563,10 @@ namespace DirectX
             float m30, float m31, float m32, float m33) noexcept;
         explicit XMMATRIX(_In_reads_(16) const float* pArray) noexcept;
 
-#ifdef _XM_NO_INTRINSICS_
+    #ifdef _XM_NO_INTRINSICS_
         float       operator() (size_t Row, size_t Column) const noexcept { return m[Row][Column]; }
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
-#endif
+    #endif
 
         XMMATRIX    operator+ () const noexcept { return *this; }
         XMMATRIX    operator- () const noexcept;
@@ -604,10 +604,10 @@ namespace DirectX
         constexpr XMFLOAT2(float _x, float _y) noexcept : x(_x), y(_y) {}
         explicit XMFLOAT2(_In_reads_(2) const float* pArray)  noexcept : x(pArray[0]), y(pArray[1]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT2&) const = default;
         auto operator <=> (const XMFLOAT2&) const = default;
-#endif
+    #endif
     };
 
     // 2D Vector; 32 bit floating point components aligned on a 16 byte boundary
@@ -634,10 +634,10 @@ namespace DirectX
         constexpr XMINT2(int32_t _x, int32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMINT2(_In_reads_(2) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMINT2&) const = default;
         auto operator <=> (const XMINT2&) const = default;
-#endif
+    #endif
     };
 
     // 2D Vector; 32 bit unsigned integer components
@@ -657,10 +657,10 @@ namespace DirectX
         constexpr XMUINT2(uint32_t _x, uint32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMUINT2(_In_reads_(2) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT2&) const = default;
         auto operator <=> (const XMUINT2&) const = default;
-#endif
+    #endif
     };
 
     //------------------------------------------------------------------------------
@@ -708,10 +708,10 @@ namespace DirectX
         constexpr XMINT3(int32_t _x, int32_t _y, int32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMINT3(_In_reads_(3) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMINT3&) const = default;
         auto operator <=> (const XMINT3&) const = default;
-#endif
+    #endif
     };
 
     // 3D Vector; 32 bit unsigned integer components
@@ -732,10 +732,10 @@ namespace DirectX
         constexpr XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMUINT3(_In_reads_(3) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT3&) const = default;
         auto operator <=> (const XMUINT3&) const = default;
-#endif
+    #endif
     };
 
     //------------------------------------------------------------------------------
@@ -758,10 +758,10 @@ namespace DirectX
         constexpr XMFLOAT4(float _x, float _y, float _z, float _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMFLOAT4(_In_reads_(4) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT4&) const = default;
         auto operator <=> (const XMFLOAT4&) const = default;
-#endif
+    #endif
     };
 
     // 4D Vector; 32 bit floating point components aligned on a 16 byte boundary
@@ -790,10 +790,10 @@ namespace DirectX
         constexpr XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMINT4(_In_reads_(4) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMINT4&) const = default;
         auto operator <=> (const XMINT4&) const = default;
-#endif
+    #endif
     };
 
     // 4D Vector; 32 bit unsigned integer components
@@ -815,10 +815,10 @@ namespace DirectX
         constexpr XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMUINT4(_In_reads_(4) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT4&) const = default;
         auto operator <=> (const XMUINT4&) const = default;
-#endif
+    #endif
     };
 
 #ifdef __clang__
@@ -857,16 +857,17 @@ namespace DirectX
             float m20, float m21, float m22) noexcept
             : _11(m00), _12(m01), _13(m02),
             _21(m10), _22(m11), _23(m12),
-            _31(m20), _32(m21), _33(m22) {}
+            _31(m20), _32(m21), _33(m22)
+        {}
         explicit XMFLOAT3X3(_In_reads_(9) const float* pArray) noexcept;
 
         float  operator() (size_t Row, size_t Column) const  noexcept { return m[Row][Column]; }
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT3X3&) const = default;
         auto operator <=> (const XMFLOAT3X3&) const = default;
-#endif
+    #endif
     };
 
     //------------------------------------------------------------------------------
@@ -901,16 +902,17 @@ namespace DirectX
             : _11(m00), _12(m01), _13(m02),
             _21(m10), _22(m11), _23(m12),
             _31(m20), _32(m21), _33(m22),
-            _41(m30), _42(m31), _43(m32) {}
+            _41(m30), _42(m31), _43(m32)
+        {}
         explicit XMFLOAT4X3(_In_reads_(12) const float* pArray) noexcept;
 
         float  operator() (size_t Row, size_t Column) const  noexcept { return m[Row][Column]; }
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT4X3&) const = default;
         auto operator <=> (const XMFLOAT4X3&) const = default;
-#endif
+    #endif
     };
 
     // 4x3 Row-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
@@ -948,16 +950,17 @@ namespace DirectX
             float m20, float m21, float m22, float m23) noexcept
             : _11(m00), _12(m01), _13(m02), _14(m03),
             _21(m10), _22(m11), _23(m12), _24(m13),
-            _31(m20), _32(m21), _33(m22), _34(m23) {}
+            _31(m20), _32(m21), _33(m22), _34(m23)
+        {}
         explicit XMFLOAT3X4(_In_reads_(12) const float* pArray) noexcept;
 
         float  operator() (size_t Row, size_t Column) const noexcept { return m[Row][Column]; }
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT3X4&) const = default;
         auto operator <=> (const XMFLOAT3X4&) const = default;
-#endif
+    #endif
     };
 
     // 3x4 Column-major Matrix: 32 bit floating point components aligned on a 16 byte boundary
@@ -997,16 +1000,17 @@ namespace DirectX
             : _11(m00), _12(m01), _13(m02), _14(m03),
             _21(m10), _22(m11), _23(m12), _24(m13),
             _31(m20), _32(m21), _33(m22), _34(m23),
-            _41(m30), _42(m31), _43(m32), _44(m33) {}
+            _41(m30), _42(m31), _43(m32), _44(m33)
+        {}
         explicit XMFLOAT4X4(_In_reads_(16) const float* pArray) noexcept;
 
         float  operator() (size_t Row, size_t Column) const noexcept { return m[Row][Column]; }
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
-#if (__cplusplus >= 202002L)
+    #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT4X4&) const = default;
         auto operator <=> (const XMFLOAT4X4&) const = default;
-#endif
+    #endif
     };
 
     // 4x4 Matrix: 32 bit floating point components aligned on a 16 byte boundary
@@ -1516,7 +1520,7 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMMatrixDeterminant(FXMMATRIX M) noexcept;
 
     _Success_(return)
-    bool        XM_CALLCONV     XMMatrixDecompose(_Out_ XMVECTOR* outScale, _Out_ XMVECTOR* outRotQuat, _Out_ XMVECTOR* outTrans, _In_ FXMMATRIX M) noexcept;
+        bool        XM_CALLCONV     XMMatrixDecompose(_Out_ XMVECTOR* outScale, _Out_ XMVECTOR* outRotQuat, _Out_ XMVECTOR* outTrans, _In_ FXMMATRIX M) noexcept;
 
     XMMATRIX    XM_CALLCONV     XMMatrixIdentity() noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixSet(float m00, float m01, float m02, float m03,
@@ -1798,7 +1802,7 @@ namespace DirectX
         static_assert(PermuteZ <= 7, "PermuteZ template parameter out of range");
         static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
 
-#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
         constexpr uint32_t Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
 
         constexpr bool WhichX = PermuteX > 3;
@@ -1807,11 +1811,11 @@ namespace DirectX
         constexpr bool WhichW = PermuteW > 3;
 
         return MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
-#else
+    #else
 
         return XMVectorPermute(V1, V2, PermuteX, PermuteY, PermuteZ, PermuteW);
 
-#endif
+    #endif
     }
 
     // Special-case permute templates
@@ -1894,13 +1898,13 @@ namespace DirectX
         static_assert(SwizzleZ <= 3, "SwizzleZ template parameter out of range");
         static_assert(SwizzleW <= 3, "SwizzleW template parameter out of range");
 
-#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+    #if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
         return XM_PERMUTE_PS(V, _MM_SHUFFLE(SwizzleW, SwizzleZ, SwizzleY, SwizzleX));
-#else
+    #else
 
         return XMVectorSwizzle(V, SwizzleX, SwizzleY, SwizzleZ, SwizzleW);
 
-#endif
+    #endif
     }
 
     // Specialized swizzles
@@ -1993,13 +1997,13 @@ namespace DirectX
      *
      ****************************************************************************/
 
-     // The purpose of the following global constants is to prevent redundant
-     // reloading of the constants when they are referenced by more than one
-     // separate inline math routine called within the same function.  Declaring
-     // a constant locally within a routine is sufficient to prevent redundant
-     // reloads of that constant when that single routine is called multiple
-     // times in a function, but if the constant is used (and declared) in a
-     // separate math routine it would be reloaded.
+    // The purpose of the following global constants is to prevent redundant
+    // reloading of the constants when they are referenced by more than one
+    // separate inline math routine called within the same function.  Declaring
+    // a constant locally within a routine is sufficient to prevent redundant
+    // reloads of that constant when that single routine is called multiple
+    // times in a function, but if the constant is used (and declared) in a
+    // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
 #if defined(__GNUC__) && !defined(__MINGW32__)
@@ -2161,10 +2165,10 @@ namespace DirectX
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable:4068 4214 4204 4365 4616 4640 6001 6101)
-     // C4068/4616: ignore unknown pragmas
-     // C4214/4204: nonstandard extension used
-     // C4365/4640: Off by default noise
-     // C6001/6101: False positives
+    // C4068/4616: ignore unknown pragmas
+    // C4214/4204: nonstandard extension used
+    // C4365/4640: Off by default noise
+    // C6001/6101: False positives
 #endif
 
 #ifdef _PREFAST_
@@ -2185,21 +2189,21 @@ namespace DirectX
 
     inline XMVECTOR XM_CALLCONV XMVectorSetBinaryConstant(uint32_t C0, uint32_t C1, uint32_t C2, uint32_t C3) noexcept
     {
-#if defined(_XM_NO_INTRINSICS_)
+    #if defined(_XM_NO_INTRINSICS_)
         XMVECTORU32 vResult;
         vResult.u[0] = (0 - (C0 & 1)) & 0x3F800000;
         vResult.u[1] = (0 - (C1 & 1)) & 0x3F800000;
         vResult.u[2] = (0 - (C2 & 1)) & 0x3F800000;
         vResult.u[3] = (0 - (C3 & 1)) & 0x3F800000;
         return vResult.v;
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    #elif defined(_XM_ARM_NEON_INTRINSICS_)
         XMVECTORU32 vResult;
         vResult.u[0] = (0 - (C0 & 1)) & 0x3F800000;
         vResult.u[1] = (0 - (C1 & 1)) & 0x3F800000;
         vResult.u[2] = (0 - (C2 & 1)) & 0x3F800000;
         vResult.u[3] = (0 - (C3 & 1)) & 0x3F800000;
         return vResult.v;
-#else // XM_SSE_INTRINSICS_
+    #else // XM_SSE_INTRINSICS_
         static const XMVECTORU32 g_vMask1 = { { { 1, 1, 1, 1 } } };
         // Move the parms to a vector
         __m128i vTemp = _mm_set_epi32(static_cast<int>(C3), static_cast<int>(C2), static_cast<int>(C1), static_cast<int>(C0));
@@ -2210,7 +2214,7 @@ namespace DirectX
         // 0xFFFFFFFF -> 1.0f, 0x00000000 -> 0.0f
         vTemp = _mm_and_si128(vTemp, g_XMOne);
         return _mm_castsi128_ps(vTemp);
-#endif
+    #endif
     }
 
     //------------------------------------------------------------------------------
@@ -2219,15 +2223,15 @@ namespace DirectX
     {
         assert(IntConstant >= -16 && IntConstant <= 15);
         assert(DivExponent < 32);
-#if defined(_XM_NO_INTRINSICS_)
+    #if defined(_XM_NO_INTRINSICS_)
 
         using DirectX::XMConvertVectorIntToFloat;
 
         XMVECTORI32 V = { { { IntConstant, IntConstant, IntConstant, IntConstant } } };
         return XMConvertVectorIntToFloat(V.v, DivExponent);
 
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
-        // Splat the int
+    #elif defined(_XM_ARM_NEON_INTRINSICS_)
+            // Splat the int
         int32x4_t vScale = vdupq_n_s32(IntConstant);
         // Convert to a float
         XMVECTOR vResult = vcvtq_f32_s32(vScale);
@@ -2238,8 +2242,8 @@ namespace DirectX
         // Multiply by the reciprocal (Perform a right shift by DivExponent)
         vResult = vmulq_f32(vResult, reinterpret_cast<const float32x4_t*>(&vScale)[0]);
         return vResult;
-#else // XM_SSE_INTRINSICS_
-        // Splat the int
+    #else // XM_SSE_INTRINSICS_
+            // Splat the int
         __m128i vScale = _mm_set1_epi32(IntConstant);
         // Convert to a float
         XMVECTOR vResult = _mm_cvtepi32_ps(vScale);
@@ -2250,7 +2254,7 @@ namespace DirectX
         // Multiply by the reciprocal (Perform a right shift by DivExponent)
         vResult = _mm_mul_ps(vResult, _mm_castsi128_ps(vScale));
         return vResult;
-#endif
+    #endif
     }
 
     //------------------------------------------------------------------------------
@@ -2258,18 +2262,18 @@ namespace DirectX
     inline XMVECTOR XM_CALLCONV XMVectorSplatConstantInt(int32_t IntConstant) noexcept
     {
         assert(IntConstant >= -16 && IntConstant <= 15);
-#if defined(_XM_NO_INTRINSICS_)
+    #if defined(_XM_NO_INTRINSICS_)
 
         XMVECTORI32 V = { { { IntConstant, IntConstant, IntConstant, IntConstant } } };
         return V.v;
 
-#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    #elif defined(_XM_ARM_NEON_INTRINSICS_)
         int32x4_t V = vdupq_n_s32(IntConstant);
         return reinterpret_cast<float32x4_t*>(&V)[0];
-#else // XM_SSE_INTRINSICS_
+    #else // XM_SSE_INTRINSICS_
         __m128i V = _mm_set1_epi32(IntConstant);
         return _mm_castsi128_ps(V);
-#endif
+    #endif
     }
 
 #include "DirectXMathConvert.inl"

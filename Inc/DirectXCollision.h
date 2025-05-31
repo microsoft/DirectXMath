@@ -336,9 +336,9 @@ namespace DirectX
 #ifdef _MSC_VER
 #pragma warning(push)
 #pragma warning(disable : 4068 4365 4616 6001)
-     // C4068/4616: ignore unknown pragmas
-     // C4365: Off by default noise
-     // C6001: False positives
+    // C4068/4616: ignore unknown pragmas
+    // C4365: Off by default noise
+    // C6001: False positives
 #endif
 
 #ifdef _PREFAST_

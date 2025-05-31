@@ -520,9 +520,9 @@ namespace MathInternal
  *
  ****************************************************************************/
 
- //-----------------------------------------------------------------------------
- // Transform a sphere by an angle preserving transform.
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Transform a sphere by an angle preserving transform.
+//-----------------------------------------------------------------------------
 _Use_decl_annotations_
 inline void XM_CALLCONV BoundingSphere::Transform(BoundingSphere& Out, FXMMATRIX M) const noexcept
 {
@@ -1187,9 +1187,9 @@ inline void BoundingSphere::CreateFromFrustum(BoundingSphere& Out, const Boundin
  *
  ****************************************************************************/
 
- //-----------------------------------------------------------------------------
- // Transform an axis aligned box by an angle preserving transform.
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Transform an axis aligned box by an angle preserving transform.
+//-----------------------------------------------------------------------------
 _Use_decl_annotations_
 inline void XM_CALLCONV BoundingBox::Transform(BoundingBox& Out, FXMMATRIX M) const noexcept
 {
@@ -1943,9 +1943,9 @@ inline void BoundingBox::CreateFromPoints(BoundingBox& Out, size_t Count, const 
  *
  ****************************************************************************/
 
- //-----------------------------------------------------------------------------
- // Transform an oriented box by an angle preserving transform.
- //-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// Transform an oriented box by an angle preserving transform.
+//-----------------------------------------------------------------------------
 _Use_decl_annotations_
 inline void XM_CALLCONV BoundingOrientedBox::Transform(BoundingOrientedBox& Out, FXMMATRIX M) const noexcept
 {

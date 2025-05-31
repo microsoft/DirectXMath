@@ -6,32 +6,32 @@
 # Builds the math3 test suite for DirectXMath.
 
 schedules:
-- cron: "0 0 * * *"
-  displayName: 'Nightly build'
-  branches:
-    include:
-    - main
+  - cron: "0 0 * * *"
+    displayName: 'Nightly build'
+    branches:
+      include:
+        - main
 
 # GitHub Actions handles MSBuild for CI/PR
 trigger: none
 pr:
   branches:
     include:
-    - main
+      - main
   paths:
     include:
-    - '.azuredevops/pipelines/DirectXMath-GitHub-Dev17.yml'
+      - '.azuredevops/pipelines/DirectXMath-GitHub-Dev17.yml'
 
 resources:
   repositories:
-  - repository: self
-    type: git
-    ref: refs/heads/main
-  - repository: testRepo
-    name: walbourn/directxmathtest
-    type: github
-    endpoint: microsoft
-    ref: refs/heads/main
+    - repository: self
+      type: git
+      ref: refs/heads/main
+    - repository: testRepo
+      name: walbourn/directxmathtest
+      type: github
+      endpoint: microsoft
+      ref: refs/heads/main
 
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
@@ -43,320 +43,320 @@ variables:
   VC_PATH: 'C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC'
 
 jobs:
-- job: BUILD_DEV17
-  displayName: 'Visual Studio 2022 (v143)'
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 6
-    matrix:
-      Release_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Release
-      Debug_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Debug
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
+  - job: BUILD_DEV17
+    displayName: 'Visual Studio 2022 (v143)'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 6
+      matrix:
+        Release_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Release
+        Debug_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Debug
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
 
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln no-intrinsics
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'NI $(BuildConfiguration)'
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln SSE3
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE3 $(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: ne(variables['BuildPlatform'], 'ARM64')
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln SSE4
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'SSE4 $(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: ne(variables['BuildPlatform'], 'ARM64')
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln AVX
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX $(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: ne(variables['BuildPlatform'], 'ARM64')
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln AVX2
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'AVX2 $(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: ne(variables['BuildPlatform'], 'ARM64')
-  - task: VSBuild@1
-    displayName: Build solution math3_2022.sln x87
-    inputs:
-      solution: Tests/math3/math3_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: 'x87 $(BuildConfiguration)'
-      msbuildArchitecture: x64
-    condition: eq(variables['BuildPlatform'], 'x86')
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln no-intrinsics
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'NI $(BuildConfiguration)'
+          msbuildArchitecture: x64
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln SSE3
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE3 $(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: ne(variables['BuildPlatform'], 'ARM64')
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln SSE4
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'SSE4 $(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: ne(variables['BuildPlatform'], 'ARM64')
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln AVX
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX $(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: ne(variables['BuildPlatform'], 'ARM64')
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln AVX2
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'AVX2 $(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: ne(variables['BuildPlatform'], 'ARM64')
+      - task: VSBuild@1
+        displayName: Build solution math3_2022.sln x87
+        inputs:
+          solution: Tests/math3/math3_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: 'x87 $(BuildConfiguration)'
+          msbuildArchitecture: x64
+        condition: eq(variables['BuildPlatform'], 'x86')
 
-- job: BUILD_EXTS
-  displayName: 'Visual Studio 2022 (v143) SHMath and XDSP'
-  cancelTimeoutInMinutes: 1
-  strategy:
-    maxParallel: 2
-    matrix:
-      Release_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Release
-      Debug_arm64:
-        BuildPlatform: ARM64
-        BuildConfiguration: Debug
-      Release_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Release
-      Debug_x64:
-        BuildPlatform: x64
-        BuildConfiguration: Debug
-      Release_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Release
-      Debug_x86:
-        BuildPlatform: x86
-        BuildConfiguration: Debug
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: VSBuild@1
-    displayName: Build solution shmath_2022.sln
-    inputs:
-      solution: Tests/shmath/shmath_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
-  - task: VSBuild@1
-    displayName: Build solution XDSPTest_2022
-    inputs:
-      solution: Tests/xdsp/XDSPTest_2022.sln
-      vsVersion: 17.0
-      platform: '$(BuildPlatform)'
-      configuration: '$(BuildConfiguration)'
-      msbuildArchitecture: x64
+  - job: BUILD_EXTS
+    displayName: 'Visual Studio 2022 (v143) SHMath and XDSP'
+    cancelTimeoutInMinutes: 1
+    strategy:
+      maxParallel: 2
+      matrix:
+        Release_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Release
+        Debug_arm64:
+          BuildPlatform: ARM64
+          BuildConfiguration: Debug
+        Release_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Release
+        Debug_x64:
+          BuildPlatform: x64
+          BuildConfiguration: Debug
+        Release_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Release
+        Debug_x86:
+          BuildPlatform: x86
+          BuildConfiguration: Debug
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: VSBuild@1
+        displayName: Build solution shmath_2022.sln
+        inputs:
+          solution: Tests/shmath/shmath_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64
+      - task: VSBuild@1
+        displayName: Build solution XDSPTest_2022
+        inputs:
+          solution: Tests/xdsp/XDSPTest_2022.sln
+          vsVersion: 17.0
+          platform: '$(BuildPlatform)'
+          configuration: '$(BuildConfiguration)'
+          msbuildArchitecture: x64
 
-- job: CMAKE_BUILD_X64
-  displayName: 'CMake for X64 BUILD_TESTING=ON'
-  timeoutInMinutes: 60
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: CmdLine@2
-    displayName: Setup environment for CMake to use VS
-    inputs:
-      script: |
-        call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
-        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
-        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
-        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
-        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
-        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
-        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
-        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
-        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
-        echo ##vso[task.setvariable variable=LIB;]%LIB%
+  - job: CMAKE_BUILD_X64
+    displayName: 'CMake for X64 BUILD_TESTING=ON'
+    timeoutInMinutes: 60
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: CmdLine@2
+        displayName: Setup environment for CMake to use VS
+        inputs:
+          script: |
+            call "$(VC_PATH)\Auxiliary\Build\vcvars64.bat"
+            echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+            echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+            echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+            echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+            echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+            echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\x64
+            echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+            echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+            echo ##vso[task.setvariable variable=LIB;]%LIB%
 
-  - task: CMake@1
-    displayName: CMake (MSVC; x64-Debug) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=x64-Debug
-  - task: CMake@1
-    displayName: CMake (MSVC; x64-Debug) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/x64-Debug -v
-  - task: CMake@1
-    displayName: CMake (MSVC; x64-Release) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=x64-Release
-  - task: CMake@1
-    displayName: CMake (MSVC; x64-Release) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/x64-Release -v
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; x64-Debug) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=x64-Debug-Clang
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; x64-Debug) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/x64-Debug-Clang -v
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; x64-Release) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=x64-Release-Clang
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; x64-Release) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/x64-Release-Clang -v
+      - task: CMake@1
+        displayName: CMake (MSVC; x64-Debug) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=x64-Debug
+      - task: CMake@1
+        displayName: CMake (MSVC; x64-Debug) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/x64-Debug -v
+      - task: CMake@1
+        displayName: CMake (MSVC; x64-Release) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=x64-Release
+      - task: CMake@1
+        displayName: CMake (MSVC; x64-Release) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/x64-Release -v
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; x64-Debug) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=x64-Debug-Clang
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; x64-Debug) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/x64-Debug-Clang -v
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; x64-Release) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=x64-Release-Clang
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; x64-Release) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/x64-Release-Clang -v
 
-- job: CMAKE_BUILD_ARM64
-  displayName: 'CMake for ARM64 BUILD_TESTING=ON'
-  timeoutInMinutes: 60
-  workspace:
-    clean: all
-  steps:
-  - checkout: self
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's'
-  - checkout: testRepo
-    displayName: Fetch Tests
-    clean: true
-    fetchTags: false
-    fetchDepth: 1
-    path: 's/Tests'
-  - task: CmdLine@2
-    displayName: Setup environment for CMake to use VS
-    inputs:
-      script: |
-        call "$(VC_PATH)\Auxiliary\Build\vcvarsamd64_arm64.bat"
-        echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
-        echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
-        echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
-        echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
-        echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
-        echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\arm64
-        echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
-        echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
-        echo ##vso[task.setvariable variable=LIB;]%LIB%
+  - job: CMAKE_BUILD_ARM64
+    displayName: 'CMake for ARM64 BUILD_TESTING=ON'
+    timeoutInMinutes: 60
+    workspace:
+      clean: all
+    steps:
+      - checkout: self
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's'
+      - checkout: testRepo
+        displayName: Fetch Tests
+        clean: true
+        fetchTags: false
+        fetchDepth: 1
+        path: 's/Tests'
+      - task: CmdLine@2
+        displayName: Setup environment for CMake to use VS
+        inputs:
+          script: |
+            call "$(VC_PATH)\Auxiliary\Build\vcvarsamd64_arm64.bat"
+            echo ##vso[task.setvariable variable=WindowsSdkVerBinPath;]%WindowsSdkVerBinPath%
+            echo ##vso[task.prependpath]%VSINSTALLDIR%Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja
+            echo ##vso[task.prependpath]%VCINSTALLDIR%Tools\Llvm\x64\bin
+            echo ##vso[task.prependpath]%WindowsSdkBinPath%x64
+            echo ##vso[task.prependpath]%WindowsSdkVerBinPath%x64
+            echo ##vso[task.prependpath]%VCToolsInstallDir%bin\Hostx64\arm64
+            echo ##vso[task.setvariable variable=EXTERNAL_INCLUDE;]%EXTERNAL_INCLUDE%
+            echo ##vso[task.setvariable variable=INCLUDE;]%INCLUDE%
+            echo ##vso[task.setvariable variable=LIB;]%LIB%
 
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64-Debug) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Debug
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64-Debug) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Debug -v
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64-Release) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Release
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64-Release) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Release -v
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; arm64-Debug) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Debug-Clang
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; arm64-Debug) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Debug-Clang -v
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; arm64-Release) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64-Release-Clang
-  - task: CMake@1
-    displayName: CMake (clang/LLVM; arm64-Release) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64-Release-Clang -v
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64ec-Debug) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64ec-Debug
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64ec-Debug) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64ec-Debug -v
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64ec-Release) Config
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --preset=arm64ec-Release
-  - task: CMake@1
-    displayName: CMake (MSVC; arm64ec-Release) Build
-    inputs:
-      cwd: '$(Build.SourcesDirectory)'
-      cmakeArgs: --build out/build/arm64ec-Release -v
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64-Debug) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64-Debug
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64-Debug) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64-Debug -v
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64-Release) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64-Release
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64-Release) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64-Release -v
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; arm64-Debug) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64-Debug-Clang
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; arm64-Debug) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64-Debug-Clang -v
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; arm64-Release) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64-Release-Clang
+      - task: CMake@1
+        displayName: CMake (clang/LLVM; arm64-Release) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64-Release-Clang -v
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64ec-Debug) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64ec-Debug
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64ec-Debug) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64ec-Debug -v
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64ec-Release) Config
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --preset=arm64ec-Release
+      - task: CMake@1
+        displayName: CMake (MSVC; arm64ec-Release) Build
+        inputs:
+          cwd: '$(Build.SourcesDirectory)'
+          cmakeArgs: --build out/build/arm64ec-Release -v

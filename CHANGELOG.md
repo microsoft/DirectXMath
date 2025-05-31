@@ -115,7 +115,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 * Includes support for additional optimizations when built with /arch:AVX or /arch:AVX2
 * Added use of constexpr for type constructors, XMConvertToRadians, and XMConvertToDegrees
 * Marked ``__vector4i``, ``XMXDEC4``, ``XMDECN4``, ``XMDEC4``, and associated Load & Store functions as deprecated.
-  + These are vestiges of Xbox 360 support and will be removed in a future release
+  * These are vestiges of Xbox 360 support and will be removed in a future release
 * Renamed parameter in XMMatrixPerspectiveFov* to reduce user confusion when relying on IntelliSense
 * XMU565, XMUNIBBLE4 constructors take uint8_t instead of int8_t
 
@@ -168,7 +168,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 * Optimizations for transcendental functions
 * Template forms for permute, swizzle, shift-left, rotate-left, rotation-right, and insert
 * Removal of deprecated types and functions
-  + ``XM_CACHE_LINE_SIZE`` define, XMVectorExpEst, XMVectorLogEst, XMVectorPowEst, XMVectorSinHEs, XMVectorCosHEst, XMVectorTanHEst, XMVector2InBoundsR, XMVector3InBoundsR, XMVector4InBoundsR
+  * ``XM_CACHE_LINE_SIZE`` define, XMVectorExpEst, XMVectorLogEst, XMVectorPowEst, XMVectorSinHEs, XMVectorCosHEst, XMVectorTanHEst, XMVector2InBoundsR, XMVector3InBoundsR, XMVector4InBoundsR
 * Removed ``XM_STRICT_VECTOR4``; XMVECTOR in NO-INTRINSICS always defined without .x, .y, .z, .w, .v, or .u
 * Additional bounding types
 * SAL fixes and improvements
@@ -177,7 +177,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 * Renamed and reorganized the headers
 * Introduced C++ namespaces
 * Removed the Xbox 360-specific GPU types
-  + HENDN3, XMHEND3, XMUHENDN3, XMUHEND3, XMDHENN3, XMDHEN3, XMUDHENN3, XMUDHEN3, XMXICON4, XMXICO4, XMICON4, XMICO4, XMUICON4, XMUICO4
+  * HENDN3, XMHEND3, XMUHENDN3, XMUHEND3, XMDHENN3, XMDHEN3, XMUDHENN3, XMUDHEN3, XMXICON4, XMXICO4, XMICON4, XMICO4, XMUICON4, XMUICO4
 
 ### July 2012 (XNAMath 2.05)
 * Template forms have been added for `XMVectorPermute`, `XMVectorSwizzle`, `XMVectorShiftLeft`, `XMVectorRotateLeft`, `XMVectorRotateRight`, and `XMVectorInsert`
@@ -188,15 +188,14 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ### February 2011 (XNAMath 2.04)
 * Addition of new data types and associated load-store functions:
-  + `XMBYTEN2, XMBYTE2, XMUBYTEN2, XMUBYTE2`
-  + `XMLoadByteN2, XMLoadByte2, XMLoadUByteN2, XMLoadUByte2`
-  + `XMStoreByteN2, XMStoreByte2, XMStoreUByteN2, XMStoreUByte2`
-  + `XMINT2, XMUINT2, XMINT3, XMUINT3, XMINT4, XMUINT4`
-  + `XMLoadSInt2, XMLoadUInt2, XMLoadSInt3, XMLoadUInt3, XMLoadSInt4, XMLoadUInt4`
-  + `XMStoreSInt2, XMStoreUInt2, XMStoreSInt3, XMStoreUInt3, XMStoreSInt4, XMStoreUInt4`
+  * `XMBYTEN2, XMBYTE2, XMUBYTEN2, XMUBYTE2`
+  * `XMLoadByteN2, XMLoadByte2, XMLoadUByteN2, XMLoadUByte2`
+  * `XMStoreByteN2, XMStoreByte2, XMStoreUByteN2, XMStoreUByte2`
+  * `XMINT2, XMUINT2, XMINT3, XMUINT3, XMINT4, XMUINT4`
+  * `XMLoadSInt2, XMLoadUInt2, XMLoadSInt3, XMLoadUInt3, XMLoadSInt4, XMLoadUInt4`
+  * `XMStoreSInt2, XMStoreUInt2, XMStoreSInt3, XMStoreUInt3, XMStoreSInt4, XMStoreUInt4`
 * Marked most single-parameter C++ constructors with `explicit` keyword
 * Corrected range issues with SSE implementations of `XMVectorFloor` and `XMVectorCeiling`
-
 
 ### June 2010 (XNAMath 2.03)
 * Addition of ``XMVectorDivide`` to optimize SSE2 vector division operations
@@ -210,9 +209,9 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 ### August 2009 (XNAMath 2.01)
 * Adds ``XM_STRICT_VECTOR4``. This opt-in directive disallows the usage of XboxMath-like  member accessors such as .x, .y, and .z. This makes it easier to write portable XNA Math code.
 * Added conversion support for the following Windows graphics formats:
-  + 16-bit color formats (565, 555X, 5551)
-  + 4-bits per channel color formats (4444)
-  + Unique Direct3D 10/11 formats (``DXGI_FORMAT_R9G9B9E5_SHAREDEXP`` and ``DXGI_FORMAT_R11G11B10_FLOAT``)
+  * 16-bit color formats (565, 555X, 5551)
+  * 4-bits per channel color formats (4444)
+  * Unique Direct3D 10/11 formats (``DXGI_FORMAT_R9G9B9E5_SHAREDEXP`` and ``DXGI_FORMAT_R11G11B10_FLOAT``)
 
 ### March 2009 (XNAMath 2.00)
 * Initial release (based on the Xbox 360 Xbox math library)
