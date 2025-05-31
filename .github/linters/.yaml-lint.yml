@@ -10,6 +10,8 @@ rules:
     check-keys: false
   document-start: disable
   line-length:
-    max: 150
+    max: 160
   comments:
     min-spaces-from-content: 1
+  new-lines:
+    type: platform
