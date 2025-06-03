@@ -23,12 +23,12 @@ namespace
     )
     {
         // note that most people have difficulty fusing images into 3D
-        // if the separation equals even just the human average. by 
+        // if the separation equals even just the human average. by
         // reducing the separation (interocular distance) by 1/2, we
         // guarantee a larger subset of people will see full 3D
 
         // the conservative setting should always be used. the only problem
-        // with the conservative setting is that the 3D effect will be less 
+        // with the conservative setting is that the 3D effect will be less
         // impressive on smaller screens (which makes sense, since your eye
         // cannot be tricked as easily based on the smaller fov). to simulate
         // the effect of a larger screen, use the liberal settings (debug only)
@@ -37,10 +37,10 @@ namespace
 
         // Liberal Settings: * max acuity angle: 1.6f degrees * interoc distance: 2.5f inches
 
-        // maximum visual accuity angle allowed is 3.2 degrees for 
-        // a physical scene, and 1.6 degrees for a virtual one. 
+        // maximum visual accuity angle allowed is 3.2 degrees for
+        // a physical scene, and 1.6 degrees for a virtual one.
         // thus we cannot allow an object to appear any closer to
-        // the viewer than 1.6 degrees (divided by two for most 
+        // the viewer than 1.6 degrees (divided by two for most
         // half-angle calculations)
 
         static const float fMaxStereoDistance = 780; // inches (should be between 10 and 20m)
@@ -135,7 +135,7 @@ XMMATRIX DirectX::StereoProjectionFovLH
     fVirtualProjection *= pStereoParameters->fStereoSeparationFactor; // incorporate developer defined bias
 
     //
-    // By applying a translation, we are forcing our cameras to be parallel 
+    // By applying a translation, we are forcing our cameras to be parallel
     //
 
     float fInvertedAngle = atanf(fVirtualProjection / (2.0f * NearZ));
@@ -212,7 +212,7 @@ XMMATRIX DirectX::StereoProjectionFovRH
     fVirtualProjection *= pStereoParameters->fStereoSeparationFactor; // incorporate developer defined bias
 
     //
-    // By applying a translation, we are forcing our cameras to be parallel 
+    // By applying a translation, we are forcing our cameras to be parallel
     //
 
     float fInvertedAngle = atanf(fVirtualProjection / (2.0f * NearZ));
@@ -220,7 +220,7 @@ XMMATRIX DirectX::StereoProjectionFovRH
     XMMATRIX proj = XMMatrixPerspectiveFovRH(FovAngleY, AspectRatio, NearZ, FarZ);
 
     //
-    // By applying a translation, we are forcing our cameras to be parallel 
+    // By applying a translation, we are forcing our cameras to be parallel
     //
 
     XMMATRIX patchedProjection;

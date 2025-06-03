@@ -16,28 +16,28 @@ namespace DirectX
 
     namespace PackedVector
     {
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4201 4365 4324 4996)
-        // C4201: nonstandard extension used
-        // C4365: Off by default noise
-        // C4324: alignment padding warnings
-        // C4996: deprecation warnings
-#endif
+    #ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable:4201 4365 4324 4996)
+            // C4201: nonstandard extension used
+            // C4365: Off by default noise
+            // C4324: alignment padding warnings
+            // C4996: deprecation warnings
+    #endif
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
-#pragma clang diagnostic ignored "-Wnested-anon-types"
-#endif
+    #ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+    #pragma clang diagnostic ignored "-Wnested-anon-types"
+    #endif
 
-        //------------------------------------------------------------------------------
-        // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
-        // a 32 bit integer.  The normalized color is packed into 32 bits using 8 bit
-        // unsigned, normalized integers for the alpha, red, green, and blue components.
-        // The alpha component is stored in the most significant bits and the blue
-        // component in the least significant bits (A8R8G8B8):
-        // [32] aaaaaaaa rrrrrrrr gggggggg bbbbbbbb [0]
+            //------------------------------------------------------------------------------
+            // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
+            // a 32 bit integer.  The normalized color is packed into 32 bits using 8 bit
+            // unsigned, normalized integers for the alpha, red, green, and blue components.
+            // The alpha component is stored in the most significant bits and the blue
+            // component in the least significant bits (A8R8G8B8):
+            // [32] aaaaaaaa rrrrrrrr gggggggg bbbbbbbb [0]
         struct XMCOLOR
         {
             union
@@ -1046,18 +1046,18 @@ namespace DirectX
             XMU555& operator= (uint16_t Packed) noexcept { v = Packed; return *this; }
         };
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #endif
 
-        /****************************************************************************
-         *
-         * Data conversion operations
-         *
-         ****************************************************************************/
+            /****************************************************************************
+             *
+             * Data conversion operations
+             *
+             ****************************************************************************/
 
         float           XMConvertHalfToFloat(HALF Value) noexcept;
         float* XMConvertHalfToFloatStream(_Out_writes_bytes_(sizeof(float) + OutputStride * (HalfCount - 1)) float* pOutputStream,
@@ -1108,46 +1108,46 @@ namespace DirectX
         XMVECTOR    XM_CALLCONV     XMLoadUNibble4(_In_ const XMUNIBBLE4* pSource) noexcept;
         XMVECTOR    XM_CALLCONV     XMLoadU555(_In_ const XMU555* pSource) noexcept;
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996)
-        // C4996: ignore deprecation warning
-#endif
+    #ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable : 4996)
+            // C4996: ignore deprecation warning
+    #endif
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#endif
+    #ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    #endif
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
-        XM_DEPRECATED
-        XMVECTOR    XM_CALLCONV XMLoadDecN4(_In_ const XMDECN4* pSource) noexcept;
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    #endif
 
         XM_DEPRECATED
-        XMVECTOR    XM_CALLCONV XMLoadDec4(_In_ const XMDEC4* pSource) noexcept;
+            XMVECTOR    XM_CALLCONV XMLoadDecN4(_In_ const XMDECN4* pSource) noexcept;
 
         XM_DEPRECATED
-        XMVECTOR    XM_CALLCONV XMLoadXDec4(_In_ const XMXDEC4* pSource) noexcept;
+            XMVECTOR    XM_CALLCONV XMLoadDec4(_In_ const XMDEC4* pSource) noexcept;
 
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+        XM_DEPRECATED
+            XMVECTOR    XM_CALLCONV XMLoadXDec4(_In_ const XMXDEC4* pSource) noexcept;
 
-        /****************************************************************************
-         *
-         * Store operations
-         *
-         ****************************************************************************/
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #endif
+
+            /****************************************************************************
+             *
+             * Store operations
+             *
+             ****************************************************************************/
 
         void    XM_CALLCONV     XMStoreColor(_Out_ XMCOLOR* pDestination, _In_ FXMVECTOR V) noexcept;
 
@@ -1181,78 +1181,78 @@ namespace DirectX
         void    XM_CALLCONV     XMStoreUNibble4(_Out_ XMUNIBBLE4* pDestination, _In_ FXMVECTOR V) noexcept;
         void    XM_CALLCONV     XMStoreU555(_Out_ XMU555* pDestination, _In_ FXMVECTOR V) noexcept;
 
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable : 4996)
-        // C4996: ignore deprecation warning
-#endif
+    #ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable : 4996)
+            // C4996: ignore deprecation warning
+    #endif
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#endif
+    #ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    #endif
 
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
-
-        XM_DEPRECATED
-        void    XM_CALLCONV XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V) noexcept;
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    #endif
 
         XM_DEPRECATED
-        void    XM_CALLCONV XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
+            void    XM_CALLCONV XMStoreDecN4(_Out_ XMDECN4* pDestination, _In_ FXMVECTOR V) noexcept;
 
         XM_DEPRECATED
-        void    XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
+            void    XM_CALLCONV XMStoreDec4(_Out_ XMDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
 
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+        XM_DEPRECATED
+            void    XM_CALLCONV XMStoreXDec4(_Out_ XMXDEC4* pDestination, _In_ FXMVECTOR V) noexcept;
 
-        /****************************************************************************
-         *
-         * Implementation
-         *
-         ****************************************************************************/
-#ifdef _MSC_VER
-#pragma warning(push)
-#pragma warning(disable:4068 4214 4204 4365 4616 6001 6101)
-         // C4068/4616: ignore unknown pragmas
-         // C4214/4204: nonstandard extension used
-         // C4365: Off by default noise
-         // C6001/6101: False positives
-#endif
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #endif
 
-#ifdef _PREFAST_
-#pragma prefast(push)
-#pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
-#pragma prefast(disable : 26495, "Union initialization confuses /analyze")
-#endif
+            /****************************************************************************
+             *
+             * Implementation
+             *
+             ****************************************************************************/
+    #ifdef _MSC_VER
+    #pragma warning(push)
+    #pragma warning(disable:4068 4214 4204 4365 4616 6001 6101)
+            // C4068/4616: ignore unknown pragmas
+            // C4214/4204: nonstandard extension used
+            // C4365: Off by default noise
+            // C6001/6101: False positives
+    #endif
 
-#ifdef __clang__
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-warning-option"
-#pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
-#endif
+    #ifdef _PREFAST_
+    #pragma prefast(push)
+    #pragma prefast(disable : 25000, "FXMVECTOR is 16 bytes")
+    #pragma prefast(disable : 26495, "Union initialization confuses /analyze")
+    #endif
 
-#include "DirectXPackedVector.inl"
+    #ifdef __clang__
+    #pragma clang diagnostic push
+    #pragma clang diagnostic ignored "-Wunknown-warning-option"
+    #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+    #endif
 
-#ifdef __clang__
-#pragma clang diagnostic pop
-#endif
-#ifdef _PREFAST_
-#pragma prefast(pop)
-#endif
-#ifdef _MSC_VER
-#pragma warning(pop)
-#endif
+    #include "DirectXPackedVector.inl"
+
+    #ifdef __clang__
+    #pragma clang diagnostic pop
+    #endif
+    #ifdef _PREFAST_
+    #pragma prefast(pop)
+    #endif
+    #ifdef _MSC_VER
+    #pragma warning(pop)
+    #endif
     } // namespace PackedVector
 
 } // namespace DirectX

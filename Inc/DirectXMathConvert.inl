@@ -15,7 +15,7 @@
  *
  ****************************************************************************/
 
- //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -34,10 +34,12 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorIntToFloat
     float fScale = 1.0f / static_cast<float>(1U << DivExponent);
     uint32_t ElementIndex = 0;
     XMVECTOR Result;
-    do {
+    do
+    {
         auto iTemp = static_cast<int32_t>(VInt.vector4_u32[ElementIndex]);
         Result.vector4_f32[ElementIndex] = static_cast<float>(iTemp)* fScale;
-    } while (++ElementIndex < 4);
+    }
+    while (++ElementIndex < 4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fScale = 1.0f / static_cast<float>(1U << DivExponent);
@@ -69,7 +71,8 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToInt
     auto fScale = static_cast<float>(1U << MulExponent);
     uint32_t ElementIndex = 0;
     XMVECTOR Result;
-    do {
+    do
+    {
         int32_t iResult;
         float fTemp = VFloat.vector4_f32[ElementIndex] * fScale;
         if (fTemp <= -(65536.0f * 32768.0f))
@@ -80,11 +83,13 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToInt
         {
             iResult = 0x7FFFFFFF;
         }
-        else {
+        else
+        {
             iResult = static_cast<int32_t>(fTemp);
         }
         Result.vector4_u32[ElementIndex] = static_cast<uint32_t>(iResult);
-    } while (++ElementIndex < 4);
+    }
+    while (++ElementIndex < 4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmulq_n_f32(VFloat, static_cast<float>(1U << MulExponent));
@@ -125,9 +130,11 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorUIntToFloat
     float fScale = 1.0f / static_cast<float>(1U << DivExponent);
     uint32_t ElementIndex = 0;
     XMVECTOR Result;
-    do {
+    do
+    {
         Result.vector4_f32[ElementIndex] = static_cast<float>(VUInt.vector4_u32[ElementIndex])* fScale;
-    } while (++ElementIndex < 4);
+    }
+    while (++ElementIndex < 4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fScale = 1.0f / static_cast<float>(1U << DivExponent);
@@ -169,7 +176,8 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
     auto fScale = static_cast<float>(1U << MulExponent);
     uint32_t ElementIndex = 0;
     XMVECTOR Result;
-    do {
+    do
+    {
         uint32_t uResult;
         float fTemp = VFloat.vector4_f32[ElementIndex] * fScale;
         if (fTemp <= 0.0f)
@@ -180,11 +188,13 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
         {
             uResult = 0xFFFFFFFFU;
         }
-        else {
+        else
+        {
             uResult = static_cast<uint32_t>(fTemp);
         }
         Result.vector4_u32[ElementIndex] = uResult;
-    } while (++ElementIndex < 4);
+    }
+    while (++ElementIndex < 4);
     return Result;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float32x4_t vResult = vmulq_n_f32(VFloat, static_cast<float>(1U << MulExponent));
@@ -230,7 +240,7 @@ inline XMVECTOR XM_CALLCONV XMConvertVectorFloatToUInt
  *
  ****************************************************************************/
 
- //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 _Use_decl_annotations_
 inline XMVECTOR XM_CALLCONV XMLoadInt(const uint32_t* pSource) noexcept
 {

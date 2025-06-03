@@ -849,7 +849,8 @@ namespace
             zc2 = m[2] * len25inv;
             zs2 = m[5] * len25inv;
         }
-        else {  // m[6],m[7],m[8] already aligned to (0,0,1)
+        else
+        {  // m[6],m[7],m[8] already aligned to (0,0,1)
             zc1 = 1.0; zs1 = 0.0;        // identity
             yc = cz; ys = 0.0;           // identity
             zc2 = m[0] * cz; zs2 = -m[1];  // align x axis (mx[0],mx[1],0) to (1,0,0)
@@ -1070,82 +1071,82 @@ float* XM_CALLCONV DirectX::XMSHRotate(
     switch (order)
     {
     case 2:
-    {
-        // do linear by hand...
+        {
+            // do linear by hand...
 
-        result[1] = r11*input[1] - r12*input[2] + r10*input[3];
-        result[2] = -r21*input[1] + r22*input[2] - r20*input[3];
-        result[3] = r01*input[1] - r02*input[2] + r00*input[3];
-    }
-    break;
+            result[1] = r11*input[1] - r12*input[2] + r10*input[3];
+            result[2] = -r21*input[1] + r22*input[2] - r20*input[3];
+            result[3] = r01*input[1] - r02*input[2] + r00*input[3];
+        }
+        break;
 
     case 3:
-    {
-        float R[25];
-        // do linear by hand...
-
-        result[1] = r11*input[1] - r12*input[2] + r10*input[3];
-        result[2] = -r21*input[1] + r22*input[2] - r20*input[3];
-        result[3] = r01*input[1] - r02*input[2] + r00*input[3];
-
-        // direct code for quadratics is faster than ZYZ reccurence relations
-
-        const float t41 = r01 * r00;
-        const float t43 = r11 * r10;
-        const float t48 = r11 * r12;
-        const float t50 = r01 * r02;
-        const float t55 = r02 * r02;
-        const float t57 = r22 * r22;
-        const float t58 = r12 * r12;
-        const float t61 = r00 * r02;
-        const float t63 = r10 * r12;
-        const float t68 = r10 * r10;
-        const float t70 = r01 * r01;
-        const float t72 = r11 * r11;
-        const float t74 = r00 * r00;
-        const float t76 = r21 * r21;
-        const float t78 = r20 * r20;
-
-        const float v173 = 0.1732050808e1f;
-        const float v577 = 0.5773502693e0f;
-        const float v115 = 0.1154700539e1f;
-        const float v288 = 0.2886751347e0f;
-        const float v866 = 0.8660254040e0f;
-
-        R[0] = r11 * r00 + r01 * r10;
-        R[1] = -r01 * r12 - r11 * r02;
-        R[2] = v173 * r02 * r12;
-        R[3] = -r10 * r02 - r00 * r12;
-        R[4] = r00 * r10 - r01 * r11;
-        R[5] = -r11 * r20 - r21 * r10;
-        R[6] = r11 * r22 + r21 * r12;
-        R[7] = -v173 * r22 * r12;
-        R[8] = r20 * r12 + r10 * r22;
-        R[9] = -r10 * r20 + r11 * r21;
-        R[10] = -v577* (t41 + t43) + v115 * r21 * r20;
-        R[11] = v577* (t48 + t50) - v115 * r21 * r22;
-        R[12] = -0.5000000000e0f * (t55 + t58) + t57;
-        R[13] = v577 * (t61 + t63) - v115 * r20 * r22;
-        R[14] = v288 * (t70 - t68 + t72 - t74) - v577 * (t76 - t78);
-        R[15] = -r01 * r20 - r21 * r00;
-        R[16] = r01 * r22 + r21 * r02;
-        R[17] = -v173 * r22 * r02;
-        R[18] = r00 * r22 + r20 * r02;
-        R[19] = -r00 * r20 + r01 * r21;
-        R[20] = t41 - t43;
-        R[21] = -t50 + t48;
-        R[22] = v866 * (t55 - t58);
-        R[23] = t63 - t61;
-        R[24] = 0.5000000000e0f *(t74 - t68 - t70 + t72);
-
-        // blow the matrix multiply out by hand, looping is ineficient on a P4...
-        for (unsigned int iR = 0; iR < 5; iR++)
         {
-            const unsigned int uBase = iR * 5;
-            result[4 + iR] = R[uBase + 0] * input[4] + R[uBase + 1] * input[5] + R[uBase + 2] * input[6] + R[uBase + 3] * input[7] + R[uBase + 4] * input[8];
+            float R[25];
+            // do linear by hand...
+
+            result[1] = r11*input[1] - r12*input[2] + r10*input[3];
+            result[2] = -r21*input[1] + r22*input[2] - r20*input[3];
+            result[3] = r01*input[1] - r02*input[2] + r00*input[3];
+
+            // direct code for quadratics is faster than ZYZ reccurence relations
+
+            const float t41 = r01 * r00;
+            const float t43 = r11 * r10;
+            const float t48 = r11 * r12;
+            const float t50 = r01 * r02;
+            const float t55 = r02 * r02;
+            const float t57 = r22 * r22;
+            const float t58 = r12 * r12;
+            const float t61 = r00 * r02;
+            const float t63 = r10 * r12;
+            const float t68 = r10 * r10;
+            const float t70 = r01 * r01;
+            const float t72 = r11 * r11;
+            const float t74 = r00 * r00;
+            const float t76 = r21 * r21;
+            const float t78 = r20 * r20;
+
+            const float v173 = 0.1732050808e1f;
+            const float v577 = 0.5773502693e0f;
+            const float v115 = 0.1154700539e1f;
+            const float v288 = 0.2886751347e0f;
+            const float v866 = 0.8660254040e0f;
+
+            R[0] = r11 * r00 + r01 * r10;
+            R[1] = -r01 * r12 - r11 * r02;
+            R[2] = v173 * r02 * r12;
+            R[3] = -r10 * r02 - r00 * r12;
+            R[4] = r00 * r10 - r01 * r11;
+            R[5] = -r11 * r20 - r21 * r10;
+            R[6] = r11 * r22 + r21 * r12;
+            R[7] = -v173 * r22 * r12;
+            R[8] = r20 * r12 + r10 * r22;
+            R[9] = -r10 * r20 + r11 * r21;
+            R[10] = -v577* (t41 + t43) + v115 * r21 * r20;
+            R[11] = v577* (t48 + t50) - v115 * r21 * r22;
+            R[12] = -0.5000000000e0f * (t55 + t58) + t57;
+            R[13] = v577 * (t61 + t63) - v115 * r20 * r22;
+            R[14] = v288 * (t70 - t68 + t72 - t74) - v577 * (t76 - t78);
+            R[15] = -r01 * r20 - r21 * r00;
+            R[16] = r01 * r22 + r21 * r02;
+            R[17] = -v173 * r22 * r02;
+            R[18] = r00 * r22 + r20 * r02;
+            R[19] = -r00 * r20 + r01 * r21;
+            R[20] = t41 - t43;
+            R[21] = -t50 + t48;
+            R[22] = v866 * (t55 - t58);
+            R[23] = t63 - t61;
+            R[24] = 0.5000000000e0f *(t74 - t68 - t70 + t72);
+
+            // blow the matrix multiply out by hand, looping is ineficient on a P4...
+            for (unsigned int iR = 0; iR < 5; iR++)
+            {
+                const unsigned int uBase = iR * 5;
+                result[4 + iR] = R[uBase + 0] * input[4] + R[uBase + 1] * input[5] + R[uBase + 2] * input[6] + R[uBase + 3] * input[7] + R[uBase + 4] * input[8];
+            }
         }
-    }
-    break;
+        break;
 
     case 4:
         sh3_rot(mRot, const_cast<float *>(input), result);
@@ -1401,8 +1402,8 @@ float* DirectX::XMSHScale(
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float DirectX::XMSHDot(
-    size_t order, 
-    const float *inputA, 
+    size_t order,
+    const float *inputA,
     const float *inputB) noexcept
 {
     if (!inputA || !inputB)
@@ -1425,10 +1426,10 @@ float DirectX::XMSHDot(
 // Computes the product of two functions represented using SH (f and g), where:
 // result[i] = int(y_i(s) * f(s) * g(s)), where y_i(s) is the ith SH basis
 // function, f(s) and g(s) are SH functions (sum_i(y_i(s)*c_i)).  The order O
-// determines the lengths of the arrays, where there should always be O^2 
+// determines the lengths of the arrays, where there should always be O^2
 // coefficients.  In general the product of two SH functions of order O generates
 // and SH function of order 2*O - 1, but we truncate the result.  This means
-// that the product commutes (f*g == g*f) but doesn't associate 
+// that the product commutes (f*g == g*f) but doesn't associate
 // (f*(g*h) != (f*g)*h.
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
@@ -4469,7 +4470,7 @@ float* DirectX::XMSHMultiply6(
 
 
 //-------------------------------------------------------------------------------------
-// Evaluates a directional light and returns spectral SH data.  The output 
+// Evaluates a directional light and returns spectral SH data.  The output
 // vector is computed so that if the intensity of R/G/B is unit the resulting
 // exit radiance of a point directly under the light on a diffuse object with
 // an albedo of 1 would be 1.0.  This will compute 3 spectral samples, resultR
@@ -4536,10 +4537,10 @@ bool XM_CALLCONV DirectX::XMSHEvalDirectionalLight(
 
 
 //------------------------------------------------------------------------------------
-// Evaluates a spherical light and returns spectral SH data.  There is no 
+// Evaluates a spherical light and returns spectral SH data.  There is no
 // normalization of the intensity of the light like there is for directional
-// lights, care has to be taken when specifiying the intensities.  This will 
-// compute 3 spectral samples, resultR has to be specified, while resultG and 
+// lights, care has to be taken when specifiying the intensities.  This will
+// compute 3 spectral samples, resultR has to be specified, while resultG and
 // resultB are optional.
 //
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb205451.aspx
@@ -4574,7 +4575,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
 
     //
     // Sphere at distance fDist, the cone angle is determined by looking at the
-    // right triangle with one side (the hypotenuse) beind the vector from the 
+    // right triangle with one side (the hypotenuse) beind the vector from the
     // origin to the center of the sphere, another side is from the origin to
     // a point on the sphere whose normal is perpendicular to the given side (this
     // is one of the points on the cone that is defined by the projection of the sphere
@@ -4589,7 +4590,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
     // no default normalization is done for this case, have to be careful how
     // you represent the coefficients...
 
-    const float fNewNorm = 1.0f;///(fSinConeAngle*fSinConeAngle); 
+    const float fNewNorm = 1.0f;///(fSinConeAngle*fSinConeAngle);
 
     ComputeCapInt(order, fConeAngle, fTmpL0);
 
@@ -4790,7 +4791,7 @@ bool XM_CALLCONV DirectX::XMSHEvalConeLight(
 // is normalized so that a point on a perfectly diffuse surface with no
 // shadowing and a normal pointed in the direction pDir would result in exit
 // radiance with a value of 1 if the top color was white and the bottom color
-// was black.  This is a very simple model where topColor represents the intensity 
+// was black.  This is a very simple model where topColor represents the intensity
 // of the "sky" and bottomColor represents the intensity of the "ground".
 //
 // http://msdn.microsoft.com/en-us/library/windows/desktop/bb204989.aspx

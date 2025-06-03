@@ -6,3 +6,4 @@
 *.cmd eol=crlf
 *.h eol=crlf
 *.inl eol=crlf
+*.yml eol=crlf

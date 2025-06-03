@@ -124,11 +124,11 @@ namespace
         switch (format)
         {
         case DXGI_FORMAT_R32G32B32A32_FLOAT:
-        {
-            size_t msize = (size > (sizeof(XMVECTOR)*count)) ? (sizeof(XMVECTOR)*count) : size;
-            memcpy_s(dPtr, sizeof(XMVECTOR)*count, pSource, msize);
-        }
-        return true;
+            {
+                size_t msize = (size > (sizeof(XMVECTOR)*count)) ? (sizeof(XMVECTOR)*count) : size;
+                memcpy_s(dPtr, sizeof(XMVECTOR)*count, pSource, msize);
+            }
+            return true;
 
         case DXGI_FORMAT_R32G32B32_FLOAT:
             LOAD_SCANLINE3(XMFLOAT3, XMLoadFloat3, g_XMIdentityR3)

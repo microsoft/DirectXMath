@@ -41,7 +41,7 @@ namespace DirectX
     // be 1.0, but during development, on small screens, this value can be raised to up to 2.0 in
     // order to exaggerate the 3D effect.  Values over 1.0 may cause discomfort on normal sized
     // displays. It defaults to 1.0.
-    // 
+    //
     struct STEREO_PARAMETERS
     {
         float fViewerDistanceInches;
