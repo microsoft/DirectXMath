@@ -3,7 +3,7 @@
 #
 # http://go.microsoft.com/fwlink/?LinkID=615560
 
-name: 'CTest (Windows)'
+name: 'CTest (x64)'
 
 on:
   push:
