@@ -67,7 +67,6 @@ jobs:
         Debug_x86:
           BuildPlatform: x86
           BuildConfiguration: Debug
-
     steps:
       - checkout: self
         clean: true
@@ -84,7 +83,6 @@ jobs:
         displayName: Build solution math3_2022.sln
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -92,7 +90,6 @@ jobs:
         displayName: Build solution math3_2022.sln no-intrinsics
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'NI $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -100,7 +97,6 @@ jobs:
         displayName: Build solution math3_2022.sln SSE3
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE3 $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -109,7 +105,6 @@ jobs:
         displayName: Build solution math3_2022.sln SSE4
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE4 $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -118,7 +113,6 @@ jobs:
         displayName: Build solution math3_2022.sln AVX
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -127,7 +121,6 @@ jobs:
         displayName: Build solution math3_2022.sln AVX2
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX2 $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -136,7 +129,6 @@ jobs:
         displayName: Build solution math3_2022.sln x87
         inputs:
           solution: Tests/math3/math3_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: 'x87 $(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -182,7 +174,6 @@ jobs:
         displayName: Build solution shmath_2022.sln
         inputs:
           solution: Tests/shmath/shmath_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
           msbuildArchitecture: x64
@@ -190,7 +181,6 @@ jobs:
         displayName: Build solution XDSPTest_2022
         inputs:
           solution: Tests/xdsp/XDSPTest_2022.sln
-          vsVersion: 17.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
           msbuildArchitecture: x64

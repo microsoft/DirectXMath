@@ -36,7 +36,7 @@ resources:
 name: $(Year:yyyy).$(Month).$(DayOfMonth)$(Rev:.r)
 
 pool:
-  vmImage: windows-2019
+  vmImage: windows-2022
 
 variables:
   Codeql.Enabled: true
@@ -76,49 +76,42 @@ jobs:
         displayName: Build solution math3_2019.sln
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln no-intrinsics
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'NI $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln SSE3
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE3 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln SSE4
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE4 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln AVX
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln AVX2
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX2 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2019.sln x87
         inputs:
           solution: Tests/math3/math3_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'x87 $(BuildConfiguration)'
         condition: eq(variables['BuildPlatform'], 'x86')
@@ -157,14 +150,12 @@ jobs:
         displayName: Build solution shmath_2019.sln
         inputs:
           solution: Tests/shmath/shmath_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution XDSPTest_2019
         inputs:
           solution: Tests/xdsp/XDSPTest_2019.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
 
@@ -201,49 +192,42 @@ jobs:
         displayName: Build solution math3_2017.sln
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln no-intrinsics
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'NI $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln SSE3
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE3 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln SSE4
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'SSE4 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln AVX
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln AVX2
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'AVX2 $(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution math3_2017.sln x86dbg x87
         inputs:
           solution: Tests/math3/math3_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: 'x87 $(BuildConfiguration)'
         condition: eq(variables['BuildPlatform'], 'x86')
@@ -282,13 +266,11 @@ jobs:
         displayName: Build solution shmath_2017.sln
         inputs:
           solution: Tests/shmath/shmath_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
       - task: VSBuild@1
         displayName: Build solution XDSPTest_2017
         inputs:
           solution: Tests/xdsp/XDSPTest_2017.sln
-          vsVersion: 16.0
           platform: '$(BuildPlatform)'
           configuration: '$(BuildConfiguration)'
