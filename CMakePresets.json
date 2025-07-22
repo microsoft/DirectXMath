@@ -30,15 +30,6 @@
       "hidden": true
     },
     {
-      "name": "ARM",
-      "architecture": {
-        "value": "arm",
-        "strategy": "external"
-      },
-      "cacheVariables": { "DXMATH_ARCHITECTURE": "arm" },
-      "hidden": true
-    },
-    {
       "name": "ARM64",
       "architecture": {
         "value": "arm64",
@@ -188,8 +179,6 @@
     { "name": "x64-Release"    , "description": "MSVC for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "MSVC" ] },
     { "name": "x86-Debug"      , "description": "MSVC for x86 (Debug) - SSE/SSE2", "inherits": [ "base", "x86", "Debug", "MSVC" ] },
     { "name": "x86-Release"    , "description": "MSVC for x86 (Release) - SSE/SSE2", "inherits": [ "base", "x86", "Release", "MSVC" ] },
-    { "name": "arm-Debug"      , "description": "MSVC for ARM (Debug) - ARM-NEON", "inherits": [ "base", "ARM", "Debug", "MSVC" ] },
-    { "name": "arm-Release"    , "description": "MSVC for ARM (Release) - ARM-NEON", "inherits": [ "base", "ARM", "Release", "MSVC" ] },
     { "name": "arm64-Debug"    , "description": "MSVC for ARM64 (Debug) - ARM-NEON", "inherits": [ "base", "ARM64", "Debug", "MSVC" ] },
     { "name": "arm64-Release"  , "description": "MSVC for ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC" ] },
     { "name": "arm64ec-Debug"  , "description": "MSVC for ARM64EC (Debug) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Debug", "MSVC" ] },
