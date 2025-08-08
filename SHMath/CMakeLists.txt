@@ -175,7 +175,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
          /sdl /Zc:inline /fp:fast
-         "/wd4061" "/wd4365" "/wd4514" "/wd4571" "/wd4668" "/wd4710" "/wd4820" "/wd5039" "/wd5045")
+         /wd4061 /wd4365 /wd4514 /wd4571 /wd4668 /wd4710 /wd4820 /wd5039 /wd5045)
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
         target_compile_options(${PROJECT_NAME} PRIVATE $<$<NOT:$<CONFIG:DEBUG>>:/Gy /Gw>)
@@ -207,6 +207,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.34)
         target_compile_options(${PROJECT_NAME} PRIVATE /wd5262 /wd5264)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.50)
+      target_compile_options(${PROJECT_NAME} PRIVATE /wd4865)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.35)
