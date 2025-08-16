@@ -48,12 +48,14 @@ Tests/        # Tests are designed to be cloned from a separate repository at th
 
 ## References
 
+- [Source git repository on GitHub](https://github.com/microsoft/DirectXMath.git)
+- [DirectXMath wiki git repository on GitHub](https://github.com/microsoft/DirectXMath.wiki.git)
+- [DirectXMath test suite git repository on GitHub](https://github.com/walbourn/directxmathtest.wiki.git).
 - [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
 - [Microsoft Secure Coding Guidelines](https://learn.microsoft.com/en-us/security/develop/secure-coding-guidelines)
 - [CMake Documentation](https://cmake.org/documentation/)
-- [VCPK Documentation](https://learn.microsoft.com/vcpkg/)
+- [VCPKG Documentation](https://learn.microsoft.com/vcpkg/)
 - [DirectXMath Documentation](https://learn.microsoft.com/windows/win32/dxmath/directxmath-portal)
-- [DirectXMath Wiki](https://github.com/microsoft/DirectXMath/wiki/)
 - [Games for Windows and the DirectX SDK blog - March 2012](https://walbourn.github.io/introducing-directxmath/)
 
 ## No speculation
@@ -83,3 +85,25 @@ When creating documentation:
 - Review each documented item against source code whenever related to the task.
 - Remove any speculative content.
 - Ensure all documentation is verifiable against the current state of the codebase.
+
+## Cross-platform Support Notes
+
+- The code supports building for Windows and Linux.
+- Portability and conformance of the code is validated by building with Visual C++, clang/LLVM for Windows, MinGW, and GCC for Linux.
+
+## Code Review Instructions
+
+When reviewing code, focus on the following aspects:
+
+- Adherence to coding standards defined in `.editorconfig` and on the [wiki](https://github.com/microsoft/DirectXTK/wiki/Implementation).
+- Make coding recommendations based on the *C++ Core Guidelines*.
+- Proper use of RAII and smart pointers.
+- Correct error handling practices and C++ Exception safety.
+- Clarity and maintainability of the code.
+- Adequate comments where necessary.
+- Public interfaces located in `Inc\*.h` should be clearly defined and documented on the Microsoft Docs pages.
+- Optional functions are available in headers in the `SHMath`, `Stereo3D`, `MatrixStack`, and `XDSP` folders.
+- Compliance with the project's architecture and design patterns.
+- Ensure that all public functions and classes are covered by unit tests located on [GitHub](https://github.com/walbourn/directxmathtest.git) where applicable. Report any gaps in test coverage.
+- Check for performance implications, especially in geometry processing algorithms.
+- Provide brutally honest feedback on code quality, design, and potential improvements as needed.
