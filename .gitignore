@@ -18,6 +18,7 @@
 *.VC.db
 *.nupkg
 .vs
+.vscode
 /Tests
 /wiki
 /out
