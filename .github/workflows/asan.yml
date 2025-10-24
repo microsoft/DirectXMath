@@ -1,0 +1,80 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkId=248929
+
+name: 'Address Sanitizer (x64)'
+
+on:
+  push:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.json
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+  pull_request:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.nuget/*'
+      - build/*.cmd
+      - build/*.json
+      - build/*.props
+      - build/*.ps1
+      - build/*.targets
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    timeout-minutes: 20
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        toolver: ['14.29', '14']
+        build_type: [x64-Release]
+        arch: [amd64]
+
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Clone test repository
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolver }}
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: >
+          cmake --preset=${{ matrix.build_type }}
+          -DBUILD_TESTING=ON -DBUILD_TOOLS=OFF -ENABLE_ASAN=ON
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out\build\${{ matrix.build_type }}
+
+      - name: 'Run BVTs'
+        working-directory: ${{ github.workspace }}
+        run: ctest --preset=${{ matrix.build_type }} --output-on-failure
