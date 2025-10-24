@@ -69,7 +69,7 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: >
           cmake --preset=${{ matrix.build_type }}
-          -DBUILD_TESTING=ON -DBUILD_TOOLS=OFF -ENABLE_ASAN=ON
+          -DBUILD_TESTING=ON -DBUILD_TOOLS=OFF -DENABLE_ASAN=ON
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
