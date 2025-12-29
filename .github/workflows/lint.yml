@@ -45,4 +45,3 @@ jobs:
           VALIDATE_POWERSHELL: true
           VALIDATE_GITLEAKS: true
           VALIDATE_YAML: true
-
