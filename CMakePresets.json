@@ -14,14 +14,15 @@
       "binaryDir": "${sourceDir}/out/build/${presetName}",
       "installDir": "${sourceDir}/out/install/${presetName}"
     },
-
     {
       "name": "x64",
       "architecture": {
         "value": "x64",
         "strategy": "external"
       },
-      "cacheVariables": { "DXMATH_ARCHITECTURE": "x64" },
+      "cacheVariables": {
+        "DXMATH_ARCHITECTURE": "x64"
+      },
       "hidden": true
     },
     {
@@ -30,7 +31,9 @@
         "value": "x86",
         "strategy": "external"
       },
-      "cacheVariables": { "DXMATH_ARCHITECTURE": "x86" },
+      "cacheVariables": {
+        "DXMATH_ARCHITECTURE": "x86"
+      },
       "hidden": true
     },
     {
@@ -39,7 +42,9 @@
         "value": "arm64",
         "strategy": "external"
       },
-      "cacheVariables": { "DXMATH_ARCHITECTURE": "arm64" },
+      "cacheVariables": {
+        "DXMATH_ARCHITECTURE": "arm64"
+      },
       "hidden": true
     },
     {
@@ -48,51 +53,64 @@
         "value": "arm64ec",
         "strategy": "external"
       },
-      "cacheVariables": { "DXMATH_ARCHITECTURE": "arm64ec" },
+      "cacheVariables": {
+        "DXMATH_ARCHITECTURE": "arm64ec"
+      },
       "environment": {
         "CFLAGS": "/arm64EC",
         "CXXFLAGS": "/arm64EC"
       },
       "hidden": true
     },
-
     {
       "name": "Debug",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "Debug" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug"
+      },
       "hidden": true
     },
     {
       "name": "Release",
-      "cacheVariables": { "CMAKE_BUILD_TYPE": "RelWithDebInfo" },
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+      },
       "hidden": true
     },
-
     {
       "name": "OneCore",
-      "cacheVariables": { "BUILD_FOR_ONECORE": true },
+      "cacheVariables": {
+        "BUILD_FOR_ONECORE": true
+      },
       "hidden": true
     },
     {
       "name": "AVX",
-      "cacheVariables": { "BUILD_AVX_TEST": true },
+      "cacheVariables": {
+        "BUILD_AVX_TEST": true
+      },
       "hidden": true
     },
     {
       "name": "AVX2",
-      "cacheVariables": { "BUILD_AVX2_TEST": true },
+      "cacheVariables": {
+        "BUILD_AVX2_TEST": true
+      },
       "hidden": true
     },
     {
       "name": "F16C",
-      "cacheVariables": { "BUILD_F16C_TEST": true },
+      "cacheVariables": {
+        "BUILD_F16C_TEST": true
+      },
       "hidden": true
     },
     {
       "name": "NI",
-      "cacheVariables": { "BUILD_NO_INTRINSICS": true },
+      "cacheVariables": {
+        "BUILD_NO_INTRINSICS": true
+      },
       "hidden": true
     },
-
     {
       "name": "MSVC",
       "hidden": true,
@@ -203,6 +221,7 @@
     { "name": "x64-Debug-Linux"     , "description": "WSL x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug" ] },
     { "name": "x64-Release-Linux"   , "description": "WSL x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release" ] }
   ],
+
   "testPresets": [
     { "name": "x64-Debug"      , "configurePreset": "x64-Debug" },
     { "name": "x64-Release"    , "configurePreset": "x64-Release" },
