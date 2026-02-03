@@ -1,0 +1,12 @@
+schemaVersion: 1.0.0
+providers:
+  - provider: InventoryAsCode
+    version: 1.0.0
+    metadata:
+      isProduction: true
+      accountableOwners:
+        service: c8a040a5-7881-4b08-8216-6e754fd858a4
+      routing:
+        defaultAreaPath:
+          org: microsoft
+          path: Xbox\Developer\DeveloperEcosystem\DeveloperTools

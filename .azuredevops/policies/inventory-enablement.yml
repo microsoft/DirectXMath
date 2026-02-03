@@ -1,0 +1,8 @@
+name: microsoft-github-directxmath inventory config
+description: Inventory-as-code configuration for the directxmath repository
+resource: repository
+configuration:
+  inventoryConfig:
+    schemaVersion: 0
+    publishInventory: false
+    areasOnly: true
