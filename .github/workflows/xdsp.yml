@@ -35,14 +35,11 @@ jobs:
 
       matrix:
         toolver: ['14.29', '14']
-        build_type: [x64-Debug, x64-Release, x64-Debug-Clang, x64-Release-Clang]
+        build_type: [x64-Debug, x64-Release]
         arch: [amd64]
         include:
           - toolver: '14.29'
             build_type: x86-Debug
-            arch: amd64_x86
-          - toolver: '14.29'
-            build_type: x86-Debug-Clang
             arch: amd64_x86
           - toolver: '14'
             build_type: x86-Debug
@@ -62,17 +59,56 @@ jobs:
           - toolver: '14'
             build_type: arm64ec-Release
             arch: amd64_arm64
-          - toolver: '14'
-            build_type: x86-Debug-Clang
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+          toolset: ${{ matrix.toolver }}
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_XDSP=ON
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
+
+  build2026:
+    runs-on: windows-2025-vs2026
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug, x64-Release]
+        arch: [amd64]
+        include:
+          - build_type: x86-Debug
             arch: amd64_x86
-          - toolver: '14'
-            build_type: x86-Release-Clang
+          - build_type: x86-Debug
             arch: amd64_x86
-          - toolver: '14'
-            build_type: arm64-Debug-Clang
+          - build_type: x86-Release
+            arch: amd64_x86
+          - build_type: arm64-Debug
             arch: amd64_arm64
-          - toolver: '14'
-            build_type: arm64-Release-Clang
+          - build_type: arm64-Release
+            arch: amd64_arm64
+          - build_type: arm64ec-Debug
+            arch: amd64_arm64
+          - build_type: arm64ec-Release
             arch: amd64_arm64
 
     steps:
