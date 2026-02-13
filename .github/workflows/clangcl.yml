@@ -65,11 +65,11 @@ jobs:
 
       - name: 'Configure CMake'
         working-directory: ${{ github.workspace }}
-        run: cmake --preset=${{ matrix.build_type }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=ON
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
-        run: cmake --build out/build/${{ matrix.build_type }} -DBUILD_TESTING=ON
+        run: cmake --build out/build/${{ matrix.build_type }}
 
       - if: (matrix.build_type == 'x64-Release-Clang') || (matrix.build_type == 'x86-Release-Clang')
         timeout-minutes: 10
@@ -115,11 +115,11 @@ jobs:
 
       - name: 'Configure CMake'
         working-directory: ${{ github.workspace }}
-        run: cmake --preset=${{ matrix.build_type }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=ON
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}
-        run: cmake --build out/build/${{ matrix.build_type }} -DBUILD_TESTING=ON
+        run: cmake --build out/build/${{ matrix.build_type }}
 
       - if: (matrix.build_type == 'x64-Release-Clang') || (matrix.build_type == 'x86-Release-Clang')
         timeout-minutes: 10
