@@ -1,0 +1,128 @@
+# Copyright (c) Microsoft Corporation.
+# Licensed under the MIT License.
+#
+# http://go.microsoft.com/fwlink/?LinkID=615560
+
+name: 'CMake (clang-cl)'
+
+on:
+  push:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.nuget/*'
+      - build/*.ps1
+  pull_request:
+    branches: "main"
+    paths-ignore:
+      - '*.md'
+      - LICENSE
+      - '.azuredevops/**'
+      - '.nuget/*'
+      - build/*.ps1
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-Clang, x64-Release-Clang]
+        arch: [amd64]
+        include:
+          - build_type: x86-Debug-Clang
+            arch: amd64_x86
+          - build_type: x86-Release-Clang
+            arch: amd64_x86
+          - build_type: arm64-Debug-Clang
+            arch: amd64_arm64
+          - build_type: arm64-Release-Clang
+            arch: amd64_arm64
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=ON
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
+
+      - if: (matrix.build_type == 'x64-Release-Clang') || (matrix.build_type == 'x86-Release-Clang')
+        timeout-minutes: 10
+        name: 'Test'
+        working-directory: ${{ github.workspace }}
+        run: ctest --preset=${{ matrix.build_type }} --output-on-failure
+
+  build2026:
+    runs-on: windows-2025-vs2026
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-Clang, x64-Release-Clang]
+        arch: [amd64]
+        include:
+          - build_type: x86-Debug-Clang
+            arch: amd64_x86
+          - build_type: x86-Release-Clang
+            arch: amd64_x86
+          - build_type: arm64-Debug-Clang
+            arch: amd64_arm64
+          - build_type: arm64-Release-Clang
+            arch: amd64_arm64
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: ${{ matrix.arch }}
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }} -DBUILD_TESTING=ON
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
+
+      - if: (matrix.build_type == 'x64-Release-Clang') || (matrix.build_type == 'x86-Release-Clang')
+        timeout-minutes: 10
+        name: 'Test'
+        working-directory: ${{ github.workspace }}
+        run: ctest --preset=${{ matrix.build_type }} --output-on-failure
