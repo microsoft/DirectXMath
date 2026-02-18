@@ -604,6 +604,8 @@ namespace DirectX
         constexpr XMFLOAT2(float _x, float _y) noexcept : x(_x), y(_y) {}
         explicit XMFLOAT2(_In_reads_(2) const float* pArray)  noexcept : x(pArray[0]), y(pArray[1]) {}
 
+        float& operator [] (_In_range_(0, 1) int32_t index) noexcept { return reinterpret_cast<float*>(this)[index]; }
+        const float operator [] (_In_range_(0, 1) int32_t index) const noexcept { return reinterpret_cast<const float*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT2&) const = default;
         auto operator <=> (const XMFLOAT2&) const = default;
@@ -634,6 +636,8 @@ namespace DirectX
         constexpr XMINT2(int32_t _x, int32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMINT2(_In_reads_(2) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
 
+        int32_t& operator [] (_In_range_(0, 1) int32_t index) noexcept { return reinterpret_cast<int32_t*>(this)[index]; }
+        const int32_t operator [] (_In_range_(0, 1) int32_t index) const noexcept { return reinterpret_cast<const int32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMINT2&) const = default;
         auto operator <=> (const XMINT2&) const = default;
@@ -657,6 +661,8 @@ namespace DirectX
         constexpr XMUINT2(uint32_t _x, uint32_t _y) noexcept : x(_x), y(_y) {}
         explicit XMUINT2(_In_reads_(2) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]) {}
 
+        uint32_t& operator [] (_In_range_(0, 1) int32_t index) noexcept { return reinterpret_cast<uint32_t*>(this)[index]; }
+        const uint32_t operator [] (_In_range_(0, 1) int32_t index) const noexcept { return reinterpret_cast<const uint32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT2&) const = default;
         auto operator <=> (const XMUINT2&) const = default;
@@ -681,6 +687,9 @@ namespace DirectX
 
         constexpr XMFLOAT3(float _x, float _y, float _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMFLOAT3(_In_reads_(3) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+
+        float& operator [] (_In_range_(0, 2) int32_t index) noexcept { return reinterpret_cast<float*>(this)[index]; }
+        const float operator [] (_In_range_(0, 2) int32_t index) const noexcept { return reinterpret_cast<const float*>(this)[index]; }
     };
 
     // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
@@ -708,6 +717,8 @@ namespace DirectX
         constexpr XMINT3(int32_t _x, int32_t _y, int32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMINT3(_In_reads_(3) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
+        int32_t& operator [] (_In_range_(0, 2) int32_t index) noexcept { return reinterpret_cast<int32_t*>(this)[index]; }
+        const int32_t operator [] (_In_range_(0, 2) int32_t index) const noexcept { return reinterpret_cast<const int32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMINT3&) const = default;
         auto operator <=> (const XMINT3&) const = default;
@@ -732,6 +743,8 @@ namespace DirectX
         constexpr XMUINT3(uint32_t _x, uint32_t _y, uint32_t _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMUINT3(_In_reads_(3) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
 
+        uint32_t& operator [] (_In_range_(0, 2) int32_t index) noexcept { return reinterpret_cast<uint32_t*>(this)[index]; }
+        const uint32_t operator [] (_In_range_(0, 2) int32_t index) const noexcept { return reinterpret_cast<const uint32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT3&) const = default;
         auto operator <=> (const XMUINT3&) const = default;
@@ -758,6 +771,8 @@ namespace DirectX
         constexpr XMFLOAT4(float _x, float _y, float _z, float _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMFLOAT4(_In_reads_(4) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
+        float& operator [] (_In_range_(0, 3) int32_t index) noexcept { return reinterpret_cast<float*>(this)[index]; }
+        const float operator [] (_In_range_(0, 3) int32_t index) const noexcept { return reinterpret_cast<const float*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMFLOAT4&) const = default;
         auto operator <=> (const XMFLOAT4&) const = default;
@@ -790,6 +805,8 @@ namespace DirectX
         constexpr XMINT4(int32_t _x, int32_t _y, int32_t _z, int32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMINT4(_In_reads_(4) const int32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
+        int32_t& operator [] (_In_range_(0, 3) int32_t index) noexcept { return reinterpret_cast<int32_t*>(this)[index]; }
+        const int32_t operator [] (_In_range_(0, 3) int32_t index) const noexcept { return reinterpret_cast<const int32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMINT4&) const = default;
         auto operator <=> (const XMINT4&) const = default;
@@ -815,6 +832,8 @@ namespace DirectX
         constexpr XMUINT4(uint32_t _x, uint32_t _y, uint32_t _z, uint32_t _w) noexcept : x(_x), y(_y), z(_z), w(_w) {}
         explicit XMUINT4(_In_reads_(4) const uint32_t* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]), w(pArray[3]) {}
 
+        uint32_t& operator [] (_In_range_(0, 3) int32_t index) noexcept { return reinterpret_cast<uint32_t*>(this)[index]; }
+        const uint32_t operator [] (_In_range_(0, 3) int32_t index) const noexcept { return reinterpret_cast<const uint32_t*>(this)[index]; }
     #if (__cplusplus >= 202002L)
         bool operator == (const XMUINT4&) const = default;
         auto operator <=> (const XMUINT4&) const = default;
