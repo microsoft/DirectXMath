@@ -94,14 +94,14 @@ All types and functions are in the `DirectX` namespace. Sub-namespaces are used 
 
 DirectXMath auto-selects the SIMD backend based on compiler/architecture. Macros cascade from highest to lowest:
 
-```
-_XM_AVX2_INTRINSICS_    → enables _XM_FMA3_INTRINSICS_ + _XM_F16C_INTRINSICS_
-_XM_AVX_INTRINSICS_     → enables _XM_SSE4_INTRINSICS_
-_XM_SSE4_INTRINSICS_    → enables _XM_SSE3_INTRINSICS_
-_XM_SSE3_INTRINSICS_    → enables _XM_SSE_INTRINSICS_
-_XM_SSE_INTRINSICS_     (auto-enabled for x86/x64)
+```cpp
+_XM_AVX2_INTRINSICS_     -> enables _XM_FMA3_INTRINSICS_ + _XM_F16C_INTRINSICS_
+_XM_AVX_INTRINSICS_      -> enables _XM_SSE4_INTRINSICS_
+_XM_SSE4_INTRINSICS_     -> enables _XM_SSE3_INTRINSICS_
+_XM_SSE3_INTRINSICS_     -> enables _XM_SSE_INTRINSICS_
+_XM_SSE_INTRINSICS_      (auto-enabled for x86/x64)
 _XM_ARM_NEON_INTRINSICS_ (auto-enabled for ARM/ARM64)
-_XM_NO_INTRINSICS_      (pure C++ fallback; force with this define)
+_XM_NO_INTRINSICS_       (pure C++ fallback; force with this define)
 ```
 
 Optional macros:
@@ -111,6 +111,7 @@ Optional macros:
 - `_XM_NO_XMVECTOR_OVERLOADS_` — Disables `XMVECTOR` arithmetic operators (auto-set for GCC/Clang)
 
 When writing multi-path implementations, follow this pattern:
+
 ```cpp
 #if defined(_XM_NO_INTRINSICS_)
     // Pure C++ path
@@ -222,6 +223,7 @@ _In_reads_bytes_(n)        // input pointer reading n bytes
 ```
 
 Example:
+
 ```cpp
 XMMATRIX XM_CALLCONV XMLoadFloat4x4(_In_ const XMFLOAT4X4* pSource) noexcept;
 void XM_CALLCONV XMStoreFloat4x4(_Out_ XMFLOAT4X4* pDestination, _In_ FXMMATRIX M) noexcept;
