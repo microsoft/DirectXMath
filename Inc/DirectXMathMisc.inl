@@ -1971,7 +1971,7 @@ inline XMVECTOR XM_CALLCONV XMColorSRGBToRGB(FXMVECTOR srgb) noexcept
 
 inline bool XMVerifyCPUSupport() noexcept
 {
-#if defined(_XM_SSE_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
+#if defined(_XM_SSE_INTRINSICS_) && !defined(__powerpc64__) && !defined(_XM_NO_INTRINSICS_)
     int CPUInfo[4] = { -1 };
 #if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
     __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
