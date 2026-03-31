@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkID=615560
+// https://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
 #pragma once
@@ -27,7 +27,7 @@ namespace DirectX
         {
             // Should return true on AMD Bulldozer, Intel Core 2 ("Penryn"), and Intel Core i7 ("Nehalem") or later processors
 
-            // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
+            // See https://msdn.microsoft.com/en-us/library/hskdteyh.aspx
             int CPUInfo[4] = { -1 };
         #if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
             __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
