@@ -295,7 +295,7 @@ Every source file (`.h`, `.inl`, etc.) must begin with this block:
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkID=615560
+// https://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 ```
 

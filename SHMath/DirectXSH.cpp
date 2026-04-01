@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/p/?LinkId=262885
+// https://go.microsoft.com/fwlink/p/?LinkId=262885
 //-------------------------------------------------------------------------------------
 
 #ifdef _MSC_VER
@@ -983,7 +983,7 @@ namespace
 //-------------------------------------------------------------------------------------
 // Evaluates the Spherical Harmonic basis functions
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205448.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205448.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* XM_CALLCONV DirectX::XMSHEvalDirection(
@@ -1035,7 +1035,7 @@ float* XM_CALLCONV DirectX::XMSHEvalDirection(
 //-------------------------------------------------------------------------------------
 // Rotates SH vector by a rotation matrix
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204992.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb204992.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* XM_CALLCONV DirectX::XMSHRotate(
@@ -1172,7 +1172,7 @@ float* XM_CALLCONV DirectX::XMSHRotate(
 //-------------------------------------------------------------------------------------
 // Rotates the SH vector in the Z axis by an angle
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205461.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205461.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHRotateZ(
@@ -1346,7 +1346,7 @@ float* DirectX::XMSHRotateZ(
 //-------------------------------------------------------------------------------------
 // Adds two SH vectors, result[i] = inputA[i] + inputB[i];
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205438.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205438.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHAdd(
@@ -1372,7 +1372,7 @@ float* DirectX::XMSHAdd(
 //-------------------------------------------------------------------------------------
 // Scales a SH vector, result[i] = input[i] * scale;
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204994.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb204994.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHScale(
@@ -1398,7 +1398,7 @@ float* DirectX::XMSHScale(
 //-------------------------------------------------------------------------------------
 // Computes the dot product of two SH vectors
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205446.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205446.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float DirectX::XMSHDot(
@@ -1464,7 +1464,7 @@ float* DirectX::XMSHMultiply(
 
 
 //-------------------------------------------------------------------------------------
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205454.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205454.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHMultiply2(
@@ -1507,7 +1507,7 @@ float* DirectX::XMSHMultiply2(
 
 
 //-------------------------------------------------------------------------------------
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb232906.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb232906.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHMultiply3(
@@ -1629,7 +1629,7 @@ float* DirectX::XMSHMultiply3(
 
 
 //-------------------------------------------------------------------------------------
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb232907.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb232907.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHMultiply4(
@@ -1964,7 +1964,7 @@ float* DirectX::XMSHMultiply4(
 
 
 //-------------------------------------------------------------------------------------
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb232908.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb232908.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHMultiply5(
@@ -2780,7 +2780,7 @@ float* DirectX::XMSHMultiply5(
 
 
 //-------------------------------------------------------------------------------------
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb232909.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb232909.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 float* DirectX::XMSHMultiply6(
@@ -4476,7 +4476,7 @@ float* DirectX::XMSHMultiply6(
 // an albedo of 1 would be 1.0.  This will compute 3 spectral samples, resultR
 // has to be specified, while resultG and resultB are optional.
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204988.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb204988.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 bool XM_CALLCONV DirectX::XMSHEvalDirectionalLight(
@@ -4543,7 +4543,7 @@ bool XM_CALLCONV DirectX::XMSHEvalDirectionalLight(
 // compute 3 spectral samples, resultR has to be specified, while resultG and
 // resultB are optional.
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb205451.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb205451.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
@@ -4673,7 +4673,7 @@ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(
 // This will compute 3 spectral samples, resultR has to be specified, while resultG
 // and resultB are optional.
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204986.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb204986.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 bool XM_CALLCONV DirectX::XMSHEvalConeLight(
@@ -4794,7 +4794,7 @@ bool XM_CALLCONV DirectX::XMSHEvalConeLight(
 // was black.  This is a very simple model where topColor represents the intensity
 // of the "sky" and bottomColor represents the intensity of the "ground".
 //
-// http://msdn.microsoft.com/en-us/library/windows/desktop/bb204989.aspx
+// https://msdn.microsoft.com/en-us/library/windows/desktop/bb204989.aspx
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
 bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(

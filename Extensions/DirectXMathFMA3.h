@@ -4,7 +4,7 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
-// http://go.microsoft.com/fwlink/?LinkID=615560
+// https://go.microsoft.com/fwlink/?LinkID=615560
 //-------------------------------------------------------------------------------------
 
 #pragma once
@@ -26,7 +26,7 @@ namespace DirectX
             // Should return true for AMD "Pildriver" and Intel "Haswell" processors
             // with OS support for AVX (Windows 7 Service Pack 1, Windows Server 2008 R2 Service Pack 1, Windows 8, Windows Server 2012)
 
-            // See http://msdn.microsoft.com/en-us/library/hskdteyh.aspx
+            // See https://msdn.microsoft.com/en-us/library/hskdteyh.aspx
             int CPUInfo[4] = { -1 };
         #if (defined(__clang__) || defined(__GNUC__)) && defined(__cpuid)
             __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
