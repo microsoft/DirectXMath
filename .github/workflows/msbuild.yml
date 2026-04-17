@@ -53,6 +53,8 @@ jobs:
 
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: x64
 
       - name: Build math3
         working-directory: ${{ github.workspace }}/Tests/math3
@@ -73,3 +75,47 @@ jobs:
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
           ./XDSPTest_${{ matrix.vs }}.sln
+
+  build2022_arm64:
+    runs-on: windows-11-arm
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [Debug, Release, 'NI Debug', 'NI Release']
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: arm64
+
+      - name: Build math3
+        working-directory: ${{ github.workspace }}/Tests/math3
+        run: >
+          msbuild /m /p:Configuration="${{ matrix.build_type }}" /p:Platform=ARM64
+          ./math3_2022.sln
+
+      - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+        name: Build shmath
+        working-directory: ${{ github.workspace }}/Tests/shmath
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
+          ./shmath_2022.sln
+
+      - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+        name: Build xdsp
+        working-directory: ${{ github.workspace }}/Tests/xdsp
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
+          ./XDSPTest_2022.sln
