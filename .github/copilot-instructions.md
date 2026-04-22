@@ -307,13 +307,14 @@ Section separators within files use:
 - Major sections: `//-------------------------------------------------------------------------------------`
 - Subsections:   `//---------------------------------------------------------------------------------`
 - C-style block headers for top-level groupings:
-  ```cpp
-  /****************************************************************************
-   *
-   * {Section Name}
-   *
-   ****************************************************************************/
-  ```
+
+```cpp
+/****************************************************************************
+*
+* {Section Name}
+*
+****************************************************************************/
+```
 
 The project does **not** use Doxygen. API documentation is maintained exclusively on the GitHub wiki.
 
@@ -343,6 +344,7 @@ assert(NearZ > 0.f && FarZ > 0.f);
 The codebase uses compiler-specific pragmas that should be followed in new code:
 
 **MSVC warning suppression** (push/pop around affected blocks):
+
 ```cpp
 #ifdef _MSC_VER
 #pragma warning(push)
@@ -353,6 +355,7 @@ The codebase uses compiler-specific pragmas that should be followed in new code:
 ```
 
 **Clang diagnostic suppression**:
+
 ```cpp
 #ifdef __clang__
 #pragma clang diagnostic push
@@ -364,6 +367,7 @@ The codebase uses compiler-specific pragmas that should be followed in new code:
 ```
 
 **Floating-point precision** (MSVC-only, for mathematically sensitive code):
+
 ```cpp
 #ifdef _MSC_VER
 #pragma float_control(push)
@@ -374,6 +378,7 @@ The codebase uses compiler-specific pragmas that should be followed in new code:
 ```
 
 **PREfast static analysis suppression**:
+
 ```cpp
 #ifdef _PREFAST_
 #pragma prefast(push)
