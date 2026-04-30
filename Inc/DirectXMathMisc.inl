@@ -2022,7 +2022,7 @@ inline bool XMVerifyCPUSupport() noexcept
         return false; // No SSE2/SSE support
 
 #if defined(__AVX2__) || defined(_XM_AVX2_INTRINSICS_)
-#if defined(__clang__) || defined(__GNUC__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER)
     __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
 #else
     __cpuidex(CPUInfo, 7, 0);

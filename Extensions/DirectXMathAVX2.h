@@ -48,7 +48,7 @@ namespace DirectX
             if ((CPUInfo[2] & 0x38081001) != 0x38081001)
                 return false;
 
-        #if defined(__clang__) || defined(__GNUC__)
+        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER)
             __cpuid_count(7, 0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
         #else
             __cpuidex(CPUInfo, 7, 0);
