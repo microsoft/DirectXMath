@@ -29,7 +29,7 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  buildgcc:
     runs-on: ubuntu-latest
 
     strategy:
@@ -58,6 +58,39 @@ jobs:
         env:
           CC: gcc-${{ matrix.gcc }}
           CXX: g++-${{ matrix.gcc }}
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}/Tests
+        run: cmake --build out/build/${{ matrix.build_type }}
+
+  buildclang:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [x64-Debug-Linux, x64-Release-Linux]
+        clang: [16, 17, 18]
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}/Tests
+        run: cmake --preset=${{ matrix.build_type }}
+        env:
+          CC: clang-${{ matrix.clang }}
+          CXX: clang++-${{ matrix.clang }}
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}/Tests
