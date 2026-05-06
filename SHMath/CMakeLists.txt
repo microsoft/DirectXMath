@@ -225,5 +225,5 @@ if((NOT WIN32) AND (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"))
         message(FATAL_ERROR "Failed to download sal.h: ${DOWNLOAD_ERROR}")
     endif()
 
-    target_include_directories(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/sal")
+    target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sal")
 endif()
