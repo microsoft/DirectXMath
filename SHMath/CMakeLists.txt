@@ -164,7 +164,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     target_compile_options(${PROJECT_NAME} PRIVATE /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
-         /sdl /Zc:inline /fp:fast
+         /sdl /Zc:forScope /Zc:inline /Zc:wchar_t /fp:fast
          /wd4061 /wd4365 /wd4514 /wd4571 /wd4668 /wd4710 /wd4820 /wd5039 /wd5045)
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
