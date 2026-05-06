@@ -75,7 +75,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
-target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_11)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_11)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE DirectXMath)
 
@@ -102,8 +102,7 @@ cmake_path(GET CMAKE_CURRENT_LIST_DIR PARENT_PATH DIRECTXMATH_PATH)
 write_basic_package_version_file(
   ${PACKAGE_NAME}-config-version.cmake
   VERSION ${SHMATH_VERSION}
-  COMPATIBILITY AnyNewerVersion
-  ARCH_INDEPENDENT)
+  COMPATIBILITY AnyNewerVersion)
 
 install(TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}-targets
@@ -213,12 +212,18 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     endif()
 endif()
 
-if(NOT WIN32)
+if((NOT WIN32) AND (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"))
     file(DOWNLOAD
         https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h
         "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"
         EXPECTED_HASH SHA512=8085f67bfa4ce01ae89461cadf72454a9552fde3f08b2dcc3de36b9830e29ce7a6192800f8a5cb2a66af9637be0017e85719826a4cfdade508ae97f319e0ee8e
+        STATUS DOWNLOAD_STATUS
     )
+    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+    list(GET DOWNLOAD_STATUS 1 DOWNLOAD_ERROR)
+    if(NOT (STATUS_CODE EQUAL 0))
+        message(FATAL_ERROR "Failed to download sal.h: ${DOWNLOAD_ERROR}")
+    endif()
 
-    target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sal")
+    target_include_directories(${PROJECT_NAME} INTERFACE "${CMAKE_CURRENT_BINARY_DIR}/sal")
 endif()

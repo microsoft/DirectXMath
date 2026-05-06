@@ -3,6 +3,10 @@
 
 cmake_minimum_required (VERSION 3.21)
 
+if(POLICY CMP0162)
+   cmake_policy(SET CMP0162 NEW)
+endif()
+
 set(DIRECTXMATH_VERSION 3.20)
 
 if(WINDOWS_STORE OR (DEFINED XBOX_CONSOLE_TARGET))
@@ -77,10 +81,9 @@ install(FILES
   DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${PACKAGE_NAME})
 
 # Create pkg-config file
-include(build/JoinPaths.cmake)
 # from: https://github.com/jtojnar/cmake-snips#concatenating-paths-when-building-pkg-config-files
-join_paths(DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
-join_paths(DIRECTXMATH_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
+cmake_path(APPEND DIRECTXMATH_INCLUDEDIR_FOR_PKG_CONFIG "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
+cmake_path(APPEND DIRECTXMATH_LIBDIR_FOR_PKG_CONFIG "\${prefix}"     "${CMAKE_INSTALL_LIBDIR}")
 
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/build/DirectXMath.pc.in"
