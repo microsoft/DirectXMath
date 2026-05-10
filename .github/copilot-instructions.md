@@ -532,5 +532,6 @@ When reviewing code, focus on the following aspects:
 16. Test the VCPKG port using all appropriate triplets and features.
 17. Run `.\vcpkg --x-add-version directxmath` to update the VCPKG versioning history.
 18. Submit a PR to the VCPKG GitHub repository to update the DirectXMath port. The PR will be reviewed and merged by the VCPKG maintainers.
-19. Update the GitHub release with links to the matching NuGet packages and the VCPKG port.
-20. For the DirectXMath release to be included in the next Windows SDK, prepare a PR for the MSCodeHub project from the `main` branch to the `ms_sdk_release` branch. When the PR is complete, the Azure DevOps pipeline will automatically build vpack and submit a PR for further review.
+19. For the DirectXMath release to be included in the next Windows SDK, prepare a PR for the MSCodeHub project from the `main` branch to the `ms_sdk_release` branch. When the PR is complete, the Azure DevOps pipeline will automatically build vpack and submit a PR for further review.
+
+> When fully completed, be sure to update the GitHub release with links to the matching NuGet packages and the VCPKG port.
