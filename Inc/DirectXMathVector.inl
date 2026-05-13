@@ -1240,7 +1240,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle
     __m128i vControl = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&elem[0]));
     return _mm_permutevar_ps(V, vControl);
 #else
-#ifdef __MINGW32__
+#if defined(__GNUC__) && !defined(__clang__)
     XMVECTORU32 T;
     T.v = V;
     auto aPtr = reinterpret_cast<const uint32_t*>(&T);
@@ -1318,7 +1318,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
 
     const uint32_t* aPtr[2];
 
-#ifdef __MINGW32__
+#if defined(__GNUC__) && !defined(__clang__)
     XMVECTORU32 T1;
     T1.v = V1;
     XMVECTORU32 T2;
