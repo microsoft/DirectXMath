@@ -2006,7 +2006,9 @@ namespace DirectX
     // separate math routine it would be reloaded.
 
 #ifndef XMGLOBALCONST
-#if defined(__GNUC__) && !defined(__MINGW32__)
+#if __cplusplus >= 201703L
+#define XMGLOBALCONST inline constexpr
+#elif defined(__GNUC__) && !defined(__MINGW32__)
 #define XMGLOBALCONST extern const __attribute__((weak))
 #else
 #define XMGLOBALCONST extern const __declspec(selectany)
