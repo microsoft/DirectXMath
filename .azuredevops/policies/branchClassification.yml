@@ -1,0 +1,15 @@
+name: branch_classification
+description: Branch classification configuration for repository
+resource: repository
+disabled: false
+where:
+configuration:
+  branchClassificationSettings:
+    defaultClassification: nonproduction
+    ruleset:
+      - name: prod-branches
+        branchNames:
+          - main
+          - ms_sdk_release
+          - release
+        classification: production

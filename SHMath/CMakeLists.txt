@@ -69,7 +69,9 @@ if(WIN32 AND BUILD_DX12)
   set(LIBRARY_SOURCES ${LIBRARY_SOURCES} DirectXSHD3D12.cpp)
 endif()
 
-add_library(${PROJECT_NAME} STATIC ${LIBRARY_SOURCES} ${LIBRARY_HEADERS})
+add_library(${PROJECT_NAME} STATIC)
+
+target_sources(${PROJECT_NAME} PRIVATE ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 
 target_include_directories(${PROJECT_NAME} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
@@ -129,7 +131,7 @@ install(FILES
 
 #--- Compiler switches
 if(MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE /Wall /EHsc /GR "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
+    target_compile_options(${PROJECT_NAME} PRIVATE /Wall /EHsc /GR /Gd /GS /Zc:forScope /Zc:inline /Zc:wchar_t "$<$<NOT:$<CONFIG:DEBUG>>:/guard:cf>")
 
     if((MSVC_VERSION GREATER_EQUAL 1928)
        AND (CMAKE_SIZEOF_VOID_P EQUAL 8)
@@ -164,7 +166,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "Intel")
     target_compile_options(${PROJECT_NAME} PRIVATE /Zc:__cplusplus /Zc:inline /fp:fast /Qdiag-disable:161)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     target_compile_options(${PROJECT_NAME} PRIVATE
-         /sdl /Zc:forScope /Zc:inline /Zc:wchar_t /fp:fast
+         /sdl /fp:fast
          /wd4061 /wd4365 /wd4514 /wd4571 /wd4668 /wd4710 /wd4820 /wd5039 /wd5045)
 
     if(CMAKE_INTERPROCEDURAL_OPTIMIZATION)
@@ -177,6 +179,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.14)
         target_compile_options(${PROJECT_NAME} PRIVATE /Zc:__cplusplus)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.15)
+        target_compile_options(${PROJECT_NAME} PRIVATE /JMC-)
     endif()
 
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.24)
@@ -209,6 +215,10 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
         endif()
 
         target_compile_options(${PROJECT_NAME} PRIVATE $<$<VERSION_GREATER_EQUAL:${CMAKE_VS_WINDOWS_TARGET_PLATFORM_VERSION},10.0.22000>:/Zc:templateScope>)
+    endif()
+
+    if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.50)
+      target_compile_options(${PROJECT_NAME} PRIVATE /Zc:u8EscapeEncoding)
     endif()
 endif()
 
