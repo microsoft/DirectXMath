@@ -1240,17 +1240,21 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle
     __m128i vControl = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&elem[0]));
     return _mm_permutevar_ps(V, vControl);
 #else
+#ifdef __MINGW32__
+    XMVECTORU32 T;
+    T.v = V;
+    auto aPtr = reinterpret_cast<const uint32_t*>(&T);
+#else
     auto aPtr = reinterpret_cast<const uint32_t*>(&V);
+#endif
 
-    XMVECTOR Result;
-    auto pWork = reinterpret_cast<uint32_t*>(&Result);
+    XMVECTORU32 vResult;
+    vResult.u[0] = aPtr[E0];
+    vResult.u[1] = aPtr[E1];
+    vResult.u[2] = aPtr[E2];
+    vResult.u[3] = aPtr[E3];
 
-    pWork[0] = aPtr[E0];
-    pWork[1] = aPtr[E1];
-    pWork[2] = aPtr[E2];
-    pWork[3] = aPtr[E3];
-
-    return Result;
+    return vResult.v;
 #endif
 }
 
@@ -1313,29 +1317,37 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
 #else
 
     const uint32_t* aPtr[2];
+
+#ifdef __MINGW32__
+    XMVECTORU32 T1;
+    T1.v = V1;
+    XMVECTORU32 T2;
+    T2.v = V2;
+    aPtr[0] = reinterpret_cast<const uint32_t*>(&T1);
+    aPtr[1] = reinterpret_cast<const uint32_t*>(&T2);
+#else
     aPtr[0] = reinterpret_cast<const uint32_t*>(&V1);
     aPtr[1] = reinterpret_cast<const uint32_t*>(&V2);
+#endif
 
-    XMVECTOR Result;
-    auto pWork = reinterpret_cast<uint32_t*>(&Result);
-
+    XMVECTORU32 vResult;
     const uint32_t i0 = PermuteX & 3;
     const uint32_t vi0 = PermuteX >> 2;
-    pWork[0] = aPtr[vi0][i0];
+    vResult.u[0] = aPtr[vi0][i0];
 
     const uint32_t i1 = PermuteY & 3;
     const uint32_t vi1 = PermuteY >> 2;
-    pWork[1] = aPtr[vi1][i1];
+    vResult.u[1] = aPtr[vi1][i1];
 
     const uint32_t i2 = PermuteZ & 3;
     const uint32_t vi2 = PermuteZ >> 2;
-    pWork[2] = aPtr[vi2][i2];
+    vResult.u[2] = aPtr[vi2][i2];
 
     const uint32_t i3 = PermuteW & 3;
     const uint32_t vi3 = PermuteW >> 2;
-    pWork[3] = aPtr[vi3][i3];
+    vResult.u[3] = aPtr[vi3][i3];
 
-    return Result;
+    return vResult.v;
 #endif
 }
 
