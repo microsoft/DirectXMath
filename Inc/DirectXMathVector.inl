@@ -1241,6 +1241,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle
     return _mm_permutevar_ps(V, vControl);
 #else
 #if defined(__GNUC__) && !defined(__clang__)
+    // workaround some GCC optimization behavior that breaks this function
     XMVECTORU32 T;
     T.v = V;
     auto aPtr = reinterpret_cast<const uint32_t*>(&T);
@@ -1319,6 +1320,7 @@ inline XMVECTOR XM_CALLCONV XMVectorPermute
     const uint32_t* aPtr[2];
 
 #if defined(__GNUC__) && !defined(__clang__)
+    // workaround some GCC optimization behavior that breaks this function
     XMVECTORU32 T1;
     T1.v = V1;
     XMVECTORU32 T2;
