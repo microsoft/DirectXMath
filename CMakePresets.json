@@ -37,6 +37,17 @@
       "hidden": true
     },
     {
+      "name": "ARM32",
+      "architecture": {
+        "value": "arm",
+        "strategy": "external"
+      },
+      "cacheVariables": {
+        "DXMATH_ARCHITECTURE": "arm"
+      },
+      "hidden": true
+    },
+    {
       "name": "ARM64",
       "architecture": {
         "value": "arm64",
@@ -205,6 +216,8 @@
     { "name": "arm64-Release"  , "description": "MSVC for ARM64 (Release) - ARM-NEON", "inherits": [ "base", "ARM64", "Release", "MSVC" ] },
     { "name": "arm64ec-Debug"  , "description": "MSVC for ARM64EC (Debug) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Debug", "MSVC" ] },
     { "name": "arm64ec-Release", "description": "MSVC for ARM64EC (Release) - ARM-NEON", "inherits": [ "base", "ARM64EC", "Release", "MSVC" ] },
+    { "name": "arm-Debug"      , "description": "MSVC for ARM32 [Deprecated] (Debug) - ARM-NEON", "inherits": [ "base", "ARM32", "Debug", "MSVC" ] },
+    { "name": "arm-Release"    , "description": "MSVC for ARM32 [Deprecated] (Release) - ARM-NEON", "inherits": [ "base", "ARM32", "Release", "MSVC" ] },
 
     { "name": "x64-Debug-Clang"    , "description": "Clang/LLVM for x64 (Debug) - SSE/SSE2", "inherits": [ "base", "x64", "Debug", "Clang" ] },
     { "name": "x64-Release-Clang"  , "description": "Clang/LLVM for x64 (Release) - SSE/SSE2", "inherits": [ "base", "x64", "Release", "Clang" ] },
