@@ -2747,10 +2747,10 @@ inline void XM_CALLCONV XMStoreFloat3SE
 #endif
 
     // Extract and pack into bitfields
-    pDestination->v = (vgetq_lane_u32(ints, 0) & 0x1FF)
-        | ((vgetq_lane_u32(ints, 1) & 0x1FF) << 9)
-        | ((vgetq_lane_u32(ints, 2) & 0x1FF) << 18)
-        | ((exp - 0x6f) << 27);
+    pDestination->xm = vgetq_lane_u32(ints, 0) & 0x1FF;
+    pDestination->ym = vgetq_lane_u32(ints, 1) & 0x1FF;
+    pDestination->zm = vgetq_lane_u32(ints, 2) & 0x1FF;
+    pDestination->e = exp - 0x6f;
 
 #elif defined(_XM_SSE_INTRINSICS_)
 
@@ -2787,11 +2787,10 @@ inline void XM_CALLCONV XMStoreFloat3SE
     XM_ALIGNED_DATA(16) uint32_t ivals[4];
     _mm_store_si128(reinterpret_cast<__m128i*>(ivals), ints);
 
-    pDestination->v = (ivals[0] & 0x1FF)
-        | ((ivals[1] & 0x1FF) << 9)
-        | ((ivals[2] & 0x1FF) << 18)
-        | ((exp - 0x6f) << 27);
-
+    pDestination->xm = ivals[0] & 0x1FF;
+    pDestination->ym = ivals[1] & 0x1FF;
+    pDestination->zm = ivals[2] & 0x1FF;
+    pDestination->e = exp - 0x6f;
 #endif
 }
 
