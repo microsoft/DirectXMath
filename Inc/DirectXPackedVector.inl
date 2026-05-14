@@ -1294,17 +1294,15 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3SE(const XMFLOAT3SE* pSource) noexcept
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
 
-    uint32_t v = pSource->v;
-
     // Build scale factor from shared exponent
     union { float f; int32_t i; } fi;
-    fi.i = 0x33800000 + (static_cast<int>(v >> 27) << 23);
+    fi.i = 0x33800000 + (pSource->e << 23);
 
     // Extract 9-bit mantissas into vector lanes
     uint32x4_t mantissas = vdupq_n_u32(0);
-    mantissas = vsetq_lane_u32(v & 0x1FFu, mantissas, 0);
-    mantissas = vsetq_lane_u32((v >> 9) & 0x1FFu, mantissas, 1);
-    mantissas = vsetq_lane_u32((v >> 18) & 0x1FFu, mantissas, 2);
+    mantissas = vsetq_lane_u32(pSource->xm, mantissas, 0);
+    mantissas = vsetq_lane_u32(pSource->ym, mantissas, 1);
+    mantissas = vsetq_lane_u32(pSource->zm, mantissas, 2);
 
     // Convert to float, scale, and set w = 1.0f
     float32x4_t result = vmulq_n_f32(vcvtq_f32_u32(mantissas), fi.f);
@@ -1312,18 +1310,16 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3SE(const XMFLOAT3SE* pSource) noexcept
 
 #elif defined(_XM_SSE_INTRINSICS_)
 
-    uint32_t v = pSource->v;
-
     // Build scale factor from shared exponent
     union { float f; int32_t i; } fi;
-    fi.i = 0x33800000 + (static_cast<int>(v >> 27) << 23);
+    fi.i = 0x33800000 + (pSource->e << 23);
 
     // Extract 9-bit mantissas, convert to float, and scale
     __m128i mantissas = _mm_set_epi32(
         0,
-        static_cast<int>((v >> 18) & 0x1FF),
-        static_cast<int>((v >> 9) & 0x1FF),
-        static_cast<int>(v & 0x1FF));
+        static_cast<int>(pSource->zm),
+        static_cast<int>(pSource->ym),
+        static_cast<int>(pSource->xm));
     __m128 result = _mm_mul_ps(_mm_cvtepi32_ps(mantissas), _mm_set1_ps(fi.f));
 
     // Set w = 1.0f (w lane is +0.0f so bitwise OR inserts 1.0f cleanly)
