@@ -1279,6 +1279,8 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3SE(const XMFLOAT3SE* pSource) noexcept
 {
     assert(pSource);
 
+#if defined(_XM_NO_INTRINSICS_)
+
     union { float f; int32_t i; } fi;
     fi.i = 0x33800000 + (pSource->e << 23);
     float Scale = fi.f;
@@ -1289,6 +1291,45 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3SE(const XMFLOAT3SE* pSource) noexcept
             Scale * float(pSource->zm),
             1.0f } } };
     return v;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+
+    uint32_t v = pSource->v;
+
+    // Build scale factor from shared exponent
+    union { float f; int32_t i; } fi;
+    fi.i = 0x33800000 + (static_cast<int>(v >> 27) << 23);
+
+    // Extract 9-bit mantissas into vector lanes
+    uint32x4_t mantissas = vdupq_n_u32(0);
+    mantissas = vsetq_lane_u32(v & 0x1FFu, mantissas, 0);
+    mantissas = vsetq_lane_u32((v >> 9) & 0x1FFu, mantissas, 1);
+    mantissas = vsetq_lane_u32((v >> 18) & 0x1FFu, mantissas, 2);
+
+    // Convert to float, scale, and set w = 1.0f
+    float32x4_t result = vmulq_n_f32(vcvtq_f32_u32(mantissas), fi.f);
+    return vsetq_lane_f32(1.0f, result, 3);
+
+#elif defined(_XM_SSE_INTRINSICS_)
+
+    uint32_t v = pSource->v;
+
+    // Build scale factor from shared exponent
+    union { float f; int32_t i; } fi;
+    fi.i = 0x33800000 + (static_cast<int>(v >> 27) << 23);
+
+    // Extract 9-bit mantissas, convert to float, and scale
+    __m128i mantissas = _mm_set_epi32(
+        0,
+        static_cast<int>((v >> 18) & 0x1FF),
+        static_cast<int>((v >> 9) & 0x1FF),
+        static_cast<int>(v & 0x1FF));
+    __m128 result = _mm_mul_ps(_mm_cvtepi32_ps(mantissas), _mm_set1_ps(fi.f));
+
+    // Set w = 1.0f (w lane is +0.0f so bitwise OR inserts 1.0f cleanly)
+    return _mm_or_ps(result, g_XMIdentityR3);
+
+#endif
 }
 
 //------------------------------------------------------------------------------
@@ -2639,6 +2680,8 @@ inline void XM_CALLCONV XMStoreFloat3SE
 {
     assert(pDestination);
 
+#if defined(_XM_NO_INTRINSICS_)
+
     XMFLOAT3A tmp;
     XMStoreFloat3A(&tmp, V);
 
@@ -2667,6 +2710,93 @@ inline void XM_CALLCONV XMStoreFloat3SE
     pDestination->xm = static_cast<uint32_t>(MathInternal::round_to_nearest(x * ScaleR));
     pDestination->ym = static_cast<uint32_t>(MathInternal::round_to_nearest(y * ScaleR));
     pDestination->zm = static_cast<uint32_t>(MathInternal::round_to_nearest(z * ScaleR));
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+
+    static const XMVECTORF32 MaxFloat9 = { { { float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7) } } };
+    static constexpr float minf9 = float(1.f / (1 << 16));
+
+    // Clamp to [0, maxf9] then zero w lane
+    float32x4_t clamped = vminq_f32(vmaxq_f32(V, vdupq_n_f32(0)), MaxFloat9);
+    clamped = vsetq_lane_f32(0.0f, clamped, 3);
+
+    // Horizontal max of xyz for shared exponent
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__
+    float maxVal = vmaxvq_f32(clamped);
+#else
+    float32x2_t vlow = vget_low_f32(clamped);
+    float32x2_t vhigh = vget_high_f32(clamped);
+    float32x2_t maxPair = vpmax_f32(vlow, vhigh);
+    maxPair = vpmax_f32(maxPair, maxPair);
+    float maxVal = vget_lane_f32(maxPair, 0);
+#endif
+
+    if (maxVal < minf9) maxVal = minf9;
+
+    // Compute shared exponent (inherently scalar)
+    union { float f; int32_t i; } fi;
+    fi.f = maxVal;
+    fi.i += 0x00004000; // round up leaving 9 bits in fraction (including assumed 1)
+
+    auto exp = static_cast<uint32_t>(fi.i) >> 23;
+    fi.i = static_cast<int32_t>(0x83000000 - (exp << 23));
+
+    // Scale all channels and convert to integer
+    float32x4_t scaled = vmulq_n_f32(clamped, fi.f);
+#if defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __aarch64__
+    uint32x4_t ints = vcvtnq_u32_f32(scaled);
+#else
+    scaled = vaddq_f32(scaled, vdupq_n_f32(0.5f));
+    uint32x4_t ints = vcvtq_u32_f32(scaled);
+#endif
+
+    // Extract and pack into bitfields
+    pDestination->v = (vgetq_lane_u32(ints, 0) & 0x1FF)
+        | ((vgetq_lane_u32(ints, 1) & 0x1FF) << 9)
+        | ((vgetq_lane_u32(ints, 2) & 0x1FF) << 18)
+        | ((exp - 0x6f) << 27);
+
+#elif defined(_XM_SSE_INTRINSICS_)
+
+    static const XMVECTORF32 MaxFloat9 = { { { float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7) } } };
+    static constexpr float minf9 = float(1.f / (1 << 16));
+
+    // Clamp to [0, maxf9] then mask w to zero
+    __m128 clamped = _mm_min_ps(_mm_max_ps(V, _mm_setzero_ps()), MaxFloat9);
+    clamped = _mm_and_ps(clamped, g_XMMask3);
+
+    // Horizontal max of xyz for shared exponent
+    __m128 maxV = clamped;
+    __m128 temp = XM_PERMUTE_PS(maxV, _MM_SHUFFLE(1, 1, 1, 1));
+    maxV = _mm_max_ps(maxV, temp);
+    temp = XM_PERMUTE_PS(clamped, _MM_SHUFFLE(2, 2, 2, 2));
+    maxV = _mm_max_ps(maxV, temp);
+
+    // Ensure minimum threshold
+    maxV = _mm_max_ss(maxV, _mm_set_ss(minf9));
+
+    // Compute shared exponent (inherently scalar)
+    union { float f; int32_t i; } fi;
+    _mm_store_ss(&fi.f, maxV);
+    fi.i += 0x00004000; // round up leaving 9 bits in fraction (including assumed 1)
+
+    auto exp = static_cast<uint32_t>(fi.i) >> 23;
+    fi.i = static_cast<int32_t>(0x83000000 - (exp << 23));
+
+    // Scale all channels and round to nearest integer
+    __m128 scaled = _mm_mul_ps(clamped, _mm_set1_ps(fi.f));
+    __m128i ints = _mm_cvtps_epi32(scaled);
+
+    // Extract and pack into bitfields
+    XM_ALIGNED_DATA(16) uint32_t ivals[4];
+    _mm_store_si128(reinterpret_cast<__m128i*>(ivals), ints);
+
+    pDestination->v = (ivals[0] & 0x1FF)
+        | ((ivals[1] & 0x1FF) << 9)
+        | ((ivals[2] & 0x1FF) << 18)
+        | ((exp - 0x6f) << 27);
+
+#endif
 }
 
 //------------------------------------------------------------------------------
