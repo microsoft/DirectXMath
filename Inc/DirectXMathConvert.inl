@@ -869,6 +869,24 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3(const XMFLOAT4X3* pSource) noexcept
     M.r[2] = vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(T2), g_XMMask3));
     M.r[3] = vsetq_lane_f32(1.f, T3, 3);
     return M;
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp1 = _mm_loadu_ps(&pSource->m[0][0]);
+    XMVECTOR vTemp2 = _mm_loadu_ps(&pSource->m[1][1]);
+    XMVECTOR vTemp4 = _mm_loadu_ps(&pSource->m[2][2]);
+    XMVECTOR vTemp3 = _mm_shuffle_ps(vTemp2, vTemp4, _MM_SHUFFLE(0, 0, 3, 2));
+    vTemp2 = _mm_shuffle_ps(vTemp2, vTemp1, _MM_SHUFFLE(3, 3, 1, 0));
+    vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(1, 1, 0, 2));
+    XMVECTOR zero = _mm_setzero_ps();
+    vTemp1 = _mm_blend_ps(zero, vTemp1, 0x7);
+    vTemp2 = _mm_blend_ps(zero, vTemp2, 0x7);
+    vTemp3 = _mm_blend_ps(zero, vTemp3, 0x7);
+    __m128i vTemp4i = _mm_srli_si128(_mm_castps_si128(vTemp4), 32 / 8);
+    vTemp4i = _mm_or_si128(vTemp4i, g_XMIdentityR3);
+    XMMATRIX M(vTemp1,
+        vTemp2,
+        vTemp3,
+        _mm_castsi128_ps(vTemp4i));
+    return M;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Use unaligned load instructions to
     // load the 12 floats
@@ -952,6 +970,24 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A(const XMFLOAT4X3A* pSource) noexcept
     M.r[1] = vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(T1), g_XMMask3));
     M.r[2] = vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(T2), g_XMMask3));
     M.r[3] = vsetq_lane_f32(1.f, T3, 3);
+    return M;
+#elif defined(_XM_SSE4_INTRINSICS_)
+    XMVECTOR vTemp1 = _mm_load_ps(&pSource->m[0][0]);
+    XMVECTOR vTemp2 = _mm_load_ps(&pSource->m[1][1]);
+    XMVECTOR vTemp4 = _mm_load_ps(&pSource->m[2][2]);
+    XMVECTOR vTemp3 = _mm_shuffle_ps(vTemp2, vTemp4, _MM_SHUFFLE(0, 0, 3, 2));
+    vTemp2 = _mm_shuffle_ps(vTemp2, vTemp1, _MM_SHUFFLE(3, 3, 1, 0));
+    vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(1, 1, 0, 2));
+    XMVECTOR zero = _mm_setzero_ps();
+    vTemp1 = _mm_blend_ps(zero, vTemp1, 0x7);
+    vTemp2 = _mm_blend_ps(zero, vTemp2, 0x7);
+    vTemp3 = _mm_blend_ps(zero, vTemp3, 0x7);
+    __m128i vTemp4i = _mm_srli_si128(_mm_castps_si128(vTemp4), 32 / 8);
+    vTemp4i = _mm_or_si128(vTemp4i, g_XMIdentityR3);
+    XMMATRIX M(vTemp1,
+        vTemp2,
+        vTemp3,
+        _mm_castsi128_ps(vTemp4i));
     return M;
 #elif defined(_XM_SSE_INTRINSICS_)
     // Use aligned load instructions to
