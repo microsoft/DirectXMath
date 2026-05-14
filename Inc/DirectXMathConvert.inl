@@ -541,6 +541,10 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3A(const XMFLOAT3A* pSource) noexcept
     float32x4_t V = vld1q_f32(reinterpret_cast<const float*>(pSource));
 #endif
     return vsetq_lane_f32(0, V, 3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    // Reads an extra float which is zero'd
+    __m128 V = _mm_load_ps(&pSource->x);
+    return _mm_blend_ps(_mm_setzero_ps(), V, 0x7);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Reads an extra float which is zero'd
     __m128 V = _mm_load_ps(&pSource->x);
@@ -881,11 +885,18 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3(const XMFLOAT4X3* pSource) noexcept
     // vTemp2 = x2,y2,z2,z2
     vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(1, 1, 0, 2));
     // vTemp1 = x1,y1,z1,0
-    vTemp1 = _mm_and_ps(vTemp1, g_XMMask3);
     // vTemp2 = x2,y2,z2,0
-    vTemp2 = _mm_and_ps(vTemp2, g_XMMask3);
     // vTemp3 = x3,y3,z3,0
+#ifdef _XM_SSE4_INTRINSICS_
+    XMVECTOR zero = _mm_setzero_ps();
+    vTemp1 = _mm_blend_ps(zero, vTemp1, 0x7);
+    vTemp2 = _mm_blend_ps(zero, vTemp2, 0x7);
+    vTemp3 = _mm_blend_ps(zero, vTemp3, 0x7);
+#else
+    vTemp1 = _mm_and_ps(vTemp1, g_XMMask3);
+    vTemp2 = _mm_and_ps(vTemp2, g_XMMask3);
     vTemp3 = _mm_and_ps(vTemp3, g_XMMask3);
+#endif
     // vTemp4i = x4,y4,z4,0
     __m128i vTemp4i = _mm_srli_si128(_mm_castps_si128(vTemp4), 32 / 8);
     // vTemp4i = x4,y4,z4,1.0f
@@ -965,11 +976,18 @@ inline XMMATRIX XM_CALLCONV XMLoadFloat4x3A(const XMFLOAT4X3A* pSource) noexcept
     // vTemp2 = x2,y2,z2,z2
     vTemp2 = XM_PERMUTE_PS(vTemp2, _MM_SHUFFLE(1, 1, 0, 2));
     // vTemp1 = x1,y1,z1,0
-    vTemp1 = _mm_and_ps(vTemp1, g_XMMask3);
     // vTemp2 = x2,y2,z2,0
-    vTemp2 = _mm_and_ps(vTemp2, g_XMMask3);
     // vTemp3 = x3,y3,z3,0
+#ifdef _XM_SSE4_INTRINSICS_
+    XMVECTOR zero = _mm_setzero_ps();
+    vTemp1 = _mm_blend_ps(zero, vTemp1, 0x7);
+    vTemp2 = _mm_blend_ps(zero, vTemp2, 0x7);
+    vTemp3 = _mm_blend_ps(zero, vTemp3, 0x7);
+#else
+    vTemp1 = _mm_and_ps(vTemp1, g_XMMask3);
+    vTemp2 = _mm_and_ps(vTemp2, g_XMMask3);
     vTemp3 = _mm_and_ps(vTemp3, g_XMMask3);
+#endif
     // vTemp4i = x4,y4,z4,0
     __m128i vTemp4i = _mm_srli_si128(_mm_castps_si128(vTemp4), 32 / 8);
     // vTemp4i = x4,y4,z4,1.0f
