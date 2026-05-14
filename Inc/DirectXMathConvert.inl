@@ -541,6 +541,10 @@ inline XMVECTOR XM_CALLCONV XMLoadFloat3A(const XMFLOAT3A* pSource) noexcept
     float32x4_t V = vld1q_f32(reinterpret_cast<const float*>(pSource));
 #endif
     return vsetq_lane_f32(0, V, 3);
+#elif defined(_XM_SSE4_INTRINSICS_)
+    // Reads an extra float which is zero'd
+    __m128 V = _mm_load_ps(&pSource->x);
+    return _mm_blend_ps(_mm_setzero_ps(), V, 0x7);
 #elif defined(_XM_SSE_INTRINSICS_)
     // Reads an extra float which is zero'd
     __m128 V = _mm_load_ps(&pSource->x);
