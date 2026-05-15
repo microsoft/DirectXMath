@@ -93,6 +93,8 @@ For a full change history, see [CHANGELOG.md](https://github.com/microsoft/Direc
 
 * The clang/LLVM toolset currently does not respect the ``float_control`` pragma for SSE instrinsics. Therefore, the use of ``/fp:fast`` is not recommended on clang/LLVM until this issue is fixed. See [55713](https://github.com/llvm/llvm-project/issues/55713).
 
+* AArch32/ARM32 (ARMv7) support is deprecated in Windows 11. Compiler support for ARM32 is deprecated in Visual Studio 2026, and the system libraries are no longer present in the Windows SDK (26100) or later. Therefore, support for ARM32 is deprecated in DirectXMath and will be removed in a future release. Since most codepaths are shared for AArch32 and AArch64, the codepaths will be refactored to assume AArch64 (ARMv8).
+
 ## Support
 
 For questions, consider using [Stack Overflow](https://stackoverflow.com/questions/tagged/directxmath) with the *directxmath* tag, or the [DirectX Discord Server](https://discord.gg/directx) in the *dx12-developers* or *dx9-dx11-developers* channel.

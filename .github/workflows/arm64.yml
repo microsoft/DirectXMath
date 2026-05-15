@@ -62,3 +62,39 @@ jobs:
       - name: 'Build'
         working-directory: ${{ github.workspace }}
         run: cmake --build out/build/${{ matrix.build_type }}
+
+  buildarm32:
+    runs-on: windows-11-arm
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [arm-Debug, arm-Release]
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Clone test repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: 'Install Ninja'
+        run: choco install ninja
+
+      # ARM32 is deprecated, so more recent Windows SDKs no longer support it
+      - uses: ilammy/msvc-dev-cmd@0b201ec74fa43914dc39ae48a89fd1d8cb592756 # v1.13.0
+        with:
+          arch: arm64_arm
+          sdk: 10.0.22621.0
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}
+        run: cmake --preset=${{ matrix.build_type }}
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}
+        run: cmake --build out/build/${{ matrix.build_type }}
