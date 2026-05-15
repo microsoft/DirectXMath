@@ -681,6 +681,11 @@ namespace DirectX
 
         constexpr XMFLOAT3(float _x, float _y, float _z) noexcept : x(_x), y(_y), z(_z) {}
         explicit XMFLOAT3(_In_reads_(3) const float* pArray) noexcept : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+
+    #if (__cplusplus >= 202002L)
+        bool operator == (const XMFLOAT3&) const = default;
+        auto operator <=> (const XMFLOAT3&) const = default;
+    #endif
     };
 
     // 3D Vector; 32 bit floating point components aligned on a 16 byte boundary
