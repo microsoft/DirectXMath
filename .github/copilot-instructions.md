@@ -492,7 +492,7 @@ Use these established guards — do not invent new ones:
 | `_M_ARM64` / `_M_X64` / `_M_IX86` | Architecture-specific code paths for MSVC (`#ifdef`) |
 | `_M_ARM64EC` | ARM64EC ABI (ARM64 code with x64 interop using ARM-NEON) for MSVC |
 | `__aarch64__` / `__x86_64__` / `__i386__` / `__powerpc64__` | Additional architecture-specific symbols for MinGW/GNUC (`#if`) |
-| `_M_ARM` / `__arm__` | This is the legacy 32-bit Windows on ARM which is deprecated.|
+| `_M_ARM` / `__arm__` | This is the legacy 32-bit Windows on ARM which is deprecated. |
 
 > GNU predefined architecture macros (`__aarch64__`, `__x86_64__`, `__i386__`, `__powerpc64__`, `__arm__`) are always defined to `1` by the compiler — they are **not** merely defined/undefined like MSVC's `_M_ARM64`. Use them **bare** (without `defined()`) in `#if` expressions: `#if __aarch64__`, not `#if defined(__aarch64__)`. Using `defined()` is technically valid but inconsistent with the project's convention and suppresses `-Wundef` unnecessarily.
 
