@@ -6,6 +6,16 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### May 2026
+* Defaulted C++20 `operator==` and `operator<=>` added for `XMFLOAT3`
+* Fix C++20 comparison operators for `XMFLOAT3X3`, `XMFLOAT4X3`, `XMFLOAT3X4`, and `XMFLOAT4X4`
+* SIMD optimized implementations for `XMLoadFloat3SE` and `XMStoreFloat3SE`
+* Minor SSE4.1 optimization for `XMLoadFloat3A`, `XMLoadFloat4x3`, and `XMLoadFloat4x3A`
+* Fix `XMVectorSwizzle` and `XMVectorPermute` for GCC strict-aliasing optimizer
+* C++17 and later use `inline constexpr` for `XMGLOBALCONST` to support C++20 Modules
+* Improved clang for Windows usage of cpuid intrinsics
+* CMake project updates including minimum version 3.21 and additional build switches
+
 ### April 2025 (3.20b)
 * `XM_DEPRECATED` macro uses C++14 ``[[deprecated]]`` standard attribute when supported
 * Cmake project updates with build options for XDSP and SHMath
