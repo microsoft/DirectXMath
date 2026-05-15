@@ -6,7 +6,7 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
-### May 2026
+### May 2026 (3.21)
 * Defaulted C++20 `operator==` and `operator<=>` added for `XMFLOAT3`
 * Fix C++20 comparison operators for `XMFLOAT3X3`, `XMFLOAT4X3`, `XMFLOAT3X4`, and `XMFLOAT4X4`
 * SIMD optimized implementations for `XMLoadFloat3SE` and `XMStoreFloat3SE`
