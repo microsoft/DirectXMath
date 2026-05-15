@@ -495,6 +495,8 @@ Use these established guards — do not invent new ones:
 
 > `_M_ARM` / `__arm__` is legacy 32-bit ARM which is deprecated.
 
+> GNU predefined architecture macros (`__aarch64__`, `__x86_64__`, `__i386__`, `__powerpc64__`, `__arm__`) are always defined to `1` by the compiler — they are **not** merely defined/undefined like MSVC's `_M_ARM64`. Use them **bare** (without `defined()`) in `#if` expressions: `#if __aarch64__`, not `#if defined(__aarch64__)`. Using `defined()` is technically valid but inconsistent with the project's convention and suppresses `-Wundef` unnecessarily.
+
 ## Code Review Instructions
 
 When reviewing code, focus on the following aspects:
