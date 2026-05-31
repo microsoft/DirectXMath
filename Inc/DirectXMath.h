@@ -870,14 +870,14 @@ namespace DirectX
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
     #if (__cplusplus >= 202002L)
-        bool operator == (const XMFLOAT3X3& M) const noexcept
+        constexpr bool operator == (const XMFLOAT3X3& M) const noexcept
         {
             return _11 == M._11 && _12 == M._12 && _13 == M._13
                 && _21 == M._21 && _22 == M._22 && _23 == M._23
                 && _31 == M._31 && _32 == M._32 && _33 == M._33;
         }
 
-        auto operator <=> (const XMFLOAT3X3& M) const noexcept
+        constexpr auto operator <=> (const XMFLOAT3X3& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0) return cmp;
             if (auto cmp = _12 <=> M._12; cmp != 0) return cmp;
@@ -932,7 +932,7 @@ namespace DirectX
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
     #if (__cplusplus >= 202002L)
-        bool operator == (const XMFLOAT4X3& M) const noexcept
+        constexpr bool operator == (const XMFLOAT4X3& M) const noexcept
         {
             return _11 == M._11 && _12 == M._12 && _13 == M._13
                 && _21 == M._21 && _22 == M._22 && _23 == M._23
@@ -940,7 +940,7 @@ namespace DirectX
                 && _41 == M._41 && _42 == M._42 && _43 == M._43;
         }
 
-        auto operator <=> (const XMFLOAT4X3& M) const noexcept
+        constexpr auto operator <=> (const XMFLOAT4X3& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0) return cmp;
             if (auto cmp = _12 <=> M._12; cmp != 0) return cmp;
@@ -1001,14 +1001,14 @@ namespace DirectX
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
     #if (__cplusplus >= 202002L)
-        bool operator == (const XMFLOAT3X4& M) const noexcept
+        constexpr bool operator == (const XMFLOAT3X4& M) const noexcept
         {
             return _11 == M._11 && _12 == M._12 && _13 == M._13 && _14 == M._14
                 && _21 == M._21 && _22 == M._22 && _23 == M._23 && _24 == M._24
                 && _31 == M._31 && _32 == M._32 && _33 == M._33 && _34 == M._34;
         }
 
-        auto operator <=> (const XMFLOAT3X4& M) const noexcept
+        constexpr auto operator <=> (const XMFLOAT3X4& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0) return cmp;
             if (auto cmp = _12 <=> M._12; cmp != 0) return cmp;
@@ -1071,7 +1071,7 @@ namespace DirectX
         float& operator() (size_t Row, size_t Column) noexcept { return m[Row][Column]; }
 
     #if (__cplusplus >= 202002L)
-        bool operator == (const XMFLOAT4X4& M) const noexcept
+        constexpr bool operator == (const XMFLOAT4X4& M) const noexcept
         {
             return _11 == M._11 && _12 == M._12 && _13 == M._13 && _14 == M._14
                 && _21 == M._21 && _22 == M._22 && _23 == M._23 && _24 == M._24
@@ -1079,7 +1079,7 @@ namespace DirectX
                 && _41 == M._41 && _42 == M._42 && _43 == M._43 && _44 == M._44;
         }
 
-        auto operator <=> (const XMFLOAT4X4& M) const noexcept
+        constexpr auto operator <=> (const XMFLOAT4X4& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0) return cmp;
             if (auto cmp = _12 <=> M._12; cmp != 0) return cmp;
