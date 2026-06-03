@@ -13,6 +13,7 @@ description: Guide for performing the DirectXMath release process. Use this skil
 - Local repository:
   - VCPKG at `d:\vcpkg` (synced with `main` branch)
 
+<!-- markdownlint-disable MD029 -->
 ## Steps
 
 ### Phase 1: Prepare Release
