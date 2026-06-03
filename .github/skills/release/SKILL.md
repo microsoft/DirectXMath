@@ -12,6 +12,7 @@ description: Guide for performing the DirectXMath release process. Use this skil
 - Access to the MSCodeHub mirror repository and Azure DevOps pipelines.
 - Local repository:
   - VCPKG at `d:\vcpkg` (synced with `main` branch)
+- PATs will be needed for scripts that access GitHub and ADO.
 
 <!-- markdownlint-disable MD029 -->
 ## Steps
@@ -41,20 +42,20 @@ description: Guide for performing the DirectXMath release process. Use this skil
 
 ### Phase 5: NuGet Validation and Publishing
 
-11. Run the PowerShell script `build\promotenuget.ps1` with the `-Release` parameter to promote the version to the Release view on the project-scoped ADO feed.
-12. Run the MSCodeHub pipeline to publish the NuGet package to nuget.org. The pipeline will automatically push the most recent package promoted to the Release view to nuget.org.
+12. Download the NuGet package from the ADO pipeline build, and review it with a local project or using NuGet Package Explorer.
+13. Upload the nupkg to nuget.org via the website.
 
 ### Phase 6: VCPKG Port Update
 
-13. Git pull a local repository of VCPKG to `d:\vcpkg` in sync with the `main` branch of the VCPKG repository.
-14. Run the PowerShell script `build\updatevcpkg.ps1` to update the DirectXMath port in VCPKG with the new release version. This will edit the files in `ports\directxmath`.
-15. Test the VCPKG port using all appropriate triplets and features.
-16. Run `.\vcpkg --x-add-version directxmath` to update the VCPKG versioning history.
-17. Submit a PR to the VCPKG GitHub repository to update the DirectXMath port. The PR will be reviewed and merged by the VCPKG maintainers.
+14. Git pull a local repository of VCPKG to `d:\vcpkg` in sync with the `main` branch of the VCPKG repository.
+15. Run the PowerShell script `build\updatevcpkg.ps1` to update the DirectXMath port in VCPKG with the new release version. This will edit the files in `ports\directxmath`.
+16. Test the VCPKG port using the script at `assets/vcpkgdxmath.cmd` (in this skill folder). Copy it to `d:\vcpkg` and run from there after bootstrapping VCPKG.
+17. Run `.\vcpkg x-add-version directxmath` to update the VCPKG versioning history.
+18. Submit a PR to the VCPKG GitHub repository to update the DirectXMath port. The PR will be reviewed and merged by the VCPKG maintainers.
 
 ### Phase 7: Windows SDK Update
 
-18. For the DirectXMath release to be included in the next Windows SDK, prepare a PR for the MSCodeHub project from the `main` branch to the `ms_sdk_release` branch. When the PR is complete, the Azure DevOps pipeline will automatically build vpack and submit a PR for further review.
+19. For the DirectXMath release to be included in the next Windows SDK, prepare a PR for the MSCodeHub project from the `main` branch to the `ms_sdk_release` branch. When the PR is complete, the Azure DevOps pipeline will automatically build vpack and submit a PR for further review.
 
 ### Phase 8: Finalize
 
@@ -66,5 +67,5 @@ When fully completed, be sure to update the GitHub release with links to the mat
 | --- | --- |
 | `build\preparerelease.ps1` | Creates topic branch, updates version numbers and changelog stub |
 | `build\completerelease.ps1` | Sets tags, creates GitHub release from changelog |
-| `build\promotenuget.ps1 -Release` | Promotes NuGet package to Release view on ADO feed |
-| `build\updatevcpkg.ps1` | Updates DirectXTK VCPKG port files |
+| `build\updatevcpkg.ps1` | Updates DirectXMath VCPKG port files |
+| `assets\vcpkgdxmath.cmd` | Tests VCPKG port across all triplets and features |
