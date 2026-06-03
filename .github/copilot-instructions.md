@@ -515,24 +515,4 @@ When reviewing code, focus on the following aspects:
 
 ## Release Process
 
-1. Ensure all changes are merged into the `main` branch and that all tests pass.
-2. Git pull the local repository to ensure it is up to date with the `main` branch.
-3. Run the PowerShell script `build\preparerelease.ps1` which will generate a topic branch for the release, update the version number in `CMakeLists.txt`, the `README.md` file, the release notes in the nuspec files, and create a stub in the `CHANGELOG.md` file for the new release.
-4. Edit the `CHANGELOG.md` file to update it with a summary of changes.
-5. Submit the topic branch for review and merge into `main` once approved. Allow the GitHub Actions workflows and the Azure DevOps pipelines to complete successfully before proceeding.
-6. Run the PowerShell script `build\completerelease.ps1` which will set a tag on the project repo and the test repo, and create a release on GitHub with the release notes from `CHANGELOG.md`. Ensure you have set up GPG signing for your GitHub account so that the tags will be verified.
-7. Git pull the local repository to ensure it is up to date with the `main` branch. Be sure to include `--tags`.
-8. Push the `main` branch to the MSCodeHub mirror repository. Be sure to include `--tags`.
-9. Create a PR on MSCodeHub from the `main` branch to the `release` branch.
-10. Merge the PR on MSCodeHub to update the release branch, which will trigger the Azure DevOps pipeline to build the NuGet package.
-11. Download the GitHub source .zip archive from the release. Unzip and compare to the local repo to ensure it matches — keep in mind there may be some CR/LF differences. Run minisign on the .zip to generate a signature file, and upload the signature file to the release assets.
-12. Run the PowerShell script `build\promotenuget.ps1` with the `-Release` parameter to promote the version to the Release view on the project-scoped ADO feed.
-13. Run the MSCodeHub pipeline to publish the NuGet package to nuget.org. The pipeline will automatically push the most recent package promoted to the Release view to nuget.org.
-14. Git pull a local repository of VCPKG to `d:\vcpkg` in sync with the `main` branch of the VCPKG repository.
-15. Run the PowerShell script `build\updatevcpkg.ps1` to update the DirectXMath port in VCPKG with the new release version. This will edit the files in `ports\directxmath`.
-16. Test the VCPKG port using all appropriate triplets and features.
-17. Run `.\vcpkg --x-add-version directxmath` to update the VCPKG versioning history.
-18. Submit a PR to the VCPKG GitHub repository to update the DirectXMath port. The PR will be reviewed and merged by the VCPKG maintainers.
-19. For the DirectXMath release to be included in the next Windows SDK, prepare a PR for the MSCodeHub project from the `main` branch to the `ms_sdk_release` branch. When the PR is complete, the Azure DevOps pipeline will automatically build vpack and submit a PR for further review.
-
-> When fully completed, be sure to update the GitHub release with links to the matching NuGet packages and the VCPKG port.
+The release process is documented in the [release skill](.github/skills/release/SKILL.md). Invoke the `release` skill for step-by-step guidance when performing a release.
