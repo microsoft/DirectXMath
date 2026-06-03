@@ -225,7 +225,6 @@ Spherical harmonics (SH) functions for real-time lighting. Supports orders 2 thr
 | `SHProjectCubeMap` (D3D11) | Project a D3D11 cubemap texture into SH (requires `DirectXSHD3D11.cpp`) |
 | `SHProjectCubeMap` (D3D12) | Project D3D12 cubemap subresource data into SH (requires `DirectXSHD3D12.cpp`) |
 
-
 ---
 
 ## XDSP (Digital Signal Processing)
