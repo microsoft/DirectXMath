@@ -53,6 +53,10 @@ These components are designed to work without requiring any content from the leg
 
   * Contains miscellaneous build files and scripts.
 
+* ``skills\``
+
+   * Contains published CoPilot skills for use by developers.
+
 ## Documentation
 
 Documentation is available on the [Microsoft Docs](https://docs.microsoft.com/en-us/windows/desktop/dxmath/directxmath-portal). Additional information can be found on the [project wiki](https://github.com/microsoft/DirectXMath/wiki).

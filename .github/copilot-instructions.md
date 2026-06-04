@@ -43,6 +43,7 @@ MatrixStack/  # D3DX9-like matrix stack implementation for DirectXMath.
 SHMath/       # Spherical harmonic functions using DirectXMath.
 Stereo3D/     # Stereo 3D projection matrix functions using DirectXMath created for HoloLens.
 XDSP/         # Digital Signal Processing (DSP) functions using DirectXMath.
+skills/       # Published CoPilot skills for use by developers.
 Tests/        # Tests are designed to be cloned from a separate repository at this location.
 wiki/         # Local clone of the GitHub wiki documentation repository.
 ```
