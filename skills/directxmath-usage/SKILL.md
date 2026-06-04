@@ -1,5 +1,5 @@
 ---
-name: DirectXMath Usage
+name: directxmath-usage
 description: Guide for integrating DirectXMath into new projects and an overview of the API, types, and classes. Use this skill when asked about how to use DirectXMath, integrate it into a project, or for an overview of available functionality.
 ---
 
