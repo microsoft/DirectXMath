@@ -1,6 +1,13 @@
 ---
 name: directxmath-usage
-description: Guide for integrating DirectXMath into new projects and an overview of the API, types, and classes. Use this skill when asked about how to use DirectXMath, integrate it into a project, or for an overview of available functionality.
+description: >-
+  Guide for integrating DirectXMath into new projects and an overview of the API, types, and classes.
+  Use this skill when asked about how to use DirectXMath, integrate it into a project, or for an
+  overview of available functionality.
+license: MIT
+metadata:
+  author: chuckw
+  version: "1.0"
 ---
 
 # DirectXMath Usage
