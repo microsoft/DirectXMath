@@ -6,6 +6,9 @@ Release available for download on [GitHub](https://github.com/microsoft/DirectXM
 
 ## Release History
 
+### June 2026 (3.21b)
+* `constexpr` added to C++20 comparison operators for `XMFLOAT3X3`, `XMFLOAT4X3`, `XMFLOAT3X4`, and `XMFLOAT4X4`
+
 ### May 2026 (3.21)
 * Defaulted C++20 `operator==` and `operator<=>` added for `XMFLOAT3`
 * Fix C++20 comparison operators for `XMFLOAT3X3`, `XMFLOAT4X3`, `XMFLOAT3X4`, and `XMFLOAT4X4`

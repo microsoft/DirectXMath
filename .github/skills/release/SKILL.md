@@ -59,7 +59,8 @@ description: Guide for performing the DirectXMath release process. Use this skil
 
 ### Phase 8: Finalize
 
-When fully completed, be sure to update the GitHub release with links to the matching NuGet packages and the VCPKG port.
+20. When fully completed, be sure to update the GitHub release with links to the matching NuGet packages and the VCPKG port.
+21. Contact the Visual C++ compiler team and have them update `src/qa/suites/common/TestAssets.xml` to use the release's commit ids for DirectXMath and the Test Suite to be included in their test coverage.
 
 ## Key Scripts
 
