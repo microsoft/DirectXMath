@@ -75,7 +75,7 @@ copilot
 
 ## Compiler support
 
-Officially the library is supported with Microsoft Visual C++ 2019 (16.11) or later, clang/LLVM v12 or later, and GCC 10 or later. It should also compile with the Intel C++ and MinGW compilers.
+Officially the library is supported with Microsoft Visual C++ 2019 (16.11) or later, clang/LLVM v12 or later, and GCC 10 or later. It should also compile with the Intel C++, MinGW, and Apple Clang compilers.
 
 When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
 
@@ -104,6 +104,8 @@ For the latest version of DirectXMath, bug reports, etc. please visit the projec
 FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXMath/security/advisories).
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXMath/blob/main/CHANGELOG.md).
+
+* The *directxmath* NuGet package is deprecated. The best way to integrate the latest DirectXMath into your C++ project is using [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/directxmath).
 
 * The CMake projects require 3.21 or later. VS 2019 users will need to install a standalone version of CMake 3.21 or later and add it to their PATH.
 
@@ -145,6 +147,8 @@ Thanks to Dave Eberly for his contributions particularly in improving the transc
 
 Thanks to Bruce Dawson for his help with the rounding functions.
 
-Thanks to Andrew Farrier for the fixes to ``XMVerifyCPUSupport`` to properly support clang.
+Thanks to Andrew Farrier and Ruiji-Shi for the fixes to ``XMVerifyCPUSupport`` to properly support clang.
 
 Thanks to Scott Matloff for his help in getting the library updated to use Intel SVML for VS 2019.
+
+Thanks to Shawn Hargreaves and Nada Ouf for their continued support for this library.
