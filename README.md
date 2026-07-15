@@ -145,7 +145,7 @@ Thanks to Dave Eberly for his contributions particularly in improving the transc
 
 Thanks to Bruce Dawson for his help with the rounding functions.
 
-Thanks to Andrew Farrier for the fixes to ``XMVerifyCPUSupport`` to properly support clang.
+Thanks to Andrew Farrier and Ruiji-Shi for the fixes to ``XMVerifyCPUSupport`` to properly support clang.
 
 Thanks to Scott Matloff for his help in getting the library updated to use Intel SVML for VS 2019.
 
