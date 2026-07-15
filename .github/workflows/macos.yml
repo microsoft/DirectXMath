@@ -29,35 +29,8 @@ permissions:
   contents: read
 
 jobs:
-  buildx64:
+  build:
     runs-on: macos-latest
-
-    strategy:
-      fail-fast: false
-
-      matrix:
-        build_type: [x64-Debug-Linux, x64-Release-Linux]
-
-    steps:
-      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-
-      - name: Clone test repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          repository: walbourn/directxmathtest
-          path: Tests
-          ref: main
-
-      - name: 'Configure CMake'
-        working-directory: ${{ github.workspace }}
-        run: cmake --preset=${{ matrix.build_type }}
-
-      - name: 'Build'
-        working-directory: ${{ github.workspace }}
-        run: cmake --build out/build/${{ matrix.build_type }}
-
-  build_aarch64:
-    runs-on: macos-latest-arm64
 
     strategy:
       fail-fast: false
