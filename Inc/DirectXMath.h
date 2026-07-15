@@ -155,6 +155,7 @@
 
 #include "sal.h"
 #include <assert.h>
+#include <stddef.h>
 
 #ifdef _MSC_VER
 #pragma warning(push)
