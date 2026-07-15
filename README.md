@@ -75,7 +75,7 @@ copilot
 
 ## Compiler support
 
-Officially the library is supported with Microsoft Visual C++ 2019 (16.11) or later, clang/LLVM v12 or later, and GCC 10 or later. It should also compile with the Intel C++ and MinGW compilers.
+Officially the library is supported with Microsoft Visual C++ 2019 (16.11) or later, clang/LLVM v12 or later, and GCC 10 or later. It should also compile with the Intel C++, MinGW, and Apple Clang compilers.
 
 When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
 
