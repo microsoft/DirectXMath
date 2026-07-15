@@ -105,6 +105,8 @@ FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXMath/s
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXMath/blob/main/CHANGELOG.md).
 
+* The *directxmath* NuGet package is deprecated. The best way to integrate the latest DirectXMath into your C++ project is using [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/directxmath).
+
 * The CMake projects require 3.21 or later. VS 2019 users will need to install a standalone version of CMake 3.21 or later and add it to their PATH.
 
 * The clang/LLVM toolset currently does not respect the ``float_control`` pragma for SSE instrinsics. Therefore, the use of ``/fp:fast`` is not recommended on clang/LLVM until this issue is fixed. See [55713](https://github.com/llvm/llvm-project/issues/55713).
