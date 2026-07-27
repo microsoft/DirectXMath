@@ -37,65 +37,25 @@ jobs:
 
       matrix:
         include:
-          - vs: 2019
-            platform: x86
+          - platform: x86
             build_type: 'AVX Debug'
-          - vs: 2019
-            platform: x64
+          - platform: x64
             build_type: 'AVX Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX Debug'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX Debug'
-          - vs: 2019
-            platform: x86
+          - platform: x86
             build_type: 'AVX2 Debug'
-          - vs: 2019
-            platform: x64
+          - platform: x64
             build_type: 'AVX2 Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX2 Debug'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX2 Debug'
-          - vs: 2019
-            platform: x86
+          - platform: x86
             build_type: 'x87 Debug'
-          - vs: 2022
-            platform: x86
-            build_type: 'x87 Debug'
-          - vs: 2019
-            platform: x86
+          - platform: x86
             build_type: 'AVX Release'
-          - vs: 2019
-            platform: x64
+          - platform: x64
             build_type: 'AVX Release'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX Release'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX Release'
-          - vs: 2019
-            platform: x86
+          - platform: x86
             build_type: 'AVX2 Release'
-          - vs: 2019
-            platform: x64
+          - platform: x64
             build_type: 'AVX2 Release'
-          - vs: 2022
-            platform: x86
-            build_type: 'AVX2 Release'
-          - vs: 2022
-            platform: x64
-            build_type: 'AVX2 Release'
-          - vs: 2019
-            platform: x86
-            build_type: 'x87 Release'
-          - vs: 2022
-            platform: x86
+          - platform: x86
             build_type: 'x87 Release'
 
     steps:
@@ -117,18 +77,82 @@ jobs:
         working-directory: ${{ github.workspace }}/Tests/math3
         run: >
           msbuild /m /p:Configuration="${{ matrix.build_type }}" /p:Platform=${{ matrix.platform }}
-          ./math3_${{ matrix.vs }}.sln
+          ./math3_2022.slnx
 
       - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
         name: Build shmath
         working-directory: ${{ github.workspace }}/Tests/shmath
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
-          ./shmath_${{ matrix.vs }}.sln
+          ./shmath_2022.slnx
 
       - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
         name: Build xdsp
         working-directory: ${{ github.workspace }}/Tests/xdsp
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
-          ./XDSPTest_${{ matrix.vs }}.sln
+          ./XDSPTest_2022.slnx
+
+  build2019:
+    runs-on: windows-2022
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        include:
+          - platform: x86
+            build_type: 'AVX Debug'
+          - platform: x64
+            build_type: 'AVX Debug'
+          - platform: x86
+            build_type: 'AVX2 Debug'
+          - platform: x64
+            build_type: 'AVX2 Debug'
+          - platform: x86
+            build_type: 'x87 Debug'
+          - platform: x86
+            build_type: 'AVX Release'
+          - platform: x64
+            build_type: 'AVX Release'
+          - platform: x86
+            build_type: 'AVX2 Release'
+          - platform: x64
+            build_type: 'AVX2 Release'
+          - platform: x86
+            build_type: 'x87 Release'
+
+    steps:
+      - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Clone test repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - name: Add MSBuild to PATH
+        uses: microsoft/setup-msbuild@30375c66a4eea26614e0d39710365f22f8b0af57 # v3.0.0
+        with:
+          msbuild-architecture: x64
+
+      - name: Build math3
+        working-directory: ${{ github.workspace }}/Tests/math3
+        run: >
+          msbuild /m /p:Configuration="${{ matrix.build_type }}" /p:Platform=${{ matrix.platform }}
+          ./math3_2019.sln
+
+      - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+        name: Build shmath
+        working-directory: ${{ github.workspace }}/Tests/shmath
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
+          ./shmath_2019.sln
+
+      - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
+        name: Build xdsp
+        working-directory: ${{ github.workspace }}/Tests/xdsp
+        run: >
+          msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=${{ matrix.platform }}
+          ./XDSPTest_2019.sln
