@@ -1504,6 +1504,7 @@ namespace DirectX
     XMVECTOR    XM_CALLCONV     XMVector3Refract(FXMVECTOR Incident, FXMVECTOR Normal, float RefractionIndex) noexcept;
     XMVECTOR    XM_CALLCONV     XMVector3RefractV(FXMVECTOR Incident, FXMVECTOR Normal, FXMVECTOR RefractionIndex) noexcept;
     XMVECTOR    XM_CALLCONV     XMVector3Orthogonal(FXMVECTOR V) noexcept;
+    void        XM_CALLCONV     XMVector3OrthogonalBasis(_Out_ XMVECTOR* pTangent, _Out_ XMVECTOR* pBitangent, _In_ FXMVECTOR Normal) noexcept;
     XMVECTOR    XM_CALLCONV     XMVector3AngleBetweenNormalsEst(FXMVECTOR N1, FXMVECTOR N2) noexcept;
     XMVECTOR    XM_CALLCONV     XMVector3AngleBetweenNormals(FXMVECTOR N1, FXMVECTOR N2) noexcept;
     XMVECTOR    XM_CALLCONV     XMVector3AngleBetweenVectors(FXMVECTOR V1, FXMVECTOR V2) noexcept;
