@@ -10218,28 +10218,31 @@ inline XMVECTOR XM_CALLCONV XMVector3Orthogonal(FXMVECTOR V) noexcept
 
 inline void XM_CALLCONV XMVector3OrthogonalBasis
 (
-    _Out_ XMVECTOR* pTangent,
-    _Out_ XMVECTOR* pBitangent,
+    _Out_opt_ XMVECTOR* pTangent,
+    _Out_opt_ XMVECTOR* pBitangent,
     _In_ FXMVECTOR Normal
 ) noexcept
 {
-    assert(pTangent != nullptr);
-    assert(pBitangent != nullptr);
-
 #if defined(_XM_NO_INTRINSICS_)
-    float sign = copysignf(1.0f, Normal.vector4_f32[2]);
+    float sign = (Normal.vector4_u32[2] & 0x80000000) ? -1.0f : 1.0f;
     float a = -1.0f / (sign + Normal.vector4_f32[2]);
     float b = Normal.vector4_f32[0] * Normal.vector4_f32[1] * a;
 
-    pTangent->vector4_f32[0] = 1.0f + sign * Normal.vector4_f32[0] * Normal.vector4_f32[0] * a;
-    pTangent->vector4_f32[1] = sign * b;
-    pTangent->vector4_f32[2] = -sign * Normal.vector4_f32[0];
-    pTangent->vector4_f32[3] = 0.0f;
+    if (pTangent)
+    {
+        pTangent->vector4_f32[0] = 1.0f + sign * Normal.vector4_f32[0] * Normal.vector4_f32[0] * a;
+        pTangent->vector4_f32[1] = sign * b;
+        pTangent->vector4_f32[2] = -sign * Normal.vector4_f32[0];
+        pTangent->vector4_f32[3] = 0.0f;
+    }
 
-    pBitangent->vector4_f32[0] = b;
-    pBitangent->vector4_f32[1] = sign + Normal.vector4_f32[1] * Normal.vector4_f32[1] * a;
-    pBitangent->vector4_f32[2] = -Normal.vector4_f32[1];
-    pBitangent->vector4_f32[3] = 0.0f;
+    if (pBitangent)
+    {
+        pBitangent->vector4_f32[0] = b;
+        pBitangent->vector4_f32[1] = sign + Normal.vector4_f32[1] * Normal.vector4_f32[1] * a;
+        pBitangent->vector4_f32[2] = -Normal.vector4_f32[1];
+        pBitangent->vector4_f32[3] = 0.0f;
+    }
 #else
     XMVECTOR Z = XMVectorSplatZ(Normal);
     XMVECTOR SignBitMask = g_XMNegativeZero.v;
@@ -10283,15 +10286,21 @@ inline void XM_CALLCONV XMVector3OrthogonalBasis
     // Combine into tangent and bitangent
     XMVECTOR Zero = XMVectorZero();
 
-    // pTangent = (B1X, B1Y, B1Z, 0)
-    XMVECTOR B1_XY = XMVectorMergeXY(B1X, B1Y);
-    XMVECTOR B1_Z0 = XMVectorMergeXY(B1Z, Zero);
-    *pTangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B1_XY, B1_Z0);
+    if (pTangent)
+    {
+        // pTangent = (B1X, B1Y, B1Z, 0)
+        XMVECTOR B1_XY = XMVectorMergeXY(B1X, B1Y);
+        XMVECTOR B1_Z0 = XMVectorMergeXY(B1Z, Zero);
+        *pTangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B1_XY, B1_Z0);
+    }
 
-    // pBitangent = (B2X, B2Y, B2Z, 0)
-    XMVECTOR B2_XY = XMVectorMergeXY(B2X, B2Y);
-    XMVECTOR B2_Z0 = XMVectorMergeXY(B2Z, Zero);
-    *pBitangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B2_XY, B2_Z0);
+    if (pBitangent)
+    {
+        // pBitangent = (B2X, B2Y, B2Z, 0)
+        XMVECTOR B2_XY = XMVectorMergeXY(B2X, B2Y);
+        XMVECTOR B2_Z0 = XMVectorMergeXY(B2Z, Zero);
+        *pBitangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B2_XY, B2_Z0);
+    }
 #endif
 }
 
