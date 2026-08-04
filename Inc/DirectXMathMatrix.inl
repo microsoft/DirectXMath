@@ -1007,8 +1007,8 @@ inline XMMATRIX XM_CALLCONV XMMatrixInverse
 
 inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose
 (
-    XMVECTOR* pDeterminant,
-    FXMMATRIX  M
+    _Out_opt_ XMVECTOR* pDeterminant,
+    _In_      FXMMATRIX  M
 ) noexcept
 {
     // Computes (M^-1)^T = adj(M) / det(M), used for transforming surface normals.
