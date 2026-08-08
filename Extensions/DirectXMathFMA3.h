@@ -9,8 +9,8 @@
 
 #pragma once
 
-#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __arm__ || __aarch64__
-#error FMA3 not supported on ARM platform
+#if defined(_M_ARM) || defined(_M_ARM64) || defined(_M_HYBRID_X86_ARM64) || defined(_M_ARM64EC) || __arm__ || __aarch64__ || defined(__riscv)
+#error FMA3 not supported on this platform
 #endif
 
 #include <DirectXMath.h>

@@ -77,6 +77,8 @@ copilot
 
 Officially the library is supported with Microsoft Visual C++ 2019 (16.11) or later, clang/LLVM v12 or later, and GCC 10 or later. It should also compile with the Intel C++, MinGW, and Apple Clang compilers.
 
+On `riscv64`, DirectXMath currently uses its existing scalar `_XM_NO_INTRINSICS_` backend. This provides a conservative portability path for the core headers, but it does not add any RISC-V vector or assembly implementation. The x86-specific extension headers under `Extensions/` remain unsupported there.
+
 When building with clang/LLVM or other GNU C compilers, the ``_XM_NO_XMVECTOR_OVERLOADS_`` control define is set because these compilers do not support creating operator overloads for the ``XMVECTOR`` type. You can choose to enable this preprocessor define explicitly to do the same thing with Visual C++ for improved portability.
 
 To build for non-Windows platforms, you need to provide a ``sal.h`` header in your include path. You can obtain an open source version from [GitHub](https://raw.githubusercontent.com/dotnet/runtime/main/src/coreclr/pal/inc/rt/sal.h).

@@ -23,6 +23,11 @@ option(BUILD_XDSP "Build XDSP math" OFF)
 
 option(BUILD_SHMATH "Build Spherical Harmonics math" OFF)
 
+string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" DIRECTXMATH_SYSTEM_PROCESSOR_LOWER)
+if(DIRECTXMATH_SYSTEM_PROCESSOR_LOWER MATCHES "^riscv")
+  message(STATUS "RISC-V target detected; DirectXMath will use the scalar no-intrinsics backend")
+endif()
+
 include(GNUInstallDirs)
 
 #--- Library
