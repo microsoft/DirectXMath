@@ -10216,11 +10216,12 @@ inline XMVECTOR XM_CALLCONV XMVector3Orthogonal(FXMVECTOR V) noexcept
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
 inline void XM_CALLCONV XMVector3OrthogonalBasis
 (
-    _Out_opt_ XMVECTOR* pTangent,
-    _Out_opt_ XMVECTOR* pBitangent,
-    _In_ FXMVECTOR Normal
+    XMVECTOR* pTangent,
+    XMVECTOR* pBitangent,
+    FXMVECTOR Normal
 ) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
