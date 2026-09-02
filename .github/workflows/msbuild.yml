@@ -147,18 +147,18 @@ jobs:
         working-directory: ${{ github.workspace }}/Tests/math3
         run: >
           msbuild /m /p:Configuration="${{ matrix.build_type }}" /p:Platform=ARM64
-          ./math3_2022.sln
+          ./math3_2022.slnx
 
       - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
         name: Build shmath
         working-directory: ${{ github.workspace }}/Tests/shmath
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
-          ./shmath_2022.sln
+          ./shmath_2022.slnx
 
       - if: (matrix.build_type == 'Debug') || (matrix.build_type == 'Release')
         name: Build xdsp
         working-directory: ${{ github.workspace }}/Tests/xdsp
         run: >
           msbuild /m /p:Configuration=${{ matrix.build_type }} /p:Platform=ARM64
-          ./XDSPTest_2022.sln
+          ./XDSPTest_2022.slnx
