@@ -35,6 +35,16 @@ add_library(${PROJECT_NAME})
 
 target_sources(${PROJECT_NAME} PRIVATE ${LIBRARY_HEADERS} ${LIBRARY_SOURCES})
 
+if(COMPILER_DEFINES)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE ${COMPILER_DEFINES})
+endif()
+if(COMPILER_SWITCHES)
+    target_compile_options(${PROJECT_NAME} PRIVATE ${COMPILER_SWITCHES})
+endif()
+if(LINKER_SWITCHES)
+    target_link_options(${PROJECT_NAME} PRIVATE ${LINKER_SWITCHES})
+endif()
+
 if(WIN32 AND BUILD_SHARED_LIBS)
   message(STATUS "Build SimpleMath library as a DLL")
 
