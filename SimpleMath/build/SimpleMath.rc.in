@@ -1,0 +1,40 @@
+#include <windows.h>
+
+#define VER_FILEVERSION             @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,0,0
+#define VER_FILEVERSION_STR         "@PROJECT_VERSION@.0\0"
+
+#define VER_PRODUCTVERSION          @PROJECT_VERSION_MAJOR@,@PROJECT_VERSION_MINOR@,0,0
+#define VER_PRODUCTVERSION_STR      "@PROJECT_VERSION@\0"
+
+VS_VERSION_INFO VERSIONINFO
+FILEVERSION     VER_FILEVERSION
+PRODUCTVERSION  VER_PRODUCTVERSION
+FILEFLAGSMASK   VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+FILEFLAGS       VS_FF_DEBUG
+#else
+FILEFLAGS       0x0L
+#endif
+FILEOS          VOS_NT_WINDOWS32
+FILETYPE        VFT_DLL
+FILESUBTYPE     VFT2_UNKNOWN
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904E4"
+        BEGIN
+            VALUE "CompanyName", "Microsoft Corporation"
+            VALUE "FileDescription", "SimpleMath"
+            VALUE "FileVersion", VER_FILEVERSION_STR
+            VALUE "InternalName", "SimpleMath.dll"
+            VALUE "LegalCopyright", "(c) Microsoft Corporation. All rights reserved."
+            VALUE "OriginalFilename", "SimpleMath.dll"
+            VALUE "ProductName", "DirectXMath"
+            VALUE "ProductVersion", VER_PRODUCTVERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1252
+    END
+END
