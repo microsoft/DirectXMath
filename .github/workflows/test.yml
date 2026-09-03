@@ -99,6 +99,7 @@ jobs:
         run: ctest --preset=${{ matrix.build_type }} --output-on-failure
 
   build2026:
+    if: github.repository == 'microsoft/DirectXMath'
     runs-on: windows-2025-vs2026
 
     strategy:

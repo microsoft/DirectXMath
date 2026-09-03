@@ -1605,6 +1605,7 @@ namespace DirectX
     XMMATRIX    XM_CALLCONV     XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixTranspose(FXMMATRIX M) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixInverse(_Out_opt_ XMVECTOR* pDeterminant, _In_ FXMMATRIX M) noexcept;
+    XMMATRIX    XM_CALLCONV     XMMatrixInverseTranspose(_Out_opt_ XMVECTOR* pDeterminant, _In_ FXMMATRIX M) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixVectorTensorProduct(FXMVECTOR V1, FXMVECTOR V2) noexcept;
     XMVECTOR    XM_CALLCONV     XMMatrixDeterminant(FXMMATRIX M) noexcept;
 
