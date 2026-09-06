@@ -2640,6 +2640,221 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH
 }
 
 //------------------------------------------------------------------------------
+// Infinite reversed-z perspective projection (FarZ = +infinity, depth maps NearZ->1, Infinity->0)
+// This avoids NaN that would result from passing infinity to XMMatrixPerspectiveFovLH.
+// Left-handed coordinate system.
+
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovInfiniteReverseZLH
+(
+    float FovAngleY,
+    float AspectRatio,
+    float NearZ
+) noexcept
+{
+    assert(NearZ > 0.f);
+    assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
+    assert(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+
+#if defined(_XM_NO_INTRINSICS_)
+
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    float Width = Height / AspectRatio;
+
+    // As FarZ -> +inf in XMMatrixPerspectiveFovLH:
+    //   fRange = FarZ / (FarZ - NearZ) -> 1
+    //   -fRange * NearZ -> -NearZ
+    // But for reversed-z we want depth in [1, 0] instead of [0, 1],
+    // so M[2][2] = 0 and M[3][2] = NearZ (limit of fRange*(FarZ-NearZ)/FarZ * ... see derivation).
+    // Derivation: reversed-z maps NearZ->1, inf->0. The standard row-major DX projection:
+    //   z' = M22*z + M32,  w' = z
+    //   NDC_z = z'/w' = M22 + M32/z
+    // For NearZ->1: M22 + M32/NearZ = 1
+    // For inf->0:   M22 = 0
+    // Therefore: M32 = NearZ, M22 = 0.
+    XMMATRIX M;
+    M.m[0][0] = Width;
+    M.m[0][1] = 0.0f;
+    M.m[0][2] = 0.0f;
+    M.m[0][3] = 0.0f;
+
+    M.m[1][0] = 0.0f;
+    M.m[1][1] = Height;
+    M.m[1][2] = 0.0f;
+    M.m[1][3] = 0.0f;
+
+    M.m[2][0] = 0.0f;
+    M.m[2][1] = 0.0f;
+    M.m[2][2] = 0.0f;
+    M.m[2][3] = 1.0f;
+
+    M.m[3][0] = 0.0f;
+    M.m[3][1] = 0.0f;
+    M.m[3][2] = NearZ;
+    M.m[3][3] = 0.0f;
+    return M;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    float Width = Height / AspectRatio;
+    const float32x4_t Zero = vdupq_n_f32(0);
+
+    XMMATRIX M;
+    M.r[0] = vsetq_lane_f32(Width, Zero, 0);
+    M.r[1] = vsetq_lane_f32(Height, Zero, 1);
+    // M.r[2] = (0, 0, 0, 1)  -- g_XMIdentityR3 is {0,0,0,1}
+    M.r[2] = g_XMIdentityR3.v;
+    // M.r[3] = (0, 0, NearZ, 0)
+    M.r[3] = vsetq_lane_f32(NearZ, Zero, 2);
+    return M;
+#elif defined(_XM_SSE_INTRINSICS_)
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    // Note: This is recorded on the stack
+    XMVECTOR rMem = {
+        Height / AspectRatio,
+        Height,
+        0.0f,
+        NearZ
+    };
+    // Copy from memory to SSE register
+    XMVECTOR vValues = rMem;
+    XMVECTOR vTemp = _mm_setzero_ps();
+    // Copy x only
+    vTemp = _mm_move_ss(vTemp, vValues);
+    // Width,0,0,0
+    XMMATRIX M;
+    M.r[0] = vTemp;
+    // 0,Height,0,0
+    vTemp = vValues;
+    vTemp = _mm_and_ps(vTemp, g_XMMaskY);
+    M.r[1] = vTemp;
+    // 0,0,0,1
+    M.r[2] = g_XMIdentityR3;
+    // 0,0,NearZ,0 -- place NearZ into lane z of a zero vector.
+    // _mm_set_ss(NearZ) = {NearZ, 0, 0, 0}. _MM_SHUFFLE(3,0,0,0) picks:
+    //   result = {g_XMZero[0], g_XMZero[0], b[0], b[3]} = {0, 0, NearZ, 0}.
+    vTemp = _mm_shuffle_ps(g_XMZero, _mm_set_ss(NearZ), _MM_SHUFFLE(3, 0, 0, 0)); // (0, 0, NearZ, 0)
+    M.r[3] = vTemp;
+    return M;
+#endif
+}
+
+//------------------------------------------------------------------------------
+// Infinite reversed-z perspective projection (FarZ = +infinity, depth maps NearZ->1, Infinity->0)
+// This avoids NaN that would result from passing infinity to XMMatrixPerspectiveFovRH.
+// Right-handed coordinate system.
+
+inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovInfiniteReverseZRH
+(
+    float FovAngleY,
+    float AspectRatio,
+    float NearZ
+) noexcept
+{
+    assert(NearZ > 0.f);
+    assert(!XMScalarNearEqual(FovAngleY, 0.0f, 0.00001f * 2.0f));
+    assert(!XMScalarNearEqual(AspectRatio, 0.0f, 0.00001f));
+
+#if defined(_XM_NO_INTRINSICS_)
+
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    float Width = Height / AspectRatio;
+
+    // As FarZ -> +inf in XMMatrixPerspectiveFovRH (RH flips the sign of z in clip):
+    //   M22 = 0, M32 = -NearZ
+    // Derivation (same as LH but w' = -z for RH):
+    //   NDC_z = M22 + M32/z. For inf->0: M22=0. For NearZ->1: M32 = -NearZ.
+    XMMATRIX M;
+    M.m[0][0] = Width;
+    M.m[0][1] = 0.0f;
+    M.m[0][2] = 0.0f;
+    M.m[0][3] = 0.0f;
+
+    M.m[1][0] = 0.0f;
+    M.m[1][1] = Height;
+    M.m[1][2] = 0.0f;
+    M.m[1][3] = 0.0f;
+
+    M.m[2][0] = 0.0f;
+    M.m[2][1] = 0.0f;
+    M.m[2][2] = 0.0f;
+    M.m[2][3] = -1.0f;
+
+    M.m[3][0] = 0.0f;
+    M.m[3][1] = 0.0f;
+    M.m[3][2] = -NearZ;
+    M.m[3][3] = 0.0f;
+    return M;
+
+#elif defined(_XM_ARM_NEON_INTRINSICS_)
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    float Width = Height / AspectRatio;
+    const float32x4_t Zero = vdupq_n_f32(0);
+
+    XMMATRIX M;
+    M.r[0] = vsetq_lane_f32(Width, Zero, 0);
+    M.r[1] = vsetq_lane_f32(Height, Zero, 1);
+    // M.r[2] = (0, 0, 0, -1) -- g_XMNegIdentityR3 is {0,0,0,-1}
+    M.r[2] = g_XMNegIdentityR3.v;
+    // M.r[3] = (0, 0, -NearZ, 0)
+    M.r[3] = vsetq_lane_f32(-NearZ, Zero, 2);
+    return M;
+#elif defined(_XM_SSE_INTRINSICS_)
+    float    SinFov;
+    float    CosFov;
+    XMScalarSinCos(&SinFov, &CosFov, 0.5f * FovAngleY);
+
+    float Height = CosFov / SinFov;
+    // Note: This is recorded on the stack
+    XMVECTOR rMem = {
+        Height / AspectRatio,
+        Height,
+        0.0f,
+        -NearZ
+    };
+    // Copy from memory to SSE register
+    XMVECTOR vValues = rMem;
+    XMVECTOR vTemp = _mm_setzero_ps();
+    // Copy x only
+    vTemp = _mm_move_ss(vTemp, vValues);
+    // Width,0,0,0
+    XMMATRIX M;
+    M.r[0] = vTemp;
+    // 0,Height,0,0
+    vTemp = vValues;
+    vTemp = _mm_and_ps(vTemp, g_XMMaskY);
+    M.r[1] = vTemp;
+    // 0,0,0,-1
+    M.r[2] = g_XMNegIdentityR3;
+    // 0,0,-NearZ,0 -- place -NearZ into lane z of a zero vector.
+    // _mm_set_ss(-NearZ) = {-NearZ, 0, 0, 0}. Same shuffle: {0, 0, -NearZ, 0}.
+    vTemp = _mm_shuffle_ps(g_XMZero, _mm_set_ss(-NearZ), _MM_SHUFFLE(3, 0, 0, 0)); // (0, 0, -NearZ, 0)
+    M.r[3] = vTemp;
+    return M;
+#endif
+}
+
+
+//------------------------------------------------------------------------------
 
 inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveOffCenterLH
 (

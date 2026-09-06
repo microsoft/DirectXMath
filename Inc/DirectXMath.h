@@ -1650,6 +1650,8 @@ namespace DirectX
     XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveRH(float ViewWidth, float ViewHeight, float NearZ, float FarZ) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveFovLH(float FovAngleY, float AspectRatio, float NearZ, float FarZ) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveFovRH(float FovAngleY, float AspectRatio, float NearZ, float FarZ) noexcept;
+    XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveFovInfiniteReverseZLH(float FovAngleY, float AspectRatio, float NearZ) noexcept;
+    XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveFovInfiniteReverseZRH(float FovAngleY, float AspectRatio, float NearZ) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveOffCenterLH(float ViewLeft, float ViewRight, float ViewBottom, float ViewTop, float NearZ, float FarZ) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixPerspectiveOffCenterRH(float ViewLeft, float ViewRight, float ViewBottom, float ViewTop, float NearZ, float FarZ) noexcept;
     XMMATRIX    XM_CALLCONV     XMMatrixOrthographicLH(float ViewWidth, float ViewHeight, float NearZ, float FarZ) noexcept;
