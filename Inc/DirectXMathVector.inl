@@ -10216,6 +10216,97 @@ inline XMVECTOR XM_CALLCONV XMVector3Orthogonal(FXMVECTOR V) noexcept
 
 //------------------------------------------------------------------------------
 
+_Use_decl_annotations_
+inline void XM_CALLCONV XMVector3OrthogonalBasis
+(
+    XMVECTOR* pTangent,
+    XMVECTOR* pBitangent,
+    FXMVECTOR Normal
+) noexcept
+{
+#if defined(_XM_NO_INTRINSICS_)
+    float sign = (Normal.vector4_u32[2] & 0x80000000) ? -1.0f : 1.0f;
+    float a = -1.0f / (sign + Normal.vector4_f32[2]);
+    float b = Normal.vector4_f32[0] * Normal.vector4_f32[1] * a;
+
+    if (pTangent)
+    {
+        pTangent->vector4_f32[0] = 1.0f + sign * Normal.vector4_f32[0] * Normal.vector4_f32[0] * a;
+        pTangent->vector4_f32[1] = sign * b;
+        pTangent->vector4_f32[2] = -sign * Normal.vector4_f32[0];
+        pTangent->vector4_f32[3] = 0.0f;
+    }
+
+    if (pBitangent)
+    {
+        pBitangent->vector4_f32[0] = b;
+        pBitangent->vector4_f32[1] = sign + Normal.vector4_f32[1] * Normal.vector4_f32[1] * a;
+        pBitangent->vector4_f32[2] = -Normal.vector4_f32[1];
+        pBitangent->vector4_f32[3] = 0.0f;
+    }
+#else
+    XMVECTOR Z = XMVectorSplatZ(Normal);
+    XMVECTOR SignBitMask = g_XMNegativeZero.v;
+    XMVECTOR One = g_XMOne.v;
+
+    // sign = copysignf(1.0f, n.z)
+    XMVECTOR SignZ = XMVectorAndInt(Z, SignBitMask);
+    XMVECTOR Sign = XMVectorOrInt(SignZ, One);
+
+    // a = -1.0f / (sign + n.z)
+    XMVECTOR Denom = XMVectorAdd(Sign, Z);
+    XMVECTOR A = XMVectorDivide(g_XMNegativeOne.v, Denom);
+
+    // b = n.x * n.y * a
+    XMVECTOR X = XMVectorSplatX(Normal);
+    XMVECTOR Y = XMVectorSplatY(Normal);
+    XMVECTOR XY = XMVectorMultiply(X, Y);
+    XMVECTOR B = XMVectorMultiply(XY, A);
+
+    // b1.x = 1.0f + sign * n.x * n.x * a
+    XMVECTOR SignX = XMVectorMultiply(Sign, X);
+    XMVECTOR XXA = XMVectorMultiply(X, XMVectorMultiply(X, A));
+    XMVECTOR B1X = XMVectorMultiplyAdd(Sign, XXA, One);
+
+    // b1.y = sign * b
+    XMVECTOR B1Y = XMVectorMultiply(Sign, B);
+
+    // b1.z = -sign * n.x
+    XMVECTOR B1Z = XMVectorNegate(SignX);
+
+    // b2.x = b
+    XMVECTOR B2X = B;
+
+    // b2.y = sign + n.y * n.y * a
+    XMVECTOR YYA = XMVectorMultiply(Y, XMVectorMultiply(Y, A));
+    XMVECTOR B2Y = XMVectorAdd(Sign, YYA);
+
+    // b2.z = -n.y
+    XMVECTOR B2Z = XMVectorNegate(Y);
+
+    // Combine into tangent and bitangent
+    XMVECTOR Zero = XMVectorZero();
+
+    if (pTangent)
+    {
+        // pTangent = (B1X, B1Y, B1Z, 0)
+        XMVECTOR B1_XY = XMVectorMergeXY(B1X, B1Y);
+        XMVECTOR B1_Z0 = XMVectorMergeXY(B1Z, Zero);
+        *pTangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B1_XY, B1_Z0);
+    }
+
+    if (pBitangent)
+    {
+        // pBitangent = (B2X, B2Y, B2Z, 0)
+        XMVECTOR B2_XY = XMVectorMergeXY(B2X, B2Y);
+        XMVECTOR B2_Z0 = XMVectorMergeXY(B2Z, Zero);
+        *pBitangent = XMVectorPermute<XM_PERMUTE_0X, XM_PERMUTE_0Y, XM_PERMUTE_1X, XM_PERMUTE_1Y>(B2_XY, B2_Z0);
+    }
+#endif
+}
+
+//------------------------------------------------------------------------------
+
 inline XMVECTOR XM_CALLCONV XMVector3AngleBetweenNormalsEst
 (
     FXMVECTOR N1,
