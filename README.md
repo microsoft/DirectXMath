@@ -105,6 +105,13 @@ FOR SECURITY ADVISORIES, see [GitHub](https://github.com/microsoft/DirectXMath/s
 
 For a full change history, see [CHANGELOG.md](https://github.com/microsoft/DirectXMath/blob/main/CHANGELOG.md).
 
+* clang-format use for this project must match the version use by GitHub Super-Linter to pass the validation. VS 2022 and VS 2026 come with different versions, so to match use:
+
+```cmd
+winget install --id=LLVM.LLVM --version 21.1.2
+powershell -File build/Format.ps1 -LLVM
+```
+
 * The *directxmath* NuGet package is deprecated. The best way to integrate the latest DirectXMath into your C++ project is using [vcpkg](https://github.com/microsoft/vcpkg/tree/master/ports/directxmath).
 
 * The CMake projects require 3.21 or later. VS 2019 users will need to install a standalone version of CMake 3.21 or later and add it to their PATH.

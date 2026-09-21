@@ -29,32 +29,28 @@ namespace DirectX
 
             // See https://msdn.microsoft.com/en-us/library/hskdteyh.aspx
             int CPUInfo[4] = { -1 };
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 0);
-        #endif
+#endif
             if (CPUInfo[0] < 1)
                 return false;
 
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 1);
-        #endif
+#endif
 
             // We only check for SSE3 instruction set. SSSE3 instructions are not used.
             return ((CPUInfo[2] & 0x1) != 0);
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector2Dot
-        (
-            FXMVECTOR V1,
-            FXMVECTOR V2
-        )
+        inline XMVECTOR XM_CALLCONV XMVector2Dot(FXMVECTOR V1, FXMVECTOR V2)
         {
             XMVECTOR vTemp = _mm_mul_ps(V1, V2);
-            vTemp = _mm_hadd_ps(vTemp, vTemp);
+            vTemp          = _mm_hadd_ps(vTemp, vTemp);
             return _mm_shuffle_ps(vTemp, vTemp, _MM_SHUFFLE(0, 0, 0, 0));
         }
 
@@ -63,15 +59,11 @@ namespace DirectX
             return SSE3::XMVector2Dot(V, V);
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector3Dot
-        (
-            FXMVECTOR V1,
-            FXMVECTOR V2
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3Dot(FXMVECTOR V1, FXMVECTOR V2)
         {
             XMVECTOR vTemp = _mm_mul_ps(V1, V2);
-            vTemp = _mm_and_ps(vTemp, g_XMMask3);
-            vTemp = _mm_hadd_ps(vTemp, vTemp);
+            vTemp          = _mm_and_ps(vTemp, g_XMMask3);
+            vTemp          = _mm_hadd_ps(vTemp, vTemp);
             return _mm_hadd_ps(vTemp, vTemp);
         }
 
@@ -80,14 +72,10 @@ namespace DirectX
             return SSE3::XMVector3Dot(V, V);
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector4Dot
-        (
-            FXMVECTOR V1,
-            FXMVECTOR V2
-        )
+        inline XMVECTOR XM_CALLCONV XMVector4Dot(FXMVECTOR V1, FXMVECTOR V2)
         {
             XMVECTOR vTemp = _mm_mul_ps(V1, V2);
-            vTemp = _mm_hadd_ps(vTemp, vTemp);
+            vTemp          = _mm_hadd_ps(vTemp, vTemp);
             return _mm_hadd_ps(vTemp, vTemp);
         }
 

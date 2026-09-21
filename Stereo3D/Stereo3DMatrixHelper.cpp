@@ -11,16 +11,13 @@ using namespace DirectX;
 
 namespace
 {
-    inline bool StereoProjectionHelper
-    (
-        const STEREO_PARAMETERS& stereoParameters,
-        _Out_ float* fVirtualProjection,
-        _Out_ float* zNearWidth,
-        _Out_ float* zNearHeight,
-        float FovAngleY,
-        float AspectRatio,
-        float NearZ
-    )
+    inline bool StereoProjectionHelper(const STEREO_PARAMETERS& stereoParameters,
+        _Out_ float*                                            fVirtualProjection,
+        _Out_ float*                                            zNearWidth,
+        _Out_ float*                                            zNearHeight,
+        float                                                   FovAngleY,
+        float                                                   AspectRatio,
+        float                                                   NearZ)
     {
         // note that most people have difficulty fusing images into 3D
         // if the separation equals even just the human average. by
@@ -43,21 +40,21 @@ namespace
         // the viewer than 1.6 degrees (divided by two for most
         // half-angle calculations)
 
-        static const float fMaxStereoDistance = 780; // inches (should be between 10 and 20m)
-        static const float fMaxVisualAcuityAngle = 1.6f * (XM_PI / 180.0f);  // radians
-        static const float fInterocularDistance = 1.25f; // inches
+        static const float fMaxStereoDistance    = 780;                     // inches (should be between 10 and 20m)
+        static const float fMaxVisualAcuityAngle = 1.6f * (XM_PI / 180.0f); // radians
+        static const float fInterocularDistance  = 1.25f;                   // inches
 
-        float fDisplayHeight = stereoParameters.fDisplaySizeInches / sqrtf(AspectRatio * AspectRatio + 1.0f);
-        float fDisplayWidth = fDisplayHeight * AspectRatio;
-        float fHalfInterocular = 0.5f * fInterocularDistance * stereoParameters.fStereoExaggerationFactor;
-        float fHalfPixelWidth = fDisplayWidth / stereoParameters.fPixelResolutionWidth * 0.5f;
+        float fDisplayHeight          = stereoParameters.fDisplaySizeInches / sqrtf(AspectRatio * AspectRatio + 1.0f);
+        float fDisplayWidth           = fDisplayHeight * AspectRatio;
+        float fHalfInterocular        = 0.5f * fInterocularDistance * stereoParameters.fStereoExaggerationFactor;
+        float fHalfPixelWidth         = fDisplayWidth / stereoParameters.fPixelResolutionWidth * 0.5f;
         float fHalfMaximumAcuityAngle = fMaxVisualAcuityAngle * 0.5f * stereoParameters.fStereoExaggerationFactor;
         // float fHalfWidth = fDisplayWidth * 0.5f;
 
         float fMaxSeparationAcuityAngle = atanf(fHalfInterocular / fMaxStereoDistance);
-        float fMaxSeparationDistance = fHalfPixelWidth / tanf(fMaxSeparationAcuityAngle);
+        float fMaxSeparationDistance    = fHalfPixelWidth / tanf(fMaxSeparationAcuityAngle);
         float fRefinedMaxStereoDistance = fMaxStereoDistance - fMaxSeparationDistance;
-        float fFovHalfAngle = FovAngleY / 2.0f;
+        float fFovHalfAngle             = FovAngleY / 2.0f;
 
         bool ComfortableResult = true;
         if (fRefinedMaxStereoDistance < 0.0f || fMaxSeparationDistance > 0.1f * fMaxStereoDistance)
@@ -67,49 +64,43 @@ namespace
         }
 
         float fRefinedMaxSeparationAcuityAngle = atanf(fHalfInterocular / (fRefinedMaxStereoDistance));
-        float fPhysicalZNearDistance = fHalfInterocular / tanf(fHalfMaximumAcuityAngle);
+        float fPhysicalZNearDistance           = fHalfInterocular / tanf(fHalfMaximumAcuityAngle);
         // float fScalingFactor = fHalfMaximumAcuityAngle / atanf(fHalfInterocular / stereoParameters.fViewerDistanceInches);
 
         float fNearZSeparation = tanf(fRefinedMaxSeparationAcuityAngle) * (fRefinedMaxStereoDistance - fPhysicalZNearDistance);
         // float fNearZSeparation2 = fHalfInterocular * (fRefinedMaxStereoDistance - fPhysicalZNearDistance) / fRefinedMaxStereoDistance;
 
-        (*zNearHeight) = cosf(fFovHalfAngle) / sinf(fFovHalfAngle);
-        (*zNearWidth) = (*zNearHeight) / AspectRatio;
+        (*zNearHeight)        = cosf(fFovHalfAngle) / sinf(fFovHalfAngle);
+        (*zNearWidth)         = (*zNearHeight) / AspectRatio;
         (*fVirtualProjection) = (fNearZSeparation * NearZ * (*zNearWidth * 4.0f)) / (2.0f * NearZ);
 
         return ComfortableResult;
     }
-}
+} // namespace
 
 //------------------------------------------------------------------------------
 
-void DirectX::StereoCreateDefaultParameters
-(
-    STEREO_PARAMETERS& stereoParameters
-)
+void DirectX::StereoCreateDefaultParameters(STEREO_PARAMETERS& stereoParameters)
 {
     // Default assumption is 1920x1200 resolution, a 22" LCD monitor, and a 2' viewing distance
-    stereoParameters.fViewerDistanceInches = 24.0f;
-    stereoParameters.fPixelResolutionWidth = 1920.0f;
+    stereoParameters.fViewerDistanceInches  = 24.0f;
+    stereoParameters.fPixelResolutionWidth  = 1920.0f;
     stereoParameters.fPixelResolutionHeight = 1200.0f;
-    stereoParameters.fDisplaySizeInches = 22.0f;
+    stereoParameters.fDisplaySizeInches     = 22.0f;
 
-    stereoParameters.fStereoSeparationFactor = 1.0f;
+    stereoParameters.fStereoSeparationFactor   = 1.0f;
     stereoParameters.fStereoExaggerationFactor = 1.0f;
 }
 
 //------------------------------------------------------------------------------
 
-XMMATRIX DirectX::StereoProjectionFovLH
-(
-    _In_opt_ const STEREO_PARAMETERS* pStereoParameters,
-    STEREO_CHANNEL Channel,
-    float FovAngleY,
-    float AspectRatio,
-    float NearZ,
-    float FarZ,
-    STEREO_MODE StereoMode
-)
+XMMATRIX DirectX::StereoProjectionFovLH(_In_opt_ const STEREO_PARAMETERS* pStereoParameters,
+    STEREO_CHANNEL                                                        Channel,
+    float                                                                 FovAngleY,
+    float                                                                 AspectRatio,
+    float                                                                 NearZ,
+    float                                                                 FarZ,
+    STEREO_MODE                                                           StereoMode)
 {
     assert(Channel == STEREO_CHANNEL_LEFT || Channel == STEREO_CHANNEL_RIGHT);
     assert(StereoMode == STEREO_MODE_NORMAL || StereoMode == STEREO_MODE_INVERTED);
@@ -128,8 +119,8 @@ XMMATRIX DirectX::StereoProjectionFovLH
     assert(pStereoParameters->fStereoExaggerationFactor >= 1.0f && pStereoParameters->fStereoExaggerationFactor <= 2.0f);
 
     float fVirtualProjection = 0.0f;
-    float zNearWidth = 0.0f;
-    float zNearHeight = 0.0f;
+    float zNearWidth         = 0.0f;
+    float zNearHeight        = 0.0f;
     StereoProjectionHelper(*pStereoParameters, &fVirtualProjection, &zNearWidth, &zNearHeight, FovAngleY, AspectRatio, NearZ);
 
     fVirtualProjection *= pStereoParameters->fStereoSeparationFactor; // incorporate developer defined bias
@@ -147,13 +138,13 @@ XMMATRIX DirectX::StereoProjectionFovLH
     {
         if (StereoMode > STEREO_MODE_NORMAL)
         {
-            XMMATRIX rots = XMMatrixRotationY(fInvertedAngle);
-            XMMATRIX trans = XMMatrixTranslation(-fVirtualProjection, 0, 0);
+            XMMATRIX rots     = XMMatrixRotationY(fInvertedAngle);
+            XMMATRIX trans    = XMMatrixTranslation(-fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(XMMatrixMultiply(rots, trans), proj);
         }
         else
         {
-            XMMATRIX trans = XMMatrixTranslation(-fVirtualProjection, 0, 0);
+            XMMATRIX trans    = XMMatrixTranslation(-fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(trans, proj);
         }
     }
@@ -161,13 +152,13 @@ XMMATRIX DirectX::StereoProjectionFovLH
     {
         if (StereoMode > STEREO_MODE_NORMAL)
         {
-            XMMATRIX rots = XMMatrixRotationY(-fInvertedAngle);
-            XMMATRIX trans = XMMatrixTranslation(fVirtualProjection, 0, 0);
+            XMMATRIX rots     = XMMatrixRotationY(-fInvertedAngle);
+            XMMATRIX trans    = XMMatrixTranslation(fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(XMMatrixMultiply(rots, trans), proj);
         }
         else
         {
-            XMMATRIX trans = XMMatrixTranslation(fVirtualProjection, 0, 0);
+            XMMATRIX trans    = XMMatrixTranslation(fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(trans, proj);
         }
     }
@@ -177,16 +168,13 @@ XMMATRIX DirectX::StereoProjectionFovLH
 
 //------------------------------------------------------------------------------
 
-XMMATRIX DirectX::StereoProjectionFovRH
-(
-    _In_opt_ const STEREO_PARAMETERS* pStereoParameters,
-    STEREO_CHANNEL Channel,
-    float FovAngleY,
-    float AspectRatio,
-    float NearZ,
-    float FarZ,
-    STEREO_MODE StereoMode
-)
+XMMATRIX DirectX::StereoProjectionFovRH(_In_opt_ const STEREO_PARAMETERS* pStereoParameters,
+    STEREO_CHANNEL                                                        Channel,
+    float                                                                 FovAngleY,
+    float                                                                 AspectRatio,
+    float                                                                 NearZ,
+    float                                                                 FarZ,
+    STEREO_MODE                                                           StereoMode)
 {
     assert(Channel == STEREO_CHANNEL_LEFT || Channel == STEREO_CHANNEL_RIGHT);
     assert(StereoMode == STEREO_MODE_NORMAL || StereoMode == STEREO_MODE_INVERTED);
@@ -205,8 +193,8 @@ XMMATRIX DirectX::StereoProjectionFovRH
     assert(pStereoParameters->fStereoExaggerationFactor >= 1.0f && pStereoParameters->fStereoExaggerationFactor <= 2.0f);
 
     float fVirtualProjection = 0.0f;
-    float zNearWidth = 0.0f;
-    float zNearHeight = 0.0f;
+    float zNearWidth         = 0.0f;
+    float zNearHeight        = 0.0f;
     StereoProjectionHelper(*pStereoParameters, &fVirtualProjection, &zNearWidth, &zNearHeight, FovAngleY, AspectRatio, NearZ);
 
     fVirtualProjection *= pStereoParameters->fStereoSeparationFactor; // incorporate developer defined bias
@@ -228,13 +216,13 @@ XMMATRIX DirectX::StereoProjectionFovRH
     {
         if (StereoMode > STEREO_MODE_NORMAL)
         {
-            XMMATRIX rots = XMMatrixRotationY(fInvertedAngle);
-            XMMATRIX trans = XMMatrixTranslation(-fVirtualProjection, 0, 0);
+            XMMATRIX rots     = XMMatrixRotationY(fInvertedAngle);
+            XMMATRIX trans    = XMMatrixTranslation(-fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(XMMatrixMultiply(rots, trans), proj);
         }
         else
         {
-            XMMATRIX trans = XMMatrixTranslation(-fVirtualProjection, 0, 0);
+            XMMATRIX trans    = XMMatrixTranslation(-fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(trans, proj);
         }
     }
@@ -242,13 +230,13 @@ XMMATRIX DirectX::StereoProjectionFovRH
     {
         if (StereoMode > STEREO_MODE_NORMAL)
         {
-            XMMATRIX rots = XMMatrixRotationY(-fInvertedAngle);
-            XMMATRIX trans = XMMatrixTranslation(fVirtualProjection, 0, 0);
+            XMMATRIX rots     = XMMatrixRotationY(-fInvertedAngle);
+            XMMATRIX trans    = XMMatrixTranslation(fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(XMMatrixMultiply(rots, trans), proj);
         }
         else
         {
-            XMMATRIX trans = XMMatrixTranslation(fVirtualProjection, 0, 0);
+            XMMATRIX trans    = XMMatrixTranslation(fVirtualProjection, 0, 0);
             patchedProjection = XMMatrixMultiply(trans, proj);
         }
     }

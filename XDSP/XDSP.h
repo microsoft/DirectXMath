@@ -24,7 +24,7 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable: 6001 6262)
+#pragma warning(disable : 6001 6262)
 #endif
 
 #ifdef __clang__
@@ -35,36 +35,41 @@
 
 namespace XDSP
 {
-    using XMVECTOR = DirectX::XMVECTOR;
+    using XMVECTOR  = DirectX::XMVECTOR;
     using FXMVECTOR = DirectX::FXMVECTOR;
     using GXMVECTOR = DirectX::GXMVECTOR;
     using CXMVECTOR = DirectX::CXMVECTOR;
     using XMFLOAT4A = DirectX::XMFLOAT4A;
 
-    constexpr bool ISPOWEROF2(size_t n) { return (((n)&((n)-1)) == 0 && (n) != 0); }
-
-    // Parallel multiplication of four complex numbers, assuming real and imaginary values are stored in separate vectors.
-    inline void XM_CALLCONV vmulComplex(
-        _Out_ XMVECTOR& rResult, _Out_ XMVECTOR& iResult,
-        _In_ FXMVECTOR r1, _In_ FXMVECTOR i1, _In_ FXMVECTOR r2, _In_ GXMVECTOR i2) noexcept
+    constexpr bool ISPOWEROF2(size_t n)
     {
-        using namespace DirectX;
-        // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
-        const XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
-        const XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-        rResult = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
-        iResult = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+        return (((n) & ((n)-1)) == 0 && (n) != 0);
     }
 
-    inline void XM_CALLCONV vmulComplex(
-        _Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1, _In_ FXMVECTOR r2, _In_ FXMVECTOR i2) noexcept
+    // Parallel multiplication of four complex numbers, assuming real and imaginary values are stored in separate vectors.
+    inline void XM_CALLCONV vmulComplex(_Out_ XMVECTOR& rResult,
+        _Out_ XMVECTOR&                                 iResult,
+        _In_ FXMVECTOR                                  r1,
+        _In_ FXMVECTOR                                  i1,
+        _In_ FXMVECTOR                                  r2,
+        _In_ GXMVECTOR                                  i2) noexcept
     {
         using namespace DirectX;
         // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
         const XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
         const XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
-        r1 = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
-        i1 = XMVectorMultiplyAdd(r2, i1, vr1i2); // imaginary: (r1*i2 + r2*i1)
+        rResult              = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+        iResult              = XMVectorMultiplyAdd(r2, i1, vr1i2);              // imaginary: (r1*i2 + r2*i1)
+    }
+
+    inline void XM_CALLCONV vmulComplex(_Inout_ XMVECTOR& r1, _Inout_ XMVECTOR& i1, _In_ FXMVECTOR r2, _In_ FXMVECTOR i2) noexcept
+    {
+        using namespace DirectX;
+        // (r1, i1) * (r2, i2) = (r1r2 - i1i2, r1i2 + r2i1)
+        const XMVECTOR vr1r2 = XMVectorMultiply(r1, r2);
+        const XMVECTOR vr1i2 = XMVectorMultiply(r1, i2);
+        r1                   = XMVectorNegativeMultiplySubtract(i1, i2, vr1r2); // real: (r1*r2 - i1*i2)
+        i1                   = XMVectorMultiplyAdd(r2, i1, vr1i2);              // imaginary: (r1*i2 + r2*i1)
     }
 
     //----------------------------------------------------------------------------------
@@ -119,9 +124,9 @@ namespace XDSP
         const XMVECTOR iTemp = XMVectorMultiplyAdd(i1H, vDFT4SignBits1, i1L);
 
         // calculating Result
-        const XMVECTOR rZrWiZiW = XMVectorPermute<2, 3, 6, 7>(rTemp, iTemp);   // [rTempZ|rTempW|iTempZ|iTempW]
-        const XMVECTOR rZiWrZiW = XMVectorSwizzle<0, 3, 0, 3>(rZrWiZiW);       // [rTempZ|iTempW|rTempZ|iTempW]
-        const XMVECTOR iZrWiZrW = XMVectorSwizzle<2, 1, 2, 1>(rZrWiZiW);       // [rTempZ|iTempW|rTempZ|iTempW]
+        const XMVECTOR rZrWiZiW = XMVectorPermute<2, 3, 6, 7>(rTemp, iTemp); // [rTempZ|rTempW|iTempZ|iTempW]
+        const XMVECTOR rZiWrZiW = XMVectorSwizzle<0, 3, 0, 3>(rZrWiZiW);     // [rTempZ|iTempW|rTempZ|iTempW]
+        const XMVECTOR iZrWiZrW = XMVectorSwizzle<2, 1, 2, 1>(rZrWiZiW);     // [rTempZ|iTempW|rTempZ|iTempW]
 
         // [rTempX| rTempY| rTempX| rTempY] + [rTempZ| iTempW|-rTempZ|-iTempW]
         // [iTempX| iTempY| iTempX| iTempY] + // [iTempZ|-rTempW|-iTempZ| rTempW]
@@ -153,18 +158,17 @@ namespace XDSP
     //          | 1  0 -1  0 |   | (rTemp2,iTemp2) |   | (rTemp0 - rTemp2, iTemp0 - iTemp2) |
     //          | 0  1  0  j |   | (rTemp3,iTemp3) |   | (rTemp1 - iTemp3, iTemp1 + rTemp3) |
     //----------------------------------------------------------------------------------
-    inline void ButterflyDIT4_4(
-        _Inout_ XMVECTOR& r0,
-        _Inout_ XMVECTOR& r1,
-        _Inout_ XMVECTOR& r2,
-        _Inout_ XMVECTOR& r3,
-        _Inout_ XMVECTOR& i0,
-        _Inout_ XMVECTOR& i1,
-        _Inout_ XMVECTOR& i2,
-        _Inout_ XMVECTOR& i3,
+    inline void ButterflyDIT4_4(_Inout_ XMVECTOR& r0,
+        _Inout_ XMVECTOR&                         r1,
+        _Inout_ XMVECTOR&                         r2,
+        _Inout_ XMVECTOR&                         r3,
+        _Inout_ XMVECTOR&                         i0,
+        _Inout_ XMVECTOR&                         i1,
+        _Inout_ XMVECTOR&                         i2,
+        _Inout_ XMVECTOR&                         i3,
         _In_reads_(uStride * 4) const XMVECTOR* __restrict pUnityTableReal,
         _In_reads_(uStride * 4) const XMVECTOR* __restrict pUnityTableImaginary,
-        _In_ size_t uStride,
+        _In_ size_t     uStride,
         _In_ const bool fLast) noexcept
     {
         using namespace DirectX;
@@ -214,10 +218,14 @@ namespace XDSP
             ButterflyDIT4_1(rTemp7, iTemp7);
         }
 
-        r0 = rTemp4;    i0 = iTemp4;
-        r1 = rTemp5;    i1 = iTemp5;
-        r2 = rTemp6;    i2 = iTemp6;
-        r3 = rTemp7;    i3 = iTemp7;
+        r0 = rTemp4;
+        i0 = iTemp4;
+        r1 = rTemp5;
+        i1 = iTemp5;
+        r2 = rTemp6;
+        i2 = iTemp6;
+        r3 = rTemp7;
+        i3 = iTemp7;
     }
 
     //==================================================================================
@@ -233,8 +241,7 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    inline void FFT4(
-        _Inout_updates_(uCount) XMVECTOR* __restrict pReal,
+    inline void FFT4(_Inout_updates_(uCount) XMVECTOR* __restrict pReal,
         _Inout_updates_(uCount) XMVECTOR* __restrict pImaginary,
         const size_t uCount = 1) noexcept
     {
@@ -259,8 +266,7 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount*2 elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    inline void FFT8(
-        _Inout_updates_(uCount * 2) XMVECTOR* __restrict pReal,
+    inline void FFT8(_Inout_updates_(uCount * 2) XMVECTOR* __restrict pReal,
         _Inout_updates_(uCount * 2) XMVECTOR* __restrict pImaginary,
         _In_ const size_t uCount = 1) noexcept
     {
@@ -282,9 +288,9 @@ namespace XDSP
             XMVECTOR* __restrict pR = pReal + uIndex * 2;
             XMVECTOR* __restrict pI = pImaginary + uIndex * 2;
 
-            XMVECTOR oddsR = XMVectorPermute<1, 3, 5, 7>(pR[0], pR[1]);
+            XMVECTOR oddsR  = XMVectorPermute<1, 3, 5, 7>(pR[0], pR[1]);
             XMVECTOR evensR = XMVectorPermute<0, 2, 4, 6>(pR[0], pR[1]);
-            XMVECTOR oddsI = XMVectorPermute<1, 3, 5, 7>(pI[0], pI[1]);
+            XMVECTOR oddsI  = XMVectorPermute<1, 3, 5, 7>(pI[0], pI[1]);
             XMVECTOR evensI = XMVectorPermute<0, 2, 4, 6>(pI[0], pI[1]);
             ButterflyDIT4_1(oddsR, oddsI);
             ButterflyDIT4_1(evensR, evensI);
@@ -309,8 +315,7 @@ namespace XDSP
     //  pImaginary - [inout] imaginary components, must have at least uCount*4 elements
     //  uCount     - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    inline void FFT16(
-        _Inout_updates_(uCount * 4) XMVECTOR* __restrict pReal,
+    inline void FFT16(_Inout_updates_(uCount * 4) XMVECTOR* __restrict pReal,
         _Inout_updates_(uCount * 4) XMVECTOR* __restrict pImaginary,
         _In_ const size_t uCount = 1) noexcept
     {
@@ -322,19 +327,14 @@ namespace XDSP
         assert(reinterpret_cast<uintptr_t>(pImaginary) % 16 == 0);
         assert(ISPOWEROF2(uCount));
 
-        static const XMVECTORF32 aUnityTableReal[4] = {
-            { { { 1.0f, 1.0f, 1.0f, 1.0f } } },
-            { { { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f } } },
-            { { { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f } } },
-            { { { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f } } }
-        };
-        static const XMVECTORF32 aUnityTableImaginary[4] =
-        {
-            { { { -0.0f, -0.0f, -0.0f, -0.0f } } },
+        static const XMVECTORF32 aUnityTableReal[4]      = { { { { 1.0f, 1.0f, 1.0f, 1.0f } } },
+                 { { { 1.0f, 0.92387950f, 0.70710677f, 0.38268343f } } },
+                 { { { 1.0f, 0.70710677f, -4.3711388e-008f, -0.70710677f } } },
+                 { { { 1.0f, 0.38268343f, -0.70710677f, -0.92387950f } } } };
+        static const XMVECTORF32 aUnityTableImaginary[4] = { { { { -0.0f, -0.0f, -0.0f, -0.0f } } },
             { { { -0.0f, -0.38268343f, -0.70710677f, -0.92387950f } } },
             { { { -0.0f, -0.70710677f, -1.0f, -0.70710677f } } },
-            { { { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f } } }
-        };
+            { { { -0.0f, -0.92387950f, -0.70710677f, 0.38268343f } } } };
 
         for (size_t uIndex = 0; uIndex < uCount; ++uIndex)
         {
@@ -348,7 +348,8 @@ namespace XDSP
                 pImaginary[uIndex * 4 + 3],
                 reinterpret_cast<const XMVECTOR*>(aUnityTableReal),
                 reinterpret_cast<const XMVECTOR*>(aUnityTableImaginary),
-                1, true);
+                1,
+                true);
         }
     }
 
@@ -366,10 +367,9 @@ namespace XDSP
     //  uLength     - [in]    FFT length in samples, must be a power of 2 > 16
     //  uCount      - [in]    number of FFT iterations
     //----------------------------------------------------------------------------------
-    inline void FFT(
-        _Inout_updates_((uLength * uCount) / 4) XMVECTOR* __restrict pReal,
+    inline void FFT(_Inout_updates_((uLength * uCount) / 4) XMVECTOR* __restrict pReal,
         _Inout_updates_((uLength * uCount) / 4) XMVECTOR* __restrict pImaginary,
-        _In_reads_(uLength * uCount) const XMVECTOR* __restrict pUnityTable,
+        _In_reads_(uLength* uCount) const XMVECTOR* __restrict pUnityTable,
         _In_ const size_t uLength,
         _In_ const size_t uCount = 1) noexcept
     {
@@ -384,17 +384,17 @@ namespace XDSP
         assert(ISPOWEROF2(uLength));
         assert(ISPOWEROF2(uCount));
 
-        const XMVECTOR* __restrict pUnityTableReal = pUnityTable;
+        const XMVECTOR* __restrict pUnityTableReal      = pUnityTable;
         const XMVECTOR* __restrict pUnityTableImaginary = pUnityTable + (uLength >> 2);
-        const size_t uTotal = uCount * uLength;
-        const size_t uTotal_vectors = uTotal >> 2;
-        const size_t uStage_vectors = uLength >> 2;
-        const size_t uStage_vectors_mask = uStage_vectors - 1;
-        const size_t uStride = uLength >> 4; // stride between butterfly elements
-        const size_t uStrideMask = uStride - 1;
-        const size_t uStride2 = uStride * 2;
-        const size_t uStride3 = uStride * 3;
-        const size_t uStrideInvMask = ~uStrideMask;
+        const size_t uTotal                             = uCount * uLength;
+        const size_t uTotal_vectors                     = uTotal >> 2;
+        const size_t uStage_vectors                     = uLength >> 2;
+        const size_t uStage_vectors_mask                = uStage_vectors - 1;
+        const size_t uStride                            = uLength >> 4; // stride between butterfly elements
+        const size_t uStrideMask                        = uStride - 1;
+        const size_t uStride2                           = uStride * 2;
+        const size_t uStride3                           = uStride * 3;
+        const size_t uStrideInvMask                     = ~uStrideMask;
 
         for (size_t uIndex = 0; uIndex < (uTotal_vectors >> 2); ++uIndex)
         {
@@ -409,7 +409,8 @@ namespace XDSP
                 pImaginary[n + uStride3],
                 pUnityTableReal + (n & uStage_vectors_mask),
                 pUnityTableImaginary + (n & uStage_vectors_mask),
-                uStride, false);
+                uStride,
+                false);
         }
 
         if (uLength > 16 * 4)
@@ -470,22 +471,22 @@ namespace XDSP
                 XMVECTOR vSin, vCos;
                 XMVECTOR viJP, vlS;
 
-                pUnityTable[j] = g_XMOne;
+                pUnityTable[j]           = g_XMOne;
                 pUnityTable[j + len * 4] = XMVectorZero();
 
                 vlS = XMVectorMultiply(vJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
-                pUnityTable[j + len] = vCos;
+                pUnityTable[j + len]     = vCos;
                 pUnityTable[j + len * 5] = XMVectorMultiply(vSin, g_XMNegativeOne);
 
                 viJP = XMVectorAdd(vJP, vJP);
-                vlS = XMVectorMultiply(viJP, vlStep);
+                vlS  = XMVectorMultiply(viJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
                 pUnityTable[j + len * 2] = vCos;
                 pUnityTable[j + len * 6] = XMVectorMultiply(vSin, g_XMNegativeOne);
 
                 viJP = XMVectorAdd(viJP, vJP);
-                vlS = XMVectorMultiply(viJP, vlStep);
+                vlS  = XMVectorMultiply(viJP, vlStep);
                 XMVectorSinCos(&vSin, &vCos, vlS);
                 pUnityTable[j + len * 3] = vCos;
                 pUnityTable[j + len * 7] = XMVectorMultiply(vSin, g_XMNegativeOne);
@@ -494,8 +495,7 @@ namespace XDSP
             }
             vlStep = XMVectorMultiply(vlStep, g_XMFour);
             pUnityTable += len * 8;
-        }
-        while (len > 4);
+        } while (len > 4);
     }
 
     //----------------------------------------------------------------------------------
@@ -507,12 +507,12 @@ namespace XDSP
     //  Exponential values and bits correspond, so the reversed upper index can be omitted depending on the number of exponents.
     //
     // PARAMETERS:
-    //  pOutput     - [out] output buffer, receives samples in order of increasing frequency, cannot overlap pInput, must have at least (1<<uLog2Length)/4 elements
-    //  pInput      - [in]  input buffer, samples in bit reversed order as generated by FFT functions, cannot overlap pOutput, must have at least (1<<uLog2Length)/4 elements
-    //  uLog2Length - [in]  LOG (base 2) of FFT length in samples, must be >= 2
+    //  pOutput     - [out] output buffer, receives samples in order of increasing frequency, cannot overlap pInput, must have at least
+    //  (1<<uLog2Length)/4 elements pInput      - [in]  input buffer, samples in bit reversed order as generated by FFT functions, cannot
+    //  overlap pOutput, must have at least (1<<uLog2Length)/4 elements uLog2Length - [in]  LOG (base 2) of FFT length in samples, must be
+    //  >= 2
     //----------------------------------------------------------------------------------
-    inline void FFTUnswizzle(
-        _Out_writes_((1 << uLog2Length) / 4) XMVECTOR* __restrict pOutput,
+    inline void FFTUnswizzle(_Out_writes_((1 << uLog2Length) / 4) XMVECTOR* __restrict pOutput,
         _In_reads_((1 << uLog2Length) / 4) const XMVECTOR* __restrict pInput,
         _In_ const size_t uLog2Length) noexcept
     {
@@ -522,9 +522,10 @@ namespace XDSP
         _Analysis_assume_(uLog2Length >= 2);
 
         float* __restrict pfOutput = reinterpret_cast<float*>(pOutput);
-        const size_t uLength = size_t(1) << (uLog2Length - 2);
+        const size_t uLength       = size_t(1) << (uLog2Length - 2);
 
         static const unsigned char cSwizzleTable[256] = {
+            // clang-format off
             0x00, 0x40, 0x80, 0xC0, 0x10, 0x50, 0x90, 0xD0, 0x20, 0x60, 0xA0, 0xE0, 0x30, 0x70, 0xB0, 0xF0,
             0x04, 0x44, 0x84, 0xC4, 0x14, 0x54, 0x94, 0xD4, 0x24, 0x64, 0xA4, 0xE4, 0x34, 0x74, 0xB4, 0xF4,
             0x08, 0x48, 0x88, 0xC8, 0x18, 0x58, 0x98, 0xD8, 0x28, 0x68, 0xA8, 0xE8, 0x38, 0x78, 0xB8, 0xF8,
@@ -541,6 +542,7 @@ namespace XDSP
             0x07, 0x47, 0x87, 0xC7, 0x17, 0x57, 0x97, 0xD7, 0x27, 0x67, 0xA7, 0xE7, 0x37, 0x77, 0xB7, 0xF7,
             0x0B, 0x4B, 0x8B, 0xCB, 0x1B, 0x5B, 0x9B, 0xDB, 0x2B, 0x6B, 0xAB, 0xEB, 0x3B, 0x7B, 0xBB, 0xFB,
             0x0F, 0x4F, 0x8F, 0xCF, 0x1F, 0x5F, 0x9F, 0xDF, 0x2F, 0x6F, 0xAF, 0xEF, 0x3F, 0x7F, 0xBF, 0xFF
+            // clang-format on
         };
         if ((uLog2Length & 1) == 0)
         {
@@ -551,11 +553,10 @@ namespace XDSP
                 XMFLOAT4A f4a;
                 XMStoreFloat4A(&f4a, pInput[uIndex]);
                 const size_t n = uIndex * 4;
-                const size_t uAddr = (static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 24)]));
-                pfOutput[uAddr >> uRev32] = f4a.x;
+                const size_t uAddr
+                    = (static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) | (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16)
+                      | (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) | (static_cast<size_t>(cSwizzleTable[(n >> 24)]));
+                pfOutput[uAddr >> uRev32]                = f4a.x;
                 pfOutput[(0x40000000 | uAddr) >> uRev32] = f4a.y;
                 pfOutput[(0x80000000 | uAddr) >> uRev32] = f4a.z;
                 pfOutput[(0xC0000000 | uAddr) >> uRev32] = f4a.w;
@@ -564,18 +565,18 @@ namespace XDSP
         else
         {
             // odd powers of two
-            const size_t uRev7 = size_t(1) << (uLog2Length - 3);
+            const size_t uRev7  = size_t(1) << (uLog2Length - 3);
             const size_t uRev32 = 32 - (uLog2Length - 3);
             for (size_t uIndex = 0; uIndex < uLength; ++uIndex)
             {
                 XMFLOAT4A f4a;
                 XMStoreFloat4A(&f4a, pInput[uIndex]);
                 const size_t n = (uIndex >> 1);
-                size_t uAddr = (((static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) |
-                    (static_cast<size_t>(cSwizzleTable[(n >> 24)]))) >> uRev32) |
-                    ((uIndex & 1) * uRev7 * 4);
+                size_t       uAddr
+                    = (((static_cast<size_t>(cSwizzleTable[n & 0xff]) << 24) | (static_cast<size_t>(cSwizzleTable[(n >> 8) & 0xff]) << 16)
+                           | (static_cast<size_t>(cSwizzleTable[(n >> 16) & 0xff]) << 8) | (static_cast<size_t>(cSwizzleTable[(n >> 24)])))
+                          >> uRev32)
+                      | ((uIndex & 1) * uRev7 * 4);
                 pfOutput[uAddr] = f4a.x;
                 uAddr += uRev7;
                 pfOutput[uAddr] = f4a.y;
@@ -598,10 +599,9 @@ namespace XDSP
     //  uLength         - [in]  FFT length in samples, must be a power of 2 >= 4
     //----------------------------------------------------------------------------------
 #ifdef _MSC_VER
-#pragma warning(suppress: 6101)
+#pragma warning(suppress : 6101)
 #endif
-    inline void FFTPolar(
-        _Out_writes_(uLength / 4) XMVECTOR* __restrict pOutput,
+    inline void FFTPolar(_Out_writes_(uLength / 4) XMVECTOR* __restrict pOutput,
         _In_reads_(uLength / 4) const XMVECTOR* __restrict pInputReal,
         _In_reads_(uLength / 4) const XMVECTOR* __restrict pInputImaginary,
         _In_ const size_t uLength) noexcept
@@ -622,13 +622,13 @@ namespace XDSP
 
         for (size_t uIndex = 0; uIndex < (uLength >> 2); ++uIndex)
         {
-            XMVECTOR vReal = XMVectorMultiply(pInputReal[uIndex], vOneOverLength);
+            XMVECTOR vReal      = XMVectorMultiply(pInputReal[uIndex], vOneOverLength);
             XMVECTOR vImaginary = XMVectorMultiply(pInputImaginary[uIndex], vOneOverLength);
-            XMVECTOR vRR = XMVectorMultiply(vReal, vReal);
-            XMVECTOR vII = XMVectorMultiply(vImaginary, vImaginary);
-            XMVECTOR vRRplusII = XMVectorAdd(vRR, vII);
-            XMVECTOR vTotal = XMVectorSqrt(vRRplusII);
-            pOutput[uIndex] = XMVectorAdd(vTotal, vTotal);
+            XMVECTOR vRR        = XMVectorMultiply(vReal, vReal);
+            XMVECTOR vII        = XMVectorMultiply(vImaginary, vImaginary);
+            XMVECTOR vRRplusII  = XMVectorAdd(vRR, vII);
+            XMVECTOR vTotal     = XMVectorSqrt(vRRplusII);
+            pOutput[uIndex]     = XMVectorAdd(vTotal, vTotal);
         }
     }
 
@@ -640,13 +640,12 @@ namespace XDSP
     //  For example, audio of the form [LRLRLR] becomes [LLLRRR].
     //
     // PARAMETERS:
-    //  pOutput       - [out] output buffer, receives samples in deinterleaved form, cannot overlap pInput, must have at least (uChannelCount*uFrameCount)/4 elements
-    //  pInput        - [in]  input buffer, cannot overlap pOutput, must have at least (uChannelCount*uFrameCount)/4 elements
-    //  uChannelCount - [in]  number of channels, must be > 1
-    //  uFrameCount   - [in]  number of frames of valid data, must be > 0
+    //  pOutput       - [out] output buffer, receives samples in deinterleaved form, cannot overlap pInput, must have at least
+    //  (uChannelCount*uFrameCount)/4 elements pInput        - [in]  input buffer, cannot overlap pOutput, must have at least
+    //  (uChannelCount*uFrameCount)/4 elements uChannelCount - [in]  number of channels, must be > 1 uFrameCount   - [in]  number of frames
+    //  of valid data, must be > 0
     //----------------------------------------------------------------------------------
-    inline void Deinterleave(
-        _Out_writes_((uChannelCount * uFrameCount) / 4) XMVECTOR* __restrict pOutput,
+    inline void Deinterleave(_Out_writes_((uChannelCount * uFrameCount) / 4) XMVECTOR* __restrict pOutput,
         _In_reads_((uChannelCount * uFrameCount) / 4) const XMVECTOR* __restrict pInput,
         _In_ const size_t uChannelCount,
         _In_ const size_t uFrameCount) noexcept
@@ -656,7 +655,7 @@ namespace XDSP
         assert(uChannelCount > 1);
         assert(uFrameCount > 0);
 
-        float* __restrict pfOutput = reinterpret_cast<float* __restrict>(pOutput);
+        float* __restrict pfOutput      = reinterpret_cast<float* __restrict>(pOutput);
         const float* __restrict pfInput = reinterpret_cast<const float* __restrict>(pInput);
 
         for (size_t uChannel = 0; uChannel < uChannelCount; ++uChannel)
@@ -676,13 +675,12 @@ namespace XDSP
     //  For example, audio of the form [LLLRRR] becomes [LRLRLR].
     //
     // PARAMETERS:
-    //  pOutput       - [out] output buffer, receives samples in interleaved form, cannot overlap pInput, must have at least (uChannelCount*uFrameCount)/4 elements
-    //  pInput        - [in]  input buffer, cannot overlap pOutput, must have at least (uChannelCount*uFrameCount)/4 elements
-    //  uChannelCount - [in]  number of channels, must be > 1
-    //  uFrameCount   - [in]  number of frames of valid data, must be > 0
+    //  pOutput       - [out] output buffer, receives samples in interleaved form, cannot overlap pInput, must have at least
+    //  (uChannelCount*uFrameCount)/4 elements pInput        - [in]  input buffer, cannot overlap pOutput, must have at least
+    //  (uChannelCount*uFrameCount)/4 elements uChannelCount - [in]  number of channels, must be > 1 uFrameCount   - [in]  number of frames
+    //  of valid data, must be > 0
     //----------------------------------------------------------------------------------
-    inline void Interleave(
-        _Out_writes_((uChannelCount * uFrameCount) / 4) XMVECTOR* __restrict pOutput,
+    inline void Interleave(_Out_writes_((uChannelCount * uFrameCount) / 4) XMVECTOR* __restrict pOutput,
         _In_reads_((uChannelCount * uFrameCount) / 4) const XMVECTOR* __restrict pInput,
         _In_ const size_t uChannelCount,
         _In_ const size_t uFrameCount) noexcept
@@ -692,7 +690,7 @@ namespace XDSP
         assert(uChannelCount > 1);
         assert(uFrameCount > 0);
 
-        float* __restrict pfOutput = reinterpret_cast<float* __restrict>(pOutput);
+        float* __restrict pfOutput      = reinterpret_cast<float* __restrict>(pOutput);
         const float* __restrict pfInput = reinterpret_cast<const float* __restrict>(pInput);
 
         for (size_t uChannel = 0; uChannel < uChannelCount; ++uChannel)
@@ -717,8 +715,7 @@ namespace XDSP
     //  uChannelCount - [in]    number of channels, must be within [1, 6]
     //  uLog2Length   - [in]    LOG (base 2) of FFT length in frames, must within [2, 9]
     //----------------------------------------------------------------------------------
-    inline void FFTInterleaved(
-        _Inout_updates_(((1 << uLog2Length) * uChannelCount) / 4) XMVECTOR* __restrict pReal,
+    inline void FFTInterleaved(_Inout_updates_(((1 << uLog2Length) * uChannelCount) / 4) XMVECTOR* __restrict pReal,
         _Out_writes_(((1 << uLog2Length) * uChannelCount) / 4) XMVECTOR* __restrict pImaginary,
         _In_reads_(1 << uLog2Length) const XMVECTOR* __restrict pUnityTable,
         _In_ const size_t uChannelCount,
@@ -735,7 +732,7 @@ namespace XDSP
 
         XM_ALIGNED_DATA(16) XMVECTOR vRealTemp[768];
         XM_ALIGNED_DATA(16) XMVECTOR vImaginaryTemp[768];
-        const size_t uLength = size_t(1) << uLog2Length;
+        const size_t                 uLength = size_t(1) << uLog2Length;
 
         if (uChannelCount > 1)
         {
@@ -796,8 +793,7 @@ namespace XDSP
     //  uChannelCount - [in]    number of channels, must be > 0
     //  uLog2Length   - [in]    LOG (base 2) of FFT length in frames, must within [2, 9]
     //----------------------------------------------------------------------------------
-    inline void IFFTDeinterleaved(
-        _Inout_updates_(((1 << uLog2Length) * uChannelCount) / 4) XMVECTOR* __restrict pReal,
+    inline void IFFTDeinterleaved(_Inout_updates_(((1 << uLog2Length) * uChannelCount) / 4) XMVECTOR* __restrict pReal,
         _In_reads_(((1 << uLog2Length) * uChannelCount) / 4) const XMVECTOR* __restrict pImaginary,
         _In_reads_(1 << uLog2Length) const XMVECTOR* __restrict pUnityTable,
         _In_ const size_t uChannelCount,
@@ -816,7 +812,7 @@ namespace XDSP
         assert(uLog2Length >= 2 && uLog2Length <= 9);
         _Analysis_assume_(uLog2Length >= 2 && uLog2Length <= 9);
 
-        XM_ALIGNED_DATA(16) XMVECTOR vRealTemp[768] = {};
+        XM_ALIGNED_DATA(16) XMVECTOR vRealTemp[768]      = {};
         XM_ALIGNED_DATA(16) XMVECTOR vImaginaryTemp[768] = {};
 
         const size_t uLength = size_t(1) << uLog2Length;
@@ -825,7 +821,7 @@ namespace XDSP
         const XMVECTOR vRnm = XMVectorReplicate(-1.0f / float(uLength));
         for (size_t u = 0; u < uChannelCount * (uLength >> 2); u++)
         {
-            vRealTemp[u] = XMVectorMultiply(pReal[u], vRnp);
+            vRealTemp[u]      = XMVectorMultiply(pReal[u], vRnp);
             vImaginaryTemp[u] = XMVectorMultiply(pImaginary[u], vRnm);
         }
 
