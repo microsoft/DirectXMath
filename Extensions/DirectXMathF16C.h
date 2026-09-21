@@ -29,25 +29,24 @@ namespace DirectX
 
             // See https://msdn.microsoft.com/en-us/library/hskdteyh.aspx
             int CPUInfo[4] = { -1 };
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 0);
-        #endif
+#endif
 
             if (CPUInfo[0] < 1)
                 return false;
 
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 1);
-        #endif
+#endif
 
             // We check for F16C, AVX, OSXSAVE, and SSE4.1
             return ((CPUInfo[2] & 0x38080000) == 0x38080000);
         }
-
 
         //-------------------------------------------------------------------------------------
         // Data conversion
@@ -56,25 +55,22 @@ namespace DirectX
         inline float XMConvertHalfToFloat(PackedVector::HALF Value)
         {
             __m128i V1 = _mm_cvtsi32_si128(static_cast<int>(Value));
-            __m128 V2 = _mm_cvtph_ps(V1);
+            __m128  V2 = _mm_cvtph_ps(V1);
             return _mm_cvtss_f32(V2);
         }
 
         inline PackedVector::HALF XMConvertFloatToHalf(float Value)
         {
-            __m128 V1 = _mm_set_ss(Value);
+            __m128  V1 = _mm_set_ss(Value);
             __m128i V2 = _mm_cvtps_ph(V1, 0);
             return static_cast<PackedVector::HALF>(_mm_cvtsi128_si32(V2));
         }
 
-        inline float* XMConvertHalfToFloatStream
-        (
-            _Out_writes_bytes_(sizeof(float) + OutputStride * (HalfCount - 1)) float* pOutputStream,
-            _In_ size_t      OutputStride,
-            _In_reads_bytes_(2 + InputStride * (HalfCount - 1)) const PackedVector::HALF* pInputStream,
-            _In_ size_t      InputStride,
-            _In_ size_t      HalfCount
-        )
+        inline float* XMConvertHalfToFloatStream(_Out_writes_bytes_(sizeof(float) + OutputStride * (HalfCount - 1)) float* pOutputStream,
+            _In_ size_t                                                                                                    OutputStride,
+            _In_reads_bytes_(2 + InputStride * (HalfCount - 1)) const PackedVector::HALF*                                  pInputStream,
+            _In_ size_t                                                                                                    InputStride,
+            _In_ size_t                                                                                                    HalfCount)
         {
             using namespace PackedVector;
 
@@ -84,10 +80,10 @@ namespace DirectX
             assert(InputStride >= sizeof(HALF));
             assert(OutputStride >= sizeof(float));
 
-            auto pHalf = reinterpret_cast<const uint8_t*>(pInputStream);
+            auto pHalf  = reinterpret_cast<const uint8_t*>(pInputStream);
             auto pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
-            size_t i = 0;
+            size_t i    = 0;
             size_t four = HalfCount >> 2;
             if (four > 0)
             {
@@ -165,11 +161,11 @@ namespace DirectX
                             pHalf += InputStride;
 
                             __m128i HV = _mm_setzero_si128();
-                            HV = _mm_insert_epi16(HV, H1, 0);
-                            HV = _mm_insert_epi16(HV, H2, 1);
-                            HV = _mm_insert_epi16(HV, H3, 2);
-                            HV = _mm_insert_epi16(HV, H4, 3);
-                            __m128 FV = _mm_cvtph_ps(HV);
+                            HV         = _mm_insert_epi16(HV, H1, 0);
+                            HV         = _mm_insert_epi16(HV, H2, 1);
+                            HV         = _mm_insert_epi16(HV, H3, 2);
+                            HV         = _mm_insert_epi16(HV, H4, 3);
+                            __m128 FV  = _mm_cvtph_ps(HV);
 
                             _mm_stream_ps(reinterpret_cast<float*>(pFloat), FV);
                             pFloat += OutputStride * 4;
@@ -191,17 +187,16 @@ namespace DirectX
                             pHalf += InputStride;
 
                             __m128i HV = _mm_setzero_si128();
-                            HV = _mm_insert_epi16(HV, H1, 0);
-                            HV = _mm_insert_epi16(HV, H2, 1);
-                            HV = _mm_insert_epi16(HV, H3, 2);
-                            HV = _mm_insert_epi16(HV, H4, 3);
-                            __m128 FV = _mm_cvtph_ps(HV);
+                            HV         = _mm_insert_epi16(HV, H1, 0);
+                            HV         = _mm_insert_epi16(HV, H2, 1);
+                            HV         = _mm_insert_epi16(HV, H3, 2);
+                            HV         = _mm_insert_epi16(HV, H4, 3);
+                            __m128 FV  = _mm_cvtph_ps(HV);
 
                             _mm_storeu_ps(reinterpret_cast<float*>(pFloat), FV);
                             pFloat += OutputStride * 4;
                             i += 4;
                         }
-
                     }
                 }
                 else
@@ -219,11 +214,11 @@ namespace DirectX
                         pHalf += InputStride;
 
                         __m128i HV = _mm_setzero_si128();
-                        HV = _mm_insert_epi16(HV, H1, 0);
-                        HV = _mm_insert_epi16(HV, H2, 1);
-                        HV = _mm_insert_epi16(HV, H3, 2);
-                        HV = _mm_insert_epi16(HV, H4, 3);
-                        __m128 FV = _mm_cvtph_ps(HV);
+                        HV         = _mm_insert_epi16(HV, H1, 0);
+                        HV         = _mm_insert_epi16(HV, H2, 1);
+                        HV         = _mm_insert_epi16(HV, H3, 2);
+                        HV         = _mm_insert_epi16(HV, H4, 3);
+                        __m128 FV  = _mm_cvtph_ps(HV);
 
                         _mm_store_ss(reinterpret_cast<float*>(pFloat), FV);
                         pFloat += OutputStride;
@@ -248,15 +243,12 @@ namespace DirectX
             return pOutputStream;
         }
 
-
-        inline PackedVector::HALF* XMConvertFloatToHalfStream
-        (
-            _Out_writes_bytes_(2 + OutputStride * (FloatCount - 1)) PackedVector::HALF* pOutputStream,
-            _In_ size_t       OutputStride,
+        inline PackedVector::HALF* XMConvertFloatToHalfStream(_Out_writes_bytes_(2 + OutputStride * (FloatCount - 1))
+                                                                  PackedVector::HALF*     pOutputStream,
+            _In_ size_t                                                                   OutputStride,
             _In_reads_bytes_(sizeof(float) + InputStride * (FloatCount - 1)) const float* pInputStream,
-            _In_ size_t       InputStride,
-            _In_ size_t       FloatCount
-        )
+            _In_ size_t                                                                   InputStride,
+            _In_ size_t                                                                   FloatCount)
         {
             using namespace PackedVector;
 
@@ -267,9 +259,9 @@ namespace DirectX
             assert(OutputStride >= sizeof(HALF));
 
             auto pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
-            auto pHalf = reinterpret_cast<uint8_t*>(pOutputStream);
+            auto pHalf  = reinterpret_cast<uint8_t*>(pOutputStream);
 
-            size_t i = 0;
+            size_t i    = 0;
             size_t four = FloatCount >> 2;
             if (four > 0)
             {
@@ -373,7 +365,7 @@ namespace DirectX
 
                         __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
                         __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
-                        FV = _mm_blend_ps(FV, FT, 0xC);
+                        FV        = _mm_blend_ps(FV, FT, 0xC);
 
                         __m128i HV = _mm_cvtps_ph(FV, 0);
 
@@ -401,7 +393,7 @@ namespace DirectX
 
                         __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
                         __m128 FT = _mm_blend_ps(FV3, FV4, 0x8);
-                        FV = _mm_blend_ps(FV, FT, 0xC);
+                        FV        = _mm_blend_ps(FV, FT, 0xC);
 
                         __m128i HV = _mm_cvtps_ph(FV, 0);
 
@@ -428,7 +420,6 @@ namespace DirectX
             return pOutputStream;
         }
 
-
         //-------------------------------------------------------------------------------------
         // Half2
         //-------------------------------------------------------------------------------------
@@ -446,7 +437,6 @@ namespace DirectX
             __m128i V1 = _mm_cvtps_ph(V, 0);
             _mm_store_ss(reinterpret_cast<float*>(pDestination), _mm_castsi128_ps(V1));
         }
-
 
         //-------------------------------------------------------------------------------------
         // Half4
