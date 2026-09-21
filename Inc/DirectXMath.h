@@ -738,10 +738,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMFLOAT2&) const  = default;
         auto operator<=>(const XMFLOAT2&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -776,10 +774,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMINT2&) const  = default;
         auto operator<=>(const XMINT2&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -807,10 +803,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMUINT2&) const  = default;
         auto operator<=>(const XMUINT2&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -842,10 +836,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMFLOAT3&) const  = default;
         auto operator<=>(const XMFLOAT3&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -883,10 +875,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMINT3&) const  = default;
         auto operator<=>(const XMINT3&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -917,10 +907,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMUINT3&) const  = default;
         auto operator<=>(const XMUINT3&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -955,10 +943,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMFLOAT4&) const  = default;
         auto operator<=>(const XMFLOAT4&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -999,10 +985,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
         bool operator==(const XMINT4&) const  = default;
         auto operator<=>(const XMINT4&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -1036,10 +1020,8 @@ namespace DirectX
         {}
 
 #if (__cplusplus >= 202002L)
-        // clang-format off
-        bool operator==(const XMUINT4&) const   = default;
+        bool operator==(const XMUINT4&) const  = default;
         auto operator<=>(const XMUINT4&) const = default;
-        // clang-format on
 #endif
     };
 
@@ -1097,7 +1079,6 @@ namespace DirectX
                    && _32 == M._32 && _33 == M._33;
         }
 
-        // clang-format off
         constexpr auto operator<=>(const XMFLOAT3X3& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0)
@@ -1118,7 +1099,6 @@ namespace DirectX
                 return cmp;
             return _33 <=> M._33;
         }
-        // clang-format on
 #endif
     };
 
@@ -1184,7 +1164,6 @@ namespace DirectX
                    && _32 == M._32 && _33 == M._33 && _41 == M._41 && _42 == M._42 && _43 == M._43;
         }
 
-        // clang-format off
         constexpr auto operator<=>(const XMFLOAT4X3& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0)
@@ -1211,7 +1190,6 @@ namespace DirectX
                 return cmp;
             return _43 <=> M._43;
         }
-        // clang-format on
 #endif
     };
 
@@ -1282,7 +1260,6 @@ namespace DirectX
                    && _24 == M._24 && _31 == M._31 && _32 == M._32 && _33 == M._33 && _34 == M._34;
         }
 
-        // clang-format off
         constexpr auto operator<=>(const XMFLOAT3X4& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0)
@@ -1309,7 +1286,6 @@ namespace DirectX
                 return cmp;
             return _34 <=> M._34;
         }
-        // clang-format on
 #endif
     };
 
@@ -1389,7 +1365,6 @@ namespace DirectX
                    && _43 == M._43 && _44 == M._44;
         }
 
-        // clang-format off
         constexpr auto operator<=>(const XMFLOAT4X4& M) const noexcept
         {
             if (auto cmp = _11 <=> M._11; cmp != 0)
@@ -1424,7 +1399,6 @@ namespace DirectX
                 return cmp;
             return _44 <=> M._44;
         }
-        // clang-format on
 #endif
     };
 
