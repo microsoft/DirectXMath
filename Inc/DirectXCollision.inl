@@ -3323,9 +3323,11 @@ inline bool BoundingFrustum::Intersects(const BoundingSphere& sh) const noexcept
     // The Edges are:
     static const size_t edges[12][2] =
     {
+        // clang-format off
         { 0, 1 }, { 2, 3 }, { 0, 2 }, { 1, 3 },    // Near plane
         { 4, 5 }, { 6, 7 }, { 4, 6 }, { 5, 7 },    // Far plane
         { 0, 4 }, { 1, 5 }, { 2, 6 }, { 3, 7 },
+        // clang-format on
     }; // Near to far
 
     XMVECTOR RadiusSq = XMVectorMultiply(vRadius, vRadius);
