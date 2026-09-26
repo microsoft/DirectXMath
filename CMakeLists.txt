@@ -23,6 +23,8 @@ option(BUILD_XDSP "Build XDSP math" OFF)
 
 option(BUILD_SHMATH "Build Spherical Harmonics math" OFF)
 
+option(BUILD_SIMPLEMATH "Build SimpleMath" OFF)
+
 include(GNUInstallDirs)
 
 #--- Library
@@ -102,6 +104,11 @@ endif()
 if(BUILD_SHMATH)
   message(STATUS "Including C++ Spherical Harmonics Math")
   add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/SHMath)
+endif()
+
+if(BUILD_SIMPLEMATH)
+  message(STATUS "Including SimpleMath")
+  add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/SimpleMath)
 endif()
 
 #--- Test suite

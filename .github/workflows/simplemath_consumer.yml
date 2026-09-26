@@ -1,0 +1,38 @@
+name: 'CMake (SimpleMath Consumer Test)'
+
+on:
+  push:
+    branches: "auto-fix-327"
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Configure and Install DirectXMath
+        run: |
+          cmake -B out/build/install_test -DBUILD_SIMPLEMATH=ON -DBUILD_SHARED_LIBS=ON
+          cmake --build out/build/install_test --config Release
+          cmake --install out/build/install_test --config Release --prefix out/installed
+
+      - name: Create Consumer Project
+        run: |
+          mkdir consumer
+          cd consumer
+          echo 'cmake_minimum_required(VERSION 3.21)' > CMakeLists.txt
+          echo 'project(ConsumerTest)' >> CMakeLists.txt
+          echo 'find_package(directxmath CONFIG REQUIRED)' >> CMakeLists.txt
+          echo 'find_package(SimpleMath CONFIG REQUIRED)' >> CMakeLists.txt
+          echo 'add_executable(Consumer main.cpp)' >> CMakeLists.txt
+          echo 'target_link_libraries(Consumer PRIVATE Microsoft::SimpleMath)' >> CMakeLists.txt
+          
+          echo '#include <SimpleMath.h>' > main.cpp
+          echo 'using namespace DirectX::SimpleMath;' >> main.cpp
+          echo 'int main() { Vector3 v(1, 2, 3); return 0; }' >> main.cpp
+
+      - name: Build Consumer Project
+        run: |
+          cd consumer
+          cmake -B build -DCMAKE_PREFIX_PATH="$env:GITHUB_WORKSPACE/out/installed"
+          cmake --build build --config Release
