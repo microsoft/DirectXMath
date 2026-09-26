@@ -30,6 +30,10 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
 #pragma clang diagnostic ignored "-Wnested-anon-types"
 #endif
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
 
         //------------------------------------------------------------------------------
         // ARGB Color; 8-8-8-8 bit unsigned normalized integer components packed into
@@ -1398,6 +1402,9 @@ namespace DirectX
             }
         };
 
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif
