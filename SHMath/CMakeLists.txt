@@ -225,7 +225,7 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     endif()
 endif()
 
-if(NOT WIN32)
+if((NOT WIN32) AND (NOT VCPKG_TOOLCHAIN))
     if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h")
         file(DOWNLOAD
             https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h
