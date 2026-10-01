@@ -29,6 +29,9 @@ namespace DirectX
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
 #pragma clang diagnostic ignored "-Wnested-anon-types"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
         //------------------------------------------------------------------------------
@@ -1400,6 +1403,8 @@ namespace DirectX
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 #ifdef _MSC_VER
 #pragma warning(pop)

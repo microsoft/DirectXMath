@@ -1137,6 +1137,8 @@ _Use_decl_annotations_ inline bool
         fAbsZ = fabsf(XMVectorGetZ(ppvBasis[a][0]));
 
         XM3RANKDECOMPOSE(aa, bb, cc, fAbsX, fAbsY, fAbsZ)
+        (void)aa;
+        (void)bb;
 
         ppvBasis[b][0] = XMVector3Cross(ppvBasis[a][0], pvCanonicalBasis[cc][0]);
     }

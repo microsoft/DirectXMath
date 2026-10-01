@@ -617,6 +617,15 @@ namespace DirectX
     // Fix-up for (2nd+) XMMATRIX parameters to pass by reference
     typedef const XMMATRIX& CXMMATRIX;
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wgnu-anonymous-struct"
+#pragma clang diagnostic ignored "-Wnested-anon-types"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
+#endif
+
 #ifdef _XM_NO_INTRINSICS_
     struct XMMATRIX
 #else
@@ -712,6 +721,12 @@ namespace DirectX
 
         friend XMMATRIX XM_CALLCONV operator*(float S, FXMMATRIX M) noexcept;
     };
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
 
     //------------------------------------------------------------------------------
     // 2D Vector; 32 bit floating point components
@@ -1031,6 +1046,9 @@ namespace DirectX
 #pragma clang diagnostic ignored "-Wnested-anon-types"
 #pragma clang diagnostic ignored "-Wunknown-warning-option"
 #pragma clang diagnostic ignored "-Wunsafe-buffer-usage"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
 #endif
 
     //------------------------------------------------------------------------------
@@ -1412,6 +1430,8 @@ namespace DirectX
 
 #ifdef __clang__
 #pragma clang diagnostic pop
+#elif defined(__GNUC__)
+#pragma GCC diagnostic pop
 #endif
 #ifdef _PREFAST_
 #pragma prefast(pop)
