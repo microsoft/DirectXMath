@@ -2040,7 +2040,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreColor(XMCOLOR* pDestinatio
     // Mash to bytes
     vInt = _mm_packus_epi16(vInt, vInt);
     // Store the color
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->c), _mm_castsi128_ps(vInt));
+#else
+    pDestination->c = static_cast<uint32_t>(_mm_cvtsi128_si32(vInt));
+#endif
 #endif
 }
 
@@ -2050,7 +2054,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreHalf2(XMHALF2* pDestinatio
     assert(pDestination);
 #if defined(_XM_F16C_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     __m128i V1 = _mm_cvtps_ph(V, _MM_FROUND_TO_NEAREST_INT);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(pDestination), _mm_castsi128_ps(V1));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(V1));
+#endif
 #else
     pDestination->x = XMConvertFloatToHalf(XMVectorGetX(V));
     pDestination->y = XMConvertFloatToHalf(XMVectorGetY(V));
@@ -2086,7 +2094,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreShortN2(XMSHORTN2* pDestin
     vResult          = _mm_mul_ps(vResult, g_ShortMax);
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     vResulti         = _mm_packs_epi32(vResulti, vResulti);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->x), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -2119,7 +2131,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreShort2(XMSHORT2* pDestinat
     __m128i vInt = _mm_cvtps_epi32(vResult);
     // Pack the ints into shorts
     vInt = _mm_packs_epi32(vInt, vInt);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->x), _mm_castsi128_ps(vInt));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vInt));
+#endif
 #endif
 }
 
@@ -2857,7 +2873,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreXDecN4(XMXDECN4* pDestinat
     vResulti = _mm_or_si128(vResulti, _mm_castps_si128(vResult));
     vResult  = XM_PERMUTE_PS(vResult, _MM_SHUFFLE(0, 3, 2, 1));
     vResulti = _mm_or_si128(vResulti, _mm_castps_si128(vResult));
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -2933,7 +2953,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreXDec4(XMXDEC4* pDestinatio
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3005,7 +3029,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreUDecN4(XMUDECN4* pDestinat
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3070,7 +3098,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreUDecN4_XR(XMUDECN4* pDesti
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3129,7 +3161,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreUDec4(XMUDEC4* pDestinatio
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3200,7 +3236,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreDecN4(XMDECN4* pDestinatio
     vResulti2 = _mm_shuffle_epi32(vResulti, _MM_SHUFFLE(1, 1, 1, 1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3253,7 +3293,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreDec4(XMDEC4* pDestination,
     vResulti2 = _mm_shuffle_epi32(vResulti, _MM_SHUFFLE(1, 1, 1, 1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3316,7 +3360,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreUByteN4(XMUBYTEN4* pDestin
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3366,7 +3414,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreUByte4(XMUBYTE4* pDestinat
     vResulti2 = _mm_add_epi32(vResulti2, vResulti2);
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3416,7 +3468,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreByteN4(XMBYTEN4* pDestinat
     vResulti2 = _mm_shuffle_epi32(vResulti, _MM_SHUFFLE(1, 1, 1, 1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
@@ -3464,7 +3520,11 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreByte4(XMBYTE4* pDestinatio
     vResulti2 = _mm_shuffle_epi32(vResulti, _MM_SHUFFLE(1, 1, 1, 1));
     // i = x|y|z|w
     vResulti = _mm_or_si128(vResulti, vResulti2);
+#ifdef _MSC_VER
     _mm_store_ss(reinterpret_cast<float*>(&pDestination->v), _mm_castsi128_ps(vResulti));
+#else
+    pDestination->v = static_cast<uint32_t>(_mm_cvtsi128_si32(vResulti));
+#endif
 #endif
 }
 
