@@ -1108,7 +1108,7 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, siz
         {
             const unsigned int uBase = iR * 5;
             result[4 + iR]           = R[uBase + 0] * input[4] + R[uBase + 1] * input[5] + R[uBase + 2] * input[6] + R[uBase + 3] * input[7]
-                             + R[uBase + 4] * input[8];
+                                       + R[uBase + 4] * input[8];
         }
     }
     break;

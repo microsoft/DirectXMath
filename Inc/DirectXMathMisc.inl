@@ -1244,8 +1244,8 @@ inline XMVECTOR XM_CALLCONV XMColorAdjustSaturation(FXMVECTOR vColor, float fSat
 
     const XMVECTORF32 gvLuminance = { { { 0.2125f, 0.7154f, 0.0721f, 0.0f } } };
 #if defined(_XM_NO_INTRINSICS_)
-    float fLuminance = (vColor.vector4_f32[0] * gvLuminance.f[0]) + (vColor.vector4_f32[1] * gvLuminance.f[1])
-                       + (vColor.vector4_f32[2] * gvLuminance.f[2]);
+    float    fLuminance = (vColor.vector4_f32[0] * gvLuminance.f[0]) + (vColor.vector4_f32[1] * gvLuminance.f[1])
+                          + (vColor.vector4_f32[2] * gvLuminance.f[2]);
     XMVECTOR vResult;
     vResult.vector4_f32[0] = ((vColor.vector4_f32[0] - fLuminance) * fSaturation) + fLuminance;
     vResult.vector4_f32[1] = ((vColor.vector4_f32[1] - fLuminance) * fSaturation) + fLuminance;

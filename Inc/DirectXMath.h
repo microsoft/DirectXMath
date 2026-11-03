@@ -1783,9 +1783,9 @@ namespace DirectX
     XMVECTOR XM_CALLCONV  XMVector2AngleBetweenVectors(FXMVECTOR V1, FXMVECTOR V2) noexcept;
     XMVECTOR XM_CALLCONV  XMVector2LinePointDistance(FXMVECTOR LinePoint1, FXMVECTOR LinePoint2, FXMVECTOR Point) noexcept;
     XMVECTOR XM_CALLCONV  XMVector2IntersectLine(FXMVECTOR Line1Point1,
-         FXMVECTOR                                         Line1Point2,
-         FXMVECTOR                                         Line2Point1,
-         GXMVECTOR                                         Line2Point2) noexcept;
+        FXMVECTOR                                         Line1Point2,
+        FXMVECTOR                                         Line2Point1,
+        GXMVECTOR                                         Line2Point2) noexcept;
     XMVECTOR XM_CALLCONV  XMVector2Transform(FXMVECTOR V, FXMMATRIX M) noexcept;
     XMFLOAT4* XM_CALLCONV XMVector2TransformStream(_Out_writes_bytes_(sizeof(XMFLOAT4) + OutputStride * (VectorCount - 1))
                                                        XMFLOAT4*                             pOutputStream,
@@ -1855,9 +1855,9 @@ namespace DirectX
     XMVECTOR XM_CALLCONV  XMVector3AngleBetweenVectors(FXMVECTOR V1, FXMVECTOR V2) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3LinePointDistance(FXMVECTOR LinePoint1, FXMVECTOR LinePoint2, FXMVECTOR Point) noexcept;
     void XM_CALLCONV      XMVector3ComponentsFromNormal(_Out_ XMVECTOR* pParallel,
-             _Out_ XMVECTOR*                                            pPerpendicular,
-             _In_ FXMVECTOR                                             V,
-             _In_ FXMVECTOR                                             Normal) noexcept;
+        _Out_ XMVECTOR*                                            pPerpendicular,
+        _In_ FXMVECTOR                                             V,
+        _In_ FXMVECTOR                                             Normal) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3Rotate(FXMVECTOR V, FXMVECTOR RotationQuaternion) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3InverseRotate(FXMVECTOR V, FXMVECTOR RotationQuaternion) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3Transform(FXMVECTOR V, FXMMATRIX M) noexcept;
@@ -1885,15 +1885,15 @@ namespace DirectX
         _In_ size_t                                                                          VectorCount,
         _In_ FXMMATRIX                                                                       M) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3Project(FXMVECTOR V,
-         float                                       ViewportX,
-         float                                       ViewportY,
-         float                                       ViewportWidth,
-         float                                       ViewportHeight,
-         float                                       ViewportMinZ,
-         float                                       ViewportMaxZ,
-         FXMMATRIX                                   Projection,
-         CXMMATRIX                                   View,
-         CXMMATRIX                                   World) noexcept;
+        float                                       ViewportX,
+        float                                       ViewportY,
+        float                                       ViewportWidth,
+        float                                       ViewportHeight,
+        float                                       ViewportMinZ,
+        float                                       ViewportMaxZ,
+        FXMMATRIX                                   Projection,
+        CXMMATRIX                                   View,
+        CXMMATRIX                                   World) noexcept;
     XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(_Out_writes_bytes_(sizeof(XMFLOAT3) + OutputStride * (VectorCount - 1))
                                                      XMFLOAT3*                               pOutputStream,
         _In_ size_t                                                                          OutputStride,
@@ -1910,15 +1910,15 @@ namespace DirectX
         _In_ CXMMATRIX                                                                       View,
         _In_ CXMMATRIX                                                                       World) noexcept;
     XMVECTOR XM_CALLCONV  XMVector3Unproject(FXMVECTOR V,
-         float                                         ViewportX,
-         float                                         ViewportY,
-         float                                         ViewportWidth,
-         float                                         ViewportHeight,
-         float                                         ViewportMinZ,
-         float                                         ViewportMaxZ,
-         FXMMATRIX                                     Projection,
-         CXMMATRIX                                     View,
-         CXMMATRIX                                     World) noexcept;
+        float                                         ViewportX,
+        float                                         ViewportY,
+        float                                         ViewportWidth,
+        float                                         ViewportHeight,
+        float                                         ViewportMinZ,
+        float                                         ViewportMaxZ,
+        FXMMATRIX                                     Projection,
+        CXMMATRIX                                     View,
+        CXMMATRIX                                     World) noexcept;
     XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(_Out_writes_bytes_(sizeof(XMFLOAT3) + OutputStride * (VectorCount - 1))
                                                        XMFLOAT3*                             pOutputStream,
         _In_ size_t                                                                          OutputStride,
@@ -2111,12 +2111,12 @@ namespace DirectX
     XMVECTOR XM_CALLCONV XMQuaternionSquad(FXMVECTOR Q0, FXMVECTOR Q1, FXMVECTOR Q2, GXMVECTOR Q3, float t) noexcept;
     XMVECTOR XM_CALLCONV XMQuaternionSquadV(FXMVECTOR Q0, FXMVECTOR Q1, FXMVECTOR Q2, GXMVECTOR Q3, HXMVECTOR T) noexcept;
     void XM_CALLCONV     XMQuaternionSquadSetup(_Out_ XMVECTOR* pA,
-            _Out_ XMVECTOR*                                     pB,
-            _Out_ XMVECTOR*                                     pC,
-            _In_ FXMVECTOR                                      Q0,
-            _In_ FXMVECTOR                                      Q1,
-            _In_ FXMVECTOR                                      Q2,
-            _In_ GXMVECTOR                                      Q3) noexcept;
+        _Out_ XMVECTOR*                                     pB,
+        _Out_ XMVECTOR*                                     pC,
+        _In_ FXMVECTOR                                      Q0,
+        _In_ FXMVECTOR                                      Q1,
+        _In_ FXMVECTOR                                      Q2,
+        _In_ GXMVECTOR                                      Q3) noexcept;
     XMVECTOR XM_CALLCONV XMQuaternionBaryCentric(FXMVECTOR Q0, FXMVECTOR Q1, FXMVECTOR Q2, float f, float g) noexcept;
     XMVECTOR XM_CALLCONV XMQuaternionBaryCentricV(FXMVECTOR Q0, FXMVECTOR Q1, FXMVECTOR Q2, GXMVECTOR F, HXMVECTOR G) noexcept;
 
@@ -2154,9 +2154,9 @@ namespace DirectX
     XMVECTOR XM_CALLCONV XMPlaneNormalize(FXMVECTOR P) noexcept;
     XMVECTOR XM_CALLCONV XMPlaneIntersectLine(FXMVECTOR P, FXMVECTOR LinePoint1, FXMVECTOR LinePoint2) noexcept;
     void XM_CALLCONV     XMPlaneIntersectPlane(_Out_ XMVECTOR* pLinePoint1,
-            _Out_ XMVECTOR*                                    pLinePoint2,
-            _In_ FXMVECTOR                                     P1,
-            _In_ FXMVECTOR                                     P2) noexcept;
+        _Out_ XMVECTOR*                                    pLinePoint2,
+        _In_ FXMVECTOR                                     P1,
+        _In_ FXMVECTOR                                     P2) noexcept;
 
     // Transforms a plane given an inverse transpose matrix
     XMVECTOR XM_CALLCONV XMPlaneTransform(FXMVECTOR P, FXMMATRIX ITM) noexcept;

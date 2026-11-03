@@ -188,9 +188,9 @@ namespace DirectX
 
         static void XM_CALLCONV CreateFromPoints(_Out_ BoundingBox& Out, _In_ FXMVECTOR pt1, _In_ FXMVECTOR pt2) noexcept;
         static void             CreateFromPoints(_Out_ BoundingBox&                               Out,
-                        _In_ size_t                                                               Count,
-                        _In_reads_bytes_(sizeof(XMFLOAT3) + Stride * (Count - 1)) const XMFLOAT3* pPoints,
-                        _In_ size_t                                                               Stride) noexcept;
+            _In_ size_t                                                               Count,
+            _In_reads_bytes_(sizeof(XMFLOAT3) + Stride * (Count - 1)) const XMFLOAT3* pPoints,
+            _In_ size_t                                                               Stride) noexcept;
     };
 
     //-------------------------------------------------------------------------------------
