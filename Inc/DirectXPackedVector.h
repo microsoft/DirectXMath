@@ -1424,10 +1424,10 @@ namespace DirectX
             _In_ size_t                                                                                             HalfCount) noexcept;
         HALF   XMConvertFloatToHalf(float Value) noexcept;
         HALF*  XMConvertFloatToHalfStream(_Out_writes_bytes_(sizeof(HALF) + OutputStride * (FloatCount - 1)) HALF* pOutputStream,
-             _In_ size_t                                                                                           OutputStride,
-             _In_reads_bytes_(sizeof(float) + InputStride * (FloatCount - 1)) const float*                         pInputStream,
-             _In_ size_t                                                                                           InputStride,
-             _In_ size_t                                                                                           FloatCount) noexcept;
+            _In_ size_t                                                                                           OutputStride,
+            _In_reads_bytes_(sizeof(float) + InputStride * (FloatCount - 1)) const float*                         pInputStream,
+            _In_ size_t                                                                                           InputStride,
+            _In_ size_t                                                                                           FloatCount) noexcept;
 
         /****************************************************************************
          *
