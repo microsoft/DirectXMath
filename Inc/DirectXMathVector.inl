@@ -10834,40 +10834,40 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 float32x2_t r3       = vget_low_f32(Transform.r[3]);
-                float32x2_t r        = vget_low_f32(Transform.r[0]);
-                XMVECTOR    vResult0 = vmlaq_lane_f32(vdupq_lane_f32(r3, 0), V.val[0], r, 0); // Ax+M
-                XMVECTOR    vResult1 = vmlaq_lane_f32(vdupq_lane_f32(r3, 1), V.val[0], r, 1); // Bx+N
+                float32x2_t r        = vget_low_f32(Transform.r[2]);
+                XMVECTOR    vResult0 = vmlaq_lane_f32(vdupq_lane_f32(r3, 0), V.val[2], r, 0); // Iz+M
+                XMVECTOR    vResult1 = vmlaq_lane_f32(vdupq_lane_f32(r3, 1), V.val[2], r, 1); // Jz+N
 
                 XM_PREFETCH(pInputVector);
 
                 r3                = vget_high_f32(Transform.r[3]);
-                r                 = vget_high_f32(Transform.r[0]);
-                XMVECTOR vResult2 = vmlaq_lane_f32(vdupq_lane_f32(r3, 0), V.val[0], r, 0); // Cx+O
-                XMVECTOR W        = vmlaq_lane_f32(vdupq_lane_f32(r3, 1), V.val[0], r, 1); // Dx+P
+                r                 = vget_high_f32(Transform.r[2]);
+                XMVECTOR vResult2 = vmlaq_lane_f32(vdupq_lane_f32(r3, 0), V.val[2], r, 0); // Kz+O
+                XMVECTOR W        = vmlaq_lane_f32(vdupq_lane_f32(r3, 1), V.val[2], r, 1); // Lz+P
 
                 XM_PREFETCH(pInputVector + XM_CACHE_LINE_SIZE);
 
                 r        = vget_low_f32(Transform.r[1]);
-                vResult0 = vmlaq_lane_f32(vResult0, V.val[1], r, 0); // Ax+Ey+M
-                vResult1 = vmlaq_lane_f32(vResult1, V.val[1], r, 1); // Bx+Fy+N
+                vResult0 = vmlaq_lane_f32(vResult0, V.val[1], r, 0); // Ey+Iz+M
+                vResult1 = vmlaq_lane_f32(vResult1, V.val[1], r, 1); // Fy+Jz+N
 
                 XM_PREFETCH(pInputVector + (XM_CACHE_LINE_SIZE * 2));
 
                 r        = vget_high_f32(Transform.r[1]);
-                vResult2 = vmlaq_lane_f32(vResult2, V.val[1], r, 0); // Cx+Gy+O
-                W        = vmlaq_lane_f32(W, V.val[1], r, 1);        // Dx+Hy+P
+                vResult2 = vmlaq_lane_f32(vResult2, V.val[1], r, 0); // Gy+Kz+O
+                W        = vmlaq_lane_f32(W, V.val[1], r, 1);        // Hy+Lz+P
 
                 XM_PREFETCH(pInputVector + (XM_CACHE_LINE_SIZE * 3));
 
-                r        = vget_low_f32(Transform.r[2]);
-                vResult0 = vmlaq_lane_f32(vResult0, V.val[2], r, 0); // Ax+Ey+Iz+M
-                vResult1 = vmlaq_lane_f32(vResult1, V.val[2], r, 1); // Bx+Fy+Jz+N
+                r        = vget_low_f32(Transform.r[0]);
+                vResult0 = vmlaq_lane_f32(vResult0, V.val[0], r, 0); // Ax+Ey+Iz+M
+                vResult1 = vmlaq_lane_f32(vResult1, V.val[0], r, 1); // Bx+Fy+Jz+N
 
                 XM_PREFETCH(pInputVector + (XM_CACHE_LINE_SIZE * 4));
 
-                r        = vget_high_f32(Transform.r[2]);
-                vResult2 = vmlaq_lane_f32(vResult2, V.val[2], r, 0); // Cx+Gy+Kz+O
-                W        = vmlaq_lane_f32(W, V.val[2], r, 1);        // Dx+Hy+Lz+P
+                r        = vget_high_f32(Transform.r[0]);
+                vResult2 = vmlaq_lane_f32(vResult2, V.val[0], r, 0); // Cx+Gy+Kz+O
+                W        = vmlaq_lane_f32(W, V.val[0], r, 1);        // Dx+Hy+Lz+P
 
                 XM_PREFETCH(pInputVector + (XM_CACHE_LINE_SIZE * 5));
 
@@ -10912,9 +10912,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
             float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
             pInputVector += InputStride;
 
-            XMVECTOR vResult = vmlaq_lane_f32(Transform.r[3], Transform.r[0], VL, 0); // X
+            XMVECTOR vResult = vmlaq_lane_f32(Transform.r[3], Transform.r[2], VH, 0); // Z
             vResult          = vmlaq_lane_f32(vResult, Transform.r[1], VL, 1);        // Y
-            vResult          = vmlaq_lane_f32(vResult, Transform.r[2], VH, 0);        // Z
+            vResult          = vmlaq_lane_f32(vResult, Transform.r[0], VL, 0);        // X
 
             VH         = vget_high_f32(vResult);
             XMVECTOR W = vdupq_lane_f32(VH, 1);
