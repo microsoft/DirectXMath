@@ -3432,8 +3432,8 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreByteN4(XMBYTEN4* pDestinat
     vResult          = _mm_min_ps(vResult, g_XMOne);
     // Scale by multiplication
     vResult = _mm_mul_ps(vResult, g_ByteMax);
-    // Convert to int by rounding
-    __m128i vResulti = _mm_cvtps_epi32(vResult);
+    // Convert to int
+    __m128i vResulti = _mm_cvttps_epi32(vResult);
     // Pack the ints into shorts
     vResulti = _mm_packs_epi32(vResulti, vResulti);
     // Pack the shorts into bytes
