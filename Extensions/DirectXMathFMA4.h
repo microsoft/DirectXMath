@@ -33,191 +33,151 @@ namespace DirectX
 
             // See https://msdn.microsoft.com/en-us/library/hskdteyh.aspx
             int CPUInfo[4] = { -1 };
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(0, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 0);
-        #endif
+#endif
 
             if (CPUInfo[0] < 1)
                 return false;
 
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(1, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, 1);
-        #endif
+#endif
 
             // We check for AVX, OSXSAVE (required to access FMA4)
             if ((CPUInfo[2] & 0x18000000) != 0x18000000)
                 return false;
 
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(0x80000000, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, static_cast<int>(0x80000000));
-        #endif
+#endif
 
             if (uint32_t(CPUInfo[0]) < 0x80000001u)
                 return false;
 
             // We check for FMA4
-        #if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
+#if (defined(__clang__) || defined(__GNUC__)) && !defined(_MSC_VER) && !defined(__MINGW32__)
             __cpuid(0x80000001, CPUInfo[0], CPUInfo[1], CPUInfo[2], CPUInfo[3]);
-        #else
+#else
             __cpuid(CPUInfo, static_cast<int>(0x80000001));
-        #endif
+#endif
 
             return (CPUInfo[2] & 0x10000);
         }
-
 
         //-------------------------------------------------------------------------------------
         // Vector
         //-------------------------------------------------------------------------------------
 
-        inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd
-        (
-            FXMVECTOR V1,
-            FXMVECTOR V2,
-            FXMVECTOR V3
-        )
+        inline XMVECTOR XM_CALLCONV XMVectorMultiplyAdd(FXMVECTOR V1, FXMVECTOR V2, FXMVECTOR V3)
         {
             return _mm_macc_ps(V1, V2, V3);
         }
 
-        inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract
-        (
-            FXMVECTOR V1,
-            FXMVECTOR V2,
-            FXMVECTOR V3
-        )
+        inline XMVECTOR XM_CALLCONV XMVectorNegativeMultiplySubtract(FXMVECTOR V1, FXMVECTOR V2, FXMVECTOR V3)
         {
             return _mm_nmacc_ps(V1, V2, V3);
         }
-
 
         //-------------------------------------------------------------------------------------
         // Vector2
         //-------------------------------------------------------------------------------------
 
-        inline XMVECTOR XM_CALLCONV XMVector2Transform
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector2Transform(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vResult, M.r[1], M.r[3]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
+            vResult          = _mm_macc_ps(vResult, M.r[1], M.r[3]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
             return vResult;
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector2TransformCoord
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector2TransformCoord(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vResult, M.r[1], M.r[3]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
-            XMVECTOR W = _mm_permute_ps(vResult, _MM_SHUFFLE(3, 3, 3, 3));
-            vResult = _mm_div_ps(vResult, W);
+            vResult          = _mm_macc_ps(vResult, M.r[1], M.r[3]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
+            XMVECTOR W       = _mm_permute_ps(vResult, _MM_SHUFFLE(3, 3, 3, 3));
+            vResult          = _mm_div_ps(vResult, W);
             return vResult;
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector2TransformNormal
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector2TransformNormal(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_mul_ps(vResult, M.r[1]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
+            vResult          = _mm_mul_ps(vResult, M.r[1]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
             return vResult;
         }
-
 
         //-------------------------------------------------------------------------------------
         // Vector3
         //-------------------------------------------------------------------------------------
 
-        inline XMVECTOR XM_CALLCONV XMVector3Transform
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3Transform(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(2, 2, 2, 2)); // Z
-            vResult = _mm_macc_ps(vResult, M.r[2], M.r[3]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vTemp, M.r[1], vResult);
-            vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
+            vResult          = _mm_macc_ps(vResult, M.r[2], M.r[3]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
+            vResult          = _mm_macc_ps(vTemp, M.r[1], vResult);
+            vTemp            = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
             return vResult;
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector3TransformCoord
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3TransformCoord(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(2, 2, 2, 2)); // Z
-            vResult = _mm_macc_ps(vResult, M.r[2], M.r[3]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vTemp, M.r[1], vResult);
-            vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
-            XMVECTOR W = _mm_permute_ps(vResult, _MM_SHUFFLE(3, 3, 3, 3));
-            vResult = _mm_div_ps(vResult, W);
+            vResult          = _mm_macc_ps(vResult, M.r[2], M.r[3]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
+            vResult          = _mm_macc_ps(vTemp, M.r[1], vResult);
+            vTemp            = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
+            XMVECTOR W       = _mm_permute_ps(vResult, _MM_SHUFFLE(3, 3, 3, 3));
+            vResult          = _mm_div_ps(vResult, W);
             return vResult;
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector3TransformNormal
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3TransformNormal(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(2, 2, 2, 2)); // Z
-            vResult = _mm_mul_ps(vResult, M.r[2]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vTemp, M.r[1], vResult);
-            vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
+            vResult          = _mm_mul_ps(vResult, M.r[2]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
+            vResult          = _mm_macc_ps(vTemp, M.r[1], vResult);
+            vTemp            = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
             return vResult;
         }
 
         XMMATRIX XM_CALLCONV XMMatrixMultiply(CXMMATRIX M1, CXMMATRIX M2);
 
-        inline XMVECTOR XM_CALLCONV XMVector3Project
-        (
-            FXMVECTOR V,
-            float    ViewportX,
-            float    ViewportY,
-            float    ViewportWidth,
-            float    ViewportHeight,
-            float    ViewportMinZ,
-            float    ViewportMaxZ,
-            CXMMATRIX Projection,
-            CXMMATRIX View,
-            CXMMATRIX World
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3Project(FXMVECTOR V,
+            float                                              ViewportX,
+            float                                              ViewportY,
+            float                                              ViewportWidth,
+            float                                              ViewportHeight,
+            float                                              ViewportMinZ,
+            float                                              ViewportMaxZ,
+            CXMMATRIX                                          Projection,
+            CXMMATRIX                                          View,
+            CXMMATRIX                                          World)
         {
-            const float HalfViewportWidth = ViewportWidth * 0.5f;
+            const float HalfViewportWidth  = ViewportWidth * 0.5f;
             const float HalfViewportHeight = ViewportHeight * 0.5f;
 
-            XMVECTOR Scale = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
+            XMVECTOR Scale  = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
             XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
 
             XMMATRIX Transform = FMA4::XMMatrixMultiply(World, View);
-            Transform = FMA4::XMMatrixMultiply(Transform, Projection);
+            Transform          = FMA4::XMMatrixMultiply(Transform, Projection);
 
             XMVECTOR Result = FMA4::XMVector3TransformCoord(V, Transform);
 
@@ -226,69 +186,56 @@ namespace DirectX
             return Result;
         }
 
-        inline XMVECTOR XM_CALLCONV XMVector3Unproject
-        (
-            FXMVECTOR V,
-            float     ViewportX,
-            float     ViewportY,
-            float     ViewportWidth,
-            float     ViewportHeight,
-            float     ViewportMinZ,
-            float     ViewportMaxZ,
-            CXMMATRIX Projection,
-            CXMMATRIX View,
-            CXMMATRIX World
-        )
+        inline XMVECTOR XM_CALLCONV XMVector3Unproject(FXMVECTOR V,
+            float                                                ViewportX,
+            float                                                ViewportY,
+            float                                                ViewportWidth,
+            float                                                ViewportHeight,
+            float                                                ViewportMinZ,
+            float                                                ViewportMaxZ,
+            CXMMATRIX                                            Projection,
+            CXMMATRIX                                            View,
+            CXMMATRIX                                            World)
         {
             static const XMVECTORF32 D = { { { -1.0f, 1.0f, 0.0f, 0.0f } } };
 
             XMVECTOR Scale = XMVectorSet(ViewportWidth * 0.5f, -ViewportHeight * 0.5f, ViewportMaxZ - ViewportMinZ, 1.0f);
-            Scale = XMVectorReciprocal(Scale);
+            Scale          = XMVectorReciprocal(Scale);
 
             XMVECTOR Offset = XMVectorSet(-ViewportX, -ViewportY, -ViewportMinZ, 0.0f);
-            Offset = FMA4::XMVectorMultiplyAdd(Scale, Offset, D.v);
+            Offset          = FMA4::XMVectorMultiplyAdd(Scale, Offset, D.v);
 
             XMMATRIX Transform = FMA4::XMMatrixMultiply(World, View);
-            Transform = FMA4::XMMatrixMultiply(Transform, Projection);
-            Transform = XMMatrixInverse(nullptr, Transform);
+            Transform          = FMA4::XMMatrixMultiply(Transform, Projection);
+            Transform          = XMMatrixInverse(nullptr, Transform);
 
             XMVECTOR Result = FMA4::XMVectorMultiplyAdd(V, Scale, Offset);
 
             return FMA4::XMVector3TransformCoord(Result, Transform);
         }
 
-
         //-------------------------------------------------------------------------------------
         // Vector4
         //-------------------------------------------------------------------------------------
 
-        inline XMVECTOR XM_CALLCONV XMVector4Transform
-        (
-            FXMVECTOR V,
-            CXMMATRIX M
-        )
+        inline XMVECTOR XM_CALLCONV XMVector4Transform(FXMVECTOR V, CXMMATRIX M)
         {
             XMVECTOR vResult = _mm_permute_ps(V, _MM_SHUFFLE(3, 3, 3, 3)); // W
-            vResult = _mm_mul_ps(vResult, M.r[3]);
-            XMVECTOR vTemp = _mm_permute_ps(V, _MM_SHUFFLE(2, 2, 2, 2)); // Z
-            vResult = _mm_macc_ps(vTemp, M.r[2], vResult);
-            vTemp = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
-            vResult = _mm_macc_ps(vTemp, M.r[1], vResult);
-            vTemp = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
-            vResult = _mm_macc_ps(vTemp, M.r[0], vResult);
+            vResult          = _mm_mul_ps(vResult, M.r[3]);
+            XMVECTOR vTemp   = _mm_permute_ps(V, _MM_SHUFFLE(2, 2, 2, 2)); // Z
+            vResult          = _mm_macc_ps(vTemp, M.r[2], vResult);
+            vTemp            = _mm_permute_ps(V, _MM_SHUFFLE(1, 1, 1, 1)); // Y
+            vResult          = _mm_macc_ps(vTemp, M.r[1], vResult);
+            vTemp            = _mm_permute_ps(V, _MM_SHUFFLE(0, 0, 0, 0)); // X
+            vResult          = _mm_macc_ps(vTemp, M.r[0], vResult);
             return vResult;
         }
-
 
         //-------------------------------------------------------------------------------------
         // Matrix
         //-------------------------------------------------------------------------------------
 
-        inline XMMATRIX XM_CALLCONV XMMatrixMultiply
-        (
-            CXMMATRIX M1,
-            CXMMATRIX M2
-        )
+        inline XMMATRIX XM_CALLCONV XMMatrixMultiply(CXMMATRIX M1, CXMMATRIX M2)
         {
             XMMATRIX mResult;
             // Use vW to hold the original row
@@ -297,52 +244,48 @@ namespace DirectX
             XMVECTOR vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
             XMVECTOR vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vW          = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
             // Perform the operation on the first row
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vX           = _mm_mul_ps(vX, M2.r[0]);
+            vX           = _mm_macc_ps(vY, M2.r[1], vX);
+            vX           = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX           = _mm_macc_ps(vW, M2.r[3], vX);
             mResult.r[0] = vX;
             // Repeat for the other 3 rows
-            vW = M1.r[1];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW           = M1.r[1];
+            vX           = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY           = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ           = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW           = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX           = _mm_mul_ps(vX, M2.r[0]);
+            vX           = _mm_macc_ps(vY, M2.r[1], vX);
+            vX           = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX           = _mm_macc_ps(vW, M2.r[3], vX);
             mResult.r[1] = vX;
-            vW = M1.r[2];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW           = M1.r[2];
+            vX           = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY           = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ           = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW           = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX           = _mm_mul_ps(vX, M2.r[0]);
+            vX           = _mm_macc_ps(vY, M2.r[1], vX);
+            vX           = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX           = _mm_macc_ps(vW, M2.r[3], vX);
             mResult.r[2] = vX;
-            vW = M1.r[3];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW           = M1.r[3];
+            vX           = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY           = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ           = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW           = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX           = _mm_mul_ps(vX, M2.r[0]);
+            vX           = _mm_macc_ps(vY, M2.r[1], vX);
+            vX           = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX           = _mm_macc_ps(vW, M2.r[3], vX);
             mResult.r[3] = vX;
             return mResult;
         }
 
-        inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose
-        (
-            FXMMATRIX M1,
-            CXMMATRIX M2
-        )
+        inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2)
         {
             // Use vW to hold the original row
             XMVECTOR vW = M1.r[0];
@@ -350,43 +293,43 @@ namespace DirectX
             XMVECTOR vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
             XMVECTOR vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
             XMVECTOR vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vW          = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
             // Perform the operation on the first row
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vX        = _mm_mul_ps(vX, M2.r[0]);
+            vX        = _mm_macc_ps(vY, M2.r[1], vX);
+            vX        = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX        = _mm_macc_ps(vW, M2.r[3], vX);
             __m128 r0 = vX;
             // Repeat for the other 3 rows
-            vW = M1.r[1];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW        = M1.r[1];
+            vX        = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY        = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ        = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW        = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX        = _mm_mul_ps(vX, M2.r[0]);
+            vX        = _mm_macc_ps(vY, M2.r[1], vX);
+            vX        = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX        = _mm_macc_ps(vW, M2.r[3], vX);
             __m128 r1 = vX;
-            vW = M1.r[2];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW        = M1.r[2];
+            vX        = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY        = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ        = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW        = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX        = _mm_mul_ps(vX, M2.r[0]);
+            vX        = _mm_macc_ps(vY, M2.r[1], vX);
+            vX        = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX        = _mm_macc_ps(vW, M2.r[3], vX);
             __m128 r2 = vX;
-            vW = M1.r[3];
-            vX = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
-            vY = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
-            vZ = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
-            vW = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
-            vX = _mm_mul_ps(vX, M2.r[0]);
-            vX = _mm_macc_ps(vY, M2.r[1], vX);
-            vX = _mm_macc_ps(vZ, M2.r[2], vX);
-            vX = _mm_macc_ps(vW, M2.r[3], vX);
+            vW        = M1.r[3];
+            vX        = _mm_permute_ps(vW, _MM_SHUFFLE(0, 0, 0, 0));
+            vY        = _mm_permute_ps(vW, _MM_SHUFFLE(1, 1, 1, 1));
+            vZ        = _mm_permute_ps(vW, _MM_SHUFFLE(2, 2, 2, 2));
+            vW        = _mm_permute_ps(vW, _MM_SHUFFLE(3, 3, 3, 3));
+            vX        = _mm_mul_ps(vX, M2.r[0]);
+            vX        = _mm_macc_ps(vY, M2.r[1], vX);
+            vX        = _mm_macc_ps(vZ, M2.r[2], vX);
+            vX        = _mm_macc_ps(vW, M2.r[3], vX);
             __m128 r3 = vX;
 
             // x.x,x.y,y.x,y.y
@@ -412,4 +355,4 @@ namespace DirectX
 
     } // namespace FMA4
 
-} // namespace DirectX;
+} // namespace DirectX

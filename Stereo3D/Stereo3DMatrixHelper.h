@@ -55,10 +55,18 @@ namespace DirectX
     void StereoCreateDefaultParameters(STEREO_PARAMETERS& stereoParameters);
 
     XMMATRIX StereoProjectionFovLH(_In_opt_ const STEREO_PARAMETERS* pStereoParameters,
-        STEREO_CHANNEL Channel, float FovAngleY, float AspectRatio, float NearZ, float FarZ,
-        STEREO_MODE StereoMode = STEREO_MODE_NORMAL);
+        STEREO_CHANNEL                                               Channel,
+        float                                                        FovAngleY,
+        float                                                        AspectRatio,
+        float                                                        NearZ,
+        float                                                        FarZ,
+        STEREO_MODE                                                  StereoMode = STEREO_MODE_NORMAL);
 
     XMMATRIX StereoProjectionFovRH(_In_opt_ const STEREO_PARAMETERS* pStereoParameters,
-        STEREO_CHANNEL Channel, float FovAngleY, float AspectRatio, float NearZ, float FarZ,
-        STEREO_MODE StereoMode = STEREO_MODE_NORMAL);
-}
+        STEREO_CHANNEL                                               Channel,
+        float                                                        FovAngleY,
+        float                                                        AspectRatio,
+        float                                                        NearZ,
+        float                                                        FarZ,
+        STEREO_MODE                                                  StereoMode = STEREO_MODE_NORMAL);
+} // namespace DirectX

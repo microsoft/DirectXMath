@@ -158,7 +158,10 @@ endif()
 
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM")
     if(CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 16.0)
-        target_compile_options(${PROJECT_NAME} PRIVATE /ZH:SHA_256 "-Wno-unsafe-buffer-usage")
+        target_compile_options(${PROJECT_NAME} PRIVATE "-Wno-unsafe-buffer-usage")
+        if(MSVC)
+            target_compile_options(${PROJECT_NAME} PRIVATE /ZH:SHA_256)
+        endif()
     endif()
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     target_compile_options(${PROJECT_NAME} PRIVATE -Wno-ignored-attributes)
@@ -222,17 +225,19 @@ elseif(CMAKE_CXX_COMPILER_ID MATCHES "MSVC")
     endif()
 endif()
 
-if((NOT WIN32) AND (NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"))
-    file(DOWNLOAD
-        https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h
-        "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"
-        EXPECTED_HASH SHA512=8085f67bfa4ce01ae89461cadf72454a9552fde3f08b2dcc3de36b9830e29ce7a6192800f8a5cb2a66af9637be0017e85719826a4cfdade508ae97f319e0ee8e
-        STATUS DOWNLOAD_STATUS
-    )
-    list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
-    list(GET DOWNLOAD_STATUS 1 DOWNLOAD_ERROR)
-    if(NOT (STATUS_CODE EQUAL 0))
-        message(FATAL_ERROR "Failed to download sal.h: ${DOWNLOAD_ERROR}")
+if((NOT WIN32) AND (NOT VCPKG_TOOLCHAIN))
+    if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h")
+        file(DOWNLOAD
+            https://raw.githubusercontent.com/dotnet/runtime/v9.0.2/src/coreclr/pal/inc/rt/sal.h
+            "${CMAKE_CURRENT_BINARY_DIR}/sal/sal.h"
+            EXPECTED_HASH SHA512=8085f67bfa4ce01ae89461cadf72454a9552fde3f08b2dcc3de36b9830e29ce7a6192800f8a5cb2a66af9637be0017e85719826a4cfdade508ae97f319e0ee8e
+            STATUS DOWNLOAD_STATUS
+        )
+        list(GET DOWNLOAD_STATUS 0 STATUS_CODE)
+        list(GET DOWNLOAD_STATUS 1 DOWNLOAD_ERROR)
+        if(NOT (STATUS_CODE EQUAL 0))
+            message(FATAL_ERROR "Failed to download sal.h: ${DOWNLOAD_ERROR}")
+        endif()
     endif()
 
     target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/sal")
