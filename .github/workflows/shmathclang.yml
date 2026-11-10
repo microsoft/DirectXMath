@@ -78,7 +78,6 @@ jobs:
         run: cmake --build out/build/${{ matrix.build_type }}
 
   build2026:
-    if: github.repository == 'microsoft/DirectXMath'
     runs-on: windows-2025-vs2026
 
     strategy:
