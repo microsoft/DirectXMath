@@ -36,9 +36,8 @@ jobs:
       fail-fast: false
 
       matrix:
-        build_type: [x64-Debug-Linux, x64-Release-Linux]
+        build_type: [x64-Debug-Linux, x64-Release-Linux, x64-Debug-NI-Linux, x64-Release-NI-Linux]
         gcc: [13, 14, 15]
-        # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -103,9 +102,8 @@ jobs:
       fail-fast: false
 
       matrix:
-        build_type: [x64-Debug-Linux, x64-Release-Linux]
+        build_type: [arm64-Debug-Linux, arm64-Release-Linux, arm64-Debug-NI-Linux, arm64-Release-NI-Linux]
         gcc: [13, 14, 15]
-        # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
