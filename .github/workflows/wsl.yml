@@ -30,15 +30,19 @@ permissions:
 
 jobs:
   buildgcc:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
 
       matrix:
         build_type: [x64-Debug-Linux, x64-Release-Linux]
-        gcc: [12, 13, 14]
-        # x64-Debug-NI-Linux, x64-Release-NI-Linux trigger issue with GCC
+        gcc: [13, 14, 15]
+        include:
+          - build_type: x64-Debug-NI-Linux
+            gcc: 15
+          - build_type: x64-Release-NI-Linux
+            gcc: 15
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -64,14 +68,19 @@ jobs:
         run: cmake --build out/build/${{ matrix.build_type }}
 
   buildclang:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-26.04
 
     strategy:
       fail-fast: false
 
       matrix:
         build_type: [x64-Debug-Linux, x64-Release-Linux]
-        clang: [16, 17, 18]
+        clang: [20, 21, 22]
+        include:
+          - build_type: x64-Debug-NI-Linux
+            clang: 22
+          - build_type: x64-Release-NI-Linux
+            clang: 22
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -91,6 +100,44 @@ jobs:
         env:
           CC: clang-${{ matrix.clang }}
           CXX: clang++-${{ matrix.clang }}
+
+      - name: 'Build'
+        working-directory: ${{ github.workspace }}/Tests
+        run: cmake --build out/build/${{ matrix.build_type }}
+
+  buildarm64:
+    runs-on: ubuntu-26.04-arm
+
+    strategy:
+      fail-fast: false
+
+      matrix:
+        build_type: [arm64-Debug-Linux, arm64-Release-Linux]
+        gcc: [13, 14, 15]
+        include:
+          - build_type: arm64-Debug-NI-Linux
+            gcc: 15
+          - build_type: arm64-Release-NI-Linux
+            gcc: 15
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Clone test repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: walbourn/directxmathtest
+          path: Tests
+          ref: main
+
+      - uses: seanmiddleditch/gha-setup-ninja@3b1f8f94a2f8254bd26914c4ab9474d4f0015f67 # v6
+
+      - name: 'Configure CMake'
+        working-directory: ${{ github.workspace }}/Tests
+        run: cmake --preset=${{ matrix.build_type }}
+        env:
+          CC: gcc-${{ matrix.gcc }}
+          CXX: g++-${{ matrix.gcc }}
 
       - name: 'Build'
         working-directory: ${{ github.workspace }}/Tests
