@@ -2837,11 +2837,14 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreXDecN4(XMXDECN4* pDestinat
                                             | ((static_cast<int>(tmp.y) & 0x3FF) << 10) | (static_cast<int>(tmp.x) & 0x3FF));
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const XMVECTORF32 Scale     = { { { 511.0f, 511.0f * 1024.0f, 511.0f * 1048576.0f, 3.0f * 536870912.0f } } };
+    static const XMVECTORF32 Scale     = { { { 511.0f, 511.0f, 511.0f, 3.0f } } };
+    static const XMVECTORF32 Shift     = { { { 1.0f, 1024.0f, 1048576.0f, 536870912.0f } } };
     static const XMVECTORI32 ScaleMask = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, 0x3 << 29 } } };
     float32x4_t              vResult   = vmaxq_f32(V, Min);
     vResult                            = vminq_f32(vResult, vdupq_n_f32(1.0f));
     vResult                            = vmulq_f32(vResult, Scale);
+    vResult                            = XMVectorRound(vResult);
+    vResult                            = vmulq_f32(vResult, Shift);
     int32x4_t vResulti                 = vcvtq_s32_f32(vResult);
     vResulti                           = vandq_s32(vResulti, ScaleMask);
     int32x4_t vResultw                 = vandq_s32(vResulti, g_XMMaskW);
@@ -2853,12 +2856,16 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreXDecN4(XMXDECN4* pDestinat
     vTemp            = vpadd_u32(vTemp, vTemp);
     vst1_lane_u32(&pDestination->v, vTemp, 0);
 #elif defined(_XM_SSE_INTRINSICS_)
-    static const XMVECTORF32 Scale     = { { { 511.0f, 511.0f * 1024.0f, 511.0f * 1048576.0f, 3.0f * 536870912.0f } } };
+    static const XMVECTORF32 Scale     = { { { 511.0f, 511.0f, 511.0f, 3.0f } } };
+    static const XMVECTORF32 Shift     = { { { 1.0f, 1024.0f, 1048576.0f, 536870912.0f } } };
     static const XMVECTORI32 ScaleMask = { { { 0x3FF, 0x3FF << 10, 0x3FF << 20, 0x3 << 29 } } };
     XMVECTOR                 vResult   = _mm_max_ps(V, Min);
     vResult                            = _mm_min_ps(vResult, g_XMOne);
     // Scale by multiplication
     vResult = _mm_mul_ps(vResult, Scale);
+    // Round each component before shifting it into place
+    vResult = XMVectorRound(vResult);
+    vResult = _mm_mul_ps(vResult, Shift);
     // Convert to int (W is unsigned)
     __m128i vResulti = _mm_cvtps_epi32(vResult);
     // Mask off any fraction
