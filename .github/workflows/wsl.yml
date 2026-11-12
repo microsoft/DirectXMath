@@ -115,9 +115,9 @@ jobs:
         build_type: [arm64-Debug-Linux, arm64-Release-Linux]
         gcc: [13, 14, 15]
         include:
-          - build_type: x64-Debug-NI-Linux
+          - build_type: arm64-Debug-NI-Linux
             gcc: 15
-          - build_type: x64-Release-NI-Linux
+          - build_type: arm64-Release-NI-Linux
             gcc: 15
 
     steps:
