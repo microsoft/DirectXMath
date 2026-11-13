@@ -2560,8 +2560,10 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMStoreFloat3SE(XMFLOAT3SE* pDest
     static const XMVECTORF32 MaxFloat9 = { { { float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7), float(0x1FF << 7) } } };
     static constexpr float   minf9     = float(1.f / (1 << 16));
 
-    // Clamp to [0, maxf9] then zero w lane
-    float32x4_t clamped = vminq_f32(vmaxq_f32(V, vdupq_n_f32(0)), MaxFloat9);
+    // Clamp to [0, maxf9] then zero w lane; NaN and negative channels become 0
+    uint32x4_t  nonNeg  = vcgeq_f32(V, vdupq_n_f32(0));
+    float32x4_t clamped = vreinterpretq_f32_u32(vandq_u32(vreinterpretq_u32_f32(V), nonNeg));
+    clamped             = vminq_f32(clamped, MaxFloat9);
     clamped             = vsetq_lane_f32(0.0f, clamped, 3);
 
     // Horizontal max of xyz for shared exponent
