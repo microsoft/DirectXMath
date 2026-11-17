@@ -448,7 +448,7 @@ namespace DirectX
         {
             return v;
         }
-        inline operator const float*() const noexcept
+        inline operator float const*() const noexcept
         {
             return f;
         }
@@ -3100,7 +3100,7 @@ namespace DirectX
         // Splat the scalar value (It's really a float)
         vScale = vreinterpretq_s32_u32(vdupq_n_u32(uScale));
         // Multiply by the reciprocal (Perform a right shift by DivExponent)
-        vResult = vmulq_f32(vResult, reinterpret_cast<const float32x4_t*>(&vScale)[0]);
+        vResult = vmulq_f32(vResult, reinterpret_cast<float32x4_t const*>(&vScale)[0]);
         return vResult;
 #else // XM_SSE_INTRINSICS_
       // Splat the int

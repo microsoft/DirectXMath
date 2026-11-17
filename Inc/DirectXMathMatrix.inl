@@ -31,7 +31,7 @@ inline bool XM_CALLCONV XMMatrixIsNaN(FXMMATRIX M) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     size_t i     = 16;
-    auto   pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
+    auto   pWork = reinterpret_cast<uint32_t const*>(&M.m[0][0]);
     do
     {
         // Fetch value into integer unit
@@ -99,7 +99,7 @@ inline bool XM_CALLCONV XMMatrixIsInfinite(FXMMATRIX M) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     size_t i     = 16;
-    auto   pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
+    auto   pWork = reinterpret_cast<uint32_t const*>(&M.m[0][0]);
     do
     {
         // Fetch value into integer unit
@@ -166,7 +166,7 @@ inline bool XM_CALLCONV XMMatrixIsIdentity(FXMMATRIX M) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     // Use the integer pipeline to reduce branching to a minimum
-    auto pWork = reinterpret_cast<const uint32_t*>(&M.m[0][0]);
+    auto pWork = reinterpret_cast<uint32_t const*>(&M.m[0][0]);
     // Convert 1.0f to zero and or them together
     uint32_t uOne = pWork[0] ^ 0x3F800000U;
     // Or all the 0.0f entries together
@@ -344,10 +344,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply(FXMMATRIX M1, CXMMATRIX M2) noexcep
     XMMATRIX mResult;
     // Splat the component X,Y,Z then W
 #if defined(_XM_AVX_INTRINSICS_)
-    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
-    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
-    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
-    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 3);
+    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 0);
+    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 1);
+    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 2);
+    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 3);
 #else
     // Use vW to hold the original row
     XMVECTOR vW = M1.r[0];
@@ -368,10 +368,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply(FXMMATRIX M1, CXMMATRIX M2) noexcep
     mResult.r[0] = vX;
     // Repeat for the other 3 rows
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 3);
 #else
     vW = M1.r[1];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -388,10 +388,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply(FXMMATRIX M1, CXMMATRIX M2) noexcep
     vX           = _mm_add_ps(vX, vY);
     mResult.r[1] = vX;
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 3);
 #else
     vW = M1.r[2];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -408,10 +408,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiply(FXMMATRIX M1, CXMMATRIX M2) noexcep
     vX           = _mm_add_ps(vX, vY);
     mResult.r[2] = vX;
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 3);
 #else
     vW = M1.r[3];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -575,10 +575,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2
 #elif defined(_XM_SSE_INTRINSICS_)
     // Splat the component X,Y,Z then W
 #if defined(_XM_AVX_INTRINSICS_)
-    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 0);
-    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 1);
-    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 2);
-    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[0]) + 3);
+    XMVECTOR vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 0);
+    XMVECTOR vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 1);
+    XMVECTOR vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 2);
+    XMVECTOR vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[0]) + 3);
 #else
     // Use vW to hold the original row
     XMVECTOR vW = M1.r[0];
@@ -599,10 +599,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2
     XMVECTOR r0 = vX;
     // Repeat for the other 3 rows
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[1]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[1]) + 3);
 #else
     vW = M1.r[1];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -619,10 +619,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2
     vX          = _mm_add_ps(vX, vY);
     XMVECTOR r1 = vX;
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[2]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[2]) + 3);
 #else
     vW = M1.r[2];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -639,10 +639,10 @@ inline XMMATRIX XM_CALLCONV XMMatrixMultiplyTranspose(FXMMATRIX M1, CXMMATRIX M2
     vX          = _mm_add_ps(vX, vY);
     XMVECTOR r2 = vX;
 #if defined(_XM_AVX_INTRINSICS_)
-    vX = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 0);
-    vY = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 1);
-    vZ = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 2);
-    vW = _mm_broadcast_ss(reinterpret_cast<const float*>(&M1.r[3]) + 3);
+    vX = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 0);
+    vY = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 1);
+    vZ = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 2);
+    vW = _mm_broadcast_ss(reinterpret_cast<float const*>(&M1.r[3]) + 3);
 #else
     vW = M1.r[3];
     vX = XM_PERMUTE_PS(vW, _MM_SHUFFLE(0, 0, 0, 0));
@@ -1059,13 +1059,13 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     V1[3] = XMVectorPermute<XM_PERMUTE_1W, XM_PERMUTE_0X, XM_PERMUTE_0W, XM_PERMUTE_1Z>(D1, D2);
 
     XMVECTOR C1 = XMVectorNegativeMultiplySubtract(V0[0], V1[0], C0);
-    C0 = XMVectorMultiplyAdd(V0[0], V1[0], C0);
+    C0          = XMVectorMultiplyAdd(V0[0], V1[0], C0);
     XMVECTOR C3 = XMVectorMultiplyAdd(V0[1], V1[1], C2);
-    C2 = XMVectorNegativeMultiplySubtract(V0[1], V1[1], C2);
+    C2          = XMVectorNegativeMultiplySubtract(V0[1], V1[1], C2);
     XMVECTOR C5 = XMVectorNegativeMultiplySubtract(V0[2], V1[2], C4);
-    C4 = XMVectorMultiplyAdd(V0[2], V1[2], C4);
+    C4          = XMVectorMultiplyAdd(V0[2], V1[2], C4);
     XMVECTOR C7 = XMVectorMultiplyAdd(V0[3], V1[3], C6);
-    C6 = XMVectorNegativeMultiplySubtract(V0[3], V1[3], C6);
+    C6          = XMVectorNegativeMultiplySubtract(V0[3], V1[3], C6);
 
     XMMATRIX R;
     R.r[0] = XMVectorSelect(C0, C1, g_XMSelect0101.v);
@@ -1120,10 +1120,10 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     V11 = _mm_shuffle_ps(V11, D0, _MM_SHUFFLE(2, 1, 2, 1));
     // V13 = D1Y,D1W,D2W,D2W
     XMVECTOR V13 = _mm_shuffle_ps(D1, D2, _MM_SHUFFLE(3, 3, 3, 1));
-    V02 = XM_PERMUTE_PS(M.r[3], _MM_SHUFFLE(1, 0, 2, 1));
-    V12 = _mm_shuffle_ps(V13, D1, _MM_SHUFFLE(0, 3, 0, 2));
+    V02          = XM_PERMUTE_PS(M.r[3], _MM_SHUFFLE(1, 0, 2, 1));
+    V12          = _mm_shuffle_ps(V13, D1, _MM_SHUFFLE(0, 3, 0, 2));
     XMVECTOR V03 = XM_PERMUTE_PS(M.r[2], _MM_SHUFFLE(0, 1, 0, 2));
-    V13 = _mm_shuffle_ps(V13, D1, _MM_SHUFFLE(2, 1, 2, 1));
+    V13          = _mm_shuffle_ps(V13, D1, _MM_SHUFFLE(2, 1, 2, 1));
 
     XMVECTOR C0 = _mm_mul_ps(V00, V10);
     XMVECTOR C2 = _mm_mul_ps(V01, V11);
@@ -1165,18 +1165,18 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     V13 = _mm_shuffle_ps(D1, D2, _MM_SHUFFLE(3, 2, 3, 0));
     V13 = XM_PERMUTE_PS(V13, _MM_SHUFFLE(2, 1, 0, 3));
 
-    V00 = _mm_mul_ps(V00, V10);
-    V01 = _mm_mul_ps(V01, V11);
-    V02 = _mm_mul_ps(V02, V12);
-    V03 = _mm_mul_ps(V03, V13);
+    V00         = _mm_mul_ps(V00, V10);
+    V01         = _mm_mul_ps(V01, V11);
+    V02         = _mm_mul_ps(V02, V12);
+    V03         = _mm_mul_ps(V03, V13);
     XMVECTOR C1 = _mm_sub_ps(C0, V00);
-    C0 = _mm_add_ps(C0, V00);
+    C0          = _mm_add_ps(C0, V00);
     XMVECTOR C3 = _mm_add_ps(C2, V01);
-    C2 = _mm_sub_ps(C2, V01);
+    C2          = _mm_sub_ps(C2, V01);
     XMVECTOR C5 = _mm_sub_ps(C4, V02);
-    C4 = _mm_add_ps(C4, V02);
+    C4          = _mm_add_ps(C4, V02);
     XMVECTOR C7 = _mm_add_ps(C6, V03);
-    C6 = _mm_sub_ps(C6, V03);
+    C6          = _mm_sub_ps(C6, V03);
 
     C0 = _mm_shuffle_ps(C0, C1, _MM_SHUFFLE(3, 1, 2, 0));
     C2 = _mm_shuffle_ps(C2, C3, _MM_SHUFFLE(3, 1, 2, 0));
@@ -1663,7 +1663,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationX(float Angle) noexcept
     float fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
 
-    const float32x4_t Zero = vdupq_n_f32(0);
+    float32x4_t const Zero = vdupq_n_f32(0);
 
     float32x4_t T1 = vsetq_lane_f32(fCosAngle, Zero, 1);
     T1             = vsetq_lane_f32(fSinAngle, T1, 2);
@@ -1736,7 +1736,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationY(float Angle) noexcept
     float fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
 
-    const float32x4_t Zero = vdupq_n_f32(0);
+    float32x4_t const Zero = vdupq_n_f32(0);
 
     float32x4_t T0 = vsetq_lane_f32(fCosAngle, Zero, 0);
     T0             = vsetq_lane_f32(-fSinAngle, T0, 2);
@@ -1809,7 +1809,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixRotationZ(float Angle) noexcept
     float fCosAngle;
     XMScalarSinCos(&fSinAngle, &fCosAngle, Angle);
 
-    const float32x4_t Zero = vdupq_n_f32(0);
+    float32x4_t const Zero = vdupq_n_f32(0);
 
     float32x4_t T0 = vsetq_lane_f32(fCosAngle, Zero, 0);
     T0             = vsetq_lane_f32(fSinAngle, T0, 1);
@@ -2445,7 +2445,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveLH(float ViewWidth, float ViewHei
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float             TwoNearZ = NearZ + NearZ;
     float             fRange   = FarZ / (FarZ - NearZ);
-    const float32x4_t Zero     = vdupq_n_f32(0);
+    float32x4_t const Zero     = vdupq_n_f32(0);
     XMMATRIX          M;
     M.r[0] = vsetq_lane_f32(TwoNearZ / ViewWidth, Zero, 0);
     M.r[1] = vsetq_lane_f32(TwoNearZ / ViewHeight, Zero, 1);
@@ -2521,7 +2521,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveRH(float ViewWidth, float ViewHei
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float             TwoNearZ = NearZ + NearZ;
     float             fRange   = FarZ / (NearZ - FarZ);
-    const float32x4_t Zero     = vdupq_n_f32(0);
+    float32x4_t const Zero     = vdupq_n_f32(0);
 
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32(TwoNearZ / ViewWidth, Zero, 0);
@@ -2608,7 +2608,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovLH(float FovAngleY, float Aspe
     float             fRange = FarZ / (FarZ - NearZ);
     float             Height = CosFov / SinFov;
     float             Width  = Height / AspectRatio;
-    const float32x4_t Zero   = vdupq_n_f32(0);
+    float32x4_t const Zero   = vdupq_n_f32(0);
 
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32(Width, Zero, 0);
@@ -2698,7 +2698,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixPerspectiveFovRH(float FovAngleY, float Aspe
     float             fRange = FarZ / (NearZ - FarZ);
     float             Height = CosFov / SinFov;
     float             Width  = Height / AspectRatio;
-    const float32x4_t Zero   = vdupq_n_f32(0);
+    float32x4_t const Zero   = vdupq_n_f32(0);
 
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32(Width, Zero, 0);
@@ -2783,7 +2783,7 @@ XMMatrixPerspectiveOffCenterLH(float ViewLeft, float ViewRight, float ViewBottom
     float             ReciprocalWidth  = 1.0f / (ViewRight - ViewLeft);
     float             ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     float             fRange           = FarZ / (FarZ - NearZ);
-    const float32x4_t Zero             = vdupq_n_f32(0);
+    float32x4_t const Zero             = vdupq_n_f32(0);
 
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32(TwoNearZ * ReciprocalWidth, Zero, 0);
@@ -2863,7 +2863,7 @@ XMMatrixPerspectiveOffCenterRH(float ViewLeft, float ViewRight, float ViewBottom
     float             ReciprocalWidth  = 1.0f / (ViewRight - ViewLeft);
     float             ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     float             fRange           = FarZ / (NearZ - FarZ);
-    const float32x4_t Zero             = vdupq_n_f32(0);
+    float32x4_t const Zero             = vdupq_n_f32(0);
 
     XMMATRIX M;
     M.r[0] = vsetq_lane_f32(TwoNearZ * ReciprocalWidth, Zero, 0);
@@ -2936,7 +2936,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicLH(float ViewWidth, float ViewHe
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fRange = 1.0f / (FarZ - NearZ);
 
-    const float32x4_t Zero = vdupq_n_f32(0);
+    float32x4_t const Zero = vdupq_n_f32(0);
     XMMATRIX          M;
     M.r[0] = vsetq_lane_f32(2.0f / ViewWidth, Zero, 0);
     M.r[1] = vsetq_lane_f32(2.0f / ViewHeight, Zero, 1);
@@ -3009,7 +3009,7 @@ inline XMMATRIX XM_CALLCONV XMMatrixOrthographicRH(float ViewWidth, float ViewHe
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     float fRange = 1.0f / (NearZ - FarZ);
 
-    const float32x4_t Zero = vdupq_n_f32(0);
+    float32x4_t const Zero = vdupq_n_f32(0);
     XMMATRIX          M;
     M.r[0] = vsetq_lane_f32(2.0f / ViewWidth, Zero, 0);
     M.r[1] = vsetq_lane_f32(2.0f / ViewHeight, Zero, 1);
@@ -3086,7 +3086,7 @@ XMMatrixOrthographicOffCenterLH(float ViewLeft, float ViewRight, float ViewBotto
     float             ReciprocalWidth  = 1.0f / (ViewRight - ViewLeft);
     float             ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     float             fRange           = 1.0f / (FarZ - NearZ);
-    const float32x4_t Zero             = vdupq_n_f32(0);
+    float32x4_t const Zero             = vdupq_n_f32(0);
     XMMATRIX          M;
     M.r[0] = vsetq_lane_f32(ReciprocalWidth + ReciprocalWidth, Zero, 0);
     M.r[1] = vsetq_lane_f32(ReciprocalHeight + ReciprocalHeight, Zero, 1);
@@ -3163,7 +3163,7 @@ XMMatrixOrthographicOffCenterRH(float ViewLeft, float ViewRight, float ViewBotto
     float             ReciprocalWidth  = 1.0f / (ViewRight - ViewLeft);
     float             ReciprocalHeight = 1.0f / (ViewTop - ViewBottom);
     float             fRange           = 1.0f / (NearZ - FarZ);
-    const float32x4_t Zero             = vdupq_n_f32(0);
+    float32x4_t const Zero             = vdupq_n_f32(0);
     XMMATRIX          M;
     M.r[0] = vsetq_lane_f32(ReciprocalWidth + ReciprocalWidth, Zero, 0);
     M.r[1] = vsetq_lane_f32(ReciprocalHeight + ReciprocalHeight, Zero, 1);
@@ -3238,7 +3238,7 @@ inline XMMATRIX::XMMATRIX(float m00,
 }
 
 //------------------------------------------------------------------------------
-_Use_decl_annotations_ inline XMMATRIX::XMMATRIX(const float* pArray) noexcept
+_Use_decl_annotations_ inline XMMATRIX::XMMATRIX(float const* pArray) noexcept
 {
     assert(pArray != nullptr);
     r[0] = XMLoadFloat4(reinterpret_cast<const XMFLOAT4*>(pArray));
@@ -3452,7 +3452,7 @@ inline XMMATRIX XM_CALLCONV operator*(float S, FXMMATRIX M) noexcept
  ****************************************************************************/
 
 //------------------------------------------------------------------------------
-_Use_decl_annotations_ inline XMFLOAT3X3::XMFLOAT3X3(const float* pArray) noexcept
+_Use_decl_annotations_ inline XMFLOAT3X3::XMFLOAT3X3(float const* pArray) noexcept
 {
     assert(pArray != nullptr);
     for (size_t Row = 0; Row < 3; Row++)
@@ -3471,7 +3471,7 @@ _Use_decl_annotations_ inline XMFLOAT3X3::XMFLOAT3X3(const float* pArray) noexce
  ****************************************************************************/
 
 //------------------------------------------------------------------------------
-_Use_decl_annotations_ inline XMFLOAT4X3::XMFLOAT4X3(const float* pArray) noexcept
+_Use_decl_annotations_ inline XMFLOAT4X3::XMFLOAT4X3(float const* pArray) noexcept
 {
     assert(pArray != nullptr);
 
@@ -3499,7 +3499,7 @@ _Use_decl_annotations_ inline XMFLOAT4X3::XMFLOAT4X3(const float* pArray) noexce
  ****************************************************************************/
 
 //------------------------------------------------------------------------------
-_Use_decl_annotations_ inline XMFLOAT3X4::XMFLOAT3X4(const float* pArray) noexcept
+_Use_decl_annotations_ inline XMFLOAT3X4::XMFLOAT3X4(float const* pArray) noexcept
 {
     assert(pArray != nullptr);
 
@@ -3526,7 +3526,7 @@ _Use_decl_annotations_ inline XMFLOAT3X4::XMFLOAT3X4(const float* pArray) noexce
  ****************************************************************************/
 
 //------------------------------------------------------------------------------
-_Use_decl_annotations_ inline XMFLOAT4X4::XMFLOAT4X4(const float* pArray) noexcept
+_Use_decl_annotations_ inline XMFLOAT4X4::XMFLOAT4X4(float const* pArray) noexcept
 {
     assert(pArray != nullptr);
 

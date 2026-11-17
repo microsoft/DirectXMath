@@ -71,7 +71,7 @@ namespace DirectX
 
             operator uint32_t() const noexcept { return c; }
 
-            XMCOLOR& operator=(const uint32_t Color) noexcept
+            XMCOLOR& operator=(uint32_t const Color) noexcept
             {
                 c = Color;
                 return *this;

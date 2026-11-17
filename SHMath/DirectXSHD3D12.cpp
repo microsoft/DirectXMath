@@ -146,7 +146,7 @@ namespace
         case DXGI_FORMAT_R32_FLOAT:
             if (size >= sizeof(float))
             {
-                const float* __restrict sPtr = reinterpret_cast<const float*>(pSource);
+                float const* __restrict sPtr = reinterpret_cast<float const*>(pSource);
                 for (size_t icount = 0; icount < size; icount += sizeof(float))
                 {
                     XMVECTOR v = XMLoadFloat(sPtr++);
@@ -253,7 +253,7 @@ _Use_decl_annotations_ HRESULT DirectX::SHProjectCubeMap(size_t order,
         if (!cubeMap[face].pData)
             return E_POINTER;
 
-        const uint8_t* pSrc = reinterpret_cast<const uint8_t*>(cubeMap[face].pData);
+        uint8_t const* pSrc = reinterpret_cast<uint8_t const*>(cubeMap[face].pData);
         for (UINT y = 0; y < desc.Height; ++y)
         {
             XMVECTOR* ptr = scanline.get();
@@ -262,12 +262,12 @@ _Use_decl_annotations_ HRESULT DirectX::SHProjectCubeMap(size_t order,
                 return E_FAIL;
             }
 
-            const float v = float(y) * fS + fB;
+            float const v = float(y) * fS + fB;
 
             XMVECTOR* pixel = ptr;
             for (UINT x = 0; x < desc.Width; ++x, ++pixel)
             {
-                const float u = float(x) * fS + fB;
+                float const u = float(x) * fS + fB;
 
                 float ix, iy, iz;
                 switch (face)
@@ -317,7 +317,7 @@ _Use_decl_annotations_ HRESULT DirectX::SHProjectCubeMap(size_t order,
                 XMVECTOR dir = XMVectorSet(ix, iy, iz, 0);
                 dir          = XMVector3Normalize(dir);
 
-                const float fDiffSolid = 4.0f / ((1.0f + u * u + v * v) * sqrtf(1.0f + u * u + v * v));
+                float const fDiffSolid = 4.0f / ((1.0f + u * u + v * v) * sqrtf(1.0f + u * u + v * v));
                 fWt += fDiffSolid;
 
                 XMSHEvalDirection(shBuff, order, dir);
@@ -337,7 +337,7 @@ _Use_decl_annotations_ HRESULT DirectX::SHProjectCubeMap(size_t order,
         }
     }
 
-    const float fNormProj = (4.0f * XM_PI) / fWt;
+    float const fNormProj = (4.0f * XM_PI) / fWt;
 
     if (resultR)
         XMSHScale(resultR, order, resultR, fNormProj);

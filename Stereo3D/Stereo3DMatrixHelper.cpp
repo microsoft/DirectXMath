@@ -40,9 +40,9 @@ namespace
         // the viewer than 1.6 degrees (divided by two for most
         // half-angle calculations)
 
-        static const float fMaxStereoDistance    = 780;                     // inches (should be between 10 and 20m)
-        static const float fMaxVisualAcuityAngle = 1.6f * (XM_PI / 180.0f); // radians
-        static const float fInterocularDistance  = 1.25f;                   // inches
+        static float const fMaxStereoDistance    = 780;                     // inches (should be between 10 and 20m)
+        static float const fMaxVisualAcuityAngle = 1.6f * (XM_PI / 180.0f); // radians
+        static float const fInterocularDistance  = 1.25f;                   // inches
 
         float fDisplayHeight          = stereoParameters.fDisplaySizeInches / sqrtf(AspectRatio * AspectRatio + 1.0f);
         float fDisplayWidth           = fDisplayHeight * AspectRatio;

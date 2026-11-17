@@ -80,7 +80,7 @@ namespace DirectX
             assert(InputStride >= sizeof(HALF));
             assert(OutputStride >= sizeof(float));
 
-            auto pHalf  = reinterpret_cast<const uint8_t*>(pInputStream);
+            auto pHalf  = reinterpret_cast<uint8_t const*>(pInputStream);
             auto pFloat = reinterpret_cast<uint8_t*>(pOutputStream);
 
             size_t i    = 0;
@@ -96,7 +96,7 @@ namespace DirectX
                             // Packed input, aligned & packed output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                                __m128i HV = _mm_loadl_epi64(reinterpret_cast<__m128i const*>(pHalf));
                                 pHalf += InputStride * 4;
 
                                 __m128 FV = _mm_cvtph_ps(HV);
@@ -111,7 +111,7 @@ namespace DirectX
                             // Packed input, packed output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                                __m128i HV = _mm_loadl_epi64(reinterpret_cast<__m128i const*>(pHalf));
                                 pHalf += InputStride * 4;
 
                                 __m128 FV = _mm_cvtph_ps(HV);
@@ -127,7 +127,7 @@ namespace DirectX
                         // Packed input, scattered output
                         for (size_t j = 0; j < four; ++j)
                         {
-                            __m128i HV = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pHalf));
+                            __m128i HV = _mm_loadl_epi64(reinterpret_cast<__m128i const*>(pHalf));
                             pHalf += InputStride * 4;
 
                             __m128 FV = _mm_cvtph_ps(HV);
@@ -258,7 +258,7 @@ namespace DirectX
             assert(InputStride >= sizeof(float));
             assert(OutputStride >= sizeof(HALF));
 
-            auto pFloat = reinterpret_cast<const uint8_t*>(pInputStream);
+            auto pFloat = reinterpret_cast<uint8_t const*>(pInputStream);
             auto pHalf  = reinterpret_cast<uint8_t*>(pOutputStream);
 
             size_t i    = 0;
@@ -274,7 +274,7 @@ namespace DirectX
                             // Aligned and packed input, packed output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
+                                __m128 FV = _mm_load_ps(reinterpret_cast<float const*>(pFloat));
                                 pFloat += InputStride * 4;
 
                                 __m128i HV = _mm_cvtps_ph(FV, 0);
@@ -289,7 +289,7 @@ namespace DirectX
                             // Packed input, packed output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
+                                __m128 FV = _mm_loadu_ps(reinterpret_cast<float const*>(pFloat));
                                 pFloat += InputStride * 4;
 
                                 __m128i HV = _mm_cvtps_ph(FV, 0);
@@ -307,7 +307,7 @@ namespace DirectX
                             // Aligned & packed input, scattered output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128 FV = _mm_load_ps(reinterpret_cast<const float*>(pFloat));
+                                __m128 FV = _mm_load_ps(reinterpret_cast<float const*>(pFloat));
                                 pFloat += InputStride * 4;
 
                                 __m128i HV = _mm_cvtps_ph(FV, 0);
@@ -328,7 +328,7 @@ namespace DirectX
                             // Packed input, scattered output
                             for (size_t j = 0; j < four; ++j)
                             {
-                                __m128 FV = _mm_loadu_ps(reinterpret_cast<const float*>(pFloat));
+                                __m128 FV = _mm_loadu_ps(reinterpret_cast<float const*>(pFloat));
                                 pFloat += InputStride * 4;
 
                                 __m128i HV = _mm_cvtps_ph(FV, 0);
@@ -351,16 +351,16 @@ namespace DirectX
                     // Scattered input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV1 = _mm_load_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV1 = _mm_load_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
                         __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
@@ -379,16 +379,16 @@ namespace DirectX
                     // Scattered input, scattered output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 FV1 = _mm_load_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV1 = _mm_load_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV2 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV3 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
-                        __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<const float*>(pFloat));
+                        __m128 FV4 = _mm_broadcast_ss(reinterpret_cast<float const*>(pFloat));
                         pFloat += InputStride;
 
                         __m128 FV = _mm_blend_ps(FV1, FV2, 0x2);
@@ -412,7 +412,7 @@ namespace DirectX
 
             for (; i < FloatCount; ++i)
             {
-                *reinterpret_cast<HALF*>(pHalf) = XMConvertFloatToHalf(reinterpret_cast<const float*>(pFloat)[0]);
+                *reinterpret_cast<HALF*>(pHalf) = XMConvertFloatToHalf(reinterpret_cast<float const*>(pFloat)[0]);
                 pFloat += InputStride;
                 pHalf += OutputStride;
             }
@@ -427,7 +427,7 @@ namespace DirectX
         inline XMVECTOR XM_CALLCONV XMLoadHalf2(_In_ const PackedVector::XMHALF2* pSource)
         {
             assert(pSource);
-            __m128 V = _mm_load_ss(reinterpret_cast<const float*>(pSource));
+            __m128 V = _mm_load_ss(reinterpret_cast<float const*>(pSource));
             return _mm_cvtph_ps(_mm_castps_si128(V));
         }
 
@@ -445,7 +445,7 @@ namespace DirectX
         inline XMVECTOR XM_CALLCONV XMLoadHalf4(_In_ const PackedVector::XMHALF4* pSource)
         {
             assert(pSource);
-            __m128i V = _mm_loadl_epi64(reinterpret_cast<const __m128i*>(pSource));
+            __m128i V = _mm_loadl_epi64(reinterpret_cast<__m128i const*>(pSource));
             return _mm_cvtph_ps(V);
         }
 
