@@ -993,11 +993,11 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     // XMMatrixInverse internally transposes M first (MT = M^T), then computes
     // cofactors of MT to produce adj(M^T) = adj(M)^T. The final transpose requested
     // by the caller cancels that internal one, so InverseTranspose simply runs the
-    // same cofactor algorithm directly on M — skipping the initial transpose entirely.
+    // same cofactor algorithm directly on M - skipping the initial transpose entirely.
 
 #if defined(_XM_NO_INTRINSICS_) || defined(_XM_ARM_NEON_INTRINSICS_)
 
-    // No initial transpose — use M directly (was MT in XMMatrixInverse)
+    // No initial transpose - use M directly (was MT in XMMatrixInverse)
     XMVECTOR V0[4], V1[4];
     V0[0] = XMVectorSwizzle<XM_SWIZZLE_X, XM_SWIZZLE_X, XM_SWIZZLE_Y, XM_SWIZZLE_Y>(M.r[2]);
     V1[0] = XMVectorSwizzle<XM_SWIZZLE_Z, XM_SWIZZLE_W, XM_SWIZZLE_Z, XM_SWIZZLE_W>(M.r[3]);
@@ -1088,7 +1088,7 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     return Result;
 
 #elif defined(_XM_SSE_INTRINSICS_)
-    // No initial transpose block — cofactors are computed from M.r directly.
+    // No initial transpose block - cofactors are computed from M.r directly.
     // This gives adj(M)/det(M) = (M^-1)^T without any redundant shuffles.
 
     XMVECTOR V00 = XM_PERMUTE_PS(M.r[2], _MM_SHUFFLE(1, 1, 0, 0));
@@ -1186,7 +1186,7 @@ _Use_decl_annotations_ inline XMMATRIX XM_CALLCONV XMMatrixInverseTranspose(XMVE
     C2 = XM_PERMUTE_PS(C2, _MM_SHUFFLE(3, 1, 2, 0));
     C4 = XM_PERMUTE_PS(C4, _MM_SHUFFLE(3, 1, 2, 0));
     C6 = XM_PERMUTE_PS(C6, _MM_SHUFFLE(3, 1, 2, 0));
-    // Determinant — det(M) == det(M^T), same value as XMMatrixInverse
+    // Determinant - det(M) == det(M^T), same value as XMMatrixInverse
     XMVECTOR vTemp = XMVector4Dot(C0, M.r[0]);
     if (pDeterminant != nullptr)
         *pDeterminant = vTemp;
