@@ -27,8 +27,8 @@ namespace DirectX
         tbl.val[0] = vreinterpret_u8_f32(vget_low_f32(V));
         tbl.val[1] = vreinterpret_u8_f32(vget_high_f32(V));
 
-        const uint8x8_t rL = vtbl2_u8(tbl, vget_low_u32(idx));
-        const uint8x8_t rH = vtbl2_u8(tbl, vget_high_u32(idx));
+        uint8x8_t const rL = vtbl2_u8(tbl, vget_low_u32(idx));
+        uint8x8_t const rH = vtbl2_u8(tbl, vget_high_u32(idx));
         return vcombine_f32(vreinterpret_f32_u8(rL), vreinterpret_f32_u8(rH));
 #else
         XMVECTORU32 E;

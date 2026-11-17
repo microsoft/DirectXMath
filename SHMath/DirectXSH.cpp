@@ -34,7 +34,7 @@ namespace
 #pragma prefast(disable : 246, "generated code by maple (nested const variable definitions)")
 #endif
 
-    const float fExtraNormFac[XM_SH_MAXORDER] = { 2.0f * sqrtf(XM_PI),
+    float const fExtraNormFac[XM_SH_MAXORDER] = { 2.0f * sqrtf(XM_PI),
         2.0f / 3.0f * sqrtf(3.0f * XM_PI),
         2.0f / 5.0f * sqrtf(5.0f * XM_PI),
         2.0f / 7.0f * sqrtf(7.0f * XM_PI),
@@ -45,31 +45,31 @@ namespace
     // extent.  No error checking - only used internaly.  This function
     // only returns the Yl0 coefficients, since the rest are zero for
     // circularly symmetric functions.
-    const float ComputeCapInt_t1  = sqrtf(0.3141593E1f);
-    const float ComputeCapInt_t5  = sqrtf(3.0f);
-    const float ComputeCapInt_t11 = sqrtf(5.0f);
-    const float ComputeCapInt_t18 = sqrtf(7.0f);
-    const float ComputeCapInt_t32 = sqrtf(11.0f);
+    float const ComputeCapInt_t1  = sqrtf(0.3141593E1f);
+    float const ComputeCapInt_t5  = sqrtf(3.0f);
+    float const ComputeCapInt_t11 = sqrtf(5.0f);
+    float const ComputeCapInt_t18 = sqrtf(7.0f);
+    float const ComputeCapInt_t32 = sqrtf(11.0f);
 
-    inline void ComputeCapInt(const size_t order, float angle, float* pR)
+    inline void ComputeCapInt(size_t const order, float angle, float* pR)
     {
-        const float t2 = cosf(angle);
-        const float t3 = ComputeCapInt_t1 * t2;
-        const float t7 = sinf(angle);
-        const float t8 = t7 * t7;
+        float const t2 = cosf(angle);
+        float const t3 = ComputeCapInt_t1 * t2;
+        float const t7 = sinf(angle);
+        float const t8 = t7 * t7;
 
         pR[0] = -t3 + ComputeCapInt_t1;
         pR[1] = ComputeCapInt_t5 * ComputeCapInt_t1 * t8 / 2.0f;
 
         if (order > 2)
         {
-            const float t13 = t2 * t2;
+            float const t13 = t2 * t2;
 
             pR[2] = -ComputeCapInt_t11 * ComputeCapInt_t1 * t2 * (t13 - 1.0f) / 2.0f;
             if (order > 3)
             {
-                const float t19 = ComputeCapInt_t18 * ComputeCapInt_t1;
-                const float t20 = t13 * t13;
+                float const t19 = ComputeCapInt_t18 * ComputeCapInt_t1;
+                float const t20 = t13 * t13;
 
                 pR[3] = -5.0f / 8.0f * t19 * t20 + 3.0f / 4.0f * t19 * t13 - t19 / 8.0f;
                 if (order > 4)
@@ -78,7 +78,7 @@ namespace
                     pR[4] = -3.0f / 8.0f * t3 * (7.0f * t20 - 10.0f * t13 + 3.0f);
                     if (order > 5)
                     {
-                        const float t33 = ComputeCapInt_t32 * ComputeCapInt_t1;
+                        float const t33 = ComputeCapInt_t32 * ComputeCapInt_t1;
                         pR[5] = -21.0f / 16.0f * t33 * t20 * t13 + 35.0f / 16.0f * t33 * t20 - 15.0f / 16.0f * t33 * t13 + t33 / 16.0f;
                     }
                 }
@@ -88,13 +88,13 @@ namespace
 
     // input pF only consists of Yl0 values, normalizes coefficients for directional
     // lights.
-    inline float CosWtInt(const size_t order)
+    inline float CosWtInt(size_t const order)
     {
-        const float fCW0 = 0.25f;
-        const float fCW1 = 0.5f;
-        const float fCW2 = 5.0f / 16.0f;
+        float const fCW0 = 0.25f;
+        float const fCW1 = 0.5f;
+        float const fCW2 = 5.0f / 16.0f;
         // const float fCW3 = 0.0f;
-        const float fCW4 = -3.0f / 32.0f;
+        float const fCW4 = -3.0f / 32.0f;
         // const float fCW5 = 0.0f;
 
         // order has to be at least linear...
@@ -111,8 +111,8 @@ namespace
         return fRet;
     }
 
-    const float SHEvalHemisphereLight_fSqrtPi  = sqrtf(XM_PI);
-    const float SHEvalHemisphereLight_fSqrtPi3 = sqrtf(XM_PI / 3.0f);
+    float const SHEvalHemisphereLight_fSqrtPi  = sqrtf(XM_PI);
+    float const SHEvalHemisphereLight_fSqrtPi3 = sqrtf(XM_PI / 3.0f);
 
     using REAL = float;
 #define CONSTANT(x) (x##f)
@@ -467,26 +467,26 @@ namespace
 
     const REAL M_PIjs = (REAL)(4.0 * atan(1.0));
     const REAL maxang = (REAL)(M_PIjs / 2);
-    const int  NSH0   = 1;
-    const int  NSH1   = 4;
-    const int  NSH2   = 9;
-    const int  NSH3   = 16;
-    const int  NSH4   = 25;
-    const int  NSH5   = 36;
-    const int  NSH6   = 49;
-    const int  NSH7   = 64;
-    const int  NSH8   = 81;
-    const int  NSH9   = 100;
-    const int  NL0    = 1;
-    const int  NL1    = 3;
-    const int  NL2    = 5;
-    const int  NL3    = 7;
-    const int  NL4    = 9;
-    const int  NL5    = 11;
-    const int  NL6    = 13;
-    const int  NL7    = 15;
-    const int  NL8    = 17;
-    const int  NL9    = 19;
+    int const  NSH0   = 1;
+    int const  NSH1   = 4;
+    int const  NSH2   = 9;
+    int const  NSH3   = 16;
+    int const  NSH4   = 25;
+    int const  NSH5   = 36;
+    int const  NSH6   = 49;
+    int const  NSH7   = 64;
+    int const  NSH8   = 81;
+    int const  NSH9   = 100;
+    int const  NL0    = 1;
+    int const  NL1    = 3;
+    int const  NL2    = 5;
+    int const  NL3    = 7;
+    int const  NL4    = 9;
+    int const  NL5    = 11;
+    int const  NL6    = 13;
+    int const  NL7    = 15;
+    int const  NL8    = 17;
+    int const  NL9    = 19;
 
     inline void rot(REAL ct, REAL st, REAL x, REAL y, REAL& xout, REAL& yout)
     {
@@ -954,7 +954,7 @@ namespace
     }
 
     // simple matrix vector multiply for a square matrix (only used by ZRotation)
-    inline void SimpMatMul(size_t dim, const float* matrix, const float* input, float* result)
+    inline void SimpMatMul(size_t dim, float const* matrix, float const* input, float* result)
     {
         for (size_t iR = 0; iR < dim; ++iR)
         {
@@ -981,9 +981,9 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHEvalDirection(float* resu
     XMFLOAT4A dv;
     XMStoreFloat4A(&dv, dir);
 
-    const float fX = dv.x;
-    const float fY = dv.y;
-    const float fZ = dv.z;
+    float const fX = dv.x;
+    float const fY = dv.y;
+    float const fZ = dv.z;
 
     switch (order)
     {
@@ -1008,7 +1008,7 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHEvalDirection(float* resu
 //
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb204992.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, size_t order, FXMMATRIX rotMatrix, const float* input) noexcept
+_Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, size_t order, FXMMATRIX rotMatrix, float const* input) noexcept
 {
     if (!result || !input)
         return nullptr;
@@ -1020,17 +1020,17 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, siz
     XMStoreFloat3x3(&mat, rotMatrix);
 
     float       mRot[3 * 3];
-    const float r00 = mRot[0 * 3 + 0] = mat._11;
-    const float r10 = mRot[1 * 3 + 0] = mat._12;
-    const float r20 = mRot[2 * 3 + 0] = mat._13;
+    float const r00 = mRot[0 * 3 + 0] = mat._11;
+    float const r10 = mRot[1 * 3 + 0] = mat._12;
+    float const r20 = mRot[2 * 3 + 0] = mat._13;
 
-    const float r01 = mRot[0 * 3 + 1] = mat._21;
-    const float r11 = mRot[1 * 3 + 1] = mat._22;
-    const float r21 = mRot[2 * 3 + 1] = mat._23;
+    float const r01 = mRot[0 * 3 + 1] = mat._21;
+    float const r11 = mRot[1 * 3 + 1] = mat._22;
+    float const r21 = mRot[2 * 3 + 1] = mat._23;
 
-    const float r02 = mRot[0 * 3 + 2] = mat._31;
-    const float r12 = mRot[1 * 3 + 2] = mat._32;
-    const float r22 = mRot[2 * 3 + 2] = mat._33;
+    float const r02 = mRot[0 * 3 + 2] = mat._31;
+    float const r12 = mRot[1 * 3 + 2] = mat._32;
+    float const r22 = mRot[2 * 3 + 2] = mat._33;
 
     result[0] = input[0]; // rotate the constant term
 
@@ -1055,27 +1055,27 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, siz
 
         // direct code for quadratics is faster than ZYZ reccurence relations
 
-        const float t41 = r01 * r00;
-        const float t43 = r11 * r10;
-        const float t48 = r11 * r12;
-        const float t50 = r01 * r02;
-        const float t55 = r02 * r02;
-        const float t57 = r22 * r22;
-        const float t58 = r12 * r12;
-        const float t61 = r00 * r02;
-        const float t63 = r10 * r12;
-        const float t68 = r10 * r10;
-        const float t70 = r01 * r01;
-        const float t72 = r11 * r11;
-        const float t74 = r00 * r00;
-        const float t76 = r21 * r21;
-        const float t78 = r20 * r20;
+        float const t41 = r01 * r00;
+        float const t43 = r11 * r10;
+        float const t48 = r11 * r12;
+        float const t50 = r01 * r02;
+        float const t55 = r02 * r02;
+        float const t57 = r22 * r22;
+        float const t58 = r12 * r12;
+        float const t61 = r00 * r02;
+        float const t63 = r10 * r12;
+        float const t68 = r10 * r10;
+        float const t70 = r01 * r01;
+        float const t72 = r11 * r11;
+        float const t74 = r00 * r00;
+        float const t76 = r21 * r21;
+        float const t78 = r20 * r20;
 
-        const float v173 = 0.1732050808e1f;
-        const float v577 = 0.5773502693e0f;
-        const float v115 = 0.1154700539e1f;
-        const float v288 = 0.2886751347e0f;
-        const float v866 = 0.8660254040e0f;
+        float const v173 = 0.1732050808e1f;
+        float const v577 = 0.5773502693e0f;
+        float const v115 = 0.1154700539e1f;
+        float const v288 = 0.2886751347e0f;
+        float const v866 = 0.8660254040e0f;
 
         R[0]  = r11 * r00 + r01 * r10;
         R[1]  = -r01 * r12 - r11 * r02;
@@ -1106,7 +1106,7 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, siz
         // blow the matrix multiply out by hand, looping is ineficient on a P4...
         for (unsigned int iR = 0; iR < 5; iR++)
         {
-            const unsigned int uBase = iR * 5;
+            unsigned int const uBase = iR * 5;
             result[4 + iR]           = R[uBase + 0] * input[4] + R[uBase + 1] * input[5] + R[uBase + 2] * input[6] + R[uBase + 3] * input[7]
                                        + R[uBase + 4] * input[8];
         }
@@ -1130,7 +1130,7 @@ _Use_decl_annotations_ float* XM_CALLCONV DirectX::XMSHRotate(float* result, siz
 //
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205461.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, float angle, const float* input) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, float angle, float const* input) noexcept
 {
     if (!result || !input)
         return nullptr;
@@ -1145,11 +1145,11 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
 
     // these are actually very sparse matrices, most of the entries are zero's...
 
-    const float ca = cosf(angle);
-    const float sa = sinf(angle);
+    float const ca = cosf(angle);
+    float const sa = sinf(angle);
 
-    const float t1 = ca;
-    const float t2 = sa;
+    float const t1 = ca;
+    float const t2 = sa;
     R[0]           = t1;
     R[1]           = 0.0f;
     R[2]           = t2;
@@ -1167,12 +1167,12 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
     {
         for (int j = 0; j < 5 * 5; j++)
             R[j] = 0.0f;
-        const float t1 = sa;
-        const float t2 = t1 * t1;
-        const float t3 = ca;
-        const float t4 = t3 * t3;
-        const float t5 = -t2 + t4;
-        const float t7 = 2.0f * t3 * t1;
+        float const t1 = sa;
+        float const t2 = t1 * t1;
+        float const t3 = ca;
+        float const t4 = t3 * t3;
+        float const t5 = -t2 + t4;
+        float const t7 = 2.0f * t3 * t1;
         R[0]           = t5;
         R[4]           = t7;
         R[6]           = t3;
@@ -1188,14 +1188,14 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
         {
             for (int j = 0; j < 7 * 7; j++)
                 R[j] = 0.0f;
-            const float t1  = ca;
-            const float t2  = t1 * t1;
-            const float t4  = sa;
-            const float t5  = t4 * t4;
-            const float t8  = t2 * t1 - 3.0f * t1 * t5;
-            const float t12 = 3.0f * t4 * t2 - t5 * t4;
-            const float t13 = -t5 + t2;
-            const float t15 = 2.0f * t1 * t4;
+            float const t1  = ca;
+            float const t2  = t1 * t1;
+            float const t4  = sa;
+            float const t5  = t4 * t4;
+            float const t8  = t2 * t1 - 3.0f * t1 * t5;
+            float const t12 = 3.0f * t4 * t2 - t5 * t4;
+            float const t13 = -t5 + t2;
+            float const t15 = 2.0f * t1 * t4;
             R[0]            = t8;
             R[6]            = t12;
             R[8]            = t13;
@@ -1214,20 +1214,20 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
             {
                 for (int j = 0; j <= 9 * 9; j++)
                     R[j] = 0.0f;
-                const float t1  = ca;
-                const float t2  = t1 * t1;
-                const float t3  = t2 * t2;
-                const float t4  = sa;
-                const float t5  = t4 * t4;
-                const float t6  = t5 * t5;
-                const float t9  = t3 + t6 - 6.0f * t5 * t2;
-                const float t10 = t5 * t4;
-                const float t12 = t2 * t1;
-                const float t14 = -t10 * t1 + t4 * t12;
-                const float t17 = t12 - 3.0f * t1 * t5;
-                const float t20 = 3.0f * t4 * t2 - t10;
-                const float t21 = -t5 + t2;
-                const float t23 = 2.0f * t1 * t4;
+                float const t1  = ca;
+                float const t2  = t1 * t1;
+                float const t3  = t2 * t2;
+                float const t4  = sa;
+                float const t5  = t4 * t4;
+                float const t6  = t5 * t5;
+                float const t9  = t3 + t6 - 6.0f * t5 * t2;
+                float const t10 = t5 * t4;
+                float const t12 = t2 * t1;
+                float const t14 = -t10 * t1 + t4 * t12;
+                float const t17 = t12 - 3.0f * t1 * t5;
+                float const t20 = 3.0f * t4 * t2 - t10;
+                float const t21 = -t5 + t2;
+                float const t23 = 2.0f * t1 * t4;
                 R[0]            = t9;
                 R[8]            = 4.0f * t14;
                 R[10]           = t17;
@@ -1251,22 +1251,22 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
                 {
                     for (int j = 0; j < 11 * 11; j++)
                         R[j] = 0.0f;
-                    const float t1  = ca;
-                    const float t2  = sa;
-                    const float t3  = t2 * t2;
-                    const float t4  = t3 * t3;
-                    const float t7  = t1 * t1;
-                    const float t8  = t7 * t1;
-                    const float t11 = t7 * t7;
-                    const float t13 = 5.0f * t1 * t4 - 10.0f * t3 * t8 + t11 * t1;
-                    const float t14 = t3 * t2;
-                    const float t20 = -10.0f * t14 * t7 + 5.0f * t2 * t11 + t4 * t2;
-                    const float t23 = t11 + t4 - 6.0f * t3 * t7;
-                    const float t26 = -t14 * t1 + t2 * t8;
-                    const float t29 = t8 - 3.0f * t1 * t3;
-                    const float t32 = 3.0f * t2 * t7 - t14;
-                    const float t33 = -t3 + t7;
-                    const float t35 = 2.0f * t1 * t2;
+                    float const t1  = ca;
+                    float const t2  = sa;
+                    float const t3  = t2 * t2;
+                    float const t4  = t3 * t3;
+                    float const t7  = t1 * t1;
+                    float const t8  = t7 * t1;
+                    float const t11 = t7 * t7;
+                    float const t13 = 5.0f * t1 * t4 - 10.0f * t3 * t8 + t11 * t1;
+                    float const t14 = t3 * t2;
+                    float const t20 = -10.0f * t14 * t7 + 5.0f * t2 * t11 + t4 * t2;
+                    float const t23 = t11 + t4 - 6.0f * t3 * t7;
+                    float const t26 = -t14 * t1 + t2 * t8;
+                    float const t29 = t8 - 3.0f * t1 * t3;
+                    float const t32 = 3.0f * t2 * t7 - t14;
+                    float const t33 = -t3 + t7;
+                    float const t35 = 2.0f * t1 * t2;
                     R[0]            = t13;
                     R[10]           = t20;
                     R[12]           = t23;
@@ -1302,12 +1302,12 @@ _Use_decl_annotations_ float* DirectX::XMSHRotateZ(float* result, size_t order, 
 //
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205438.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHAdd(float* result, size_t order, const float* inputA, const float* inputB) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHAdd(float* result, size_t order, float const* inputA, float const* inputB) noexcept
 {
     if (!result || !inputA || !inputB)
         return nullptr;
 
-    const size_t numcoeff = order * order;
+    size_t const numcoeff = order * order;
 
     for (size_t i = 0; i < numcoeff; ++i)
     {
@@ -1322,12 +1322,12 @@ _Use_decl_annotations_ float* DirectX::XMSHAdd(float* result, size_t order, cons
 //
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb204994.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHScale(float* result, size_t order, const float* input, float scale) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHScale(float* result, size_t order, float const* input, float scale) noexcept
 {
     if (!result || !input)
         return nullptr;
 
-    const size_t numcoeff = order * order;
+    size_t const numcoeff = order * order;
 
     for (size_t i = 0; i < numcoeff; ++i)
     {
@@ -1342,14 +1342,14 @@ _Use_decl_annotations_ float* DirectX::XMSHScale(float* result, size_t order, co
 //
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205446.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float DirectX::XMSHDot(size_t order, const float* inputA, const float* inputB) noexcept
+_Use_decl_annotations_ float DirectX::XMSHDot(size_t order, float const* inputA, float const* inputB) noexcept
 {
     if (!inputA || !inputB)
         return 0.f;
 
     float result = inputA[0] * inputB[0];
 
-    const size_t numcoeff = order * order;
+    size_t const numcoeff = order * order;
 
     for (size_t i = 1; i < numcoeff; ++i)
     {
@@ -1369,7 +1369,7 @@ _Use_decl_annotations_ float DirectX::XMSHDot(size_t order, const float* inputA,
 // that the product commutes (f*g == g*f) but doesn't associate
 // (f*(g*h) != (f*g)*h.
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply(float* result, size_t order, const float* inputF, const float* inputG) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply(float* result, size_t order, float const* inputF, float const* inputG) noexcept
 {
     switch (order)
     {
@@ -1390,7 +1390,7 @@ _Use_decl_annotations_ float* DirectX::XMSHMultiply(float* result, size_t order,
 //-------------------------------------------------------------------------------------
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb205454.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply2(float* y, const float* f, const float* g) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply2(float* y, float const* f, float const* g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1428,7 +1428,7 @@ _Use_decl_annotations_ float* DirectX::XMSHMultiply2(float* y, const float* f, c
 //-------------------------------------------------------------------------------------
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb232906.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply3(float* y, const float* f, const float* g) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply3(float* y, float const* f, float const* g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1545,7 +1545,7 @@ _Use_decl_annotations_ float* DirectX::XMSHMultiply3(float* y, const float* f, c
 //-------------------------------------------------------------------------------------
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb232907.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply4(float* y, const float* f, const float* g) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply4(float* y, float const* f, float const* g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -1875,7 +1875,7 @@ _Use_decl_annotations_ float* DirectX::XMSHMultiply4(float* y, const float* f, c
 //-------------------------------------------------------------------------------------
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb232908.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply5(float* y, const float* f, const float* g) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply5(float* y, float const* f, float const* g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -2714,7 +2714,7 @@ _Use_decl_annotations_ float* DirectX::XMSHMultiply5(float* y, const float* f, c
 //-------------------------------------------------------------------------------------
 // https://msdn.microsoft.com/en-us/library/windows/desktop/bb232909.aspx
 //-------------------------------------------------------------------------------------
-_Use_decl_annotations_ float* DirectX::XMSHMultiply6(float* y, const float* f, const float* g) noexcept
+_Use_decl_annotations_ float* DirectX::XMSHMultiply6(float* y, float const* f, float const* g) noexcept
 {
     if (!y || !f || !g)
         return nullptr;
@@ -4548,11 +4548,11 @@ DirectX::XMSHEvalDirectionalLight(size_t order, FXMVECTOR dir, FXMVECTOR color, 
     XMSHEvalDirection(fTmp, order, dir); // evaluate the BF in this direction...
 
     // now compute "normalization" and scale vector for each valid spectral band
-    const float fNorm = XM_PI / CosWtInt(order);
+    float const fNorm = XM_PI / CosWtInt(order);
 
-    const size_t numcoeff = order * order;
+    size_t const numcoeff = order * order;
 
-    const float fRScale = fNorm * clr.x;
+    float const fRScale = fNorm * clr.x;
 
     for (size_t i = 0; i < numcoeff; ++i)
     {
@@ -4561,7 +4561,7 @@ DirectX::XMSHEvalDirectionalLight(size_t order, FXMVECTOR dir, FXMVECTOR color, 
 
     if (resultG)
     {
-        const float fGScale = fNorm * clr.y;
+        float const fGScale = fNorm * clr.y;
 
         for (size_t i = 0; i < numcoeff; ++i)
         {
@@ -4571,7 +4571,7 @@ DirectX::XMSHEvalDirectionalLight(size_t order, FXMVECTOR dir, FXMVECTOR color, 
 
     if (resultB)
     {
-        const float fBScale = fNorm * clr.z;
+        float const fBScale = fNorm * clr.z;
 
         for (size_t i = 0; i < numcoeff; ++i)
         {
@@ -4605,12 +4605,12 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(size_t o
     if (radius < 0.f)
         return false;
 
-    const float fDist = XMVectorGetX(XMVector3Length(pos));
+    float const fDist = XMVectorGetX(XMVector3Length(pos));
 
     // WARNING: fDist should not be < radius - otherwise light contains origin
 
     // const float fSinConeAngle = (fDist <= radius) ? 0.99999f : radius/fDist;
-    const float fConeAngle = (fDist <= radius) ? (XM_PIDIV2) : asinf(radius / fDist);
+    float const fConeAngle = (fDist <= radius) ? (XM_PIDIV2) : asinf(radius / fDist);
 
     XMVECTOR dir = XMVector3Normalize(pos);
 
@@ -4634,16 +4634,16 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(size_t o
     // no default normalization is done for this case, have to be careful how
     // you represent the coefficients...
 
-    const float fNewNorm = 1.0f; ///(fSinConeAngle*fSinConeAngle);
+    float const fNewNorm = 1.0f; ///(fSinConeAngle*fSinConeAngle);
 
     ComputeCapInt(order, fConeAngle, fTmpL0);
 
     XMFLOAT3A vd;
     XMStoreFloat3(&vd, dir);
 
-    const float fX = vd.x;
-    const float fY = vd.y;
-    const float fZ = vd.z;
+    float const fX = vd.x;
+    float const fY = vd.y;
+    float const fZ = vd.z;
 
     switch (order)
     {
@@ -4665,9 +4665,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(size_t o
 
     for (size_t i = 0; i < order; ++i)
     {
-        const size_t cNumCoefs = 2 * i + 1;
-        const size_t cStart    = i * i;
-        const float  fValUse   = fTmpL0[i] * clr.x * fNewNorm * fExtraNormFac[i];
+        size_t const cNumCoefs = 2 * i + 1;
+        size_t const cStart    = i * i;
+        float const  fValUse   = fTmpL0[i] * clr.x * fNewNorm * fExtraNormFac[i];
         for (size_t j = 0; j < cNumCoefs; ++j)
             resultR[cStart + j] = fTmpDir[cStart + j] * fValUse;
     }
@@ -4676,9 +4676,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(size_t o
     {
         for (size_t i = 0; i < order; ++i)
         {
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
-            const float  fValUse   = fTmpL0[i] * clr.y * fNewNorm * fExtraNormFac[i];
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
+            float const  fValUse   = fTmpL0[i] * clr.y * fNewNorm * fExtraNormFac[i];
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultG[cStart + j] = fTmpDir[cStart + j] * fValUse;
         }
@@ -4688,9 +4688,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalSphericalLight(size_t o
     {
         for (size_t i = 0; i < order; ++i)
         {
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
-            const float  fValUse   = fTmpL0[i] * clr.z * fNewNorm * fExtraNormFac[i];
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
+            float const  fValUse   = fTmpL0[i] * clr.z * fNewNorm * fExtraNormFac[i];
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultB[cStart + j] = fTmpDir[cStart + j] * fValUse;
         }
@@ -4733,19 +4733,19 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalConeLight(size_t order,
         float fTmpL0[XM_SH_MAXORDER];
         float fTmpDir[XM_SH_MAXORDER * XM_SH_MAXORDER];
 
-        const float fConeAngle = radius;
-        const float fAngCheck  = (fConeAngle > XM_PIDIV2) ? (XM_PIDIV2) : fConeAngle;
+        float const fConeAngle = radius;
+        float const fAngCheck  = (fConeAngle > XM_PIDIV2) ? (XM_PIDIV2) : fConeAngle;
 
-        const float fNewNorm = 1.0f / (sinf(fAngCheck) * sinf(fAngCheck));
+        float const fNewNorm = 1.0f / (sinf(fAngCheck) * sinf(fAngCheck));
 
         ComputeCapInt(order, fConeAngle, fTmpL0);
 
         XMFLOAT3A vd;
         XMStoreFloat3(&vd, dir);
 
-        const float fX = vd.x;
-        const float fY = vd.y;
-        const float fZ = vd.z;
+        float const fX = vd.x;
+        float const fY = vd.y;
+        float const fZ = vd.z;
 
         switch (order)
         {
@@ -4767,9 +4767,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalConeLight(size_t order,
 
         for (size_t i = 0; i < order; ++i)
         {
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
-            const float  fValUse   = fTmpL0[i] * clr.x * fNewNorm * fExtraNormFac[i];
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
+            float const  fValUse   = fTmpL0[i] * clr.x * fNewNorm * fExtraNormFac[i];
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultR[cStart + j] = fTmpDir[cStart + j] * fValUse;
         }
@@ -4778,9 +4778,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalConeLight(size_t order,
         {
             for (size_t i = 0; i < order; ++i)
             {
-                const size_t cNumCoefs = 2 * i + 1;
-                const size_t cStart    = i * i;
-                const float  fValUse   = fTmpL0[i] * clr.y * fNewNorm * fExtraNormFac[i];
+                size_t const cNumCoefs = 2 * i + 1;
+                size_t const cStart    = i * i;
+                float const  fValUse   = fTmpL0[i] * clr.y * fNewNorm * fExtraNormFac[i];
                 for (size_t j = 0; j < cNumCoefs; ++j)
                     resultG[cStart + j] = fTmpDir[cStart + j] * fValUse;
             }
@@ -4790,9 +4790,9 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalConeLight(size_t order,
         {
             for (size_t i = 0; i < order; ++i)
             {
-                const size_t cNumCoefs = 2 * i + 1;
-                const size_t cStart    = i * i;
-                const float  fValUse   = fTmpL0[i] * clr.z * fNewNorm * fExtraNormFac[i];
+                size_t const cNumCoefs = 2 * i + 1;
+                size_t const cStart    = i * i;
+                float const  fValUse   = fTmpL0[i] * clr.z * fNewNorm * fExtraNormFac[i];
                 for (size_t j = 0; j < cNumCoefs; ++j)
                     resultB[cStart + j] = fTmpDir[cStart + j] * fValUse;
             }
@@ -4834,14 +4834,14 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(size_t 
     float fTmpDir[XM_SH_MAXORDER * XM_SH_MAXORDER]; // rotation "vector"
     float fTmpL0[XM_SH_MAXORDER];
 
-    const float fNewNorm = 3.0f / 2.0f;             // normalizes things for 1 sky color, 0 ground color...
+    float const fNewNorm = 3.0f / 2.0f;             // normalizes things for 1 sky color, 0 ground color...
 
     XMFLOAT3A vd;
     XMStoreFloat3(&vd, dir);
 
-    const float fX = vd.x;
-    const float fY = vd.y;
-    const float fZ = vd.z;
+    float const fX = vd.x;
+    float const fY = vd.y;
+    float const fZ = vd.z;
 
     sh_eval_basis_1(fX, fY, fZ, fTmpDir);
 
@@ -4861,17 +4861,17 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(size_t 
     for (; i < 2; ++i)
     {
         _Analysis_assume_(i < order);
-        const size_t cNumCoefs = 2 * i + 1;
-        const size_t cStart    = i * i;
-        const float  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
+        size_t const cNumCoefs = 2 * i + 1;
+        size_t const cStart    = i * i;
+        float const  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
         for (size_t j = 0; j < cNumCoefs; ++j)
             resultR[cStart + j] = fTmpDir[cStart + j] * fValUse;
     }
 
     for (; i < order; ++i)
     {
-        const size_t cNumCoefs = 2 * i + 1;
-        const size_t cStart    = i * i;
+        size_t const cNumCoefs = 2 * i + 1;
+        size_t const cStart    = i * i;
         for (size_t j = 0; j < cNumCoefs; ++j)
             resultR[cStart + j] = 0.0f;
     }
@@ -4887,17 +4887,17 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(size_t 
         for (i = 0; i < 2; ++i)
         {
             _Analysis_assume_(i < order);
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
-            const float  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
+            float const  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultG[cStart + j] = fTmpDir[cStart + j] * fValUse;
         }
 
         for (; i < order; ++i)
         {
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultG[cStart + j] = 0.0f;
         }
@@ -4914,17 +4914,17 @@ _Use_decl_annotations_ bool XM_CALLCONV DirectX::XMSHEvalHemisphereLight(size_t 
         for (i = 0; i < 2; ++i)
         {
             _Analysis_assume_(i < order);
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
-            const float  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
+            float const  fValUse   = fTmpL0[i] * fNewNorm * fExtraNormFac[i];
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultB[cStart + j] = fTmpDir[cStart + j] * fValUse;
         }
 
         for (; i < order; ++i)
         {
-            const size_t cNumCoefs = 2 * i + 1;
-            const size_t cStart    = i * i;
+            size_t const cNumCoefs = 2 * i + 1;
+            size_t const cStart    = i * i;
             for (size_t j = 0; j < cNumCoefs; ++j)
                 resultB[cStart + j] = 0.0f;
         }

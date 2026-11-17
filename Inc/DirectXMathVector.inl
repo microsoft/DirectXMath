@@ -63,10 +63,10 @@ inline XMVECTOR XM_CALLCONV XMVectorSet(float x, float y, float z, float w) noex
     XMVECTORF32 vResult = { { { x, y, z, w } } };
     return vResult.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    float32x2_t V0 = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&x))
-                                 | (static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&y)) << 32));
-    float32x2_t V1 = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&z))
-                                 | (static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&w)) << 32));
+    float32x2_t V0 = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&x))
+                                 | (static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&y)) << 32));
+    float32x2_t V1 = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&z))
+                                 | (static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&w)) << 32));
     return vcombine_f32(V0, V1);
 #elif defined(_XM_SSE_INTRINSICS_)
     return _mm_set_ps(w, z, y, x);
@@ -107,7 +107,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicate(float Value) noexcept
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr(const float* pValue) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorReplicatePtr(float const* pValue) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     float       Value = pValue[0];
@@ -141,7 +141,7 @@ inline XMVECTOR XM_CALLCONV XMVectorReplicateInt(uint32_t Value) noexcept
 
 //------------------------------------------------------------------------------
 // Initialize a vector with a replicated integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr(const uint32_t* pValue) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr(uint32_t const* pValue) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
     uint32_t    Value = pValue[0];
@@ -151,7 +151,7 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorReplicateIntPtr(const
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     return vreinterpretq_f32_u32(vld1q_dup_u32(pValue));
 #elif defined(_XM_SSE_INTRINSICS_)
-    return _mm_load_ps1(reinterpret_cast<const float*>(pValue));
+    return _mm_load_ps1(reinterpret_cast<float const*>(pValue));
 #endif
 }
 
@@ -575,7 +575,7 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMVectorGetIntXPtr(uint32_t* x, F
 #if defined(_XM_NO_INTRINSICS_)
     *x = V.vector4_u32[0];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    vst1q_lane_u32(x, *reinterpret_cast<const uint32x4_t*>(&V), 0);
+    vst1q_lane_u32(x, *reinterpret_cast<uint32x4_t const*>(&V), 0);
 #elif defined(_XM_SSE_INTRINSICS_)
     _mm_store_ss(reinterpret_cast<float*>(x), V);
 #endif
@@ -588,7 +588,7 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMVectorGetIntYPtr(uint32_t* y, F
 #if defined(_XM_NO_INTRINSICS_)
     *y = V.vector4_u32[1];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    vst1q_lane_u32(y, *reinterpret_cast<const uint32x4_t*>(&V), 1);
+    vst1q_lane_u32(y, *reinterpret_cast<uint32x4_t const*>(&V), 1);
 #elif defined(_XM_SSE4_INTRINSICS_)
     __m128i V1 = _mm_castps_si128(V);
     *y         = static_cast<uint32_t>(_mm_extract_epi32(V1, 1));
@@ -605,7 +605,7 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMVectorGetIntZPtr(uint32_t* z, F
 #if defined(_XM_NO_INTRINSICS_)
     *z = V.vector4_u32[2];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    vst1q_lane_u32(z, *reinterpret_cast<const uint32x4_t*>(&V), 2);
+    vst1q_lane_u32(z, *reinterpret_cast<uint32x4_t const*>(&V), 2);
 #elif defined(_XM_SSE4_INTRINSICS_)
     __m128i V1 = _mm_castps_si128(V);
     *z         = static_cast<uint32_t>(_mm_extract_epi32(V1, 2));
@@ -622,7 +622,7 @@ _Use_decl_annotations_ inline void XM_CALLCONV XMVectorGetIntWPtr(uint32_t* w, F
 #if defined(_XM_NO_INTRINSICS_)
     *w = V.vector4_u32[3];
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    vst1q_lane_u32(w, *reinterpret_cast<const uint32x4_t*>(&V), 3);
+    vst1q_lane_u32(w, *reinterpret_cast<uint32x4_t const*>(&V), 3);
 #elif defined(_XM_SSE4_INTRINSICS_)
     __m128i V1 = _mm_castps_si128(V);
     *w         = static_cast<uint32_t>(_mm_extract_epi32(V1, 3));
@@ -739,7 +739,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetW(FXMVECTOR V, float w) noexcept
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to a floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, const float* f, size_t i) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECTOR V, float const* f, size_t i) noexcept
 {
     assert(f != nullptr);
     assert(i < 4);
@@ -753,7 +753,7 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetByIndexPtr(FXMVECT
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to a floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, const float* x) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, float const* x) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -769,7 +769,7 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetXPtr(FXMVECTOR V, 
 }
 
 // Sets the Y component of a vector to a floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, const float* y) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, float const* y) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -791,7 +791,7 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetYPtr(FXMVECTOR V, 
 }
 
 // Sets the Z component of a vector to a floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, const float* z) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, float const* z) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -813,7 +813,7 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetZPtr(FXMVECTOR V, 
 }
 
 // Sets the W component of a vector to a floating point value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetWPtr(FXMVECTOR V, const float* w) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetWPtr(FXMVECTOR V, float const* w) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
@@ -942,7 +942,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSetIntW(FXMVECTOR V, uint32_t w) noexcept
 //------------------------------------------------------------------------------
 
 // Sets a component of a vector to an integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, const uint32_t* x, size_t i) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMVECTOR V, uint32_t const* x, size_t i) noexcept
 {
     assert(x != nullptr);
     assert(i < 4);
@@ -956,35 +956,35 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntByIndexPtr(FXMV
 //------------------------------------------------------------------------------
 
 // Sets the X component of a vector to an integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntXPtr(FXMVECTOR V, const uint32_t* x) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntXPtr(FXMVECTOR V, uint32_t const* x) noexcept
 {
     assert(x != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { { *x, V.vector4_u32[1], V.vector4_u32[2], V.vector4_u32[3] } } };
     return U.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vreinterpretq_f32_u32(vld1q_lane_u32(x, *reinterpret_cast<const uint32x4_t*>(&V), 0));
+    return vreinterpretq_f32_u32(vld1q_lane_u32(x, *reinterpret_cast<uint32x4_t const*>(&V), 0));
 #elif defined(_XM_SSE_INTRINSICS_)
-    XMVECTOR vTemp   = _mm_load_ss(reinterpret_cast<const float*>(x));
+    XMVECTOR vTemp   = _mm_load_ss(reinterpret_cast<float const*>(x));
     XMVECTOR vResult = _mm_move_ss(V, vTemp);
     return vResult;
 #endif
 }
 
 // Sets the Y component of a vector to an integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR V, const uint32_t* y) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR V, uint32_t const* y) noexcept
 {
     assert(y != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { { V.vector4_u32[0], *y, V.vector4_u32[2], V.vector4_u32[3] } } };
     return U.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vreinterpretq_f32_u32(vld1q_lane_u32(y, *reinterpret_cast<const uint32x4_t*>(&V), 1));
+    return vreinterpretq_f32_u32(vld1q_lane_u32(y, *reinterpret_cast<uint32x4_t const*>(&V), 1));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap y and x
     XMVECTOR vResult = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 2, 0, 1));
     // Convert input to vector
-    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float*>(y));
+    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<float const*>(y));
     // Replace the x component
     vResult = _mm_move_ss(vResult, vTemp);
     // Swap y and x again
@@ -994,19 +994,19 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntYPtr(FXMVECTOR 
 }
 
 // Sets the Z component of a vector to an integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR V, const uint32_t* z) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR V, uint32_t const* z) noexcept
 {
     assert(z != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { { V.vector4_u32[0], V.vector4_u32[1], *z, V.vector4_u32[3] } } };
     return U.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vreinterpretq_f32_u32(vld1q_lane_u32(z, *reinterpret_cast<const uint32x4_t*>(&V), 2));
+    return vreinterpretq_f32_u32(vld1q_lane_u32(z, *reinterpret_cast<uint32x4_t const*>(&V), 2));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap z and x
     XMVECTOR vResult = XM_PERMUTE_PS(V, _MM_SHUFFLE(3, 0, 1, 2));
     // Convert input to vector
-    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float*>(z));
+    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<float const*>(z));
     // Replace the x component
     vResult = _mm_move_ss(vResult, vTemp);
     // Swap z and x again
@@ -1016,19 +1016,19 @@ _Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntZPtr(FXMVECTOR 
 }
 
 // Sets the W component of a vector to an integer value passed by pointer
-_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntWPtr(FXMVECTOR V, const uint32_t* w) noexcept
+_Use_decl_annotations_ inline XMVECTOR XM_CALLCONV XMVectorSetIntWPtr(FXMVECTOR V, uint32_t const* w) noexcept
 {
     assert(w != nullptr);
 #if defined(_XM_NO_INTRINSICS_)
     XMVECTORU32 U = { { { V.vector4_u32[0], V.vector4_u32[1], V.vector4_u32[2], *w } } };
     return U.v;
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    return vreinterpretq_f32_u32(vld1q_lane_u32(w, *reinterpret_cast<const uint32x4_t*>(&V), 3));
+    return vreinterpretq_f32_u32(vld1q_lane_u32(w, *reinterpret_cast<uint32x4_t const*>(&V), 3));
 #elif defined(_XM_SSE_INTRINSICS_)
     // Swap w and x
     XMVECTOR vResult = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 2, 1, 3));
     // Convert input to vector
-    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<const float*>(w));
+    XMVECTOR vTemp = _mm_load_ss(reinterpret_cast<float const*>(w));
     // Replace the x component
     vResult = _mm_move_ss(vResult, vTemp);
     // Swap w and x again
@@ -1049,7 +1049,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle(FXMVECTOR V, uint32_t E0, uint32_t E
     return Result.v;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    static const uint32_t ControlElement[4] = {
+    static uint32_t const ControlElement[4] = {
         0x03020100, // XM_SWIZZLE_X
         0x07060504, // XM_SWIZZLE_Y
         0x0B0A0908, // XM_SWIZZLE_Z
@@ -1061,24 +1061,24 @@ inline XMVECTOR XM_CALLCONV XMVectorSwizzle(FXMVECTOR V, uint32_t E0, uint32_t E
     tbl.val[1] = vreinterpret_u8_f32(vget_high_f32(V));
 
     uint32x2_t      idx = vcreate_u32(static_cast<uint64_t>(ControlElement[E0]) | (static_cast<uint64_t>(ControlElement[E1]) << 32));
-    const uint8x8_t rL  = vtbl2_u8(tbl, vreinterpret_u8_u32(idx));
+    uint8x8_t const rL  = vtbl2_u8(tbl, vreinterpret_u8_u32(idx));
 
     idx                = vcreate_u32(static_cast<uint64_t>(ControlElement[E2]) | (static_cast<uint64_t>(ControlElement[E3]) << 32));
-    const uint8x8_t rH = vtbl2_u8(tbl, vreinterpret_u8_u32(idx));
+    uint8x8_t const rH = vtbl2_u8(tbl, vreinterpret_u8_u32(idx));
 
     return vcombine_f32(vreinterpret_f32_u8(rL), vreinterpret_f32_u8(rH));
 #elif defined(_XM_AVX_INTRINSICS_)
     unsigned int elem[4]  = { E0, E1, E2, E3 };
-    __m128i      vControl = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&elem[0]));
+    __m128i      vControl = _mm_loadu_si128(reinterpret_cast<__m128i const*>(&elem[0]));
     return _mm_permutevar_ps(V, vControl);
 #else
 #if defined(__GNUC__) && !defined(__clang__)
     // workaround some GCC optimization behavior that breaks this function
     XMVECTORU32 T;
     T.v       = V;
-    auto aPtr = reinterpret_cast<const uint32_t*>(&T);
+    auto aPtr = reinterpret_cast<uint32_t const*>(&T);
 #else
-    auto aPtr = reinterpret_cast<const uint32_t*>(&V);
+    auto aPtr = reinterpret_cast<uint32_t const*>(&V);
 #endif
 
     XMVECTORU32 vResult;
@@ -1099,7 +1099,7 @@ XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2, uint32_t PermuteX, uint32_t PermuteY
     _Analysis_assume_(PermuteX <= 7 && PermuteY <= 7 && PermuteZ <= 7 && PermuteW <= 7);
 
 #if defined(_XM_ARM_NEON_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
-    static const uint32_t ControlElement[8] = {
+    static uint32_t const ControlElement[8] = {
         0x03020100, // XM_PERMUTE_0X
         0x07060504, // XM_PERMUTE_0Y
         0x0B0A0908, // XM_PERMUTE_0Z
@@ -1117,17 +1117,17 @@ XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2, uint32_t PermuteX, uint32_t PermuteY
     tbl.val[3] = vreinterpret_u8_f32(vget_high_f32(V2));
 
     uint32x2_t idx = vcreate_u32(static_cast<uint64_t>(ControlElement[PermuteX]) | (static_cast<uint64_t>(ControlElement[PermuteY]) << 32));
-    const uint8x8_t rL = vtbl4_u8(tbl, vreinterpret_u8_u32(idx));
+    uint8x8_t const rL = vtbl4_u8(tbl, vreinterpret_u8_u32(idx));
 
     idx = vcreate_u32(static_cast<uint64_t>(ControlElement[PermuteZ]) | (static_cast<uint64_t>(ControlElement[PermuteW]) << 32));
-    const uint8x8_t rH = vtbl4_u8(tbl, vreinterpret_u8_u32(idx));
+    uint8x8_t const rH = vtbl4_u8(tbl, vreinterpret_u8_u32(idx));
 
     return vcombine_f32(vreinterpret_f32_u8(rL), vreinterpret_f32_u8(rH));
 #elif defined(_XM_AVX_INTRINSICS_) && !defined(_XM_NO_INTRINSICS_)
     static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
     XM_ALIGNED_DATA(16) unsigned int elem[4]  = { PermuteX, PermuteY, PermuteZ, PermuteW };
-    __m128i                          vControl = _mm_load_si128(reinterpret_cast<const __m128i*>(&elem[0]));
+    __m128i                          vControl = _mm_load_si128(reinterpret_cast<__m128i const*>(&elem[0]));
 
     __m128i vSelect = _mm_cmpgt_epi32(vControl, three);
     vControl        = _mm_castps_si128(_mm_and_ps(_mm_castsi128_ps(vControl), three));
@@ -1141,7 +1141,7 @@ XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2, uint32_t PermuteX, uint32_t PermuteY
     return _mm_or_ps(masked1, masked2);
 #else
 
-    const uint32_t* aPtr[2];
+    uint32_t const* aPtr[2];
 
 #if defined(__GNUC__) && !defined(__clang__)
     // workaround some GCC optimization behavior that breaks this function
@@ -1149,28 +1149,28 @@ XMVectorPermute(FXMVECTOR V1, FXMVECTOR V2, uint32_t PermuteX, uint32_t PermuteY
     T1.v = V1;
     XMVECTORU32 T2;
     T2.v    = V2;
-    aPtr[0] = reinterpret_cast<const uint32_t*>(&T1);
-    aPtr[1] = reinterpret_cast<const uint32_t*>(&T2);
+    aPtr[0] = reinterpret_cast<uint32_t const*>(&T1);
+    aPtr[1] = reinterpret_cast<uint32_t const*>(&T2);
 #else
-    aPtr[0] = reinterpret_cast<const uint32_t*>(&V1);
-    aPtr[1] = reinterpret_cast<const uint32_t*>(&V2);
+    aPtr[0] = reinterpret_cast<uint32_t const*>(&V1);
+    aPtr[1] = reinterpret_cast<uint32_t const*>(&V2);
 #endif
 
     XMVECTORU32    vResult;
-    const uint32_t i0  = PermuteX & 3;
-    const uint32_t vi0 = PermuteX >> 2;
+    uint32_t const i0  = PermuteX & 3;
+    uint32_t const vi0 = PermuteX >> 2;
     vResult.u[0]       = aPtr[vi0][i0];
 
-    const uint32_t i1  = PermuteY & 3;
-    const uint32_t vi1 = PermuteY >> 2;
+    uint32_t const i1  = PermuteY & 3;
+    uint32_t const vi1 = PermuteY >> 2;
     vResult.u[1]       = aPtr[vi1][i1];
 
-    const uint32_t i2  = PermuteZ & 3;
-    const uint32_t vi2 = PermuteZ >> 2;
+    uint32_t const i2  = PermuteZ & 3;
+    uint32_t const vi2 = PermuteZ >> 2;
     vResult.u[2]       = aPtr[vi2][i2];
 
-    const uint32_t i3  = PermuteW & 3;
-    const uint32_t vi3 = PermuteW >> 2;
+    uint32_t const i3  = PermuteW & 3;
+    uint32_t const vi3 = PermuteW >> 2;
     vResult.u[3]       = aPtr[vi3][i3];
 
     return vResult.v;
@@ -1210,7 +1210,7 @@ inline XMVECTOR XM_CALLCONV XMVectorSelectControl(uint32_t VectorIndex0,
     return vreinterpretq_f32_u32(vcgtq_s32(vTemp, g_XMZero));
 #else
     XMVECTOR       ControlVector;
-    const uint32_t ControlElement[] = { XM_SELECT_0, XM_SELECT_1 };
+    uint32_t const ControlElement[] = { XM_SELECT_0, XM_SELECT_1 };
 
     assert(VectorIndex0 < 2);
     assert(VectorIndex1 < 2);
@@ -3078,7 +3078,7 @@ namespace MathInternal
         return _mm_castps_si128(result);
     }
 
-    inline __m128i GetLeadingBit(const __m128i value) noexcept
+    inline __m128i GetLeadingBit(__m128i const value) noexcept
     {
         static const XMVECTORI32 g_XM0000FFFF = { { { 0x0000FFFF, 0x0000FFFF, 0x0000FFFF, 0x0000FFFF } } };
         static const XMVECTORI32 g_XM000000FF = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
@@ -3122,7 +3122,7 @@ namespace MathInternal
 
 namespace MathInternal
 {
-    inline int32x4_t GetLeadingBit(const int32x4_t value) noexcept
+    inline int32x4_t GetLeadingBit(int32x4_t const value) noexcept
     {
         static const XMVECTORI32 g_XM0000FFFF = { { { 0x0000FFFF, 0x0000FFFF, 0x0000FFFF, 0x0000FFFF } } };
         static const XMVECTORI32 g_XM000000FF = { { { 0x000000FF, 0x000000FF, 0x000000FF, 0x000000FF } } };
@@ -6190,7 +6190,7 @@ inline XMVECTOR XM_CALLCONV XMVector2LengthEst(FXMVECTOR V) noexcept
     // Dot2
     float32x2_t vTemp             = vmul_f32(VL, VL);
     vTemp                         = vpadd_f32(vTemp, vTemp);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(vTemp, zero);
     // Sqrt (estimate)
     float32x2_t Result = vrsqrte_f32(vTemp);
@@ -6235,7 +6235,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Length(FXMVECTOR V) noexcept
     // Dot2
     float32x2_t vTemp             = vmul_f32(VL, VL);
     vTemp                         = vpadd_f32(vTemp, vTemp);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(vTemp, zero);
     // Sqrt
     float32x2_t S0     = vrsqrte_f32(vTemp);
@@ -6604,7 +6604,7 @@ inline XMVECTOR XM_CALLCONV XMVector2Orthogonal(FXMVECTOR V) noexcept
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
     static const XMVECTORF32 Negate = { { { -1.f, 1.f, 0, 0 } } };
-    const float32x2_t        zero   = vdup_n_f32(0);
+    float32x2_t const        zero   = vdup_n_f32(0);
 
     float32x2_t VL     = vget_low_f32(V);
     float32x2_t Result = vmul_f32(vrev64_f32(VL), vget_low_f32(Negate));
@@ -6799,7 +6799,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -6833,7 +6833,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -6848,7 +6848,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x2_t V = vld2q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x2_t V = vld2q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT2) * 4;
 
                 float32x2_t r3       = vget_low_f32(row3);
@@ -6893,7 +6893,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t V = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t V = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmlaq_lane_f32(row3, row0, V, 0);    // X
@@ -6905,7 +6905,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
 
     return pOutputStream;
 #elif defined(_XM_AVX2_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -6925,7 +6925,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -6956,7 +6956,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
                     // Packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -6988,7 +6988,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 4;
 
                     __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7029,7 +7029,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
 
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7048,7 +7048,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7066,7 +7066,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
                 // Packed input, aligned output
                 for (size_t j = 0; j < two; ++j)
                 {
-                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 2;
 
                     XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7097,7 +7097,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
                 // Packed input, unaligned output
                 for (size_t j = 0; j < two; ++j)
                 {
-                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 2;
 
                     XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7133,7 +7133,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
             // Aligned input, aligned output
             for (; i < VectorCount; i++)
             {
-                XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(pInputVector)));
+                XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<__m128i const*>(pInputVector)));
                 pInputVector += InputStride;
 
                 XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7152,7 +7152,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
             // Aligned input, unaligned output
             for (; i < VectorCount; i++)
             {
-                XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(pInputVector)));
+                XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<__m128i const*>(pInputVector)));
                 pInputVector += InputStride;
 
                 XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7172,7 +7172,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector2TransformStream(XMF
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7227,7 +7227,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7265,7 +7265,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7280,7 +7280,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x2_t V = vld2q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x2_t V = vld2q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT2) * 4;
 
                 float32x2_t r3       = vget_low_f32(row3);
@@ -7332,7 +7332,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t V = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t V = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmlaq_lane_f32(row3, row0, V, 0);    // X
@@ -7362,7 +7362,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
 
     return pOutputStream;
 #elif defined(_XM_AVX2_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -7382,7 +7382,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7415,7 +7415,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                     // Packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7449,7 +7449,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 4;
 
                     __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7496,7 +7496,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
 
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7518,7 +7518,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7538,7 +7538,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 2;
 
                         // Result 1
@@ -7578,7 +7578,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 2;
 
                         // Result 1
@@ -7619,7 +7619,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
                 // Packed input, unpacked output
                 for (size_t j = 0; j < two; ++j)
                 {
-                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 2;
 
                     // Result 1
@@ -7663,7 +7663,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
         // Aligned input
         for (; i < VectorCount; i++)
         {
-            XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(pInputVector)));
+            XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<__m128i const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7686,7 +7686,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformCoordStrea
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7758,7 +7758,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7791,7 +7791,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7805,7 +7805,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x2_t V = vld2q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x2_t V = vld2q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT2) * 4;
 
                 float32x2_t r        = vget_low_f32(row0);
@@ -7835,7 +7835,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t V = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t V = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmulq_lane_f32(row0, V, 0);          // X
@@ -7848,7 +7848,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
 
     return pOutputStream;
 #elif defined(_XM_AVX2_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -7867,7 +7867,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7892,7 +7892,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                     // Packed input, packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 4;
 
                         __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7918,7 +7918,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 4;
 
                     __m256 Y2 = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(3, 3, 3, 3));
@@ -7956,7 +7956,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
 
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -7974,7 +7974,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -7993,7 +7993,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 2;
 
                         // Result 1
@@ -8023,7 +8023,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT2) * 2;
 
                         // Result 1
@@ -8054,7 +8054,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
                 // Packed input, unpacked output
                 for (size_t j = 0; j < two; ++j)
                 {
-                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    XMVECTOR V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT2) * 2;
 
                     // Result 1
@@ -8088,7 +8088,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
         // Aligned input
         for (; i < VectorCount; i++)
         {
-            XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<const __m128i*>(pInputVector)));
+            XMVECTOR V = _mm_castsi128_ps(_mm_loadl_epi64(reinterpret_cast<__m128i const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(V, _MM_SHUFFLE(1, 1, 1, 1));
@@ -8106,7 +8106,7 @@ _Use_decl_annotations_ inline XMFLOAT2* XM_CALLCONV XMVector2TransformNormalStre
         // Unaligned input
         for (; i < VectorCount; i++)
         {
-            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<const double*>(pInputVector)));
+            __m128 xy = _mm_castpd_ps(_mm_load_sd(reinterpret_cast<double const*>(pInputVector)));
             pInputVector += InputStride;
 
             XMVECTOR Y = XM_PERMUTE_PS(xy, _MM_SHUFFLE(1, 1, 1, 1));
@@ -8851,7 +8851,7 @@ inline XMVECTOR XM_CALLCONV XMVector3LengthEst(FXMVECTOR V) noexcept
     v1                            = vpadd_f32(v1, v1);
     v2                            = vdup_lane_f32(v2, 0);
     v1                            = vadd_f32(v1, v2);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(v1, zero);
     // Sqrt (estimate)
     float32x2_t Result = vrsqrte_f32(v1);
@@ -8908,7 +8908,7 @@ inline XMVECTOR XM_CALLCONV XMVector3Length(FXMVECTOR V) noexcept
     v1                            = vpadd_f32(v1, v1);
     v2                            = vdup_lane_f32(v2, 0);
     v1                            = vadd_f32(v1, v2);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(v1, zero);
     // Sqrt
     float32x2_t S0     = vrsqrte_f32(v1);
@@ -9482,7 +9482,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -9510,7 +9510,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -9526,7 +9526,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x3_t V = vld3q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x3_t V = vld3q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 float32x2_t r3       = vget_low_f32(row3);
@@ -9583,9 +9583,9 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t VL   = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t VL   = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         float32x2_t zero = vdup_n_f32(0);
-        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
+        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<float const*>(pInputVector) + 2, zero, 0);
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmlaq_lane_f32(row3, row0, VL, 0);    // X
@@ -9598,7 +9598,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -9617,9 +9617,9 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
                 // Packed input, aligned output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -9685,9 +9685,9 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector3TransformStream(XMF
                 // Packed input, unaligned output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -9847,7 +9847,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -9879,7 +9879,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -9895,7 +9895,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x3_t V = vld3q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x3_t V = vld3q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 float32x2_t r3       = vget_low_f32(row3);
@@ -9963,9 +9963,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t VL   = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t VL   = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         float32x2_t zero = vdup_n_f32(0);
-        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
+        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<float const*>(pInputVector) + 2, zero, 0);
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmlaq_lane_f32(row3, row0, VL, 0);    // X
@@ -9996,7 +9996,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -10017,9 +10017,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -10099,9 +10099,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -10182,9 +10182,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformCoordStrea
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -10354,7 +10354,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -10381,7 +10381,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -10396,7 +10396,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x3_t V = vld3q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x3_t V = vld3q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 float32x2_t r        = vget_low_f32(row0);
@@ -10446,9 +10446,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
 
     for (; i < VectorCount; i++)
     {
-        float32x2_t VL   = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+        float32x2_t VL   = vld1_f32(reinterpret_cast<float const*>(pInputVector));
         float32x2_t zero = vdup_n_f32(0);
-        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
+        float32x2_t VH   = vld1_lane_f32(reinterpret_cast<float const*>(pInputVector) + 2, zero, 0);
         pInputVector += InputStride;
 
         XMVECTOR vResult = vmulq_lane_f32(row0, VL, 0);          // X
@@ -10463,7 +10463,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -10483,9 +10483,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -10549,9 +10549,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -10616,9 +10616,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3TransformNormalStre
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -10728,8 +10728,8 @@ inline XMVECTOR XM_CALLCONV XMVector3Project(FXMVECTOR V,
     CXMMATRIX                                          View,
     CXMMATRIX                                          World) noexcept
 {
-    const float HalfViewportWidth  = ViewportWidth * 0.5f;
-    const float HalfViewportHeight = ViewportHeight * 0.5f;
+    float const HalfViewportWidth  = ViewportWidth * 0.5f;
+    float const HalfViewportHeight = ViewportHeight * 0.5f;
 
     XMVECTOR Scale  = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
     XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
@@ -10777,8 +10777,8 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    const float HalfViewportWidth  = ViewportWidth * 0.5f;
-    const float HalfViewportHeight = ViewportHeight * 0.5f;
+    float const HalfViewportWidth  = ViewportWidth * 0.5f;
+    float const HalfViewportHeight = ViewportHeight * 0.5f;
 
     XMVECTOR Scale  = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 1.0f);
     XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
@@ -10786,7 +10786,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
     XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform          = XMMatrixMultiply(Transform, Projection);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     for (size_t i = 0; i < VectorCount; i++)
@@ -10805,13 +10805,13 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    const float HalfViewportWidth  = ViewportWidth * 0.5f;
-    const float HalfViewportHeight = ViewportHeight * 0.5f;
+    float const HalfViewportWidth  = ViewportWidth * 0.5f;
+    float const HalfViewportHeight = ViewportHeight * 0.5f;
 
     XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform          = XMMatrixMultiply(Transform, Projection);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -10830,7 +10830,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
 
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x3_t V = vld3q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x3_t V = vld3q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 float32x2_t r3       = vget_low_f32(Transform.r[3]);
@@ -10907,9 +10907,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
 
         for (; i < VectorCount; i++)
         {
-            float32x2_t VL   = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+            float32x2_t VL   = vld1_f32(reinterpret_cast<float const*>(pInputVector));
             float32x2_t zero = vdup_n_f32(0);
-            float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
+            float32x2_t VH   = vld1_lane_f32(reinterpret_cast<float const*>(pInputVector) + 2, zero, 0);
             pInputVector += InputStride;
 
             XMVECTOR vResult = vmlaq_lane_f32(Transform.r[3], Transform.r[2], VH, 0); // Z
@@ -10943,8 +10943,8 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    const float HalfViewportWidth  = ViewportWidth * 0.5f;
-    const float HalfViewportHeight = ViewportHeight * 0.5f;
+    float const HalfViewportWidth  = ViewportWidth * 0.5f;
+    float const HalfViewportHeight = ViewportHeight * 0.5f;
 
     XMVECTOR Scale  = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 1.0f);
     XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);
@@ -10952,7 +10952,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
     XMMATRIX Transform = XMMatrixMultiply(World, View);
     Transform          = XMMatrixMultiply(Transform, Projection);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -10968,9 +10968,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -11050,9 +11050,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -11133,9 +11133,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3ProjectStream(XMFLO
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -11327,7 +11327,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
     Transform          = XMMatrixMultiply(Transform, Projection);
     Transform          = XMMatrixInverse(nullptr, Transform);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     for (size_t i = 0; i < VectorCount; i++)
@@ -11351,7 +11351,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
     Transform          = XMMatrixMultiply(Transform, Projection);
     Transform          = XMMatrixInverse(nullptr, Transform);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     float sx = 1.f / (ViewportWidth * 0.5f);
@@ -11370,7 +11370,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x3_t V = vld3q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x3_t V = vld3q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT3) * 4;
 
                 XMVECTOR ScaleX  = vdupq_n_f32(sx);
@@ -11450,19 +11450,19 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
 
     if (i < VectorCount)
     {
-        float32x2_t ScaleL = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&sx))
-                                         | (static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&sy)) << 32));
-        float32x2_t ScaleH = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&sz)));
+        float32x2_t ScaleL = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&sx))
+                                         | (static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&sy)) << 32));
+        float32x2_t ScaleH = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&sz)));
 
-        float32x2_t OffsetL = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&ox))
-                                          | (static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&oy)) << 32));
-        float32x2_t OffsetH = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<const uint32_t*>(&oz)));
+        float32x2_t OffsetL = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&ox))
+                                          | (static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&oy)) << 32));
+        float32x2_t OffsetH = vcreate_f32(static_cast<uint64_t>(*reinterpret_cast<uint32_t const*>(&oz)));
 
         for (; i < VectorCount; i++)
         {
-            float32x2_t VL   = vld1_f32(reinterpret_cast<const float*>(pInputVector));
+            float32x2_t VL   = vld1_f32(reinterpret_cast<float const*>(pInputVector));
             float32x2_t zero = vdup_n_f32(0);
-            float32x2_t VH   = vld1_lane_f32(reinterpret_cast<const float*>(pInputVector) + 2, zero, 0);
+            float32x2_t VH   = vld1_lane_f32(reinterpret_cast<float const*>(pInputVector) + 2, zero, 0);
             pInputVector += InputStride;
 
             VL = vmla_f32(OffsetL, VL, ScaleL);
@@ -11510,7 +11510,7 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
     Transform          = XMMatrixMultiply(Transform, Projection);
     Transform          = XMMatrixInverse(nullptr, Transform);
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i    = 0;
@@ -11526,9 +11526,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -11612,9 +11612,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
                     // Packed input, unaligned & packed output
                     for (size_t j = 0; j < four; ++j)
                     {
-                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                        __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                        __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                        __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                         pInputVector += sizeof(XMFLOAT3) * 4;
 
                         // Unpack the 4 vectors (.w components are junk)
@@ -11699,9 +11699,9 @@ _Use_decl_annotations_ inline XMFLOAT3* XM_CALLCONV XMVector3UnprojectStream(XMF
                 // Packed input, unpacked output
                 for (size_t j = 0; j < four; ++j)
                 {
-                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
-                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 16));
-                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector + 32));
+                    __m128 V1 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
+                    __m128 L2 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 16));
+                    __m128 L3 = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector + 32));
                     pInputVector += sizeof(XMFLOAT3) * 4;
 
                     // Unpack the 4 vectors (.w components are junk)
@@ -12411,83 +12411,83 @@ inline XMVECTOR XM_CALLCONV XMVector4Cross(FXMVECTOR V1, FXMVECTOR V2, FXMVECTOR
     return Result.v;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    const uint32x2_t select = vget_low_u32(g_XMMaskX);
+    uint32x2_t const select = vget_low_u32(g_XMMaskX);
 
     // Term1: V2zwyz * V3wzwy
-    const float32x2_t v2xy = vget_low_f32(V2);
-    const float32x2_t v2zw = vget_high_f32(V2);
-    const float32x2_t v2yx = vrev64_f32(v2xy);
-    const float32x2_t v2wz = vrev64_f32(v2zw);
-    const float32x2_t v2yz = vbsl_f32(select, v2yx, v2wz);
+    float32x2_t const v2xy = vget_low_f32(V2);
+    float32x2_t const v2zw = vget_high_f32(V2);
+    float32x2_t const v2yx = vrev64_f32(v2xy);
+    float32x2_t const v2wz = vrev64_f32(v2zw);
+    float32x2_t const v2yz = vbsl_f32(select, v2yx, v2wz);
 
-    const float32x2_t v3zw = vget_high_f32(V3);
-    const float32x2_t v3wz = vrev64_f32(v3zw);
-    const float32x2_t v3xy = vget_low_f32(V3);
-    const float32x2_t v3wy = vbsl_f32(select, v3wz, v3xy);
+    float32x2_t const v3zw = vget_high_f32(V3);
+    float32x2_t const v3wz = vrev64_f32(v3zw);
+    float32x2_t const v3xy = vget_low_f32(V3);
+    float32x2_t const v3wy = vbsl_f32(select, v3wz, v3xy);
 
     float32x4_t vTemp1  = vcombine_f32(v2zw, v2yz);
     float32x4_t vTemp2  = vcombine_f32(v3wz, v3wy);
     XMVECTOR    vResult = vmulq_f32(vTemp1, vTemp2);
 
     // - V2wzwy * V3zwyz
-    const float32x2_t v2wy = vbsl_f32(select, v2wz, v2xy);
+    float32x2_t const v2wy = vbsl_f32(select, v2wz, v2xy);
 
-    const float32x2_t v3yx = vrev64_f32(v3xy);
-    const float32x2_t v3yz = vbsl_f32(select, v3yx, v3wz);
+    float32x2_t const v3yx = vrev64_f32(v3xy);
+    float32x2_t const v3yz = vbsl_f32(select, v3yx, v3wz);
 
     vTemp1  = vcombine_f32(v2wz, v2wy);
     vTemp2  = vcombine_f32(v3zw, v3yz);
     vResult = vmlsq_f32(vResult, vTemp1, vTemp2);
 
     // term1 * V1yxxx
-    const float32x2_t v1xy = vget_low_f32(V1);
-    const float32x2_t v1yx = vrev64_f32(v1xy);
+    float32x2_t const v1xy = vget_low_f32(V1);
+    float32x2_t const v1yx = vrev64_f32(v1xy);
 
     vTemp1  = vcombine_f32(v1yx, vdup_lane_f32(v1yx, 1));
     vResult = vmulq_f32(vResult, vTemp1);
 
     // Term2: V2ywxz * V3wxwx
-    const float32x2_t v2yw = vrev64_f32(v2wy);
-    const float32x2_t v2xz = vbsl_f32(select, v2xy, v2wz);
+    float32x2_t const v2yw = vrev64_f32(v2wy);
+    float32x2_t const v2xz = vbsl_f32(select, v2xy, v2wz);
 
-    const float32x2_t v3wx = vbsl_f32(select, v3wz, v3yx);
+    float32x2_t const v3wx = vbsl_f32(select, v3wz, v3yx);
 
     vTemp1            = vcombine_f32(v2yw, v2xz);
     vTemp2            = vcombine_f32(v3wx, v3wx);
     float32x4_t vTerm = vmulq_f32(vTemp1, vTemp2);
 
     // - V2wxwx * V3ywxz
-    const float32x2_t v2wx = vbsl_f32(select, v2wz, v2yx);
+    float32x2_t const v2wx = vbsl_f32(select, v2wz, v2yx);
 
-    const float32x2_t v3yw = vrev64_f32(v3wy);
-    const float32x2_t v3xz = vbsl_f32(select, v3xy, v3wz);
+    float32x2_t const v3yw = vrev64_f32(v3wy);
+    float32x2_t const v3xz = vbsl_f32(select, v3xy, v3wz);
 
     vTemp1 = vcombine_f32(v2wx, v2wx);
     vTemp2 = vcombine_f32(v3yw, v3xz);
     vTerm  = vmlsq_f32(vTerm, vTemp1, vTemp2);
 
     // vResult - term2 * V1zzyy
-    const float32x2_t v1zw = vget_high_f32(V1);
+    float32x2_t const v1zw = vget_high_f32(V1);
 
     vTemp1  = vcombine_f32(vdup_lane_f32(v1zw, 0), vdup_lane_f32(v1yx, 0));
     vResult = vmlsq_f32(vResult, vTerm, vTemp1);
 
     // Term3: V2yzxy * V3zxyx
-    const float32x2_t v3zx = vrev64_f32(v3xz);
+    float32x2_t const v3zx = vrev64_f32(v3xz);
 
     vTemp1 = vcombine_f32(v2yz, v2xy);
     vTemp2 = vcombine_f32(v3zx, v3yx);
     vTerm  = vmulq_f32(vTemp1, vTemp2);
 
     // - V2zxyx * V3yzxy
-    const float32x2_t v2zx = vrev64_f32(v2xz);
+    float32x2_t const v2zx = vrev64_f32(v2xz);
 
     vTemp1 = vcombine_f32(v2zx, v2yx);
     vTemp2 = vcombine_f32(v3yz, v3xy);
     vTerm  = vmlsq_f32(vTerm, vTemp1, vTemp2);
 
     // vResult + term3 * V1wwwz
-    const float32x2_t v1wz = vrev64_f32(v1zw);
+    float32x2_t const v1wz = vrev64_f32(v1zw);
 
     vTemp1 = vcombine_f32(vdup_lane_f32(v1wz, 0), v1wz);
     return vmlaq_f32(vResult, vTerm, vTemp1);
@@ -12674,7 +12674,7 @@ inline XMVECTOR XM_CALLCONV XMVector4LengthEst(FXMVECTOR V) noexcept
     float32x2_t v2                = vget_high_f32(vTemp);
     v1                            = vadd_f32(v1, v2);
     v1                            = vpadd_f32(v1, v1);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(v1, zero);
     // Sqrt (estimate)
     float32x2_t Result = vrsqrte_f32(v1);
@@ -12731,7 +12731,7 @@ inline XMVECTOR XM_CALLCONV XMVector4Length(FXMVECTOR V) noexcept
     float32x2_t v2                = vget_high_f32(vTemp);
     v1                            = vadd_f32(v1, v2);
     v1                            = vpadd_f32(v1, v1);
-    const float32x2_t zero        = vdup_n_f32(0);
+    float32x2_t const zero        = vdup_n_f32(0);
     uint32x2_t        VEqualsZero = vceq_f32(v1, zero);
     // Sqrt
     float32x2_t S0     = vrsqrte_f32(v1);
@@ -13248,7 +13248,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
 
 #if defined(_XM_NO_INTRINSICS_)
 
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -13287,7 +13287,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
     return pOutputStream;
 
 #elif defined(_XM_ARM_NEON_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -13303,7 +13303,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
         {
             for (size_t j = 0; j < four; ++j)
             {
-                float32x4x4_t V = vld4q_f32(reinterpret_cast<const float*>(pInputVector));
+                float32x4x4_t V = vld4q_f32(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += sizeof(XMFLOAT4) * 4;
 
                 float32x2_t r        = vget_low_f32(row0);
@@ -13369,7 +13369,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
 
     for (; i < VectorCount; i++)
     {
-        XMVECTOR V = vld1q_f32(reinterpret_cast<const float*>(pInputVector));
+        XMVECTOR V = vld1q_f32(reinterpret_cast<float const*>(pInputVector));
         pInputVector += InputStride;
 
         float32x2_t VL      = vget_low_f32(V);
@@ -13385,7 +13385,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
 
     return pOutputStream;
 #elif defined(_XM_AVX2_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     size_t i   = 0;
@@ -13406,7 +13406,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
                     // Packed input, aligned & packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT4) * 2;
 
                         __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13431,7 +13431,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
                     // Packed input, packed output
                     for (size_t j = 0; j < two; ++j)
                     {
-                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                        __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                         pInputVector += sizeof(XMFLOAT4) * 2;
 
                         __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13457,7 +13457,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
                 // Packed input, unpacked output
                 for (size_t j = 0; j < two; ++j)
                 {
-                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                    __m256 VV = _mm256_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                     pInputVector += sizeof(XMFLOAT4) * 2;
 
                     __m256 vTempX = _mm256_shuffle_ps(VV, VV, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13491,7 +13491,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
 
         for (; i < VectorCount; i++)
         {
-            __m128 V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+            __m128 V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
             pInputVector += InputStride;
 
             XMVECTOR vTempX = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13514,7 +13514,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
 
     return pOutputStream;
 #elif defined(_XM_SSE_INTRINSICS_)
-    auto pInputVector  = reinterpret_cast<const uint8_t*>(pInputStream);
+    auto pInputVector  = reinterpret_cast<uint8_t const*>(pInputStream);
     auto pOutputVector = reinterpret_cast<uint8_t*>(pOutputStream);
 
     const XMVECTOR row0 = M.r[0];
@@ -13529,7 +13529,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
             // Aligned input, aligned output
             for (size_t i = 0; i < VectorCount; i++)
             {
-                __m128 V = _mm_load_ps(reinterpret_cast<const float*>(pInputVector));
+                __m128 V = _mm_load_ps(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += InputStride;
 
                 XMVECTOR vTempX = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13552,7 +13552,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
             // Unaligned input, aligned output
             for (size_t i = 0; i < VectorCount; i++)
             {
-                __m128 V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                __m128 V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += InputStride;
 
                 XMVECTOR vTempX = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13578,7 +13578,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
             // Aligned input, unaligned output
             for (size_t i = 0; i < VectorCount; i++)
             {
-                __m128 V = _mm_load_ps(reinterpret_cast<const float*>(pInputVector));
+                __m128 V = _mm_load_ps(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += InputStride;
 
                 XMVECTOR vTempX = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13601,7 +13601,7 @@ _Use_decl_annotations_ inline XMFLOAT4* XM_CALLCONV XMVector4TransformStream(XMF
             // Unaligned input, unaligned output
             for (size_t i = 0; i < VectorCount; i++)
             {
-                __m128 V = _mm_loadu_ps(reinterpret_cast<const float*>(pInputVector));
+                __m128 V = _mm_loadu_ps(reinterpret_cast<float const*>(pInputVector));
                 pInputVector += InputStride;
 
                 XMVECTOR vTempX = XM_PERMUTE_PS(V, _MM_SHUFFLE(0, 0, 0, 0));
@@ -13683,7 +13683,7 @@ inline XMVECTOR& XM_CALLCONV operator/=(XMVECTOR& V1, FXMVECTOR V2) noexcept
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR& operator*=(XMVECTOR& V, const float S) noexcept
+inline XMVECTOR& operator*=(XMVECTOR& V, float const S) noexcept
 {
     V = XMVectorScale(V, S);
     return V;
@@ -13691,7 +13691,7 @@ inline XMVECTOR& operator*=(XMVECTOR& V, const float S) noexcept
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR& operator/=(XMVECTOR& V, const float S) noexcept
+inline XMVECTOR& operator/=(XMVECTOR& V, float const S) noexcept
 {
     XMVECTOR vS = XMVectorReplicate(S);
     V           = XMVectorDivide(V, vS);
@@ -13728,14 +13728,14 @@ inline XMVECTOR XM_CALLCONV operator/(FXMVECTOR V1, FXMVECTOR V2) noexcept
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV operator*(FXMVECTOR V, const float S) noexcept
+inline XMVECTOR XM_CALLCONV operator*(FXMVECTOR V, float const S) noexcept
 {
     return XMVectorScale(V, S);
 }
 
 //------------------------------------------------------------------------------
 
-inline XMVECTOR XM_CALLCONV operator/(FXMVECTOR V, const float S) noexcept
+inline XMVECTOR XM_CALLCONV operator/(FXMVECTOR V, float const S) noexcept
 {
     XMVECTOR vS = XMVectorReplicate(S);
     return XMVectorDivide(V, vS);

@@ -146,8 +146,8 @@ namespace DirectX
             CXMMATRIX                                          View,
             CXMMATRIX                                          World)
         {
-            const float HalfViewportWidth  = ViewportWidth * 0.5f;
-            const float HalfViewportHeight = ViewportHeight * 0.5f;
+            float const HalfViewportWidth  = ViewportWidth * 0.5f;
+            float const HalfViewportHeight = ViewportHeight * 0.5f;
 
             XMVECTOR Scale  = XMVectorSet(HalfViewportWidth, -HalfViewportHeight, ViewportMaxZ - ViewportMinZ, 0.0f);
             XMVECTOR Offset = XMVectorSet(ViewportX + HalfViewportWidth, ViewportY + HalfViewportHeight, ViewportMinZ, 0.0f);

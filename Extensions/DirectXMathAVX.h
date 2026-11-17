@@ -82,7 +82,7 @@ namespace DirectX
             _Analysis_assume_((E0 < 4) && (E1 < 4) && (E2 < 4) && (E3 < 4));
 
             unsigned int elem[4]  = { E0, E1, E2, E3 };
-            __m128i      vControl = _mm_loadu_si128(reinterpret_cast<const __m128i*>(&elem[0]));
+            __m128i      vControl = _mm_loadu_si128(reinterpret_cast<__m128i const*>(&elem[0]));
             return _mm_permutevar_ps(V, vControl);
         }
 
@@ -95,7 +95,7 @@ namespace DirectX
             static const XMVECTORU32 three = { { { 3, 3, 3, 3 } } };
 
             XM_ALIGNED_DATA(16) unsigned int elem[4]  = { PermuteX, PermuteY, PermuteZ, PermuteW };
-            __m128i                          vControl = _mm_load_si128(reinterpret_cast<const __m128i*>(&elem[0]));
+            __m128i                          vControl = _mm_load_si128(reinterpret_cast<__m128i const*>(&elem[0]));
 
             __m128i vSelect = _mm_cmpgt_epi32(vControl, three);
             vControl        = _mm_castps_si128(_mm_and_ps(_mm_castsi128_ps(vControl), three));
@@ -205,12 +205,12 @@ namespace DirectX
             static_assert(PermuteZ <= 7, "PermuteZ template parameter out of range");
             static_assert(PermuteW <= 7, "PermuteW template parameter out of range");
 
-            const uint32_t Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
+            uint32_t const Shuffle = _MM_SHUFFLE(PermuteW & 3, PermuteZ & 3, PermuteY & 3, PermuteX & 3);
 
-            const bool WhichX = PermuteX > 3;
-            const bool WhichY = PermuteY > 3;
-            const bool WhichZ = PermuteZ > 3;
-            const bool WhichW = PermuteW > 3;
+            bool const WhichX = PermuteX > 3;
+            bool const WhichY = PermuteY > 3;
+            bool const WhichZ = PermuteZ > 3;
+            bool const WhichW = PermuteW > 3;
 
             return AVX::MathInternal::PermuteHelper<Shuffle, WhichX, WhichY, WhichZ, WhichW>::Permute(V1, V2);
         }

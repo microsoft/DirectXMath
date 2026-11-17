@@ -510,15 +510,15 @@ inline XMVECTOR XM_CALLCONV XMQuaternionIdentity() noexcept
 inline XMVECTOR XM_CALLCONV XMQuaternionRotationRollPitchYaw(float Pitch, float Yaw, float Roll) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
-    const float halfpitch = Pitch * 0.5f;
+    float const halfpitch = Pitch * 0.5f;
     float       cp        = cosf(halfpitch);
     float       sp        = sinf(halfpitch);
 
-    const float halfyaw = Yaw * 0.5f;
+    float const halfyaw = Yaw * 0.5f;
     float       cy      = cosf(halfyaw);
     float       sy      = sinf(halfyaw);
 
-    const float halfroll = Roll * 0.5f;
+    float const halfroll = Roll * 0.5f;
     float       cr       = cosf(halfroll);
     float       sr       = sinf(halfroll);
 
@@ -537,15 +537,15 @@ inline XMVECTOR XM_CALLCONV XMQuaternionRotationRollPitchYawFromVector(FXMVECTOR
     ) noexcept
 {
 #if defined(_XM_NO_INTRINSICS_)
-    const float halfpitch = Angles.vector4_f32[0] * 0.5f;
+    float const halfpitch = Angles.vector4_f32[0] * 0.5f;
     float       cp        = cosf(halfpitch);
     float       sp        = sinf(halfpitch);
 
-    const float halfyaw = Angles.vector4_f32[1] * 0.5f;
+    float const halfyaw = Angles.vector4_f32[1] * 0.5f;
     float       cy      = cosf(halfyaw);
     float       sy      = sinf(halfyaw);
 
-    const float halfroll = Angles.vector4_f32[2] * 0.5f;
+    float const halfroll = Angles.vector4_f32[2] * 0.5f;
     float       cr       = cosf(halfroll);
     float       sr       = sinf(halfroll);
 

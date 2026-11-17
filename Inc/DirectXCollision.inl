@@ -643,7 +643,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingSphere::Contai
 //-----------------------------------------------------------------------------
 // Sphere in sphere test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR Center1 = XMLoadFloat3(&Center);
     float    r1      = Radius;
@@ -663,7 +663,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const Bou
 //-----------------------------------------------------------------------------
 // Axis-aligned box in sphere test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(BoundingBox const& box) const noexcept
 {
     if (!box.Intersects(*this))
         return DISJOINT;
@@ -692,7 +692,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const Bou
 //-----------------------------------------------------------------------------
 // Oriented box in sphere test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(BoundingOrientedBox const& box) const noexcept
 {
     if (!box.Intersects(*this))
         return DISJOINT;
@@ -722,7 +722,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const Bou
 //-----------------------------------------------------------------------------
 // Frustum in sphere test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(BoundingFrustum const& fr) const noexcept
 {
     if (!fr.Intersects(*this))
         return DISJOINT;
@@ -768,7 +768,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingSphere::Contains(const Bou
 //-----------------------------------------------------------------------------
 // Sphere vs. sphere test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline bool BoundingSphere::Intersects(BoundingSphere const& sh) const noexcept
 {
     // Load A.
     XMVECTOR vCenterA = XMLoadFloat3(&Center);
@@ -792,12 +792,12 @@ _Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingSphe
 //-----------------------------------------------------------------------------
 // Box vs. sphere test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingSphere::Intersects(BoundingBox const& box) const noexcept
 {
     return box.Intersects(*this);
 }
 
-_Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingSphere::Intersects(BoundingOrientedBox const& box) const noexcept
 {
     return box.Intersects(*this);
 }
@@ -805,7 +805,7 @@ _Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingOrie
 //-----------------------------------------------------------------------------
 // Frustum vs. sphere test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingSphere::Intersects(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline bool BoundingSphere::Intersects(BoundingFrustum const& fr) const noexcept
 {
     return fr.Intersects(*this);
 }
@@ -1009,7 +1009,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingSphere::Contai
 // Creates a bounding sphere that contains two other bounding spheres
 //-----------------------------------------------------------------------------
 _Use_decl_annotations_ inline void
-BoundingSphere::CreateMerged(BoundingSphere& Out, const BoundingSphere& S1, const BoundingSphere& S2) noexcept
+BoundingSphere::CreateMerged(BoundingSphere& Out, BoundingSphere const& S1, BoundingSphere const& S2) noexcept
 {
     XMVECTOR Center1 = XMLoadFloat3(&S1.Center);
     float    r1      = S1.Radius;
@@ -1052,14 +1052,14 @@ BoundingSphere::CreateMerged(BoundingSphere& Out, const BoundingSphere& S1, cons
 //-----------------------------------------------------------------------------
 // Create sphere enscribing bounding box
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline void BoundingSphere::CreateFromBoundingBox(BoundingSphere& Out, const BoundingBox& box) noexcept
+_Use_decl_annotations_ inline void BoundingSphere::CreateFromBoundingBox(BoundingSphere& Out, BoundingBox const& box) noexcept
 {
     Out.Center        = box.Center;
     XMVECTOR vExtents = XMLoadFloat3(&box.Extents);
     Out.Radius        = XMVectorGetX(XMVector3Length(vExtents));
 }
 
-_Use_decl_annotations_ inline void BoundingSphere::CreateFromBoundingBox(BoundingSphere& Out, const BoundingOrientedBox& box) noexcept
+_Use_decl_annotations_ inline void BoundingSphere::CreateFromBoundingBox(BoundingSphere& Out, BoundingOrientedBox const& box) noexcept
 {
     // Bounding box orientation is irrelevant because a sphere is rotationally invariant
     Out.Center        = box.Center;
@@ -1087,7 +1087,7 @@ BoundingSphere::CreateFromPoints(BoundingSphere& Out, size_t Count, const XMFLOA
 
     for (size_t i = 1; i < Count; ++i)
     {
-        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride));
+        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride));
 
         float px = XMVectorGetX(Point);
         float py = XMVectorGetY(Point);
@@ -1159,7 +1159,7 @@ BoundingSphere::CreateFromPoints(BoundingSphere& Out, size_t Count, const XMFLOA
     // Add any points not inside the sphere.
     for (size_t i = 0; i < Count; ++i)
     {
-        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride));
+        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride));
 
         XMVECTOR Delta = XMVectorSubtract(Point, vCenter);
 
@@ -1181,7 +1181,7 @@ BoundingSphere::CreateFromPoints(BoundingSphere& Out, size_t Count, const XMFLOA
 //-----------------------------------------------------------------------------
 // Create sphere containing frustum
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline void BoundingSphere::CreateFromFrustum(BoundingSphere& Out, const BoundingFrustum& fr) noexcept
+_Use_decl_annotations_ inline void BoundingSphere::CreateFromFrustum(BoundingSphere& Out, BoundingFrustum const& fr) noexcept
 {
     XMFLOAT3 Corners[BoundingFrustum::CORNER_COUNT];
     fr.GetCorners(Corners);
@@ -1313,7 +1313,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingBox::Contains(
 //-----------------------------------------------------------------------------
 // Sphere in axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR SphereCenter = XMLoadFloat3(&sh.Center);
     XMVECTOR SphereRadius = XMVectorReplicatePtr(&sh.Radius);
@@ -1358,7 +1358,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const Boundi
 //-----------------------------------------------------------------------------
 // Axis-aligned box in axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(BoundingBox const& box) const noexcept
 {
     XMVECTOR CenterA  = XMLoadFloat3(&Center);
     XMVECTOR ExtentsA = XMLoadFloat3(&Extents);
@@ -1387,7 +1387,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const Boundi
 //-----------------------------------------------------------------------------
 // Oriented box in axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(BoundingOrientedBox const& box) const noexcept
 {
     if (!box.Intersects(*this))
         return DISJOINT;
@@ -1418,7 +1418,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const Boundi
 //-----------------------------------------------------------------------------
 // Frustum in axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(BoundingFrustum const& fr) const noexcept
 {
     if (!fr.Intersects(*this))
         return DISJOINT;
@@ -1444,7 +1444,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingBox::Contains(const Boundi
 //-----------------------------------------------------------------------------
 // Sphere vs axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline bool BoundingBox::Intersects(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR SphereCenter = XMLoadFloat3(&sh.Center);
     XMVECTOR SphereRadius = XMVectorReplicatePtr(&sh.Radius);
@@ -1482,7 +1482,7 @@ _Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingSphere&
 //-----------------------------------------------------------------------------
 // Axis-aligned box vs. axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingBox::Intersects(BoundingBox const& box) const noexcept
 {
     XMVECTOR CenterA  = XMLoadFloat3(&Center);
     XMVECTOR ExtentsA = XMLoadFloat3(&Extents);
@@ -1505,7 +1505,7 @@ _Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingBox& bo
 //-----------------------------------------------------------------------------
 // Oriented box vs. axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingBox::Intersects(BoundingOrientedBox const& box) const noexcept
 {
     return box.Intersects(*this);
 }
@@ -1513,7 +1513,7 @@ _Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingOriente
 //-----------------------------------------------------------------------------
 // Frustum vs. axis-aligned box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingBox::Intersects(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline bool BoundingBox::Intersects(BoundingFrustum const& fr) const noexcept
 {
     return fr.Intersects(*this);
 }
@@ -1832,7 +1832,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingBox::Contained
 //-----------------------------------------------------------------------------
 // Create axis-aligned box that contains two other bounding boxes
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline void BoundingBox::CreateMerged(BoundingBox& Out, const BoundingBox& b1, const BoundingBox& b2) noexcept
+_Use_decl_annotations_ inline void BoundingBox::CreateMerged(BoundingBox& Out, BoundingBox const& b1, BoundingBox const& b2) noexcept
 {
     XMVECTOR b1Center  = XMLoadFloat3(&b1.Center);
     XMVECTOR b1Extents = XMLoadFloat3(&b1.Extents);
@@ -1855,7 +1855,7 @@ _Use_decl_annotations_ inline void BoundingBox::CreateMerged(BoundingBox& Out, c
 //-----------------------------------------------------------------------------
 // Create axis-aligned box that contains a bounding sphere
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline void BoundingBox::CreateFromSphere(BoundingBox& Out, const BoundingSphere& sh) noexcept
+_Use_decl_annotations_ inline void BoundingBox::CreateFromSphere(BoundingBox& Out, BoundingSphere const& sh) noexcept
 {
     XMVECTOR spCenter = XMLoadFloat3(&sh.Center);
     XMVECTOR shRadius = XMVectorReplicatePtr(&sh.Radius);
@@ -1898,7 +1898,7 @@ BoundingBox::CreateFromPoints(BoundingBox& Out, size_t Count, const XMFLOAT3* pP
 
     for (size_t i = 1; i < Count; ++i)
     {
-        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride));
+        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride));
 
         vMin = XMVectorMin(vMin, Point);
         vMax = XMVectorMax(vMax, Point);
@@ -2047,7 +2047,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingOrientedBox::C
 //-----------------------------------------------------------------------------
 // Sphere in oriented bounding box
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR SphereCenter = XMLoadFloat3(&sh.Center);
     XMVECTOR SphereRadius = XMVectorReplicatePtr(&sh.Radius);
@@ -2099,7 +2099,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(cons
 // Axis aligned box vs. oriented box. Constructs an oriented box and uses
 // the oriented box vs. oriented box test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(BoundingBox const& box) const noexcept
 {
     // Make the axis aligned box oriented and do an OBB vs OBB test.
     BoundingOrientedBox obox(box.Center, box.Extents, XMFLOAT4(0.f, 0.f, 0.f, 1.f));
@@ -2109,7 +2109,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(cons
 //-----------------------------------------------------------------------------
 // Oriented bounding box in oriented bounding box
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(BoundingOrientedBox const& box) const noexcept
 {
     if (!Intersects(box))
         return DISJOINT;
@@ -2147,7 +2147,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(cons
 //-----------------------------------------------------------------------------
 // Frustum in oriented bounding box
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(BoundingFrustum const& fr) const noexcept
 {
     if (!fr.Intersects(*this))
         return DISJOINT;
@@ -2176,7 +2176,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingOrientedBox::Contains(cons
 //-----------------------------------------------------------------------------
 // Sphere vs. oriented box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR SphereCenter = XMLoadFloat3(&sh.Center);
     XMVECTOR SphereRadius = XMVectorReplicatePtr(&sh.Radius);
@@ -2220,7 +2220,7 @@ _Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const Boundin
 // Axis aligned box vs. oriented box. Constructs an oriented box and uses
 // the oriented box vs. oriented box test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(BoundingBox const& box) const noexcept
 {
     // Make the axis aligned box oriented and do an OBB vs OBB test.
     BoundingOrientedBox obox(box.Center, box.Extents, XMFLOAT4(0.f, 0.f, 0.f, 1.f));
@@ -2231,7 +2231,7 @@ _Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const Boundin
 // Fast oriented box / oriented box intersection test using the separating axis
 // theorem.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(BoundingOrientedBox const& box) const noexcept
 {
     // Build the 3x3 rotation matrix that defines the orientation of B relative to A.
     XMVECTOR A_quat = XMLoadFloat4(&Orientation);
@@ -2420,7 +2420,7 @@ _Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const Boundin
 //-----------------------------------------------------------------------------
 // Frustum vs. oriented box test
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline bool BoundingOrientedBox::Intersects(BoundingFrustum const& fr) const noexcept
 {
     return fr.Intersects(*this);
 }
@@ -2622,7 +2622,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingOrientedBox::C
 //-----------------------------------------------------------------------------
 // Create oriented bounding box from axis-aligned bounding box
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline void BoundingOrientedBox::CreateFromBoundingBox(BoundingOrientedBox& Out, const BoundingBox& box) noexcept
+_Use_decl_annotations_ inline void BoundingOrientedBox::CreateFromBoundingBox(BoundingOrientedBox& Out, BoundingBox const& box) noexcept
 {
     Out.Center      = box.Center;
     Out.Extents     = box.Extents;
@@ -2651,7 +2651,7 @@ BoundingOrientedBox::CreateFromPoints(BoundingOrientedBox& Out, size_t Count, co
     // Compute the center of mass and inertia tensor of the points.
     for (size_t i = 0; i < Count; ++i)
     {
-        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride));
+        XMVECTOR Point = XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride));
 
         CenterOfMass = XMVectorAdd(CenterOfMass, Point);
     }
@@ -2667,7 +2667,7 @@ BoundingOrientedBox::CreateFromPoints(BoundingOrientedBox& Out, size_t Count, co
     for (size_t i = 0; i < Count; ++i)
     {
         XMVECTOR Point
-            = XMVectorSubtract(XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride)),
+            = XMVectorSubtract(XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride)),
                 CenterOfMass);
 
         XX_YY_ZZ = XMVectorAdd(XX_YY_ZZ, XMVectorMultiply(Point, Point));
@@ -2732,7 +2732,7 @@ BoundingOrientedBox::CreateFromPoints(BoundingOrientedBox& Out, size_t Count, co
     for (size_t i = 1; i < Count; ++i)
     {
         XMVECTOR Point = XMVector3TransformNormal(
-            XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<const uint8_t*>(pPoints) + i * Stride)),
+            XMLoadFloat3(reinterpret_cast<const XMFLOAT3*>(reinterpret_cast<uint8_t const*>(pPoints) + i * Stride)),
             InverseR);
 
         vMin = XMVectorMin(vMin, Point);
@@ -2961,7 +2961,7 @@ _Use_decl_annotations_ inline ContainmentType XM_CALLCONV BoundingFrustum::Conta
 }
 
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(BoundingSphere const& sh) const noexcept
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin      = XMLoadFloat3(&Origin);
@@ -2996,7 +2996,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const Bo
 }
 
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(BoundingBox const& box) const noexcept
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin      = XMLoadFloat3(&Origin);
@@ -3031,7 +3031,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const Bo
 }
 
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(BoundingOrientedBox const& box) const noexcept
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin      = XMLoadFloat3(&Origin);
@@ -3066,7 +3066,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const Bo
 }
 
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(BoundingFrustum const& fr) const noexcept
 {
     // Load origin and orientation of the frustum.
     XMVECTOR vOrigin      = XMLoadFloat3(&Origin);
@@ -3107,7 +3107,7 @@ _Use_decl_annotations_ inline ContainmentType BoundingFrustum::Contains(const Bo
 // sphere and compares the distance to the nearest feature to the radius of the
 // sphere
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingSphere& sh) const noexcept
+_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(BoundingSphere const& sh) const noexcept
 {
     XMVECTOR Zero = XMVectorZero();
 
@@ -3181,7 +3181,7 @@ _Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingSph
     // to the sphere.
 
     // The faces adjacent to each face are:
-    static const size_t adjacent_faces[6][4] = { { 2, 3, 4, 5 }, // 0
+    static size_t const adjacent_faces[6][4] = { { 2, 3, 4, 5 }, // 0
         { 2, 3, 4, 5 },                                          // 1
         { 0, 1, 4, 5 },                                          // 2
         { 0, 1, 4, 5 },                                          // 3
@@ -3237,7 +3237,7 @@ _Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingSph
     Corners[7] = XMVectorMultiply(vLeftBottom, vFar);
 
     // The Edges are:
-    static const size_t edges[12][2] = {
+    static size_t const edges[12][2] = {
         // clang-format off
         { 0, 1 }, { 2, 3 }, { 0, 2 }, { 1, 3 },    // Near plane
         { 4, 5 }, { 6, 7 }, { 4, 6 }, { 5, 7 },    // Far plane
@@ -3277,7 +3277,7 @@ _Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingSph
 // Exact axis aligned box vs frustum test.  Constructs an oriented box and uses
 // the oriented box vs frustum test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(BoundingBox const& box) const noexcept
 {
     // Make the axis aligned box oriented and do an OBB vs frustum test.
     BoundingOrientedBox obox(box.Center, box.Extents, XMFLOAT4(0.f, 0.f, 0.f, 1.f));
@@ -3287,7 +3287,7 @@ _Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingBox
 //-----------------------------------------------------------------------------
 // Exact oriented box vs frustum test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingOrientedBox& box) const noexcept
+_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(BoundingOrientedBox const& box) const noexcept
 {
     static const XMVECTORU32 SelectY = { { { XM_SELECT_0, XM_SELECT_1, XM_SELECT_0, XM_SELECT_0 } } };
     static const XMVECTORU32 SelectZ = { { { XM_SELECT_0, XM_SELECT_0, XM_SELECT_1, XM_SELECT_0 } } };
@@ -3476,7 +3476,7 @@ _Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingOri
 //-----------------------------------------------------------------------------
 // Exact frustum vs frustum test.
 //-----------------------------------------------------------------------------
-_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(const BoundingFrustum& fr) const noexcept
+_Use_decl_annotations_ inline bool BoundingFrustum::Intersects(BoundingFrustum const& fr) const noexcept
 {
     // Load origin and orientation of frustum B.
     XMVECTOR OriginB      = XMLoadFloat3(&Origin);

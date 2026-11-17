@@ -53,8 +53,8 @@ namespace DirectX
               Radius(1.f)
         {}
 
-        BoundingSphere(const BoundingSphere&)            = default;
-        BoundingSphere& operator=(const BoundingSphere&) = default;
+        BoundingSphere(BoundingSphere const&)            = default;
+        BoundingSphere& operator=(BoundingSphere const&) = default;
 
         BoundingSphere(BoundingSphere&&)            = default;
         BoundingSphere& operator=(BoundingSphere&&) = default;
@@ -131,8 +131,8 @@ namespace DirectX
               Extents(1.f, 1.f, 1.f)
         {}
 
-        BoundingBox(const BoundingBox&)            = default;
-        BoundingBox& operator=(const BoundingBox&) = default;
+        BoundingBox(BoundingBox const&)            = default;
+        BoundingBox& operator=(BoundingBox const&) = default;
 
         BoundingBox(BoundingBox&&)            = default;
         BoundingBox& operator=(BoundingBox&&) = default;
@@ -211,8 +211,8 @@ namespace DirectX
               Orientation(0, 0, 0, 1.f)
         {}
 
-        BoundingOrientedBox(const BoundingOrientedBox&)            = default;
-        BoundingOrientedBox& operator=(const BoundingOrientedBox&) = default;
+        BoundingOrientedBox(BoundingOrientedBox const&)            = default;
+        BoundingOrientedBox& operator=(BoundingOrientedBox const&) = default;
 
         BoundingOrientedBox(BoundingOrientedBox&&)            = default;
         BoundingOrientedBox& operator=(BoundingOrientedBox&&) = default;
@@ -299,8 +299,8 @@ namespace DirectX
               Far(1.f)
         {}
 
-        BoundingFrustum(const BoundingFrustum&)            = default;
-        BoundingFrustum& operator=(const BoundingFrustum&) = default;
+        BoundingFrustum(BoundingFrustum const&)            = default;
+        BoundingFrustum& operator=(BoundingFrustum const&) = default;
 
         BoundingFrustum(BoundingFrustum&&)            = default;
         BoundingFrustum& operator=(BoundingFrustum&&) = default;
